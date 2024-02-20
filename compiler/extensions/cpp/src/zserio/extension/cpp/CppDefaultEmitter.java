@@ -13,7 +13,6 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
-import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.TemplateDataContext.ContextParameters;
 

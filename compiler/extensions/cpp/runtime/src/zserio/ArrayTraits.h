@@ -1797,6 +1797,80 @@ public:
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
 };
 
+/**
+ * Array traits for Zserio structure, choice and union types.
+ */
+template <typename T, typename ELEMENT_FACTORY>
+class ObjectArrayTraits<std::shared_ptr<T>, ELEMENT_FACTORY>
+{
+public:
+    /** Element type. */
+    using ElementType = std::shared_ptr<T>;
+
+    /* Constant element type. */
+    using ConstElementType = std::shared_ptr<const T>;
+
+    /** Allocator type. */
+    using allocator_type = typename ElementType::element_type::allocator_type;
+
+    /** Typedef for the array's owner type. */
+    using OwnerType = typename ELEMENT_FACTORY::OwnerType;
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param bitPosition Current bit position.
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(const OwnerType&, size_t bitPosition, const ConstElementType& element)
+    {
+        return element->bitSizeOf(bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets of the single array element.
+     *
+     * \param bitPosition Current bit position.
+     * \param element Element to use.
+     *
+     * \return Updated bit position which points to the first bit after the array element.
+     */
+    static size_t initializeOffsets(OwnerType&, size_t bitPosition, const ElementType& element)
+    {
+        return element->initializeOffsets(bitPosition);
+    }
+
+    /**
+     * Reads the single array element.
+     *
+     * \param owner Owner of the array.
+     * \param rawArray Raw array to use.
+     * \param in Bit stream reader.
+     * \param index Index need in case of parameterized type which depends on the current index.
+     */
+    template <typename RAW_ARRAY>
+    static void read(OwnerType& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+    {
+        ELEMENT_FACTORY::create(owner, rawArray, in, index);
+    }
+
+    /**
+     * Writes the single array element.
+     *
+     * \param out Bit stream writer to use.
+     * \param element Element to write.
+     */
+    static void write(const OwnerType&, BitStreamWriter& out, const ConstElementType& element)
+    {
+        element->write(out);
+    }
+
+    /** Determines whether the bit size of the single element is constant. */
+    static constexpr bool IS_BITSIZEOF_CONSTANT = false;
+};
+
 namespace detail
 {
 
@@ -2246,6 +2320,102 @@ public:
             BitStreamWriter& out, const ElementType& element)
     {
         element.write(packingContext, out);
+    }
+};
+
+template <typename T, typename ELEMENT_FACTORY>
+class PackedArrayTraits<ObjectArrayTraits<std::shared_ptr<T>, ELEMENT_FACTORY>,
+        typename std::enable_if<has_owner_type<ObjectArrayTraits<std::shared_ptr<T>, ELEMENT_FACTORY>>::value>::type>
+{
+public:
+    /** Typedef for array traits. */
+    using ArrayTraits = ObjectArrayTraits<std::shared_ptr<T>, ELEMENT_FACTORY>;
+
+    /** Element type. */
+    using ElementType = std::shared_ptr<T>;
+
+    /** Constant element type. */
+    using ConstElementType = std::shared_ptr<const T>;
+
+    /** Allocator type. */
+    using allocator_type = typename T::allocator_type;
+
+    /** Typedef for the array's owner type. */
+    using OwnerType = typename ArrayTraits::OwnerType;
+
+    /**
+     * Calls context initialization step for the current element.
+     *
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
+     */
+    template <typename PACKING_CONTEXT>
+    static void initContext(
+            const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext, const ElementType& element)
+    {
+        element->initPackingContext(packingContext);
+    }
+
+    /**
+     * Returns length of the array element stored in the bit stream in bits.
+     *
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
+     * \param bitPosition Current bit stream position.
+     * \param element Current element.
+     *
+     * \return Length of the array element stored in the bit stream in bits.
+     */
+    template <typename PACKING_CONTEXT>
+    static size_t bitSizeOf(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
+            size_t bitPosition, const ConstElementType& element)
+    {
+        return element->bitSizeOf(packingContext, bitPosition);
+    }
+
+    /**
+     * Calls indexed offsets initialization for the current element.
+     *
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
+     * \param bitPosition Current bit stream position.
+     * \param element Current element.
+     *
+     * \return Updated bit stream position which points to the first bit after this element.
+     */
+    template <typename PACKING_CONTEXT>
+    static size_t initializeOffsets(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
+            size_t bitPosition, ElementType& element)
+    {
+        return element->initializeOffsets(packingContext, bitPosition);
+    }
+
+    /**
+     * Reads an element from the bit stream.
+     *
+     * \param owner Owner of the array.
+     * \param rawArray Raw array to use.
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
+     * \param in Bit stream reader.
+     * \param allocator Allocator to use.
+     * \param index Index of the current element.
+     */
+    template <typename RAW_ARRAY, typename PACKING_CONTEXT>
+    static void read(typename ArrayTraits::OwnerType& owner, RAW_ARRAY& rawArray,
+            PACKING_CONTEXT& packingContext, BitStreamReader& in, size_t index)
+    {
+        ELEMENT_FACTORY::create(owner, rawArray, packingContext, in, index);
+    }
+
+    /**
+     * Writes the element to the bit stream.
+     *
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
+     * \param out Bit stream writer.
+     * \param element Element to write.
+     */
+    template <typename PACKING_CONTEXT>
+    static void write(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
+            BitStreamWriter& out, const ConstElementType& element)
+    {
+        element->write(packingContext, out);
     }
 };
 

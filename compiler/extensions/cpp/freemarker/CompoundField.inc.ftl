@@ -21,7 +21,14 @@
 
 <#macro field_raw_cpp_type_name field>
     <#if field.array??>
-        <@vector_type_name field.array.elementTypeInfo.typeFullName/><#t>
+        <#local elementTypeName>
+            <#if field.array.elementUsesSharedPointer>
+                <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
+            <#else>
+                ${field.array.elementTypeInfo.typeFullName}<#t>
+            </#if>
+        </#local>
+        <@vector_type_name elementTypeName/><#t>
     <#else>
         <#if field.usesSharedPointer>
             <@shared_ptr_type_name field.typeInfo.typeFullName/><#t>
@@ -33,7 +40,14 @@
 
 <#macro field_raw_cpp_argument_type_name field>
     <#if field.array??>
-        const <@vector_type_name field.array.elementTypeInfo.typeFullName/>&<#t>
+        <#local elementTypeName>
+            <#if field.array.elementUsesSharedPointer>
+                <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
+            <#else>
+                ${field.array.elementTypeInfo.typeFullName}<#t>
+            </#if>
+        </#local>
+        const <@vector_type_name elementTypeName/>&<#t>
     <#elseif field.typeInfo.isSimple>
         ${field.typeInfo.typeFullName}<#t>
     <#else>
@@ -378,8 +392,15 @@ ${I}}
 </#macro>
 
 <#macro array_type_name field>
+    <#local elementTypeName>
+        <#if field.array.elementUsesSharedPointer>
+            <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
+        <#else>
+            ${field.array.elementTypeInfo.typeFullName}<#t>
+        </#if>
+    </#local>
     ${field.typeInfo.typeFullName}<<#t>
-            <@vector_type_name field.array.elementTypeInfo.typeFullName/>, <@array_traits_type_name field/>, <#t>
+            <@vector_type_name elementTypeName/>, <@array_traits_type_name field/>, <#t>
             <@array_type_enum field/><#t>
     <#if needs_array_expressions(field)>
             , <@array_expressions_name field.name/><#t>
@@ -389,9 +410,16 @@ ${I}}
 
 <#macro array_traits_type_name field>
     <#if field.array??>
+        <#local elementTypeName>
+            <#if field.array.elementUsesSharedPointer>
+                <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
+            <#else>
+                ${field.array.elementTypeInfo.typeFullName}<#t>
+            </#if>
+        </#local>
         ${field.array.traits.name}<#t>
         <#if field.array.traits.isTemplated>
-                <${field.array.elementTypeInfo.typeFullName}<#t>
+                <${elementTypeName}<#t>
                 <#if field.array.traits.requiresElementFixedBitSize>, ${field.array.elementBitSize.value}</#if><#t>
                 <#if field.array.traits.requiresElementDynamicBitSize>, <@element_bit_size_name field.name/></#if><#t>
                 <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
@@ -469,8 +497,13 @@ ${I}}
     <#if field.array.elementCompound?? &&
             (needs_field_initialization(field.array.elementCompound) ||
                     field.array.elementCompound.needsChildrenInitialization)>
+        <#if field.array.elementUsesSharedPointer>
+        static void initializeElement(<#if !withWriterCode>const </#if>${compoundName}& owner,
+                const <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/>& element, size_t index);
+        <#else>
         static void initializeElement(<#if !withWriterCode>const </#if>${compoundName}& owner,
                 ${field.array.elementTypeInfo.typeFullName}& element, size_t index);
+        </#if>
     </#if>
     };
 
@@ -501,18 +534,33 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(${
     <#if field.array.elementCompound?? &&
             (needs_field_initialization(field.array.elementCompound) ||
                     field.array.elementCompound.needsChildrenInitialization)>
+        <#if field.array.elementUsesSharedPointer>
+void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<#rt>
+        <#if !withWriterCode>const </#if>${compoundName}&<#t>
+        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        const <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/>& element, size_t<#rt>
+        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+{
+            <#if needs_field_initialization(field.array.elementCompound)>
+    element->initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
+            <#elseif field.array.elementCompound.needsChildrenInitialization>
+    element->initializeChildren();
+            </#if>
+}
+        <#else>
 void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
         <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
         ${field.array.elementTypeInfo.typeFullName}& element, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-        <#if needs_field_initialization(field.array.elementCompound)>
+            <#if needs_field_initialization(field.array.elementCompound)>
     element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
-        <#elseif field.array.elementCompound.needsChildrenInitialization>
+            <#elseif field.array.elementCompound.needsChildrenInitialization>
     element.initializeChildren();
-        </#if>
+            </#if>
 }
+        </#if>
 
     </#if>
 </#macro>
@@ -526,18 +574,25 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
 </#macro>
 
 <#macro declare_element_factory compoundName field>
+    <#local elementTypeName>
+        <#if field.array.elementUsesSharedPointer>
+            <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
+        <#else>
+            ${field.array.elementTypeInfo.typeFullName}<#t>
+        </#if>
+    </#local>
     class <@element_factory_name field.name/>
     {
     public:
         using OwnerType = ${compoundName};
 
         static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+                <@vector_type_name elementTypeName/>& array,
                 ::zserio::BitStreamReader& in, size_t index);
     <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+                <@vector_type_name elementTypeName/>& array,
                 ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context,
                 ::zserio::BitStreamReader& in, size_t index);
     </#if>
@@ -551,33 +606,58 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
+    <#local elementTypeName>
+        <#if field.array.elementUsesSharedPointer>
+            <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
+        <#else>
+            ${field.array.elementTypeInfo.typeFullName}<#t>
+        </#if>
+    </#local>
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
         <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
-        <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+        <@vector_type_name elementTypeName/>& array,
         ::zserio::BitStreamReader& in, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
+    <#if field.array.elementUsesSharedPointer>
+    array.push_back(::std::allocate_shared<${field.array.elementTypeInfo.typeFullName}>(
+            array.get_allocator(), in<#rt>
+    <#if extraConstructorArguments?has_content>
+            , ${extraConstructorArguments}<#t>
+    </#if>
+            <#lt>, array.get_allocator()));
+    <#else>
     array.emplace_back(in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
             <#lt>, array.get_allocator());
+    </#if>
 }
 
     <#if field.isPackable && field.array.elementUsedInPackedArray>
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
         <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
-        <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+        <@vector_type_name elementTypeName/>& array,
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
+    <#if field.array.elementUsesSharedPointer>
+    array.push_back(::std::allocate_shared<${field.array.elementTypeInfo.typeFullName}>(
+            array.get_allocator(), context, in<#rt>
+        <#if extraConstructorArguments?has_content>
+            , ${extraConstructorArguments}<#t>
+        </#if>
+            <#lt>, array.get_allocator()));
+    <#else>
     array.emplace_back(context, in<#rt>
         <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
         </#if>
             <#lt>, array.get_allocator());
+    </#if>
 }
 
     </#if>
@@ -830,9 +910,9 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
      */
     </#if>
     <#if field.usesSharedPointer>
-    <@field_raw_cpp_type_name field/><#rt>
+    <#nt><@field_raw_cpp_type_name field/><#rt>
     <#else>
-    <@field_raw_cpp_argument_type_name field/><#rt>
+    <#nt><@field_raw_cpp_argument_type_name field/><#rt>
     </#if>
     <#lt> ${field.getterName}() const;
     <#if needs_field_getter(field)>
@@ -851,9 +931,9 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
      */
         </#if>
         <#if field.usesSharedPointer>
-    <@field_raw_cpp_type_name field/><#rt>
+    <#nt><@field_raw_cpp_type_name field/><#rt>
         <#else>
-    <@field_raw_cpp_type_name field/>&<#rt>
+    <#nt><@field_raw_cpp_type_name field/>&<#rt>
         </#if>
     <#lt> ${field.getterName}();
     </#if>

@@ -13,12 +13,8 @@
 <#if withWriterCode && fieldList?has_content>
 #include <zserio/Traits.h>
 </#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-#include <zserio/NoInit.h>
-</#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/AllocatorPropagatingCopy.h>
 <#if isPackable && usedInPackedArray>
 #include <zserio/DeltaContext.h>
 </#if>
@@ -123,8 +119,6 @@ public:
     /** Default move assignment operator. */
     </#if>
     ${name}& operator=(${name}&&) = default;
-
-    <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
 <#if withTypeInfoCode>
 
     <#if withCodeComments>
@@ -368,7 +362,6 @@ private:
     </#if>
 </#list>
     <@compound_parameter_members compoundParametersData/>
-    <@compound_constructor_members compoundConstructorsData/>
 <#if (numExtendedFields > 0)>
     uint32_t m_numExtendedFields;
 </#if>

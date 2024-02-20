@@ -218,7 +218,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
-    public BinaryExpressionFormatting getDot(Expression expr)
+    public BinaryExpressionFormatting getDot(Expression expr) throws ZserioExtensionException
     {
         // ignore dots between package identifiers
         if (expr.op1().getExprZserioType() == null)
@@ -231,6 +231,19 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         // do special handling for bitmask values
         if (expr.op2().getExprSymbolObject() instanceof BitmaskValue)
             return new BinaryExpressionFormatting("::");
+
+        // to special handling for shared pointed compounds
+        if (expr.op1().getExprZserioType() instanceof CompoundType &&
+                CompoundFieldTemplateData.isAboveTreshold(context, (CompoundType)expr.op1().getExprZserioType()))
+        {
+            if (expr.op1().getExprSymbolObject() instanceof Parameter ||
+                    (expr.op1().getExprSymbolObject() instanceof Field &&
+                            context.getParameterFieldsCollector().isUsedAsParameter(
+                                    (Field)expr.op1().getExprSymbolObject())))
+            {
+                return new BinaryExpressionFormatting("->");
+            }
+        }
 
         return new BinaryExpressionFormatting(".");
     }
@@ -266,7 +279,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             AstNode resolvedSymbol, ZserioType exprType, boolean isSetter) throws ZserioExtensionException
     {
         if (resolvedSymbol instanceof Parameter)
-        {;
+        {
             // [Parameter]
             final Parameter param = (Parameter)resolvedSymbol;
             formatParameterAccessor(result, isMostLeftId, param);
@@ -335,20 +348,8 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         if (isMostLeftId)
             result.append(getAccessPrefix());
 
-        final ZserioType paramBaseType = param.getTypeReference().getBaseTypeReference().getType();
-        if (paramBaseType instanceof CompoundType &&
-                CompoundFieldTemplateData.isAboveTreshold(context, (CompoundType)paramBaseType))
-        {
-            result.append("(*");
-            result.append(AccessorNameFormatter.getGetterName(param));
-            result.append(CPP_GETTER_FUNCTION_CALL);
-            result.append(")");
-        }
-        else
-        {
-            result.append(AccessorNameFormatter.getGetterName(param));
-            result.append(CPP_GETTER_FUNCTION_CALL);
-        }
+        result.append(AccessorNameFormatter.getGetterName(param));
+        result.append(CPP_GETTER_FUNCTION_CALL);
     }
 
     private void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter)

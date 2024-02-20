@@ -88,8 +88,6 @@
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
 
-<@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
-
 <#if withTypeInfoCode>
 const ${types.typeInfo.name}& ${name}::typeInfo()
 {
@@ -237,7 +235,6 @@ void ${name}::initializeChildren()
     <#list fieldList as field>
     <@compound_initialize_children_field field, 1/>
     </#list>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
 
 </#if>

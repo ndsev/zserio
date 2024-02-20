@@ -476,6 +476,8 @@ public final class CompoundFieldTemplateData
             final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
             includeCollector.addHeaderIncludesForType(elementNativeType);
+            elementUsesSharedPointer = (elementTypeInstantiation.getBaseType() instanceof CompoundType) &&
+                    isAboveTreshold(context, (CompoundType)elementTypeInstantiation.getBaseType());
             elementBitSize = BitSizeTemplateData.create(context, elementTypeInstantiation, includeCollector);
             elementCompound = createCompound(context, elementTypeInstantiation, includeCollector);
             elementIntegerRange = createIntegerRange(context, elementTypeInstantiation, includeCollector);
@@ -503,6 +505,11 @@ public final class CompoundFieldTemplateData
         public String getLength()
         {
             return length;
+        }
+
+        public boolean getElementUsesSharedPointer()
+        {
+            return elementUsesSharedPointer;
         }
 
         public BitSizeTemplateData getElementBitSize()
@@ -549,6 +556,7 @@ public final class CompoundFieldTemplateData
         private final boolean isImplicit;
         private final boolean isPacked;
         private final String length;
+        private final boolean elementUsesSharedPointer;
         private final BitSizeTemplateData elementBitSize;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;

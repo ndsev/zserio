@@ -13,9 +13,6 @@
 <#if withWriterCode && fieldList?has_content>
 #include <zserio/Traits.h>
 </#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-#include <zserio/NoInit.h>
-</#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -28,6 +25,7 @@
 <@type_includes types.reflectablePtr/>
     </#if>
 </#if>
+<@type_includes types.sharedPtr/>
 <@type_includes types.anyHolder/>
 <@type_includes types.allocator/>
 <@system_includes headerSystemIncludes/>
@@ -84,20 +82,6 @@ public:
     /** Default destructor. */
 </#if>
     ~${name}() = default;
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-
-    <@compound_copy_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_assignment_operator_declaration compoundConstructorsData/>
-
-    <@compound_move_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_move_assignment_operator_declaration compoundConstructorsData/>
-<#else>
 
     <#if withCodeComments>
     /** Default copy constructor. */
@@ -116,29 +100,6 @@ public:
     /** Default move assignment operator. */
     </#if>
     ${name}& operator=(${name}&&) = default;
-</#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-
-    <@compound_copy_constructor_no_init_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_assignment_no_init_declaration compoundConstructorsData/>
-
-    <@compound_move_constructor_no_init_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_move_assignment_no_init_declaration compoundConstructorsData/>
-</#if>
-
-    <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
-<#if needs_compound_initialization(compoundConstructorsData)>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_allocator_propagating_copy_constructor_no_init_declaration compoundConstructorsData/>
-</#if>
 <#if withTypeInfoCode>
 
     <#if withCodeComments>
@@ -337,11 +298,9 @@ private:
     ${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     </#if>
-    ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>
     <@compound_parameter_members compoundParametersData/>
-    <@compound_constructor_members compoundConstructorsData/>
 <#if fieldList?has_content>
     ${types.anyHolder.name} m_objectChoice;
 </#if>

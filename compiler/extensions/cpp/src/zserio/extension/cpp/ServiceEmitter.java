@@ -2,7 +2,6 @@ package zserio.extension.cpp;
 
 import zserio.ast.ServiceType;
 import zserio.extension.common.OutputFileManager;
-import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.TemplateDataContext.ContextParameters;
 

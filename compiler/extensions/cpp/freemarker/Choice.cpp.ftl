@@ -49,32 +49,6 @@
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
 
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-<@compound_copy_constructor_definition compoundConstructorsData/>
-
-<@compound_assignment_operator_definition compoundConstructorsData/>
-
-<@compound_move_constructor_definition compoundConstructorsData/>
-
-<@compound_move_assignment_operator_definition compoundConstructorsData/>
-
-</#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_copy_constructor_no_init_definition compoundConstructorsData/>
-
-<@compound_assignment_no_init_definition compoundConstructorsData/>
-
-<@compound_move_constructor_no_init_definition compoundConstructorsData/>
-
-<@compound_move_assignment_no_init_definition compoundConstructorsData/>
-
-</#if>
-<@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
-
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData/>
-
-</#if>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
         selector == (${expressionList?first})<#t>
@@ -317,20 +291,29 @@ void ${name}::initializeChildren()
     <#if fieldList?has_content>
     <@choice_switch "choice_initialize_children_member", "choice_no_match", selectorExpression, 1/>
     </#if>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
 
 </#if>
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
-<@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
+        <#if field.usesSharedPointer>
+<@field_raw_cpp_type_name field/> <#rt>
+        <#else>
+<@field_raw_cpp_type_name field/>& <#rt>
+        </#if>
+${name}::${field.getterName}()
 {
     return m_objectChoice.get<<@field_cpp_type_name field/>>()<#if field.array??>.getRawArray()</#if>;
 }
 
     </#if>
-<@field_raw_cpp_argument_type_name field/> ${name}::${field.getterName}() const
+        <#if field.usesSharedPointer>
+<@field_raw_cpp_type_name field/> <#rt>
+        <#else>
+<@field_raw_cpp_argument_type_name field/> <#rt>
+        </#if>
+${name}::${field.getterName}() const
 {
     return m_objectChoice.get<<@field_cpp_type_name field/>>()<#if field.array??>.getRawArray()</#if>;
 }
@@ -591,30 +574,13 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
 {
     <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1/>
 }
-<#if isPackable && usedInPackedArray>
+    <#if isPackable && usedInPackedArray>
 
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1, true/>
 }
-</#if>
-
-<#macro choice_copy_object member packed indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if member.compoundField??>
-${I}return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name member.compoundField/>>(<#rt>
-        <#if has_field_no_init_tag(member.compoundField)>
-        ::zserio::NoInit, <#t>
-        </#if>
-        <#lt>m_objectChoice, allocator);
-    <#else>
-${I}return ${types.anyHolder.name}(allocator);
     </#if>
-</#macro>
-${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
-{
-    <@choice_switch "choice_copy_object", "choice_no_match", selectorExpression, 1/>
-}
 </#if>
 <@namespace_end package.path/>

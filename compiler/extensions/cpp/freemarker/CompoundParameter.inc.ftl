@@ -135,9 +135,6 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
             <#if !compoundParameter.typeInfo.isSimple && withWriterCode>
 ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundParameter.getterName}()
 {
-    if (!m_isInitialized)
-        throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
-
     return <@parameter_member_name compoundParameter.name/>;
 }
 
@@ -148,9 +145,6 @@ const ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundPar
 ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.getterName}() const
             </#if>
 {
-    if (!m_isInitialized)
-        throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
-
     return <@parameter_member_name compoundParameter.name/>;
 }
 

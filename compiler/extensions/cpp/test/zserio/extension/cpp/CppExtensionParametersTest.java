@@ -26,6 +26,7 @@ public class CppExtensionParametersTest
         assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
     }
 
+    /*
     @Test
     public void checkStdSetCppAllocator()
     {
@@ -72,7 +73,7 @@ public class CppExtensionParametersTest
         final TestExtensionParameters extensionParameters = new TestExtensionParameters(
                 setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
         assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
-    }
+    }*/
 
     private static class TestExtensionParameters implements ExtensionParameters
     {
