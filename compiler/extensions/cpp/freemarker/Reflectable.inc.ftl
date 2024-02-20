@@ -26,7 +26,11 @@ ${I}        typeArguments[${parameter?index}].get<<#rt>
         <#if parameter.typeInfo.isSimple>
             ${parameter.typeInfo.typeFullName}>()<#t>
         <#else>
-            ::std::reference_wrapper<${parameter.typeInfo.typeFullName}>>().get()<#t>
+            <#if parameter.usesSharedPointer>
+                ::std::reference_wrapper<<@shared_ptr_type_name parameter.typeInfo.typeFullName/>>>().get()<#t>
+            <#else>
+                ::std::reference_wrapper<${parameter.typeInfo.typeFullName}>>().get()<#t>
+            </#if>
         </#if>
         <#if parameter?has_next>
                 <#lt>,
@@ -73,8 +77,12 @@ ${I}{
     <#list fieldList as field>
 ${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
+        <#if field.usesSharedPointer>
+${I}        m_object.${field.setterName}(::std::allocate_shared<${field.typeInfo.typeFullName}>(get_allocator()));
+        <#else>
 ${I}        m_object.${field.setterName}(<@field_raw_cpp_type_name field/>(<#rt>
                     <#lt><#if field.needsAllocator>get_allocator()</#if>));
+        </#if>
 ${I}        return <@reflectable_field_create field/>;
 ${I}    }
     </#list>
@@ -185,7 +193,7 @@ ${I}}
         <#elseif field.typeInfo.isEnum>
             ::zserio::enumReflectable(m_object.${field.getterName}(), get_allocator())<#t>
         <#else>
-            m_object.${field.getterName}().reflectable(get_allocator())<#t>
+            m_object.${field.getterName}()<#if field.usesSharedPointer>-><#else>.</#if>reflectable(get_allocator())<#t>
         </#if>
     </#if>
 </#macro>
@@ -199,7 +207,7 @@ ${I}}
     <#elseif parameter.typeInfo.isEnum>
         ::zserio::enumReflectable(m_object.${parameter.getterName}(), get_allocator())<#t>
     <#else>
-        m_object.${parameter.getterName}().reflectable(get_allocator())<#t>
+        m_object.${parameter.getterName}()<#if parameter.usesSharedPointer>-><#else>.</#if>reflectable(get_allocator())<#t>
     </#if>
 </#macro>
 

@@ -118,7 +118,14 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
                 in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if><#t>
                 <#if field.compound??>, allocator</#if><#t>
             </#local>
-            <#local readCommand><@field_cpp_type_name field/>(context.${field.getterName}(), ${constructorArguments})</#local>
+            <#local readCommand>
+                <#if field.usesSharedPointer>
+                    ::std::allocate_shared<${field.typeInfo.typeFullName}>(<#t>
+                            allocator, context.${field.getterName}(), ${constructorArguments})<#t>
+                <#else>
+                    <@field_cpp_type_name field/>(context.${field.getterName}(), ${constructorArguments})<#t>
+                </#if>
+            </#local>
         <#elseif field.typeInfo.isEnum>
             <#local readCommand>::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), in)</#local>
         <#else>
@@ -333,7 +340,7 @@ ${I}}
 ${I}if (!(<@compound_get_field field/>.${parameter.getterName}() == ${instantiatedExpression}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: ") <<
-${I}            <@compound_get_field field/>.${parameter.getterName}() << " != " << ${instantiatedExpression} << "!";
+${I}            "cannot say, parameter is passed by value..." << "!";
 ${I}}
             </#if>
         </#list>

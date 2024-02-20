@@ -91,7 +91,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
     <#if constructorArgumentTypeList?has_content>
         <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2,
-                needs_compound_initialization(compoundConstructorsData)/>
+                memberInitializationMacroName != ""/>
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>

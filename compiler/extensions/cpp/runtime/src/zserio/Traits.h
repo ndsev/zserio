@@ -93,6 +93,18 @@ using void_t = typename make_void<T...>::type;
 
 } // namespace detail
 
+template <typename T>
+struct remove_shared_ptr
+{
+    using type = T;
+};
+
+template <typename T>
+struct remove_shared_ptr<std::shared_ptr<T>>
+{
+    using type = T;
+};
+
 /**
  * Trait used to check whether the type T is an allocator.
  * \{

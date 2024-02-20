@@ -2686,6 +2686,39 @@ template <typename ALLOC, typename RAW_ARRAY>
 using BitBufferReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, BitBufferReflectable<ALLOC>>;
 /** \} */
 
+namespace detail
+{
+
+template <typename T>
+struct SharedElementExtractor
+{
+    static const T& get(const std::vector<T>& rawArray, size_t index)
+    {
+        return rawArray[index];
+    }
+
+    static T& get(std::vector<T>& rawArray, size_t index)
+    {
+        return rawArray[index];
+    }
+};
+
+template <typename T>
+struct SharedElementExtractor<std::shared_ptr<T>>
+{
+    static const T& get(const std::vector<std::shared_ptr<T>>& rawArray, size_t index)
+    {
+        return *rawArray[index];
+    }
+
+    static T& get(std::vector<std::shared_ptr<T>>& rawArray, size_t index)
+    {
+        return *rawArray[index];
+    }
+};
+
+} // namespace detail
+
 /**
  * Reflectable for arrays of compound types.
  */
@@ -2705,7 +2738,7 @@ public:
     using Base::getAnyValue;
 
     CompoundReflectableConstArray(const ALLOC& allocator, const RAW_ARRAY& rawArray) :
-            Base(ElementType::typeInfo(), allocator),
+            Base(remove_shared_ptr<ElementType>::type::typeInfo(), allocator),
             m_rawArray(rawArray)
     {}
 
@@ -2723,7 +2756,8 @@ public:
                     << "' of size " << size() << "!";
         }
 
-        return m_rawArray[index].reflectable(Base::get_allocator());
+        return detail::SharedElementExtractor<ElementType>::get(
+                m_rawArray, index).reflectable(Base::get_allocator());
     }
 
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
@@ -2747,7 +2781,7 @@ public:
     using Base::getTypeInfo;
 
     CompoundReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
-            Base(ElementType::typeInfo(), allocator),
+            Base(remove_shared_ptr<ElementType>::type::typeInfo(), allocator),
             m_rawArray(rawArray)
     {}
 
@@ -2770,7 +2804,8 @@ public:
                     << "' of size " << size() << "!";
         }
 
-        return m_rawArray[index].reflectable(Base::get_allocator());
+        return detail::SharedElementExtractor<ElementType>::get(
+                m_rawArray, index).reflectable(Base::get_allocator());
     }
 
     IBasicReflectablePtr<ALLOC> at(size_t index) override
@@ -2782,7 +2817,8 @@ public:
                     << "' of size " << size() << "!";
         }
 
-        return m_rawArray[index].reflectable(Base::get_allocator());
+        return detail::SharedElementExtractor<ElementType>::get(
+                m_rawArray, index).reflectable(Base::get_allocator());
     }
 
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override
