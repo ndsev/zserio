@@ -6,6 +6,7 @@
 #include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/Vector.h"
 
 namespace explicit_parameters
 {
@@ -15,7 +16,7 @@ namespace explicit_blob_param
 using allocator_type = ExplicitParametersDb::allocator_type;
 using string_type = zserio::string<allocator_type>;
 template <typename T>
-using vector_type = std::vector<T, allocator_type>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class ExplicitBlobParamTest : public ::testing::Test
 {
