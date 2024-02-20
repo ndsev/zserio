@@ -1,7 +1,7 @@
 # Simple CMake support for sqlite3 library as needed by Zserio
 # Note: We need to use add_subdirectory for SQLite to make it independent on compiler setup of the projects
 #       which uses it (e.g. in runtime tests we setup sanitizers which we don't want to use for SQLite)
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.15.0)
 
 project(sqlite3)
 
