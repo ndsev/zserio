@@ -9,6 +9,7 @@ import zserio.ast.Parameter;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.CompoundFieldTemplateData.NumBytes;
 import zserio.extension.cpp.types.CppNativeType;
 
 /**
@@ -26,6 +27,7 @@ public final class CompoundParameterTemplateData
         {
             final CompoundParameter parameter = new CompoundParameter(
                     context, compoundParameterType, includeCollector, compoundDocComments);
+
             compoundParameterList.add(parameter);
         }
     }
@@ -49,8 +51,10 @@ public final class CompoundParameterTemplateData
             final ZserioType parameterBaseType = parameterTypeReference.getBaseTypeReference().getType();
 
             name = parameter.getName();
+            numBytesTreshold = new NumBytes(0);
             usesSharedPointer = (parameterBaseType instanceof CompoundType) &&
-                    CompoundFieldTemplateData.isAboveTreshold(context, (CompoundType)parameterBaseType);
+                    CompoundFieldTemplateData.isAboveTreshold(
+                            context, (CompoundType)parameterBaseType, numBytesTreshold);
 
             typeInfo = new NativeTypeInfoTemplateData(cppNativeType, parameterTypeReference);
             getterName = AccessorNameFormatter.getGetterName(parameter);
@@ -68,6 +72,11 @@ public final class CompoundParameterTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public int getNumBytesTreshold()
+        {
+            return numBytesTreshold.get();
         }
 
         public boolean getUsesSharedPointer()
@@ -91,6 +100,7 @@ public final class CompoundParameterTemplateData
         }
 
         private final String name;
+        private final NumBytes numBytesTreshold;
         private final boolean usesSharedPointer;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;

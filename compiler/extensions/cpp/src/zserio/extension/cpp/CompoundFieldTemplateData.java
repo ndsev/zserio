@@ -717,13 +717,34 @@ public final class CompoundFieldTemplateData
         return isAboveTreshold(context, (CompoundType)fieldBaseType);
     }
 
+    static class NumBytes
+    {
+        public NumBytes(int numBytes)
+        {
+            this.numBytes = numBytes;
+        }
+
+        public void add(int numBytes)
+        {
+            this.numBytes += numBytes;
+        }
+
+        int get()
+        {
+            return numBytes;
+        }
+
+        private int numBytes;
+    };
+
     static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
-        return isAboveTreshold(context, compoundType, 0);
+        final NumBytes numBytes = new NumBytes(0);
+        return isAboveTreshold(context, compoundType, numBytes);
     }
 
-    private static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType, int numBytes)
+    static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType, NumBytes numBytes)
             throws ZserioExtensionException
     {
         if (!compoundType.getTypeParameters().isEmpty())
@@ -736,13 +757,7 @@ public final class CompoundFieldTemplateData
                 return true; // array field
 
             ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
-            if (fieldBaseType instanceof CompoundType)
-            {
-                if (fieldBaseType == compoundType)
-                    return true; // recursion
-                return isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes);
-            }
-            else if (fieldBaseType instanceof EnumType)
+            if (fieldBaseType instanceof EnumType)
             {
                 fieldTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
                 fieldBaseType = fieldTypeInstantiation.getBaseType();
@@ -753,19 +768,26 @@ public final class CompoundFieldTemplateData
                 fieldBaseType = fieldTypeInstantiation.getBaseType();
             }
 
-            if (fieldBaseType instanceof IntegerType)
+            if (fieldBaseType instanceof CompoundType)
+            {
+                if (fieldBaseType == compoundType)
+                    return true; // recursion
+                if (isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes))
+                    return true;
+            }
+            else if (fieldBaseType instanceof IntegerType)
             {
                 final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
                 final NativeIntegralType nativeIntegralType =
                         cppNativeMapper.getCppIntegralType(fieldTypeInstantiation);
-                numBytes += nativeIntegralType.getNumBits() / Byte.SIZE;
+                numBytes.add(nativeIntegralType.getNumBits() / Byte.SIZE);
             }
             else
             {
                 return true; // type which doesn't have fixed size of the mapped native type
             }
 
-            if (numBytes > context.getCompoundParameterTreshold())
+            if (numBytes.get() > context.getCompoundParameterTreshold())
                 return true;
         }
 

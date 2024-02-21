@@ -73,6 +73,11 @@ public class NativeTypeInfoTemplateData
         return isBytes;
     }
 
+    public boolean getIsCompound()
+    {
+        return isCompound;
+    }
+
     public ArrayTraitsTemplateData getArrayTraits()
     {
         return arrayTraits;
@@ -96,6 +101,7 @@ public class NativeTypeInfoTemplateData
         isBoolean = baseType instanceof BooleanType;
         isString = baseType instanceof StringType;
         isBytes = baseType instanceof BytesType;
+        isCompound = baseType instanceof CompoundType;
 
         if (cppNativeType instanceof CppNativeArrayableType)
             arrayTraits = new ArrayTraitsTemplateData(((CppNativeArrayableType)cppNativeType).getArrayTraits());
@@ -124,6 +130,7 @@ public class NativeTypeInfoTemplateData
     private final boolean isBoolean;
     private final boolean isString;
     private final boolean isBytes;
+    private final boolean isCompound;
     private final ArrayTraitsTemplateData arrayTraits;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
+import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -30,6 +31,15 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         }
 
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
+        for (CompoundParameterTemplateData.CompoundParameter parameter : compoundParametersData.getList())
+        {
+            System.out.println("INFO: param '" + ZserioTypeUtil.getFullName(compoundType)
+                    + "." + parameter.getName() + "' is used "
+                    + (parameter.getUsesSharedPointer() ? "as shared pointer" : "by value")
+                    + (parameter.getTypeInfo().getIsCompound() ? " (compound)" : " (non-compound)")
+                    + ": " + parameter.getNumBytesTreshold() + "B");
+        }
+
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);
         compoundConstructorsData =
                 new CompoundConstructorTemplateData(compoundType, compoundParametersData, fieldList);
