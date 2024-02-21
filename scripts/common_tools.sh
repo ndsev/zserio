@@ -89,7 +89,7 @@ set_global_cpp_variables()
         return 1
     fi
 
-    MAKE_CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
+    MAKE_CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR:-Unix Makefiles}"
     MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 17 2022}"
     MSVC_CMAKE_TOOLSET="${MSVC_CMAKE_TOOLSET:-v141}"
 
@@ -420,7 +420,7 @@ Uses the following environment variables for building:
     ANT_EXTRA_ARGS         Extra arguments to Ant. Default is empty string.
     CMAKE                  CMake executable to use. Default is "cmake".
     MAKE_CMAKE_GENERATOR   CMake generator to use for build using Makefiles. Default is
-                           "Eclipse CDT4 - Unix Makefiles".
+                           "Unix Makefiles".
     MSVC_CMAKE_GENERATOR   CMake generator to use with MSVC compiler. Default is
                            "Visual Studio 17 2022". Note that CMake option "-A x64"
                            is added automatically for windows64-mscv target.
