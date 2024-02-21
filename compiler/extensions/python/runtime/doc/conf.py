@@ -14,7 +14,7 @@ import zserio
 
 project = 'Zserio'
 author = 'Eccam s.r.o.'
-copyright = 'Copyright (c) 2018-2023, Navigation Data Standard e.v.'
+copyright = 'Copyright (c) 2018-2024, Navigation Data Standard e.v.'
 
 # The release comes from the command line via -Drelease="version".
 release = 'unknown'
