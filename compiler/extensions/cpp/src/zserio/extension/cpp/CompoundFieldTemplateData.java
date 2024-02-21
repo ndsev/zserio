@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.BitmaskType;
+import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldInstantiation;
@@ -14,6 +15,7 @@ import zserio.ast.Field;
 import zserio.ast.IntegerType;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.StringType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
@@ -729,12 +731,23 @@ public final class CompoundFieldTemplateData
             this.numBytes += numBytes;
         }
 
+        public void addReason(String reason)
+        {
+            this.reason.append(reason);
+        }
+
         int get()
         {
             return numBytes;
         }
 
+        String getReason()
+        {
+            return reason.toString();
+        }
+
         private int numBytes;
+        private final StringBuilder reason = new StringBuilder();
     };
 
     static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType)
@@ -747,48 +760,73 @@ public final class CompoundFieldTemplateData
     static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType, NumBytes numBytes)
             throws ZserioExtensionException
     {
+        if (context.getCompoundParameterTreshold() == -1)
+            return false;
+
         if (!compoundType.getTypeParameters().isEmpty())
+        {
+            numBytes.addReason("type has parameters");
             return true; // parameterized type TODO[Mi-L@]
+        }
 
         for (Field field : compoundType.getFields())
         {
             TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             if (fieldTypeInstantiation instanceof ArrayInstantiation)
-                return true; // array field
-
-            ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
-            if (fieldBaseType instanceof EnumType)
             {
-                fieldTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
-                fieldBaseType = fieldTypeInstantiation.getBaseType();
-            }
-            else if (fieldBaseType instanceof BitmaskType)
-            {
-                fieldTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
-                fieldBaseType = fieldTypeInstantiation.getBaseType();
-            }
-
-            if (fieldBaseType instanceof CompoundType)
-            {
-                if (fieldBaseType == compoundType)
-                    return true; // recursion
-                if (isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes))
-                    return true;
-            }
-            else if (fieldBaseType instanceof IntegerType)
-            {
-                final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-                final NativeIntegralType nativeIntegralType =
-                        cppNativeMapper.getCppIntegralType(fieldTypeInstantiation);
-                numBytes.add(nativeIntegralType.getNumBits() / Byte.SIZE);
+                numBytes.add(24); // vector
             }
             else
             {
-                return true; // type which doesn't have fixed size of the mapped native type
+                ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+                if (fieldBaseType instanceof EnumType)
+                {
+                    fieldTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+                    fieldBaseType = fieldTypeInstantiation.getBaseType();
+                }
+                else if (fieldBaseType instanceof BitmaskType)
+                {
+                    fieldTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+                    fieldBaseType = fieldTypeInstantiation.getBaseType();
+                }
+
+                if (fieldBaseType instanceof CompoundType)
+                {
+                    if (fieldBaseType == compoundType)
+                    {
+                        numBytes.addReason("recursion");
+                        return true;
+                    }
+                    if (isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes))
+                        return true;
+                }
+                else if (fieldBaseType instanceof IntegerType)
+                {
+                    final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+                    final NativeIntegralType nativeIntegralType =
+                            cppNativeMapper.getCppIntegralType(fieldTypeInstantiation);
+                    numBytes.add(nativeIntegralType.getNumBits() / Byte.SIZE);
+                }
+                else if (fieldBaseType instanceof BooleanType)
+                {
+                    numBytes.add(1);
+                }
+                else if (fieldBaseType instanceof StringType)
+                {
+                    numBytes.add(32);
+                }
+                else
+                {
+                    numBytes.addReason("unsupported type '" + fieldBaseType.getName() + "'");
+                    return true; // type which doesn't have fixed size of the mapped native type
+                }
             }
 
             if (numBytes.get() > context.getCompoundParameterTreshold())
+            {
+                numBytes.addReason("treshold '" + context.getCompoundParameterTreshold() + "' reached");
                 return true;
+            }
         }
 
         return false;

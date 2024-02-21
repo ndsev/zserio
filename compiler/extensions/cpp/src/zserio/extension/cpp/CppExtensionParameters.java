@@ -255,7 +255,7 @@ public final class CppExtensionParameters
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
 
-    private final static int DefaultCompoundParameterTreshold = 8;
+    private final static int DefaultCompoundParameterTreshold = 32;
 
     private final String outputDir;
     private final boolean withWriterCode;

@@ -37,7 +37,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
                     + "." + parameter.getName() + "' is used "
                     + (parameter.getUsesSharedPointer() ? "as shared pointer" : "by value")
                     + (parameter.getTypeInfo().getIsCompound() ? " (compound)" : " (non-compound)")
-                    + ": " + parameter.getNumBytesTreshold() + "B");
+                    + " reason: " + parameter.getNumBytes().getReason());
         }
 
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);
