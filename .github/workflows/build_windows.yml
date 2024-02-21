@@ -104,7 +104,6 @@ jobs:
         choco install graphviz
         choco install zip
         choco install mingw --version ${{matrix.mingw-version}}
-        ls -l /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
       shell: bash
 
     - name: Install specific version of C++ static code analysis tool (cppcheck)
@@ -153,6 +152,39 @@ jobs:
       # allocation tests do not work for MSVC Debug
       run: |
         scripts/test.sh cpp-windows64-mingw
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+
+    - name: Run Zserio tests with extra arguments
+      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
+      run: |
+        # -withRangeCheckCode -withValidationCode conflicts with -withoutWriterCode
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
+        scripts/test.sh -p -i arguments/without_writer_code java python
+        ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -setCppAllocator polymorphic -withReflectionCode" \
+              scripts/test.sh -p -i arguments/without_writer_code cpp-windows64-mingw cpp-windows64-msvc
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withRangeCheckCode -withValidationCode"
+        scripts/test.sh -p -x arguments/without_writer_code java python
+        ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -setCppAllocator polymorphic -withReflectionCode" \
+              scripts/test.sh -p -x arguments/without_writer_code cpp-windows64-mingw cpp-windows64-msvc
+        export ZSERIO_EXTRA_ARGS="-setTopLevelPackage top.level"
+        scripts/test.sh doc xml
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+
+    - name: Run Zserio tests with extra arguments (Debug Build)
+      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
+      # allocation tests do not work for MSVC Debug
+      run: |
+        # -withRangeCheckCode -withValidationCode conflicts with -withoutWriterCode
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments \
+              -setCppAllocator polymorphic -withReflectionCode"
+        scripts/test.sh -p -i arguments/without_writer_code cpp-windows64-mingw
+        # disabled because of 6 hours time limit
+        # export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withRangeCheckCode -withValidationCode"
+        # scripts/test.sh -p -x arguments/without_writer_code cpp-windows64-mingw
       shell: bash
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
