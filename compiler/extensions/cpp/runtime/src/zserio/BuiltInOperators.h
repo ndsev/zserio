@@ -28,7 +28,7 @@ bool isSet(BITMASK1 bitmaskValue, BITMASK2 requiredMask)
 /**
  * Gets the minimum number of bits required to encode <tt>numValues</tt> different values.
  *
- * This method implements Zserio build-in operator <tt>numbits</tt>.
+ * This method implements Zserio built-in operator <tt>numbits</tt>.
  *
  * <b>Note:</b> Please note that this method returns 0 if <tt>numValues</tt> is zero.
  *

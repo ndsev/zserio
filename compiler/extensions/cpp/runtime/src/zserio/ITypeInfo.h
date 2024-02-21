@@ -154,7 +154,7 @@ public:
     /**
      * Gets the type information for compound type fields.
      *
-     * \return Sequence of type informations for fields.
+     * \return Sequence of type information for fields.
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
@@ -163,7 +163,7 @@ public:
     /**
      * Gets the type information for compound type parameters.
      *
-     * \return Sequence of type informations for parameters.
+     * \return Sequence of type information for parameters.
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
@@ -172,7 +172,7 @@ public:
     /**
      * Gets the type information for compound type functions.
      *
-     * \return Sequence of type informations for functions.
+     * \return Sequence of type information for functions.
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
@@ -192,7 +192,7 @@ public:
     /**
      * Gets the type information for choice type cases.
      *
-     * \return Sequence of type informations for choice type cases.
+     * \return Sequence of type information for choice type cases.
      *
      * \throw CppRuntimeException If the zserio type is not choice type.
      */
@@ -221,7 +221,7 @@ public:
     /**
      * Gets the type information for enumeration type items.
      *
-     * \return Sequence of type informations for enumeration type items.
+     * \return Sequence of type information for enumeration type items.
      *
      * \throw CppRuntimeException If the zserio type is not enumeration type.
      */
@@ -230,7 +230,7 @@ public:
     /**
      * Gets the type information for bitmask type values.
      *
-     * \return Sequence of type informations for bitmask type values.
+     * \return Sequence of type information for bitmask type values.
      *
      * \throw CppRuntimeException If the zserio type is not bitmask type.
      */
@@ -241,7 +241,7 @@ public:
     /**
      * Gets the type information for SQL table columns.
      *
-     * \return Sequence of type informations for SQL table columns.
+     * \return Sequence of type information for SQL table columns.
      *
      * \throw CppRuntimeException If the zserio type is not SQL table type.
      */
@@ -279,7 +279,7 @@ public:
     /**
      * Gets the type information for SQL database tables.
      *
-     * \return Sequence of type informations for SQL database tables.
+     * \return Sequence of type information for SQL database tables.
      *
      * \throw CppRuntimeException If the zserio type is not SQL database type.
      */
@@ -299,7 +299,7 @@ public:
     /**
      * Gets the type information for template arguments.
      *
-     * \return Sequence of type informations for template arguments.
+     * \return Sequence of type information for template arguments.
      *
      * \throw CppRuntimeException If the zserio type is not templatable.
      */
@@ -310,7 +310,7 @@ public:
     /**
      * Gets the type information for pubsub messages.
      *
-     * \return Sequence of type informations for pubsub messages.
+     * \return Sequence of type information for pubsub messages.
      *
      * \throw CppRuntimeException If the zserio type is not pubsub type.
      */
@@ -321,7 +321,7 @@ public:
     /**
      * Gets the type information for service methods.
      *
-     * \return Sequence of type informations for service methods.
+     * \return Sequence of type information for service methods.
      *
      * \throw CppRuntimeException If the zserio type is not service type.
      */

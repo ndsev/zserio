@@ -461,7 +461,7 @@ public:
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const = 0;
 
     /**
-     * Converts any signed integral value to 64-bit singed integer.
+     * Converts any signed integral value to 64-bit signed integer.
      *
      * Works also for enum types defined with signed underlying type.
      *

@@ -448,7 +448,7 @@ public:
      * \param schemaType The schema type to be stored in type information.
      * \param cppType The C++ type to be stored in type information.
      * \param templateName The full schema template name.
-     * \param templateArguments The sequence of type informations for template arguments.
+     * \param templateArguments The sequence of type information for template arguments.
      */
     TemplatableTypeInfoBase(StringView schemaName, SchemaType schemaType, CppType cppType,
             StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments);
@@ -486,10 +486,10 @@ public:
      * \param schemaType The schema type to be stored in type information.
      * \param cppType The C++ type to be stored in type information.
      * \param templateName The full schema template name.
-     * \param templateArguments The sequence of type informations for template arguments.
-     * \param fields The sequence of type informations for fields.
-     * \param parameters The sequence of type informations for parameters.
-     * \param functions The sequence of type informations for functions.
+     * \param templateArguments The sequence of type information for template arguments.
+     * \param fields The sequence of type information for fields.
+     * \param parameters The sequence of type information for parameters.
+     * \param functions The sequence of type information for functions.
      */
     CompoundTypeInfoBase(StringView schemaName, CreateInstanceFunc createInstanceFunc, SchemaType schemaType,
             CppType cppType, StringView templateName,
@@ -532,10 +532,10 @@ public:
      *
      * \param schemaName The schema name to be stored in type information.
      * \param templateName The full schema template name.
-     * \param templateArguments The sequence of type informations for template arguments.
-     * \param fields The sequence of type informations for fields.
-     * \param parameters The sequence of type informations for parameters.
-     * \param functions The sequence of type informations for functions.
+     * \param templateArguments The sequence of type information for template arguments.
+     * \param fields The sequence of type information for fields.
+     * \param parameters The sequence of type information for parameters.
+     * \param functions The sequence of type information for functions.
      */
     StructTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc, StringView templateName,
             Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
@@ -557,10 +557,10 @@ public:
      *
      * \param schemaName The schema name to be stored in type information.
      * \param templateName The full schema template name.
-     * \param templateArguments The sequence of type informations for template arguments.
-     * \param fields The sequence of type informations for fields.
-     * \param parameters The sequence of type informations for parameters.
-     * \param functions The sequence of type informations for functions.
+     * \param templateArguments The sequence of type information for template arguments.
+     * \param fields The sequence of type information for fields.
+     * \param parameters The sequence of type information for parameters.
+     * \param functions The sequence of type information for functions.
      */
     UnionTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc, StringView templateName,
             Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
@@ -582,12 +582,12 @@ public:
      *
      * \param schemaName The schema name to be stored in type information.
      * \param templateName The full schema template name.
-     * \param templateArguments The sequence of type informations for template arguments.
-     * \param fields The sequence of type informations for fields.
-     * \param parameters The sequence of type informations for parameters.
-     * \param functions The sequence of type informations for functions.
+     * \param templateArguments The sequence of type information for template arguments.
+     * \param fields The sequence of type information for fields.
+     * \param parameters The sequence of type information for parameters.
+     * \param functions The sequence of type information for functions.
      * \param selector The selector expression.
-     * \param cases The sequence of type informations for cases.
+     * \param cases The sequence of type information for cases.
      */
     ChoiceTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc, StringView templateName,
             Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
@@ -643,7 +643,7 @@ public:
      * \param schemaName The schema name to be stored in type information.
      * \param underlyingType The reference to type information of underlying zserio type.
      * \param underlyingTypeArguments The underlying zserio type arguments.
-     * \param enumItems The sequence of type informations for enumeration items.
+     * \param enumItems The sequence of type information for enumeration items.
      */
     EnumTypeInfo(StringView schemaName, const IBasicTypeInfo<ALLOC>& underlyingType,
             Span<const StringView> underlyingTypeArguments, Span<const ItemInfo> enumItems);
@@ -667,7 +667,7 @@ public:
      * \param schemaName The schema name to be stored in type information.
      * \param underlyingType The reference to type information of underlying zserio type.
      * \param underlyingTypeArguments The underlying zserio type arguments.
-     * \param bitmaskValues The sequence of type informations for bitmask values.
+     * \param bitmaskValues The sequence of type information for bitmask values.
      */
     BitmaskTypeInfo(StringView schemaName, const IBasicTypeInfo<ALLOC>& underlyingType,
             Span<const StringView> underlyingTypeArguments, Span<const ItemInfo> bitmaskValues);
@@ -690,8 +690,8 @@ public:
      *
      * \param schemaName The schema name to be stored in type information.
      * \param templateName The full schema template name.
-     * \param templateArguments The sequence of type informations for template arguments.
-     * \param columns The sequence of type informations for columns.
+     * \param templateArguments The sequence of type information for template arguments.
+     * \param columns The sequence of type information for columns.
      * \param sqlConstraint The SQL table constraint.
      * \param virtualTableUsing The SQL virtual table using specification.
      * \param isWithoutRowId true if SQL table is without row id table, otherwise false.
@@ -724,7 +724,7 @@ public:
      * Constructor.
      *
      * \param schemaName The schema name to be stored in type information.
-     * \param tables The sequence of type informations for tables.
+     * \param tables The sequence of type information for tables.
      */
     SqlDatabaseTypeInfo(StringView schemaName, Span<const BasicTableInfo<ALLOC>> tables);
 
@@ -745,7 +745,7 @@ public:
      * Constructor.
      *
      * \param schemaName The schema name to be stored in type information.
-     * \param messages The sequence of type informations for pubsub messages.
+     * \param messages The sequence of type information for pubsub messages.
      */
     PubsubTypeInfo(StringView schemaName, Span<const BasicMessageInfo<ALLOC>> messages);
 
@@ -766,7 +766,7 @@ public:
      * Constructor.
      *
      * \param schemaName The schema name to be stored in type information.
-     * \param methods The sequence of type informations for service methods.
+     * \param methods The sequence of type information for service methods.
      */
     ServiceTypeInfo(StringView schemaName, Span<const BasicMethodInfo<ALLOC>> methods);
 

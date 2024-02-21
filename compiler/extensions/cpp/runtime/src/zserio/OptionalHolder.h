@@ -198,7 +198,7 @@ public:
     /**
      * Getter for the allocator.
      *
-     * \return Allocator that is used for the dynamic memory allocat
+     * \return Allocator that is used for the dynamic memory allocation.
      */
     allocator_type get_allocator() const
     {

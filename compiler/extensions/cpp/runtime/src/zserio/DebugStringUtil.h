@@ -68,7 +68,7 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
 }
 
 // needed due to GCC compilation problems, GCC tries to instantiate return type even though the
-// particular fuction template has different number of arguments, this prevents the return type instantiation
+// particular function template has different number of arguments, this prevents the return type instantiation
 // in case that the ALLOC is not an allocator
 template <typename ALLOC, typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 struct DebugStringTraits
@@ -428,7 +428,7 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
  * Parses JSON debug string from given text stream and creates instance of the requested zserio object
  * according to the data contained in the debug string.
  *
- * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note The created object can be only partially initialized depending on the JSON debug string.
  *
  * Example:
  * \code{.cpp}
@@ -460,7 +460,7 @@ typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonStream(
  * Parses JSON debug string from given text stream and creates instance of the requested zserio object
  * according to the data contained in the debug string.
  *
- * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note The created object can be only partially initialized depending on the JSON debug string.
  * \note An reflectable instance is created first and then the object is move-constructed from it's any value.
  *
  * Example:
@@ -490,7 +490,7 @@ T fromJsonStream(std::istream& is, const ALLOC& allocator = ALLOC())
  * Parses JSON debug string from given JSON string and creates instance of the requested zserio object
  * according to the data contained in the debug string.
  *
- * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note The created object can be only partially initialized depending on the JSON debug string.
  *
  * Example:
  * \code{.cpp}
@@ -522,7 +522,7 @@ typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonString(
  * Parses JSON debug string from given JSON string and creates instance of the requested zserio object
  * according to the data contained in the debug string.
  *
- * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note The created object can be only partially initialized depending on the JSON debug string.
  * \note An reflectable instance is created first and then the object is move-constructed from it's any value.
  *
  * Example:
@@ -552,7 +552,7 @@ T fromJsonString(const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
  * Parses JSON debug string from given text file and creates instance of the requested zserio object
  * according to the data contained in the debug string.
  *
- * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note The created object can be only partially initialized depending on the JSON debug string.
  *
  * Example:
  * \code{.cpp}
@@ -585,7 +585,7 @@ typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonFile(
  * Parses JSON debug string from given text file and creates instance of the requested zserio object
  * according to the data contained in the debug string.
  *
- * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note The created object can be only partially initialized depending on the JSON debug string.
  * \note An reflectable instance is created first and then the object is move-constructed from it's any value.
  *
  * Example:
