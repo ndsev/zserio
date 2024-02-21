@@ -2692,12 +2692,14 @@ namespace detail
 template <typename T>
 struct SharedElementExtractor
 {
-    static const T& get(const std::vector<T>& rawArray, size_t index)
+    template <typename ALLOC>
+    static const T& get(const std::vector<T, ALLOC>& rawArray, size_t index)
     {
         return rawArray[index];
     }
 
-    static T& get(std::vector<T>& rawArray, size_t index)
+    template <typename ALLOC>
+    static T& get(std::vector<T, ALLOC>& rawArray, size_t index)
     {
         return rawArray[index];
     }
@@ -2706,12 +2708,14 @@ struct SharedElementExtractor
 template <typename T>
 struct SharedElementExtractor<std::shared_ptr<T>>
 {
-    static const T& get(const std::vector<std::shared_ptr<T>>& rawArray, size_t index)
+    template <typename ALLOC>
+    static const T& get(const std::vector<std::shared_ptr<T>, ALLOC>& rawArray, size_t index)
     {
         return *rawArray[index];
     }
 
-    static T& get(std::vector<std::shared_ptr<T>>& rawArray, size_t index)
+    template <typename ALLOC>
+    static T& get(std::vector<std::shared_ptr<T>, ALLOC>& rawArray, size_t index)
     {
         return *rawArray[index];
     }
@@ -2756,7 +2760,7 @@ public:
                     << "' of size " << size() << "!";
         }
 
-        return detail::SharedElementExtractor<ElementType>::get(
+        return detail::SharedElementExtractor<ElementType>::template get(
                 m_rawArray, index).reflectable(Base::get_allocator());
     }
 
@@ -2804,7 +2808,7 @@ public:
                     << "' of size " << size() << "!";
         }
 
-        return detail::SharedElementExtractor<ElementType>::get(
+        return detail::SharedElementExtractor<ElementType>::template get(
                 m_rawArray, index).reflectable(Base::get_allocator());
     }
 
@@ -2817,7 +2821,7 @@ public:
                     << "' of size " << size() << "!";
         }
 
-        return detail::SharedElementExtractor<ElementType>::get(
+        return detail::SharedElementExtractor<ElementType>::template get(
                 m_rawArray, index).reflectable(Base::get_allocator());
     }
 
