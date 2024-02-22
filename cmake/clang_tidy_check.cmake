@@ -62,6 +62,7 @@ endforeach ()
 
 # cannot use file(STRING) since the log contains semicolons
 file(READ "${LOG_FILE}" LOG_CONTENT)
+# message(STATUS "CAT ${LOG_FILE}\n${LOG_CONTENT}")
 string(REPLACE ";" ":" LOG_CONTENT "${LOG_CONTENT}")
 string(REGEX REPLACE "\r?\n" ";" LOG_LINES "${LOG_CONTENT}")
 

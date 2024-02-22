@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Source build-env.sh if found.
-SCRIPT_DIR=`dirname $0`
+CWD=`readlink -f $0`
+SCRIPT_DIR=`dirname ${CWD}`
 if [ -e "${SCRIPT_DIR}/build-env.sh" ] ; then
     source "${SCRIPT_DIR}/build-env.sh"
 fi
@@ -90,6 +91,7 @@ set_global_cpp_variables()
     fi
 
     MAKE_CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR:-Unix Makefiles}"
+    NMAKE_CMAKE_GENERATOR="${NMAKE_CMAKE_GENERATOR:-NMake Makefiles}"
     MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 17 2022}"
     MSVC_CMAKE_TOOLSET="${MSVC_CMAKE_TOOLSET:-v141}"
 
@@ -828,7 +830,8 @@ compile_cpp_for_target()
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DSANITIZERS_ENABLED=OFF")
     fi
 
-    if [ ! -z "${CLANG_TIDY_BIN}" ] ; then
+    # mingw uses msvc STL which is c++14. Clang-tidy then complains project is compiled as c++11
+    if [[ ( ! -z "${CLANG_TIDY_BIN}" ) && ( ${TARGET} != *"-mingw" ) ]] ; then
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCLANG_TIDY_BIN=${CLANG_TIDY_BIN}")
     else
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCLANG_TIDY_BIN")
@@ -861,6 +864,24 @@ compile_cpp_for_target()
 
     # resolve CMake generator
     if [[ ${TARGET} == *"-msvc" ]] ; then
+        # configure makefiles first so compile_commands.json gets exported
+        mkdir -p "nmake"
+        pushd "nmake" > /dev/null
+        # eval "$(${SCRIPT_DIR}/vcvarsall.sh x64)" - seems to break python_cpp build later
+        echo "ECHO ${SCRIPT_DIR}/vcvarsrun.sh x64 -- ${CMAKE} ${CMAKE_EXTRA_ARGS} -G ${NMAKE_CMAKE_GENERATOR} ${CMAKE_ARGS[@]} ${CMAKELISTS_DIR}"
+        "${SCRIPT_DIR}/vcvarsrun.sh" x64 -- "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${NMAKE_CMAKE_GENERATOR}" "${CMAKE_ARGS[@]}" "${CMAKELISTS_DIR}"
+        local CMAKE_RESULT=$?
+        if [ ${CMAKE_RESULT} -ne 0 ] ; then
+            stderr_echo "Running CMake failed with return code ${CMAKE_RESULT}!"
+            popd > /dev/null
+            return 1
+        fi
+        popd > /dev/null
+        cp nmake/compile_commands.json .
+        # remove arguments which clang-tidy doesn't understand
+        sed -i -E 's#/MP##g' compile_commands.json 
+        sed -i -E 's#-external:W0##g' compile_commands.json
+        
         local CMAKE_BUILD_CONFIG="--config ${BUILD_TYPE}"
         CTEST_ARGS+=("-C ${BUILD_TYPE}")
         if [[ ${CMAKE_BUILD_TARGET} == "all" ]] ; then
@@ -874,6 +895,7 @@ compile_cpp_for_target()
     fi
 
     # generate makefile running cmake
+    echo "ECHO ${CMAKE} ${CMAKE_EXTRA_ARGS} -G ${CMAKE_GENERATOR} ${CMAKE_ARGS[@]} ${CMAKELISTS_DIR}"
     "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" "${CMAKE_ARGS[@]}" "${CMAKELISTS_DIR}"
     local CMAKE_RESULT=$?
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
@@ -881,7 +903,9 @@ compile_cpp_for_target()
         popd > /dev/null
         return 1
     fi
-
+    #echo "ECHO head compile_commands.json"
+    #head compile_commands.json
+        
     # build it running cmake
     "${CMAKE}" --build . --target ${CMAKE_BUILD_TARGET} ${CMAKE_BUILD_CONFIG} -- ${CMAKE_BUILD_OPTIONS}
     local CMAKE_RESULT=$?

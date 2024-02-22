@@ -104,6 +104,12 @@ jobs:
         choco install graphviz
         choco install zip
         choco install mingw --version ${{matrix.mingw-version}}
+        ls -l /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
+        choco install llvm --version=14.0.0 --allow-downgrade
+        echo "ECHO choco/lib/llvm/tools"
+        ls -l /c/ProgramData/chocolatey/lib/llvm/tools
+        echo "ECHO Program Files/LLVM/bin"
+        ls -l "/c/Program Files/LLVM/bin"
       shell: bash
 
     - name: Install specific version of C++ static code analysis tool (cppcheck)
@@ -124,13 +130,16 @@ jobs:
       run: choco install xsltproc
 
     - name: Build Zserio
-      run: scripts/build.sh all-windows64-mingw cpp_rt-windows64-msvc
+      run: |
+        scripts/build.sh all-windows64-mingw cpp_rt-windows64-msvc
       shell: bash
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
 
     - name: Build Zserio C++ runtime (Debug Build)
-      run: scripts/build.sh cpp_rt-windows64-mingw cpp_rt-windows64-msvc
+      run: |
+        export CLANG_TIDY_BIN="/c/Program Files/LLVM/bin/clang-tidy"
+        scripts/build.sh cpp_rt-windows64-mingw cpp_rt-windows64-msvc
       shell: bash
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
@@ -142,6 +151,7 @@ jobs:
     - name: Run Zserio tests
       # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
       run: |
+        export CLANG_TIDY_BIN="/c/Program Files/LLVM/bin/clang-tidy"
         scripts/test.sh all-windows64-mingw cpp-windows64-msvc
       shell: bash
       env:

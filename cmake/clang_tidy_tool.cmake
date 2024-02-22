@@ -20,6 +20,8 @@ foreach (ARG CLANG_TIDY_BIN SOURCES BUILD_PATH CONFIG_FILE)
     endif ()
 endforeach ()
 
+# message(STATUS "ECHO \"${CLANG_TIDY_BIN}\" \"${SOURCES}\" -p \"${BUILD_PATH}\" --config-file \"${CONFIG_FILE}\" --header-filter \"${HEADER_FILTER}\"")
+
 execute_process(
     COMMAND ${CLANG_TIDY_BIN} ${SOURCES} -p "${BUILD_PATH}"
         --config-file "${CONFIG_FILE}"
