@@ -174,3 +174,5 @@ google-explicit-constructor:test/zserio/TrackingAllocator.h:78
 # Intentional tests.
 performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:58
 performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:78
+performance-move-const-arg:test/zserio/AllocatorHolderTest.cpp:62
+performance-move-const-arg:test/zserio/AllocatorHolderTest.cpp:80
