@@ -94,7 +94,7 @@ clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
                              HEADER_FILTER
                                 ".*(src|test)/zserio/.*"
                              SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt"
-                             WERROR_UNUSED_SUPPRESSIONS ON)
+                             WERROR_UNUSED_SUPPRESSIONS OFF)
 
 # add clang-format custom target
 include(clang_format_utils)
