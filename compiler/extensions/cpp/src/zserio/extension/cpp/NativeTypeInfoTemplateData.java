@@ -73,6 +73,11 @@ public class NativeTypeInfoTemplateData
         return isBytes;
     }
 
+    public boolean getIsCompound()
+    {
+        return isCompound;
+    }
+
     public ArrayTraitsTemplateData getArrayTraits()
     {
         return arrayTraits;
@@ -102,7 +107,7 @@ public class NativeTypeInfoTemplateData
         else
             arrayTraits = null;
 
-        final boolean isCompound = baseType instanceof CompoundType;
+        isCompound = baseType instanceof CompoundType;
         final boolean isArray = baseType instanceof ArrayType;
         final boolean hasTypeInfo = isCompound || isEnum || isBitmask;
         if (hasTypeInfo || isArray || (typeInstantiation == null && typeReference == null))
@@ -124,6 +129,7 @@ public class NativeTypeInfoTemplateData
     private final boolean isBoolean;
     private final boolean isString;
     private final boolean isBytes;
+    private final boolean isCompound;
     private final ArrayTraitsTemplateData arrayTraits;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }

@@ -7,6 +7,56 @@
     ${paramName}_<#t>
 </#macro>
 
+<#macro parameter_view_type parameter>
+    <#if parameter.typeInfo.isCompound>
+        ${parameter.typeInfo.typeFullName}::View<#t>
+    <#else>
+        ${parameter.typeInfo.typeFullName}<#t>
+    </#if>
+</#macro>
+
+<#macro compound_parameter_view_members compoundParametersData>
+    <#-- parameters can't be const for operator=() to work and initialize() needs to update them too -->
+    <#list compoundParametersData.list as compoundParameter>
+        <@parameter_view_type compoundParameter/> <@parameter_member_name compoundParameter.name/>;
+    </#list>
+</#macro>
+
+<#macro compound_parameter_view_constructor_type_list compoundParametersData, indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#list compoundParametersData.list as compoundParameter>
+        <#local parameterType>
+            <#if compoundParameter.typeInfo.isCompound>
+                ${compoundParameter.typeInfo.typeFullName}::View<#t>
+            <#else>
+                ${compoundParameter.typeInfo.typeFullName}<#t>
+            </#if>
+        </#local>
+<#if !compoundParameter?is_first>${I}</#if>${parameterType} <@parameter_argument_name compoundParameter.name/>,
+    </#list>
+</#macro>
+
+<#macro compound_parameter_view_constructor_initializers compoundParametersData, indent, trailingComma>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#list compoundParametersData.list as compoundParameter>
+${I}<@parameter_member_name compoundParameter.name/>(<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
+    </#list>
+</#macro>
+
+<#macro compound_parameter_view_accessors compoundParametersData>
+    <#list compoundParametersData.list as compoundParameter>
+
+        <#if compoundParameter.typeInfo.isCompound>
+        ${compoundParameter.typeInfo.typeFullName}::View ${compoundParameter.getterName}() const
+        <#else>
+        ${compoundParameter.typeInfo.typeFullName} ${compoundParameter.getterName}() const
+        </#if>
+        {
+            return <@parameter_member_name compoundParameter.name/>;
+        }
+    </#list>
+</#macro>
+
 <#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>

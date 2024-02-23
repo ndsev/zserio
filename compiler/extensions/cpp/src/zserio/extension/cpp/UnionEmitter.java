@@ -22,7 +22,7 @@ public final class UnionEmitter extends CppDefaultEmitter
         final Object templateData = new UnionEmitterTemplateData(getTemplateDataContext(), unionType);
 
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, unionType);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, unionType);
+        //processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, unionType);
     }
 
     private static final String TEMPLATE_HEADER_NAME = "Union.h.ftl";

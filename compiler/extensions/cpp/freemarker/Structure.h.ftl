@@ -47,6 +47,7 @@
 </#if>
 class ${name}
 {
+<#--
 public:
 <#if isPackable && usedInPackedArray>
     <@compound_declare_packing_context fieldList/>
@@ -409,6 +410,141 @@ private:
 <#list fieldList as field>
     <@field_member_type_name field/> <@field_member_name field/>;
 </#list>
+-->
+<#function compound_field_default_constructor_arguments fieldList>
+    <#local arguments=[]/>
+    <#list fieldList as field>
+        <#if field.optional??>
+            <#if field.holderNeedsAllocator>
+                <#local argument>${field.name}(allocator)</#local>
+                <#local arguments+=[argument]/>
+            </#if>
+        <#elseif field.array??>
+            <#local argument>${field.name}(allocator)</#local>
+            <#local arguments+=[argument]/>
+        <#elseif field.needsAllocator>
+            <#local argument>${field.name}(allocator)</#local>
+            <#local arguments+=[argument]/>
+        </#if>
+    </#list>
+    <#return arguments/>
+</#function>
+public:
+    using allocator_type = ${types.allocator.default};
+
+    struct Storage
+    {
+        Storage() noexcept :
+                Storage(allocator_type())
+        {}
+
+<#assign storageDefaultConstructorArguments=compound_field_default_constructor_arguments(fieldList)/>
+        Storage(const allocator_type&<#if storageDefaultConstructorArguments?has_content> allocator) :<#else>)</#if>
+<#list storageDefaultConstructorArguments as argument>
+                ${argument}<#if argument?has_next>,</#if>
+</#list>
+        {}
+<#if fieldList?has_content>
+
+        template <
+    <#list fieldList as field>
+                typename ZSERIO_TYPE_${field.name},
+    </#list>
+                typename std::enable_if<!std::is_same<ZSERIO_TYPE_${fieldList[0].name}, allocator_type>::value, int>::type = 0>
+        Storage(
+    <#list fieldList as field>
+                ZSERIO_TYPE_${field.name}&& <@field_argument_name field/>,
+    </#list>
+                const allocator_type& allocator = allocator_type()) :
+        <#list fieldList as field>
+                ${field.name}(std::forward<ZSERIO_TYPE_${field.name}>(<@field_argument_name field/>)<#if field.optional?? && field.holderNeedsAllocator>, allocator</#if>)<#if field?has_next>,<#else></#if>
+        </#list>
+        {}
+</#if>
+
+<#list fieldList as field>
+        <@field_storage_type field/> ${field.name};
+</#list>
+    };
+
+    class View
+    {
+    public:
+        View(<#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+        <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage) noexcept :
+<#else>
+                <#lt>Storage& storage) noexcept :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(storage)
+        {}
+
+        View(::zserio::BitStreamReader& reader, <#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage, const allocator_type& allocator = allocator_type()) :
+<#else>
+                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(storage)
+        {
+<#list fieldList as field>
+            // ${field.name}
+            <@field_view_read field, 3/>
+    <#if field?has_next>
+
+    </#if>
+</#list>
+        }
+        <@compound_parameter_view_accessors compoundParametersData/>
+<#list fieldList as field>
+    <#if field.optional??>
+
+        bool ${field.optional.isSetIndicatorName}() const
+        {
+            return m_storage.${field.name}.hasValue();
+        }
+
+        bool ${field.optional.isUsedIndicatorName}() const
+        {
+            return (<@field_optional_condition field/>);
+        }
+    </#if>
+
+        <@field_view_type field/> ${field.getterName}() const
+        {
+    <#if field.optional??>
+            if (!${field.optional.isUsedIndicatorName}())
+            {
+                throw ::zserio::CppRuntimeException("${name}: optional field '${field.name}' is not used!");
+            }
+
+    </#if>
+    <#if field.typeInfo.isCompound>
+            return <@field_view_type field/>(<#rt>
+        <#if field.compound.instantiatedParameters?has_content>
+                    <#lt><@compound_field_compound_ctor_params field.compound, false/>,
+                    m_storage.${field.name}<#if field.optional??>.value()</#if>);
+        <#else>
+                    <#lt>m_storage.${field.name}<#if field.optional??>.value()</#if>);
+        </#if>
+    <#else>
+            return m_storage.${field.name}<#if field.optional??>.value()</#if>;
+    </#if>
+        }
+</#list>
+
+    private:
+        <@compound_parameter_view_members compoundParametersData/>
+        Storage& m_storage;
+    };
 };
 <@namespace_end package.path/>
 

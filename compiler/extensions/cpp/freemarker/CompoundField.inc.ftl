@@ -3,6 +3,103 @@
     m_${field.name}_<#t>
 </#macro>
 
+<#macro field_storage_type_inner field>
+    <#if field.array??>
+        <#local storageType>
+            ${field.array.elementTypeInfo.typeFullName}<#if field.array.elementCompound??>::Storage</#if><#t>
+        </#local>
+        <@vector_type_name storageType/><#t>
+    <#else>
+        ${field.typeInfo.typeFullName}<#if field.compound??>::Storage</#if><#t>
+    </#if>
+</#macro>
+
+<#macro field_storage_type field>
+    <#local storageType>
+        <@field_storage_type_inner field/><#t>
+    </#local>
+    <#if field.optional??>
+        <#local storageType>
+            <#if field.optional.isRecursive>
+                <@heap_optional_type_name storageType/><#t>
+            <#else>
+                ${types.inplaceOptionalHolder.name}<${storageType}><#t>
+            </#if>
+        </#local>
+    </#if>
+    ${storageType}<#t>
+</#macro>
+
+<#macro field_view_type field>
+    <#if field.array??>
+        <@array_typedef_name field/>
+    <#else>
+        <#if field.typeInfo.isCompound>
+            ${field.typeInfo.typeFullName}::View<#t>
+        <#else>
+            ${field.typeInfo.typeFullName}<#t>
+        </#if>
+    </#if>
+</#macro>
+
+<#macro field_view_read field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#if field.optional.clause??>
+${I}if (${field.optional.clause})
+        <#else>
+${I}if (reader.readBool())
+        </#if>
+${I}{
+        <@field_view_read_inner field, indent+1/>
+${I}}
+    <#else>
+    <@field_view_read_inner field, indent/>
+    </#if>
+</#macro>
+
+<#macro field_view_read_inner field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#local fieldName>
+        <#if field.usesAnyHolder>
+            any<#t>
+        <#else>
+            ${field.name}<#t>
+        </#if>
+    </#local>
+    <#local storageSuffix>
+        <#if field.optional??>
+            .value()<#t>
+        <#elseif field.usesAnyHolder>
+            .get<<@field_storage_type_inner field/>>()<#t>
+        </#if>
+    </#local>
+    <#if field.typeInfo.isCompound>
+        <#if field.optional?? || field.usesAnyHolder>
+${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(<#if field.needsAllocator>allocator</#if>);
+        </#if>
+${I}<@field_view_type field/>(reader, <#rt>
+        <#if field.compound.instantiatedParameters?has_content>
+            <#lt><@compound_field_compound_ctor_params field.compound, false/>,
+${I}        m_storage.${fieldName}${storageSuffix});
+        <#else>
+            <#lt>m_storage.${fieldName}${storageSuffix});
+        </#if>
+    <#elseif field.runtimeFunction??>
+        <#local readCommandArgs>
+            ${field.runtimeFunction.arg!}<#if field.needsAllocator><#if field.runtimeFunction.arg??>, </#if>allocator</#if><#t>
+        </#local>
+${I}m_storage.${fieldName} = static_cast<<@field_cpp_type_name field/>>(reader.read${field.runtimeFunction.suffix}(${readCommandArgs}));
+    <#elseif field.typeInfo.isEnum>
+${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reader);
+    <#elseif !field.array??>
+        <#-- bitmask -->
+${I}m_storage.${fieldName} = <@field_cpp_type_name field/>(reader);
+    <#elseif field.array??>
+        <#-- TODO[Mi-L@]: -->
+    </#if>
+</#macro>
+
 <#macro field_argument_name field>
     ${field.name}_<#t>
 </#macro>

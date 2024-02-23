@@ -39,6 +39,7 @@
 </#if>
 class ${name}
 {
+<#--
 public:
 <#if withCodeComments>
     /** Definition for allocator type. */
@@ -345,6 +346,104 @@ private:
 <#if fieldList?has_content>
     ${types.anyHolder.name} m_objectChoice;
 </#if>
+-->
+public:
+    using allocator_type = ${types.allocator.default};
+
+    struct Storage
+    {
+        Storage() noexcept :
+                Storage(allocator_type())
+        {}
+
+        explicit Storage(const allocator_type& allocator) noexcept :
+                any(allocator)
+        {}
+
+        template <typename T,
+                typename std::enable_if<!std::is_same<T, allocator_type>::value, int>::type = 0>
+        explicit Storage(T&& value, const allocator_type& allocator = allocator_type()) :
+                any(std::forward<T>(value), allocator)
+        {}
+
+        ${types.anyHolder.name} any;
+    };
+
+    class View
+    {
+    public:
+        View(<#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+        <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage) noexcept :
+<#else>
+                <#lt>Storage& storage) noexcept :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(storage)
+        {}
+
+        View(::zserio::BitStreamReader& reader, <#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage, const allocator_type& allocator = allocator_type()) :
+<#else>
+                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(storage)
+        {
+            switch (${selectorExpression})
+            {
+<#list caseMemberList as caseMember>
+    <#list caseMember.expressionList as expression>
+            case ${expression}:
+    </#list>
+    <#if caseMember.compoundField??>
+                <@field_view_read caseMember.compoundField, 4/>
+    </#if>
+                break;
+</#list>
+<#if !isDefaultUnreachable>
+            default:
+    <#if defaultMember??>
+        <#if defaultMember.compoundField??>
+                <@field_view_read defaultMember.compoundField, 4/>
+        </#if>
+                break;
+    <#else>
+                throw CppRuntimeException("No match in union read constructor!");
+    </#if>
+</#if>
+            };
+        }
+        <@compound_parameter_view_accessors compoundParametersData/>
+<#list fieldList as field>
+
+        <@field_view_type field/> ${field.getterName}() const
+        {
+    <#if field.typeInfo.isCompound>
+            return <@field_view_type field/>(<#rt>
+        <#if field.compound.instantiatedParameters?has_content>
+            <#lt><@compound_field_compound_ctor_params field.compound, false/>,
+                    m_storage.any.get<<@field_storage_type field/>>());
+        <#else>
+                    <#lt>m_storage.any.get<<@field_storage_type field/>>());
+        </#if>
+    <#else>
+            return m_storage.any.get<<@field_storage_type field/>>();
+    </#if>
+        }
+</#list>
+
+    private:
+        <@compound_parameter_view_members compoundParametersData/>
+        Storage& m_storage;
+    };
 };
 <@namespace_end package.path/>
 

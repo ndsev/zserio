@@ -22,7 +22,7 @@ public final class StructureEmitter extends CppDefaultEmitter
         final Object templateData = new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
 
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, structureType);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
+        //processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "Structure.cpp.ftl";

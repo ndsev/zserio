@@ -42,6 +42,7 @@
 </#if>
 class ${name}
 {
+<#--
 public:
     <#if withCodeComments>
     /** Definition for allocator type. */
@@ -347,6 +348,105 @@ private:
 <#if fieldList?has_content>
     ${types.anyHolder.name} m_objectChoice;
 </#if>
+-->
+public:
+    using allocator_type = ${types.allocator.default};
+
+    enum ChoiceTag : int32_t
+    {
+<#list fieldList as field>
+        <@choice_tag_name field/> = ${field?index},
+</#list>
+        UNDEFINED_CHOICE = -1
+    };
+
+    struct Storage
+    {
+        Storage() noexcept :
+                Storage(allocator_type())
+        {}
+
+        Storage(const allocator_type& allocator) noexcept :
+                any(allocator)
+        {}
+
+        template <typename T,
+                typename std::enable_if<!std::is_same<T, allocator_type>::value, int>::type = 0>
+        Storage(ChoiceTag choiceTag, T&& value, const allocator_type& allocator = allocator_type()) :
+                any(std::forward<T>(value), allocator)
+        {}
+
+        ChoiceTag choiceTag;
+        ${types.anyHolder.name} any;
+    };
+
+    class View
+    {
+    public:
+        View(<#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+        <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage) noexcept :
+<#else>
+                <#lt>Storage& storage) noexcept :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(storage)
+        {}
+
+        View(::zserio::BitStreamReader& reader, <#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage, const allocator_type& allocator = allocator_type()) :
+<#else>
+                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(storage)
+        {
+            m_storage.choiceTag = static_cast<${name}::ChoiceTag>(reader.readVarSize());
+
+            switch (choiceTag())
+            {
+<#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@field_view_read field, 4/>
+                break;
+</#list>
+            };
+        }
+
+        ChoiceTag choiceTag() const
+        {
+            return m_storage.choiceTag;
+        };
+        <@compound_parameter_view_accessors compoundParametersData/>
+<#list fieldList as field>
+
+        <@field_view_type field/> ${field.getterName}() const
+        {
+    <#if field.typeInfo.isCompound>
+            return <@field_view_type field/>(<#rt>
+        <#if field.compound.instantiatedParameters?has_content>
+            <#lt><@compound_field_compound_ctor_params field.compound, false/>,
+                    m_storage.any.get<<@field_storage_type field/>>());
+        <#else>
+                    <#lt>m_storage.any.get<<@field_storage_type field/>>());
+        </#if>
+    <#else>
+            return m_storage.any.get<<@field_storage_type field/>>();
+    </#if>
+        }
+</#list>
+
+    private:
+        <@compound_parameter_view_members compoundParametersData/>
+        Storage& m_storage;
+    };
 };
 <@namespace_end package.path/>
 
