@@ -347,6 +347,72 @@ private:
     ${types.anyHolder.name} m_objectChoice;
 </#if>
 -->
+<#macro choice_selector_condition expressionList>
+    <#if expressionList?size == 1>
+        selector == (${expressionList?first})<#t>
+    <#else>
+        <#list expressionList as expression>
+        (selector == (${expression}))<#if expression?has_next> || </#if><#t>
+        </#list>
+    </#if>
+</#macro>
+<#macro choice_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}throw ::zserio::CppRuntimeException("No match in choice ${name}!");
+</#macro>
+<#macro choice_switch memberActionMacroName noMatchMacroName selectorExpression indent packed=false>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if canUseNativeSwitch>
+${I}switch (${selectorExpression})
+${I}{
+        <#list caseMemberList as caseMember>
+            <#list caseMember.expressionList as expression>
+${I}case ${expression}:
+            </#list>
+        <@.vars[memberActionMacroName] caseMember, packed, indent+1/>
+        </#list>
+        <#if !isDefaultUnreachable>
+${I}default:
+            <#if defaultMember??>
+        <@.vars[memberActionMacroName] defaultMember, packed, indent+1/>
+            <#else>
+        <@.vars[noMatchMacroName] name, indent+1/>
+            </#if>
+        </#if>
+${I}}
+    <#else>
+${I}const auto selector = ${selectorExpression};
+
+        <#list caseMemberList as caseMember>
+            <#if caseMember?has_next || !isDefaultUnreachable>
+${I}<#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
+            <#else>
+${I}else
+            </#if>
+${I}{
+        <@.vars[memberActionMacroName] caseMember, packed, indent+1/>
+${I}}
+        </#list>
+        <#if !isDefaultUnreachable>
+${I}else
+${I}{
+            <#if defaultMember??>
+        <@.vars[memberActionMacroName] defaultMember, packed, indent+1/>
+            <#else>
+        <@.vars[noMatchMacroName] name, indent+1/>
+            </#if>
+${I}}
+        </#if>
+    </#if>
+</#macro>
+<#macro choice_field_view_read  member packed indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+    <@field_view_read member.compoundField, indent/>
+    <#else>
+${I}break;
+    </#if>
+</#macro>
 public:
     using allocator_type = ${types.allocator.default};
 
@@ -397,29 +463,7 @@ public:
 </#if>
                 m_storage(storage)
         {
-            switch (${selectorExpression})
-            {
-<#list caseMemberList as caseMember>
-    <#list caseMember.expressionList as expression>
-            case ${expression}:
-    </#list>
-    <#if caseMember.compoundField??>
-                <@field_view_read caseMember.compoundField, 4/>
-    </#if>
-                break;
-</#list>
-<#if !isDefaultUnreachable>
-            default:
-    <#if defaultMember??>
-        <#if defaultMember.compoundField??>
-                <@field_view_read defaultMember.compoundField, 4/>
-        </#if>
-                break;
-    <#else>
-                throw CppRuntimeException("No match in union read constructor!");
-    </#if>
-</#if>
-            };
+            <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3/>
         }
         <@compound_parameter_view_accessors compoundParametersData/>
 <#list fieldList as field>
