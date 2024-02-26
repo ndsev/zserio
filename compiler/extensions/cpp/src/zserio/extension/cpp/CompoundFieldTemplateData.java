@@ -20,6 +20,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
+import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -48,7 +49,7 @@ public final class CompoundFieldTemplateData
 
         name = field.getName();
 
-        usesSharedPointer = usesSharedPointer(context, field, fieldBaseType);
+        usesSharedPointer = usesSharedPointer(context, field, fieldTypeInstantiation, fieldBaseType);
         typeInfo = new NativeTypeInfoTemplateData(fieldNativeType, fieldTypeInstantiation);
 
         getterName = AccessorNameFormatter.getGetterName(field);
@@ -478,8 +479,6 @@ public final class CompoundFieldTemplateData
             final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
             includeCollector.addHeaderIncludesForType(elementNativeType);
-            elementUsesSharedPointer = (elementTypeInstantiation.getBaseType() instanceof CompoundType) &&
-                    isAboveTreshold(context, (CompoundType)elementTypeInstantiation.getBaseType());
             elementBitSize = BitSizeTemplateData.create(context, elementTypeInstantiation, includeCollector);
             elementCompound = createCompound(context, elementTypeInstantiation, includeCollector);
             elementIntegerRange = createIntegerRange(context, elementTypeInstantiation, includeCollector);
@@ -507,11 +506,6 @@ public final class CompoundFieldTemplateData
         public String getLength()
         {
             return length;
-        }
-
-        public boolean getElementUsesSharedPointer()
-        {
-            return elementUsesSharedPointer;
         }
 
         public BitSizeTemplateData getElementBitSize()
@@ -558,7 +552,6 @@ public final class CompoundFieldTemplateData
         private final boolean isImplicit;
         private final boolean isPacked;
         private final String length;
-        private final boolean elementUsesSharedPointer;
         private final BitSizeTemplateData elementBitSize;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;
@@ -708,15 +701,27 @@ public final class CompoundFieldTemplateData
     }
 
     private static boolean usesSharedPointer(TemplateDataContext context, Field field,
-            ZserioType fieldBaseType) throws ZserioExtensionException
+            TypeInstantiation typeInstantiation, ZserioType fieldBaseType) throws ZserioExtensionException
     {
-        if (!context.getParameterFieldsCollector().isUsedAsParameter(field) ||
-                !(fieldBaseType instanceof CompoundType))
+        if (!context.getParameterFieldsCollector().isUsedAsParameter(field))
         {
             return false;
         }
 
-        return isAboveTreshold(context, (CompoundType)fieldBaseType);
+        ZserioType baseType = fieldBaseType;
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
+            baseType = elementTypeInstantiation.getBaseType();
+        }
+
+        if (!(baseType instanceof CompoundType))
+        {
+            return false;
+        }
+
+        return isAboveTreshold(context, (CompoundType)baseType);
     }
 
     static class NumBytes

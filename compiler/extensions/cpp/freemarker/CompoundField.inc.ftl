@@ -22,7 +22,7 @@
 <#macro field_raw_cpp_type_name field>
     <#if field.array??>
         <#local elementTypeName>
-            <#if field.array.elementUsesSharedPointer>
+            <#if field.usesSharedPointer>
                 <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
             <#else>
                 ${field.array.elementTypeInfo.typeFullName}<#t>
@@ -41,7 +41,7 @@
 <#macro field_raw_cpp_argument_type_name field>
     <#if field.array??>
         <#local elementTypeName>
-            <#if field.array.elementUsesSharedPointer>
+            <#if field.usesSharedPointer>
                 <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
             <#else>
                 ${field.array.elementTypeInfo.typeFullName}<#t>
@@ -63,7 +63,7 @@
     <#local fieldCppTypeName>
         <#if field.array?? && arrayClassPrefix?has_content>${arrayClassPrefix}::</#if><@field_cpp_type_name field/><#t>
     </#local>
-    <#if field.optional?? && !field.usesSharedPointer>
+    <#if field.optional?? && (!field.usesSharedPointer || field.array??)>
         <#if field.optional.isRecursive>
             <@heap_optional_type_name fieldCppTypeName/><#t>
         <#else>
@@ -94,7 +94,7 @@ ${I}{
         <@compound_read_field_inner field, compoundName, indent+1, packed/>
 ${I}}
 
-        <#if field.usesSharedPointer>
+        <#if field.usesSharedPointer && !field.array??>
 ${I}return <@field_member_type_name field/>(nullptr);
         <#else>
 ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if>);
@@ -119,7 +119,7 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
                 <#if field.compound??>, allocator</#if><#t>
             </#local>
             <#local readCommand>
-                <#if field.usesSharedPointer>
+                <#if field.usesSharedPointer && !field.array??>
                     ::std::allocate_shared<${field.typeInfo.typeFullName}>(<#t>
                             allocator, context.${field.getterName}(), ${constructorArguments})<#t>
                 <#else>
@@ -145,7 +145,7 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
         <#local constructorArguments>
             in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>, allocator<#t>
         </#local>
-        <#if field.usesSharedPointer>
+        <#if field.usesSharedPointer && !field.array??>
             <#local readCommand>::std::allocate_shared<${field.typeInfo.typeFullName}>(allocator, ${constructorArguments})</#local>
         <#else>
             <#local readCommand><@field_cpp_type_name field/>(${constructorArguments})</#local>
@@ -174,7 +174,7 @@ ${I}return <@compound_read_field_retval field, readCommand, false/>;
 <#macro compound_read_field_retval field readCommand needsMove>
     <#if field.usesAnyHolder>
         ${types.anyHolder.name}(<#if needsMove>::std::move(</#if>${readCommand}<#if needsMove>)</#if>, allocator)<#t>
-    <#elseif field.optional?? && !field.usesSharedPointer>
+    <#elseif field.optional?? && (!field.usesSharedPointer || field.array??)>
         <#local fieldCppTypeName><@field_cpp_type_name field/></#local>
         <#if field.optional.isRecursive>
             <@heap_optional_type_name fieldCppTypeName/>(<#t>
@@ -400,7 +400,7 @@ ${I}}
 
 <#macro array_type_name field>
     <#local elementTypeName>
-        <#if field.array.elementUsesSharedPointer>
+        <#if field.usesSharedPointer>
             <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
         <#else>
             ${field.array.elementTypeInfo.typeFullName}<#t>
@@ -418,7 +418,7 @@ ${I}}
 <#macro array_traits_type_name field>
     <#if field.array??>
         <#local elementTypeName>
-            <#if field.array.elementUsesSharedPointer>
+            <#if field.usesSharedPointer>
                 <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
             <#else>
                 ${field.array.elementTypeInfo.typeFullName}<#t>
@@ -504,7 +504,7 @@ ${I}}
     <#if field.array.elementCompound?? &&
             (needs_field_initialization(field.array.elementCompound) ||
                     field.array.elementCompound.needsChildrenInitialization)>
-        <#if field.array.elementUsesSharedPointer>
+        <#if field.usesSharedPointer>
         static void initializeElement(<#if !withWriterCode>const </#if>${compoundName}& owner,
                 const <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/>& element, size_t index);
         <#else>
@@ -541,7 +541,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(${
     <#if field.array.elementCompound?? &&
             (needs_field_initialization(field.array.elementCompound) ||
                     field.array.elementCompound.needsChildrenInitialization)>
-        <#if field.array.elementUsesSharedPointer>
+        <#if field.usesSharedPointer>
 void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
         <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
@@ -582,7 +582,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
 
 <#macro declare_element_factory compoundName field>
     <#local elementTypeName>
-        <#if field.array.elementUsesSharedPointer>
+        <#if field.usesSharedPointer>
             <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
         <#else>
             ${field.array.elementTypeInfo.typeFullName}<#t>
@@ -614,7 +614,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
         </#if>
     </#local>
     <#local elementTypeName>
-        <#if field.array.elementUsesSharedPointer>
+        <#if field.usesSharedPointer>
             <@shared_ptr_type_name field.array.elementTypeInfo.typeFullName/><#t>
         <#else>
             ${field.array.elementTypeInfo.typeFullName}<#t>
@@ -627,7 +627,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         ::zserio::BitStreamReader& in, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    <#if field.array.elementUsesSharedPointer>
+    <#if field.usesSharedPointer>
     array.push_back(::std::allocate_shared<${field.array.elementTypeInfo.typeFullName}>(
             array.get_allocator(), in<#rt>
     <#if extraConstructorArguments?has_content>
@@ -651,7 +651,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    <#if field.array.elementUsesSharedPointer>
+    <#if field.usesSharedPointer>
     array.push_back(::std::allocate_shared<${field.array.elementTypeInfo.typeFullName}>(
             array.get_allocator(), context, in<#rt>
         <#if extraConstructorArguments?has_content>
@@ -983,7 +983,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 <#macro compound_get_field_inner field>
     <#if field.usesAnyHolder>
         m_objectChoice.get<<@field_cpp_type_name field/>>()<#t>
-    <#elseif field.optional?? && !field.usesSharedPointer>
+    <#elseif field.optional?? && (!field.usesSharedPointer || field.array??)>
         <@field_member_name field/>.value()<#t>
     <#else>
         <@field_member_name field/><#t>
@@ -991,7 +991,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 </#macro>
 
 <#macro compound_get_field field>
-    <#if field.usesSharedPointer>
+    <#if field.usesSharedPointer && !field.array??>
         (*<@compound_get_field_inner field/>)<#t>
     <#else>
         <@compound_get_field_inner field/><#t>

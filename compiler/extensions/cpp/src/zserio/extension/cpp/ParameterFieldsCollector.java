@@ -3,6 +3,7 @@ package zserio.extension.cpp;
 import java.util.HashSet;
 import java.util.Set;
 
+import zserio.ast.ArrayType;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.ChoiceType;
@@ -10,11 +11,14 @@ import zserio.ast.CompoundType;
 import zserio.ast.Field;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.extension.cpp.CompoundFieldTemplateData.Compound;
 import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioAstWalker;
 import zserio.ast.ZserioTemplatableType;
+import zserio.ast.ZserioType;
+import zserio.ast.ZserioTypeUtil;
 
 public class ParameterFieldsCollector extends ZserioAstWalker
 {
@@ -72,10 +76,21 @@ public class ParameterFieldsCollector extends ZserioAstWalker
                 for (InstantiatedParameter parameter :
                         ((ParameterizedTypeInstantiation)typeInstantiation).getInstantiatedParameters())
                 {
-                    final AstNode symbolObject = parameter.getArgumentExpression().getExprSymbolObject();
-                    if (symbolObject instanceof Field)
+                    final Set<Field> referencedFields =
+                            parameter.getArgumentExpression().getReferencedDotRightSymbolObjects(Field.class);
+                    for (Field referencedField : referencedFields)
                     {
-                        parameterFields.add((Field)symbolObject);
+                        // only referenced compounds
+                        final ZserioType referencedFieldType =
+                                referencedField.getTypeInstantiation().getBaseType();
+                        if (referencedFieldType instanceof CompoundType ||
+                                referencedFieldType instanceof ArrayType)
+                        {
+                            System.out.println("INFO: Found field '" + referencedField.getName() +
+                                    "' in compound '" +  ZserioTypeUtil.getFullName(compoundType) +
+                                    "' which is used as compound parameter!");
+                            parameterFields.add(referencedField);
+                        }
                     }
                 }
             }

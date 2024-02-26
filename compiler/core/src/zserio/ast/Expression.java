@@ -377,6 +377,15 @@ public final class Expression extends AstNodeBase
         return referencedSymbolObjects;
     }
 
+    public <T extends AstNode> Set<T> getReferencedDotRightSymbolObjects(Class<? extends T> clazz)
+    {
+        // LinkedHashSet is used intentionally to guarantee insert order
+        final Set<T> referencedSymbolObjects = new LinkedHashSet<T>();
+        addReferencedDotRightSymbolObject(referencedSymbolObjects, clazz);
+
+        return referencedSymbolObjects;
+    }
+
     /**
      * Optional field information returned from the getReferencedOptionalFields() method.
      */
@@ -868,6 +877,36 @@ public final class Expression extends AstNodeBase
                 operand2.addReferencedSymbolObject(referencedObjectList, elementClass);
                 if (operand3 != null)
                     operand3.addReferencedSymbolObject(referencedObjectList, elementClass);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends AstNode> void addReferencedDotRightSymbolObject(
+            Set<T> referencedObjectList, Class<? extends AstNode> elementClass)
+    {
+        if (type == ZserioParser.DOT)
+        {
+            // skip left tree
+            if (operand2 != null)
+            {
+                operand2.addReferencedDotRightSymbolObject(referencedObjectList, elementClass);
+            }
+        }
+        else
+        {
+            if (symbolObject != null && elementClass.isInstance(symbolObject))
+                referencedObjectList.add((T)symbolObject);
+
+            if (operand1 != null)
+            {
+                operand1.addReferencedDotRightSymbolObject(referencedObjectList, elementClass);
+                if (operand2 != null)
+                {
+                    operand2.addReferencedDotRightSymbolObject(referencedObjectList, elementClass);
+                    if (operand3 != null)
+                        operand3.addReferencedDotRightSymbolObject(referencedObjectList, elementClass);
+                }
             }
         }
     }

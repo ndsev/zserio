@@ -37,7 +37,7 @@
     <#return fieldIndex - (numFields - numExtendedFields)>
 </#function>
 <#macro field_default_constructor_arguments field>
-    <#if field.usesSharedPointer>
+    <#if field.usesSharedPointer && !field.array??>
         nullptr<#t>
     <#elseif field.initializer??>
         <#-- cannot be compound or array since it has initializer! -->
@@ -244,14 +244,14 @@ void ${name}::initializeChildren()
         <#if needs_field_getter(field)>
 <@field_raw_cpp_type_name field/> ${name}::${field.getterName}()
 {
-    return <@compound_get_field_inner field/>;
+    return <@compound_get_field_inner field/><#if field.array??>.getRawArray()</#if>;
 }
 
         </#if>
         <#-- TODO[Mi-L@]: constness? -->
 <@field_raw_cpp_type_name field/> ${name}::${field.getterName}() const
 {
-    return <@compound_get_field_inner field/>;
+    return <@compound_get_field_inner field/><#if field.array??>.getRawArray()</#if>;
 }
 
     <#else>
@@ -306,7 +306,7 @@ bool ${name}::${field.optional.isUsedIndicatorName}() const
         <#if withWriterCode>
 bool ${name}::${field.optional.isSetIndicatorName}() const
 {
-    return <@field_member_name field/><#if field.usesSharedPointer> != nullptr<#else>.hasValue()</#if>;
+    return <@field_member_name field/><#if field.usesSharedPointer && !field.array??> != nullptr<#else>.hasValue()</#if>;
 }
 
 void ${name}::${field.optional.resetterName}()
