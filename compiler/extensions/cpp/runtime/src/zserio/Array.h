@@ -127,17 +127,17 @@ size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
 size_t arrayTraitsBitSizeOf(
-        const OWNER_TYPE& owner, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element)
+        OWNER_TYPE owner, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element, size_t index)
 {
-    return ARRAY_TRAITS::bitSizeOf(owner, bitPosition, element);
+    return ARRAY_TRAITS::bitSizeOf(owner, bitPosition, element, index);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
 size_t arrayTraitsBitSizeOf(
-        const OWNER_TYPE&, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element)
+        const OWNER_TYPE&, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element, size_t index)
 {
-    return ARRAY_TRAITS::bitSizeOf(bitPosition, element);
+    return ARRAY_TRAITS::bitSizeOf(bitPosition, element, index);
 }
 
 // calls the bitSizeOf method properly on packed array traits which haven't constant bit size
@@ -161,9 +161,9 @@ size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT& context, s
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
 size_t arrayTraitsInitializeOffsets(
-        OWNER_TYPE& owner, size_t bitPosition, typename ARRAY_TRAITS::ElementType& element)
+        OWNER_TYPE& owner, size_t bitPosition, typename ARRAY_TRAITS::ElementType& element, size_t index)
 {
-    return ARRAY_TRAITS::initializeOffsets(owner, bitPosition, element);
+    return ARRAY_TRAITS::initializeOffsets(owner, bitPosition, element, index);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
@@ -171,16 +171,16 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE,
                         !std::is_scalar<typename ARRAY_TRAITS::ElementType>::value,
                 int>::type = 0>
 size_t arrayTraitsInitializeOffsets(
-        OWNER_TYPE&, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element)
+        OWNER_TYPE&, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element, size_t index)
 {
-    return ARRAY_TRAITS::initializeOffsets(bitPosition, element);
+    return ARRAY_TRAITS::initializeOffsets(bitPosition, element, index);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
                         std::is_scalar<typename ARRAY_TRAITS::ElementType>::value,
                 int>::type = 0>
-size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename ARRAY_TRAITS::ElementType element)
+size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename ARRAY_TRAITS::ElementType element, size_t)
 {
     return ARRAY_TRAITS::initializeOffsets(bitPosition, element);
 }
@@ -285,15 +285,15 @@ void packedArrayTraitsRead(
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsWrite(
-        const OWNER_TYPE& owner, BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
+        const OWNER_TYPE& owner, BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element, size_t index)
 {
-    ARRAY_TRAITS::write(owner, out, element);
+    ARRAY_TRAITS::write(owner, out, element, index);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsWrite(
-        const OWNER_TYPE&, BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
+        const OWNER_TYPE&, BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element, size_t)
 {
     ARRAY_TRAITS::write(out, element);
 }
@@ -330,6 +330,19 @@ enum ArrayType
 };
 
 /**
+ * Trait used to check whether the type has an OwnerType.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_view_type : std::false_type
+{};
+
+template <typename T>
+struct has_view_type<T, detail::void_t<typename T::ViewType>> : std::true_type
+{};
+/** \} */
+
+/**
  * Array wrapper for zserio arrays which are not explicitly packed but the element type is packable
  * and thus it can be packed if requested from a parent.
  */
@@ -338,7 +351,7 @@ enum ArrayType
  */
 template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
         typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions>
-class Array
+class Array/*View*/
 {
 public:
     /** Typedef for raw array type. */
@@ -362,30 +375,20 @@ public:
     using allocator_type = typename RawArray::allocator_type;
 
     /**
-     * Empty constructor.
-     *
-     * \param allocator Allocator to use for the raw array.
-     */
-    explicit Array(const allocator_type& allocator = allocator_type()) :
-            m_rawArray(allocator)
-    {}
-
-    /**
      * Constructor from l-value raw array.
      *
      * \param rawArray Raw array.
      */
-    explicit Array(const RawArray& rawArray) :
-            m_rawArray(rawArray)
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    explicit Array(const OwnerType& owner, RawArray& rawArray) :
+            m_owner(owner), m_rawArray(rawArray)
     {}
 
-    /**
-     * Constructor from r-value raw array.
-     *
-     * \param rawArray Raw array.
-     */
-    explicit Array(RawArray&& rawArray) :
-            m_rawArray(std::move(rawArray))
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    explicit Array(RawArray& rawArray) :
+            m_rawArray(rawArray)
     {}
 
     /**
@@ -401,95 +404,6 @@ public:
     /**
      * \}
      */
-
-    /**
-     * Copy constructor which prevents initialization of parameterized elements.
-     *
-     * Note that elements will be initialized later by a parent compound.
-     *
-     * \param other Instance to construct from.
-     */
-    template <typename T = typename RAW_ARRAY::value_type,
-            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
-    Array(NoInitT, const Array& other) :
-            Array(std::allocator_traits<allocator_type>::select_on_container_copy_construction(
-                    other.m_rawArray.get_allocator()))
-    {
-        m_rawArray.reserve(other.m_rawArray.size());
-        for (const auto& value : other.m_rawArray)
-            m_rawArray.emplace_back(NoInit, value);
-    }
-
-    /**
-     * Assignment which prevents initialization of parameterized elements.
-     *
-     * Note that elements will be initialized later by a parent compound.
-     *
-     * \param other Instance to move-assign from.
-     */
-    template <typename T = typename RAW_ARRAY::value_type,
-            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
-    Array& assign(NoInitT, const Array& other)
-    {
-        const RawArray rawArray(other.m_rawArray.get_allocator());
-        m_rawArray = rawArray; // copy assign to get correct allocator propagation behaviour
-        m_rawArray.reserve(other.m_rawArray.size());
-        for (const auto& value : other.m_rawArray)
-            m_rawArray.emplace_back(NoInit, value);
-
-        return *this;
-    }
-
-    /**
-     * Move constructors which prevents initialization of parameterized elements.
-     *
-     * Provided for convenience since vector move constructor doesn't call move constructors of its elements.
-     *
-     * \param other Instance to move-construct from.
-     */
-    template <typename T = typename RAW_ARRAY::value_type,
-            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
-    Array(NoInitT, Array&& other) :
-            Array(std::move(other))
-    {}
-
-    /**
-     * Assignment which prevents initialization of parameterized elements.
-     *
-     * Provided for convenience since vector move assignment operator doesn't call move assignment operators
-     * of its elements.
-     *
-     * \param other Instance to move-assign from.
-     */
-    template <typename T = typename RAW_ARRAY::value_type,
-            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
-    Array& assign(NoInitT, Array&& other)
-    {
-        return operator=(std::move(other));
-    }
-
-    /**
-     * Copy constructor which forces allocator propagating while copying the raw array.
-     *
-     * \param other Source array to copy.
-     * \param allocator Allocator to propagate during copying.
-     */
-    Array(PropagateAllocatorT, const Array& other, const allocator_type& allocator) :
-            m_rawArray(allocatorPropagatingCopy(other.m_rawArray, allocator))
-    {}
-
-    /**
-     * Copy constructor which prevents initialization and forces allocator propagating while copying
-     * the raw array.
-     *
-     * \param other Source array to copy.
-     * \param allocator Allocator to propagate during copying.
-     */
-    template <typename T = typename RAW_ARRAY::value_type,
-            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
-    Array(PropagateAllocatorT, NoInitT, const Array& other, const allocator_type& allocator) :
-            m_rawArray(allocatorPropagatingCopy(NoInit, other.m_rawArray, allocator))
-    {}
 
     /**
      * Operator equality.
@@ -525,6 +439,26 @@ public:
         return calcHashCode(HASH_SEED, m_rawArray);
     }
 
+    size_t size() const
+    {
+        return m_rawArray.size();
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<has_view_type<ARRAY_TRAITS_>::value, int>::type = 0>
+    typename ARRAY_TRAITS_::ViewType at(size_t i) const
+    {
+        // TODO[Mi-L@]: PoC const_cast
+        return ARRAY_TRAITS::at(m_owner, const_cast<RAW_ARRAY&>(m_rawArray).at(i), i);
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<!has_view_type<ARRAY_TRAITS_>::value, int>::type = 0>
+    typename RawArray::value_type at(size_t i) const
+    {
+        return m_rawArray.at(i);
+    }
+
     /**
      * Gets raw array.
      *
@@ -546,23 +480,6 @@ public:
     }
 
     /**
-     * Initializes array elements.
-     *
-     * \param owner Array owner.
-     */
-    template <typename ARRAY_EXPRESSIONS_ = ArrayExpressions,
-            typename std::enable_if<has_initialize_element<ARRAY_EXPRESSIONS_>::value, int>::type = 0>
-    void initializeElements(OwnerType& owner)
-    {
-        size_t index = 0;
-        for (auto&& element : m_rawArray)
-        {
-            ArrayExpressions::initializeElement(owner, element, index);
-            index++;
-        }
-    }
-
-    /**
      * Calculates bit size of this array.
      *
      * Available for arrays which do not need the owner.
@@ -571,28 +488,9 @@ public:
      *
      * \return Bit size of the array.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     size_t bitSizeOf(size_t bitPosition) const
     {
-        return bitSizeOfImpl(detail::DummyArrayOwner(), bitPosition);
-    }
-
-    /**
-     * Calculates bit size of this array.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit position.
-     *
-     * \return Bit size of the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t bitSizeOf(const OwnerType& owner, size_t bitPosition) const
-    {
-        return bitSizeOfImpl(owner, bitPosition);
+        return bitSizeOfImpl(m_owner, bitPosition);
     }
 
     /**
@@ -604,29 +502,9 @@ public:
      *
      * \return Updated bit position which points to the first bit after the array.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     size_t initializeOffsets(size_t bitPosition)
     {
-        detail::DummyArrayOwner owner;
-        return initializeOffsetsImpl(owner, bitPosition);
-    }
-
-    /**
-     * Initializes indexed offsets.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit position.
-     *
-     * \return Updated bit position which points to the first bit after the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t initializeOffsets(OwnerType& owner, size_t bitPosition)
-    {
-        return initializeOffsetsImpl(owner, bitPosition);
+        return initializeOffsetsImpl(m_owner, bitPosition);
     }
 
     /**
@@ -637,28 +515,9 @@ public:
      * \param in Bit stream reader to use for reading.
      * \param arrayLength Array length. Not needed for auto / implicit arrays.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     void read(BitStreamReader& in, size_t arrayLength = 0)
     {
-        detail::DummyArrayOwner owner;
-        readImpl(owner, in, arrayLength);
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Not needed for auto / implicit arrays.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void read(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
-    {
-        readImpl(owner, in, arrayLength);
+        readImpl(m_owner, in, arrayLength);
     }
 
     /**
@@ -668,26 +527,9 @@ public:
      *
      * \param out Bit stream write to use for writing.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     void write(BitStreamWriter& out) const
     {
-        writeImpl(detail::DummyArrayOwner(), out);
-    }
-
-    /**
-     * Writes the array to the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param out Bit stream write to use for writing.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void write(const OwnerType& owner, BitStreamWriter& out) const
-    {
-        writeImpl(owner, out);
+        writeImpl(m_owner, out);
     }
 
     /**
@@ -699,28 +541,9 @@ public:
      *
      * \return Length of the array stored in the bit stream in bits.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     size_t bitSizeOfPacked(size_t bitPosition) const
     {
-        return bitSizeOfPackedImpl(detail::DummyArrayOwner(), bitPosition);
-    }
-
-    /**
-     * Returns length of the packed array stored in the bit stream in bits.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Length of the array stored in the bit stream in bits.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t bitSizeOfPacked(const OwnerType& ownerType, size_t bitPosition) const
-    {
-        return bitSizeOfPackedImpl(ownerType, bitPosition);
+        return bitSizeOfPackedImpl(m_owner, bitPosition);
     }
 
     /**
@@ -732,29 +555,9 @@ public:
      *
      * \return Updated bit stream position which points to the first bit after the array.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     size_t initializeOffsetsPacked(size_t bitPosition)
     {
-        detail::DummyArrayOwner owner;
-        return initializeOffsetsPackedImpl(owner, bitPosition);
-    }
-
-    /**
-     * Initializes indexed offsets for the packed array.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Updated bit stream position which points to the first bit after the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t initializeOffsetsPacked(OwnerType& owner, size_t bitPosition)
-    {
-        return initializeOffsetsPackedImpl(owner, bitPosition);
+        return initializeOffsetsPackedImpl(m_owner, bitPosition);
     }
 
     /**
@@ -765,28 +568,9 @@ public:
      * \param in Bit stream from which to read.
      * \param arrayLength Number of elements to read or 0 in case of auto arrays.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     void readPacked(BitStreamReader& in, size_t arrayLength = 0)
     {
-        detail::DummyArrayOwner owner;
-        readPackedImpl(owner, in, arrayLength);
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void readPacked(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
-    {
-        readPackedImpl(owner, in, arrayLength);
+        readPackedImpl(m_owner, in, arrayLength);
     }
 
     /**
@@ -796,26 +580,9 @@ public:
      *
      * \param out Bit stream where to write.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
     void writePacked(BitStreamWriter& out) const
     {
-        writePackedImpl(detail::DummyArrayOwner(), out);
-    }
-
-    /**
-     * Writes packed array to the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param out Bit stream where to write.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void writePacked(const OwnerType& owner, BitStreamWriter& out) const
-    {
-        writePackedImpl(owner, out);
+        writePackedImpl(m_owner, out);
     }
 
 private:
@@ -847,16 +614,16 @@ private:
         bitPosition = alignTo(8, bitPosition);
     }
 
-    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+    template <typename IO, typename OWNER_TYPE_, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
             typename std::enable_if<ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
                     int>::type = 0>
-    static void alignAndCheckOffset(IO&, OWNER_TYPE&, size_t)
+    static void alignAndCheckOffset(IO&, OWNER_TYPE_&, size_t)
     {}
 
-    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+    template <typename IO, typename OWNER_TYPE_, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
             typename std::enable_if<ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
                     int>::type = 0>
-    static void alignAndCheckOffset(IO& io, OWNER_TYPE& owner, size_t index)
+    static void alignAndCheckOffset(IO& io, OWNER_TYPE_& owner, size_t index)
     {
         io.alignTo(8);
         detail::checkOffset<ArrayExpressions>(owner, index, io.getBitPosition() / 8);
@@ -969,7 +736,7 @@ private:
         {
             alignBitPosition(endBitPosition);
             endBitPosition +=
-                    detail::arrayTraitsBitSizeOf<ArrayTraits>(owner, endBitPosition, m_rawArray[index]);
+                    detail::arrayTraitsBitSizeOf<ArrayTraits>(owner, endBitPosition, m_rawArray[index], index);
         }
 
         return endBitPosition - bitPosition;
@@ -986,7 +753,7 @@ private:
         {
             initializeOffset(owner, index, endBitPosition);
             endBitPosition =
-                    detail::arrayTraitsInitializeOffsets<ArrayTraits>(owner, endBitPosition, m_rawArray[index]);
+                    detail::arrayTraitsInitializeOffsets<ArrayTraits>(owner, endBitPosition, m_rawArray[index], index);
         }
 
         return endBitPosition;
@@ -995,7 +762,6 @@ private:
     void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
     {
         size_t readLength = readArrayLength(owner, in, arrayLength);
-
         m_rawArray.clear();
         m_rawArray.reserve(readLength);
         for (size_t index = 0; index < readLength; ++index)
@@ -1013,7 +779,7 @@ private:
         for (size_t index = 0; index < arrayLength; ++index)
         {
             alignAndCheckOffset(out, owner, index);
-            detail::arrayTraitsWrite<ArrayTraits>(owner, out, m_rawArray[index]);
+            detail::arrayTraitsWrite<ArrayTraits>(owner, out, m_rawArray[index], index);
         }
     }
 
@@ -1128,7 +894,8 @@ private:
         }
     }
 
-    RawArray m_rawArray;
+    OwnerType m_owner; // PoC -> copy parameters by value - should be no problem!
+    RawArray& m_rawArray;
 };
 
 /**

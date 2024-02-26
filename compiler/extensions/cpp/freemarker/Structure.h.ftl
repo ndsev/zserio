@@ -431,7 +431,18 @@ private:
 </#function>
 public:
     using allocator_type = ${types.allocator.default};
+    class Storage;
+    class View;
 
+<#list fieldList as field>
+    <#if needs_array_expressions(field)>
+        <@declare_array_expressions name, field/>
+    </#if>
+    <#if needs_field_element_factory(field)>
+        <@declare_element_factory name, field/>
+    </#if>
+</#list>
+    <@arrays_typedefs fieldList/>
     struct Storage
     {
         Storage() noexcept :
@@ -457,7 +468,7 @@ public:
     </#list>
                 const allocator_type& allocator = allocator_type()) :
         <#list fieldList as field>
-                ${field.name}(std::forward<ZSERIO_TYPE_${field.name}>(<@field_argument_name field/>)<#if field.optional?? && field.holderNeedsAllocator>, allocator</#if>)<#if field?has_next>,<#else></#if>
+                ${field.name}(std::forward<ZSERIO_TYPE_${field.name}>(<@field_argument_name field/>)<#if (field.optional?? && field.holderNeedsAllocator) || field.array??>, allocator</#if>)<#if field?has_next>,<#else></#if>
         </#list>
         {}
 </#if>
@@ -527,17 +538,7 @@ public:
             }
 
     </#if>
-    <#if field.typeInfo.isCompound>
-            return <@field_view_type field/>(<#rt>
-        <#if field.compound.instantiatedParameters?has_content>
-                    <#lt><@compound_field_compound_ctor_params field.compound, false/>,
-                    m_storage.${field.name}<#if field.optional??>.value()</#if>);
-        <#else>
-                    <#lt>m_storage.${field.name}<#if field.optional??>.value()</#if>);
-        </#if>
-    <#else>
-            return m_storage.${field.name}<#if field.optional??>.value()</#if>;
-    </#if>
+            <@field_view_get field, 3/>
         }
 </#list>
 
@@ -546,6 +547,15 @@ public:
         Storage& m_storage;
     };
 };
+
+<#list fieldList as field>
+    <#if needs_array_expressions(field)>
+<@define_array_expressions_methods name, field/>
+    </#if>
+    <#if needs_field_element_factory(field)>
+<@define_element_factory_methods name, field/>
+    </#if>
+</#list>
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

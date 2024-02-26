@@ -405,7 +405,7 @@ ${I}}
         </#if>
     </#if>
 </#macro>
-<#macro choice_field_view_read  member packed indent>
+<#macro choice_field_view_read member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
     <@field_view_read member.compoundField, indent/>
@@ -413,9 +413,40 @@ ${I}}
 ${I}break;
     </#if>
 </#macro>
+<#macro choice_tag_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}return UNDEFINED_CHOICE;
+</#macro>
+<#macro choice_tag_member member packed indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return <@choice_tag_name member.compoundField/>;
+    <#else>
+${I}return UNDEFINED_CHOICE;
+    </#if>
+</#macro>
 public:
     using allocator_type = ${types.allocator.default};
+    class Storage;
+    class View;
 
+    enum ChoiceTag : int32_t
+    {
+<#list fieldList as field>
+        <@choice_tag_name field/> = ${field?index},
+</#list>
+        UNDEFINED_CHOICE = -1
+    };
+
+<#list fieldList as field>
+    <#if needs_array_expressions(field)>
+        <@declare_array_expressions name, field/>
+    </#if>
+    <#if needs_field_element_factory(field)>
+        <@declare_element_factory name, field/>
+    </#if>
+</#list>
+    <@arrays_typedefs fieldList/>
     struct Storage
     {
         Storage() noexcept :
@@ -465,22 +496,17 @@ public:
         {
             <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3/>
         }
+
+        ChoiceTag choiceTag() const
+        {
+            <@choice_switch "choice_tag_member", "choice_tag_no_match", selectorExpression, 3/>
+        }
         <@compound_parameter_view_accessors compoundParametersData/>
 <#list fieldList as field>
 
         <@field_view_type field/> ${field.getterName}() const
         {
-    <#if field.typeInfo.isCompound>
-            return <@field_view_type field/>(<#rt>
-        <#if field.compound.instantiatedParameters?has_content>
-            <#lt><@compound_field_compound_ctor_params field.compound, false/>,
-                    m_storage.any.get<<@field_storage_type field/>>());
-        <#else>
-                    <#lt>m_storage.any.get<<@field_storage_type field/>>());
-        </#if>
-    <#else>
-            return m_storage.any.get<<@field_storage_type field/>>();
-    </#if>
+            <@field_view_get field, 3/>
         }
 </#list>
 

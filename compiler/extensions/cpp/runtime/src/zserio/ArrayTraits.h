@@ -1734,10 +1734,13 @@ class ObjectArrayTraits
 {
 public:
     /** Element type. */
-    using ElementType = T;
+    using ElementType = typename T::Storage;
+
+    /** View type. */
+    using ViewType = typename T::View;
 
     /** Allocator type. */
-    using allocator_type = typename ElementType::allocator_type;
+    using allocator_type = typename T::allocator_type;
 
     /** Typedef for the array's owner type. */
     using OwnerType = typename ELEMENT_FACTORY::OwnerType;

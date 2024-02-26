@@ -351,6 +351,8 @@ private:
 -->
 public:
     using allocator_type = ${types.allocator.default};
+    class Storage;
+    class View;
 
     enum ChoiceTag : int32_t
     {
@@ -360,6 +362,15 @@ public:
         UNDEFINED_CHOICE = -1
     };
 
+<#list fieldList as field>
+    <#if needs_array_expressions(field)>
+        <@declare_array_expressions name, field/>
+    </#if>
+    <#if needs_field_element_factory(field)>
+        <@declare_element_factory name, field/>
+    </#if>
+</#list>
+    <@arrays_typedefs fieldList/>
     struct Storage
     {
         Storage() noexcept :
@@ -429,17 +440,7 @@ public:
 
         <@field_view_type field/> ${field.getterName}() const
         {
-    <#if field.typeInfo.isCompound>
-            return <@field_view_type field/>(<#rt>
-        <#if field.compound.instantiatedParameters?has_content>
-            <#lt><@compound_field_compound_ctor_params field.compound, false/>,
-                    m_storage.any.get<<@field_storage_type field/>>());
-        <#else>
-                    <#lt>m_storage.any.get<<@field_storage_type field/>>());
-        </#if>
-    <#else>
-            return m_storage.any.get<<@field_storage_type field/>>();
-    </#if>
+            <@field_view_get field, 3/>
         }
 </#list>
 
