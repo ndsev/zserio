@@ -848,7 +848,7 @@ test_perf()
     get_python_version_string PYTHON_VERSION_STRING
     local TEST_PYTHON_OUT_DIR="${TEST_OUT_DIR}/python/${PYTHON_VERSION_STRING}"
     if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-        local ZSERIO_ARGS=("-withTypeInfoCode" "-withReflectionCode")
+        local ZSERIO_ARGS=("-withTypeInfoCode")
         if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
             rm -rf "${TEST_OUT_DIR}/cpp"
             ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/src/gen")
