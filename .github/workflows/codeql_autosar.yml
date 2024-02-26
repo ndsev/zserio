@@ -23,7 +23,9 @@ jobs:
         wget https://github.com/github/codeql-coding-standards/releases/download/v2.23.0/code-scanning-cpp-query-pack-2.23.0.zip -P "${GITHUB_WORKSPACE}/build"
         unzip "${GITHUB_WORKSPACE}/build/code-scanning-cpp-query-pack-2.23.0.zip" -d "${GITHUB_WORKSPACE}/build"
     - name: Install dependencies
-      run: sudo apt-get install cmake doxygen graphviz
+      run: |
+        sudo apt-get update
+        sudo apt-get install cmake doxygen graphviz
 
     - name: Install Python dependencies
       run: |
@@ -41,7 +43,8 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
-        tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.15.5/codeql-bundle-linux64.tar.gz
+        # used codeql version is specified in codeql-coding-standards/supported_codeql_configs.json file 
+        tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.13.5/codeql-bundle-linux64.tar.gz
         languages: cpp
         config: |
           disable-default-queries: true
