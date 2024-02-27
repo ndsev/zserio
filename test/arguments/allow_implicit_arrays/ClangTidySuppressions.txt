@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.cpp
+
 bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_bit8/ImplicitArray.h
 bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_float16/ImplicitArray.h
 bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_int24/ImplicitArray.h

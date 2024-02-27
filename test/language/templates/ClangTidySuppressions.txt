@@ -1,3 +1,6 @@
+bugprone-exception-escape:gen/templates/instantiate_type_as_sql_database_field/InstantiateTypeAsSqlDatabaseFieldDb.cpp
+bugprone-exception-escape:gen/templates/sql_table_templated_field/SqlTableTemplatedFieldDb.cpp
+
 bugprone-forwarding-reference-overload:gen/templates/expression_bitmask_template_argument/BitmaskTemplateArgumentHolder.h
 bugprone-forwarding-reference-overload:gen/templates/expression_enum_template_argument/EnumTemplateArgumentHolder.h
 bugprone-forwarding-reference-overload:gen/templates/expression_enum_template_argument_conflict/EnumTemplateArgumentConflictHolder.h

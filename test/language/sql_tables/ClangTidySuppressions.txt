@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/sql_tables/TestDb.cpp
+
 bugprone-forwarding-reference-overload:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.h
 bugprone-forwarding-reference-overload:gen/sql_tables/blob_offsets_param_table/OffsetsHolder.h
 bugprone-forwarding-reference-overload:gen/sql_tables/blob_offsets_param_table/ParameterizedBlob.h

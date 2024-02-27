@@ -1,3 +1,7 @@
+bugprone-exception-escape:gen/sql_databases/db_with_relocation/AmericaDb.cpp
+bugprone-exception-escape:gen/sql_databases/db_with_relocation/EuropeDb.cpp
+bugprone-exception-escape:gen/sql_databases/simple_db/WorldDb.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_databases/db_with_relocation/CountryMapTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_databases/simple_db/GeoMapTable.cpp
 

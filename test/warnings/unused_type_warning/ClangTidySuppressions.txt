@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/unused_type_warning/BoolStructureDatabase.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/BoolChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/BoolStructureTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/BoolStructure.cpp

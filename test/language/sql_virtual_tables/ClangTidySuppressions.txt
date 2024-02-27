@@ -1,3 +1,6 @@
+bugprone-exception-escape:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.cpp
+bugprone-exception-escape:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp
 

@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+
 bugprone-reserved-identifier:gen/_imported_tile_/Tile.h
 bugprone-reserved-identifier:gen/___/Empty.h
 

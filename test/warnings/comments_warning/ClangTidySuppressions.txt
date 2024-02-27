@@ -1,3 +1,5 @@
+bugprone-exception-escape
+
 bugprone-forwarding-reference-overload:gen_comments/comments_warning/unused_field_comments/ByOptionalAndType.h
 bugprone-forwarding-reference-overload:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/StructureTypeSTR.h
 bugprone-forwarding-reference-overload:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedStructureTypeSTR.h

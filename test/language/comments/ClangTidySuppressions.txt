@@ -1,3 +1,6 @@
+bugprone-exception-escape:gen/comments/markdown_doc/sql_database_comments/Db.cpp
+bugprone-exception-escape:gen/comments/classic_doc/sql_database_comments/Db.cpp
+
 bugprone-forwarding-reference-overload:gen/comments/classic_doc/struct_template_comments/Field_Compound.h
 bugprone-forwarding-reference-overload:gen/comments/classic_doc/struct_template_comments/Field_string.h
 bugprone-forwarding-reference-overload:gen/comments/markdown_doc/struct_template_comments/Field_Compound.h

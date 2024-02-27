@@ -1,5 +1,6 @@
 bugprone-exception-escape:gen/with_type_info_code/RecursiveChoice.cpp
 bugprone-exception-escape:gen/with_type_info_code/RecursiveChoice.h
+bugprone-exception-escape:gen/with_type_info_code/SqlDatabase.cpp
 
 bugprone-forwarding-reference-overload:gen/with_type_info_code/ParameterizedStruct.h
 bugprone-forwarding-reference-overload:gen/with_type_info_code/TemplatedParameterizedStruct_TS32.h

@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen_sql_allocation/sql_allocation/SqlAllocationDb.cpp
+
 bugprone-forwarding-reference-overload:gen_pubsub_allocation/pubsub_allocation/Greeting.h
 bugprone-forwarding-reference-overload:gen_pubsub_allocation/pubsub_allocation/Name.h
 bugprone-forwarding-reference-overload:gen_service_allocation/service_allocation/Greeting.h

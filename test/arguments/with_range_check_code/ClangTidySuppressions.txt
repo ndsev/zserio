@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/without_writer_code/WorldDb.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/with_range_check_code/choice_bit4_range_check/ChoiceBit4RangeCheckCompound.cpp
 
 readability-braces-around-statements

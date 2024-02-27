@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/sql_without_rowid_tables_warning/integer_primary_key_warning/WithoutRowIdDatabase.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables_warning/integer_primary_key_warning/WithoutRowIdTable.cpp
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_without_rowid_tables_warning/integer_primary_key_warning/WithoutRowIdTable.cpp

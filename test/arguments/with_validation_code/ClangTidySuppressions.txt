@@ -1,3 +1,5 @@
+bugprone-exception-escape
+
 bugprone-forwarding-reference-overload:gen/with_validation_code/depend_table_validation/Blob.h
 
 bugprone-signed-char-misuse:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp
@@ -55,6 +57,8 @@ google-build-using-namespace:cpp/VirtualTableValidationTest.cpp
 
 google-explicit-constructor:gen/with_validation_code/simple_table_validation/TestBitmask.h
 
+modernize-make-unique
+
 performance-move-const-arg:gen/with_validation_code/blob_table_validation/BlobTable.cpp
 performance-move-const-arg:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp
 performance-move-const-arg:gen/with_validation_code/constraint_table_validation/ConstraintTable.cpp
@@ -69,5 +73,3 @@ readability-make-member-function-const:gen/with_validation_code/constraint_table
 readability-make-member-function-const:gen/with_validation_code/control_validation/Blob.cpp
 readability-make-member-function-const:gen/with_validation_code/depend_table_validation/Blob.cpp
 readability-make-member-function-const:gen/with_validation_code/simple_table_validation/RootStruct.cpp
-
-modernize-make-unique

@@ -106,8 +106,6 @@ jobs:
         choco install mingw --version ${{matrix.mingw-version}}
         ls -l /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
         choco install llvm --version=14.0.0 --allow-downgrade
-        echo "ECHO choco/lib/llvm/tools"
-        ls -l /c/ProgramData/chocolatey/lib/llvm/tools
         echo "ECHO Program Files/LLVM/bin"
         ls -l "/c/Program Files/LLVM/bin"
       shell: bash

@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/sql_types/SqlTypesDb.cpp
+
 bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp
 
 cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp

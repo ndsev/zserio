@@ -1,3 +1,5 @@
+bugprone-exception-escape:gen/explicit_parameters/ExplicitParametersDb.cpp
+
 bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_bitmask_param/TestBlob.h
 bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_blob_param/TestBlob.h
 bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_enum_param/TestBlob.h

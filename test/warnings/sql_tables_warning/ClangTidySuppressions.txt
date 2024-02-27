@@ -1,3 +1,5 @@
+bugprone-exception-escape
+
 cppcoreguidelines-pro-type-member-init:gen/sql_tables_warning/bad_ordered_primary_key_warning/BadOrderedPrimaryKeyTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables_warning/duplicated_primary_key_warning/DuplicatedPrimaryKeyTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables_warning/multiple_primary_keys_warning/MultiplePrimaryKeysTable.cpp

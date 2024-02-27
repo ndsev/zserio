@@ -1,5 +1,6 @@
 bugprone-exception-escape:gen/without_writer_code/ItemChoice.cpp
 bugprone-exception-escape:gen/without_writer_code/ItemChoice.h
+bugprone-exception-escape:gen/without_writer_code/WorldDb.cpp
 
 cert-err58-cpp:cpp/WithoutWriterCodeTest.cpp
 
