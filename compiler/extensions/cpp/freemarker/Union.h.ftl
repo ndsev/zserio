@@ -382,6 +382,10 @@ public:
     <@arrays_typedefs fieldList/>
     struct Storage
     {
+<#if isPackable && usedInPackedArray>
+        using ZserioPackingContext = ${fullName}::ZserioPackingContext;
+
+</#if>
         Storage() noexcept :
                 Storage(allocator_type())
         {}
@@ -453,6 +457,11 @@ public:
     </#if>
                 m_storage(storage)
         {
+            m_storage.choiceTag = return static_cast<${name}::ChoiceTag>(
+                    static_cast<int32_t>(context.getChoiceTag().read<::zserio::VarSizeArrayTraits>(reader)));
+
+            switch (choiceTag())
+            {
 <#list fieldList as field>
             case <@choice_tag_name field/>:
                 <@field_view_read field, 4, true/>

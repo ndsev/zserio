@@ -454,6 +454,10 @@ public:
     <@arrays_typedefs fieldList/>
     struct Storage
     {
+<#if isPackable && usedInPackedArray>
+        using ZserioPackingContext = ${fullName}::ZserioPackingContext;
+
+</#if>
         Storage() noexcept :
                 Storage(allocator_type())
         {}

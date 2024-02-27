@@ -457,6 +457,10 @@ public:
     <@arrays_typedefs fieldList/>
     struct Storage
     {
+<#if isPackable && usedInPackedArray>
+        using ZserioPackingContext = ${fullName}::ZserioPackingContext;
+
+</#if>
         Storage() noexcept :
                 Storage(allocator_type())
         {}
@@ -518,7 +522,7 @@ public:
     </#if>
                 m_storage(storage)
         {
-            <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3/>
+            <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3, true/>
         }
 </#if>
 

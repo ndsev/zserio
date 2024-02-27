@@ -110,6 +110,12 @@ ${I}}
             <@compound_field_compound_ctor_params field.compound, false/>
         </#if>
     </#local>
+    <#if field.alignmentValue??>
+${I}reader.alignTo(${field.alignmentValue});
+    </#if>
+    <#if field.offset?? && !field.offset.containsIndex>
+${I}reader.alignTo(UINT32_C(8));
+    </#if>
     <#if packed && uses_field_packing_context(field)>
         <#if field.compound??>
             <#if field.optional?? || field.usesAnyHolder>
@@ -126,14 +132,8 @@ ${I}        m_storage.${fieldName}${getFromHolder}, allocator);
 ${I}m_storage.${fieldName} = <@field_view_type field/>(context.${field.getterName}(), reader);
         <#elseif field.typeInfo.isEnum>
 ${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), reader);
-        <#elseif !field.array??>
+        <#else>
 ${I}m_storage.${fieldName} = context.${field.getterName}().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>reader);
-        <#else><#-- array -->
-            <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
-            </#if>
-${I}<@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage.${fieldName}${getFromHolder}).readPacked(reader<#rt>
-        <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
         </#if>
     <#elseif field.typeInfo.isCompound>
         <#if field.optional?? || field.usesAnyHolder>
@@ -156,12 +156,14 @@ ${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reade
     <#elseif !field.array??>
         <#-- bitmask -->
 ${I}m_storage.${fieldName} = <@field_cpp_type_name field/>(reader);
-    <#elseif field.array??>
+    </#if>
+    <#if field.array??>
         <#if field.optional?? || field.usesAnyHolder>
 ${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
         </#if>
-${I}<@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage.${fieldName}${getFromHolder}).read(reader<#rt>
-        <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
+${I}<@array_typedef_name field/>(<#lt><#if array_needs_owner(field)>*this, </#if><#rt>
+        <#lt>m_storage.${fieldName}${getFromHolder}).read<@array_field_packed_suffix field, packed/>(<#rt>
+        <#lt>reader<#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
     </#if>
 </#macro>
 
