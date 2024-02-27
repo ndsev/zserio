@@ -16,3 +16,6 @@ readability-braces-around-statements
 
 readability-make-member-function-const:gen/sql_databases/db_with_relocation/Tile.cpp
 readability-make-member-function-const:gen/sql_databases/simple_db/Tile.cpp
+
+modernize-make-unique:gen/sql_databases/db_with_relocation/AmericaDb.cpp
+modernize-make-unique:cpp/DbWithRelocationTest.cpp

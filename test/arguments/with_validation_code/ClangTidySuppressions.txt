@@ -69,3 +69,5 @@ readability-make-member-function-const:gen/with_validation_code/constraint_table
 readability-make-member-function-const:gen/with_validation_code/control_validation/Blob.cpp
 readability-make-member-function-const:gen/with_validation_code/depend_table_validation/Blob.cpp
 readability-make-member-function-const:gen/with_validation_code/simple_table_validation/RootStruct.cpp
+
+modernize-make-unique
