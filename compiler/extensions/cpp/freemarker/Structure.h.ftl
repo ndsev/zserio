@@ -39,6 +39,8 @@
 </#if>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
+<@system_includes cppSystemIncludes/>
+<@user_includes cppUserIncludes/>
 <@namespace_begin package.path/>
 
 <#assign numExtendedFields=num_extended_fields(fieldList)>
@@ -434,12 +436,19 @@ public:
     class Storage;
     class View;
 
+<#if isPackable && usedInPackedArray>
+    <@compound_declare_packing_context fieldList/>
+
+</#if>
 <#list fieldList as field>
     <#if needs_array_expressions(field)>
         <@declare_array_expressions name, field/>
     </#if>
     <#if needs_field_element_factory(field)>
         <@declare_element_factory name, field/>
+    </#if>
+    <#if needs_field_element_bit_size(field)>
+        <@declare_element_bit_size name, field/>
     </#if>
 </#list>
     <@arrays_typedefs fieldList/>
@@ -468,11 +477,12 @@ public:
     </#list>
                 const allocator_type& allocator = allocator_type()) :
         <#list fieldList as field>
-                ${field.name}(std::forward<ZSERIO_TYPE_${field.name}>(<@field_argument_name field/>)<#if (field.optional?? && field.holderNeedsAllocator) || field.array??>, allocator</#if>)<#if field?has_next>,<#else></#if>
+                ${field.name}(std::forward<ZSERIO_TYPE_${field.name}>(<@field_argument_name field/>)<#if (field.optional?? && field.holderNeedsAllocator) || (!field.optional?? && field.array??)>, allocator</#if>)<#if field?has_next>,<#else></#if>
         </#list>
         {}
 </#if>
 
+        <#-- TODO[Mi-L@]: What about allocator extended copy/move constructors? -->
 <#list fieldList as field>
         <@field_storage_type field/> ${field.name};
 </#list>
@@ -514,6 +524,29 @@ public:
     </#if>
 </#list>
         }
+<#if isPackable && usedInPackedArray>
+
+        View(ZserioPackingContext& context, ::zserio::BitStreamReader& reader, <#rt>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage, const allocator_type& allocator = allocator_type()) :
+    <#else>
+                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+    </#if>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+    </#if>
+                m_storage(storage)
+        {
+    <#list fieldList as field>
+            // ${field.name}
+            <@field_view_read field, 3, true/>
+        <#if field?has_next>
+
+        </#if>
+    </#list>
+        }
+</#if>
         <@compound_parameter_view_accessors compoundParametersData/>
 <#list fieldList as field>
     <#if field.optional??>
@@ -547,13 +580,15 @@ public:
         Storage& m_storage;
     };
 };
-
 <#list fieldList as field>
     <#if needs_array_expressions(field)>
 <@define_array_expressions_methods name, field/>
     </#if>
     <#if needs_field_element_factory(field)>
 <@define_element_factory_methods name, field/>
+    </#if>
+    <#if needs_field_element_bit_size(field)>
+<@define_element_bit_size_methods name, field/>
     </#if>
 </#list>
 <@namespace_end package.path/>

@@ -73,7 +73,7 @@ ${I}return m_storage.${fieldName}${getFromHolder};
     </#if>
 </#macro>
 
-<#macro field_view_read field indent>
+<#macro field_view_read field indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
@@ -82,14 +82,14 @@ ${I}if (${field.optional.clause})
 ${I}if (reader.readBool())
         </#if>
 ${I}{
-        <@field_view_read_inner field, indent+1/>
+        <@field_view_read_inner field, indent+1, packed/>
 ${I}}
     <#else>
-    <@field_view_read_inner field, indent/>
+    <@field_view_read_inner field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro field_view_read_inner field indent>
+<#macro field_view_read_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#local fieldName>
         <#if field.usesAnyHolder>
@@ -105,16 +105,46 @@ ${I}}
             .value()<#t>
         </#if>
     </#local>
-    <#if field.typeInfo.isCompound>
+    <#local compoundParamsArguments>
+        <#if field.compound??>
+            <@compound_field_compound_ctor_params field.compound, false/>
+        </#if>
+    </#local>
+    <#if packed && uses_field_packing_context(field)>
+        <#if field.compound??>
+            <#if field.optional?? || field.usesAnyHolder>
+${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+            </#if>
+${I}<@field_view_type field/>(context.${field.getterName}(), reader, <#rt>
+            <#if compoundParamsArguments?has_content>
+            <#lt>${compoundParamsArguments},
+${I}        m_storage.${fieldName}${getFromHolder}, allocator);
+            <#else>
+            <#lt>m_storage.${fieldName}${getFromHolder}, allocator);
+            </#if>
+        <#elseif field.typeInfo.isBitmask>
+${I}m_storage.${fieldName} = <@field_view_type field/>(context.${field.getterName}(), reader);
+        <#elseif field.typeInfo.isEnum>
+${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), reader);
+        <#elseif !field.array??>
+${I}m_storage.${fieldName} = context.${field.getterName}().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>reader);
+        <#else><#-- array -->
+            <#if field.optional?? || field.usesAnyHolder>
+${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+            </#if>
+${I}<@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage.${fieldName}${getFromHolder}).readPacked(reader<#rt>
+        <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
+        </#if>
+    <#elseif field.typeInfo.isCompound>
         <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(<#if field.needsAllocator>allocator</#if>);
+${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
         </#if>
 ${I}<@field_view_type field/>(reader, <#rt>
-        <#if field.compound.instantiatedParameters?has_content>
-            <#lt><@compound_field_compound_ctor_params field.compound, false/>,
-${I}        m_storage.${fieldName}${getFromHolder});
+        <#if compoundParamsArguments?has_content>
+            <#lt>${compoundParamsArguments},
+${I}        m_storage.${fieldName}${getFromHolder}, allocator);
         <#else>
-            <#lt>m_storage.${fieldName}${getFromHolder});
+            <#lt>m_storage.${fieldName}${getFromHolder}, allocator);
         </#if>
     <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
@@ -127,7 +157,10 @@ ${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reade
         <#-- bitmask -->
 ${I}m_storage.${fieldName} = <@field_cpp_type_name field/>(reader);
     <#elseif field.array??>
-${I}<@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage.${fieldName}).read(reader<#rt>
+        <#if field.optional?? || field.usesAnyHolder>
+${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+        </#if>
+${I}<@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage.${fieldName}${getFromHolder}).read(reader<#rt>
         <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
     </#if>
 </#macro>
@@ -584,6 +617,7 @@ ${I}}
 
 <#macro define_array_expressions_methods compoundName field>
     <#if needs_field_offset_checker(field)>
+
 void ${compoundName}::<@array_expressions_name field.name/>::checkOffset(const OwnerType& owner,
         size_t index, size_t byteOffset)
 {
@@ -593,15 +627,14 @@ void ${compoundName}::<@array_expressions_name field.name/>::checkOffset(const O
                 byteOffset << " != " << (${field.offset.indirectGetter}) << "!";
     }
 }
-
         <#if withWriterCode>
+
 void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(OwnerType& owner,
         size_t index, size_t byteOffset)
 {
     const ${field.offset.typeInfo.typeFullName} value = static_cast<${field.offset.typeInfo.typeFullName}>(byteOffset);
     ${field.offset.indirectSetter};
 }
-
         </#if>
     </#if>
 </#macro>
@@ -623,6 +656,9 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(Ow
         static void create(<#if !withWriterCode>const </#if>OwnerType& owner,
                 <@field_storage_type_inner field/>& array,
                 ::zserio::BitStreamReader& in, size_t index);
+
+        static ${field.array.elementTypeInfo.typeFullName}::View at(const OwnerType& owner,
+                ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index);
     <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         static void create(<#if !withWriterCode>const </#if>OwnerType& owner,
@@ -640,6 +676,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(Ow
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
+
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>OwnerType&<#t>
         <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
@@ -647,12 +684,19 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         ::zserio::BitStreamReader& in, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    array.emplace_back(allocator_type(array.get_allocator()));
     ${field.array.elementTypeInfo.typeFullName}::View(in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
-            <#lt>, array.back(), array.get_allocator());
+            <#lt>, array.emplace_back(allocator_type(array.get_allocator())), array.get_allocator());
+}
+
+${field.array.elementTypeInfo.typeFullName}::View ${compoundName}::<@element_factory_name field.name/>::at(
+        const OwnerType& owner, ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index)
+{
+    return ${field.array.elementTypeInfo.typeFullName}::View(
+            <#if extraConstructorArguments?has_content>${extraConstructorArguments}, </#if>
+            element);
 }
 
     <#if field.isPackable && field.array.elementUsedInPackedArray>
@@ -663,14 +707,12 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    array.emplace_back(allocator_type(array.get_allocator()));
     ${field.array.elementTypeInfo.typeFullName}::View(context, in<#rt>
         <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
         </#if>
-            <#lt>, array.back(), array.get_allocator());
+            <#lt>, array.emplace_back(allocator_type(array.get_allocator())), array.get_allocator());
 }
-
     </#if>
 </#macro>
 
@@ -692,7 +734,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         using OwnerType = ${compoundName}::View;
 
     </#if>
-        static uint8_t get(<#if needsOwner>const ${compoundName}& owner</#if>);
+        static uint8_t get(<#if needsOwner>const OwnerType& owner</#if>);
     };
 
 </#macro>
@@ -706,8 +748,9 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
 </#function>
 
 <#macro define_element_bit_size_methods compoundName field>
+
 uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
-        <#lt><#if needs_element_bit_size_owner(field)>const ${compoundName}& owner</#if>)
+        <#lt><#if needs_element_bit_size_owner(field)>const OwnerType& owner</#if>)
 {
     <#if field.array??>
     return static_cast<uint8_t>(${field.array.elementBitSize.ownerIndirectValue});
@@ -715,7 +758,6 @@ uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
     return static_cast<uint8_t>(${field.bitSize.ownerIndirectValue});
     </#if>
 }
-
 </#macro>
 
 <#macro inner_classes_declaration compoundName fieldList>

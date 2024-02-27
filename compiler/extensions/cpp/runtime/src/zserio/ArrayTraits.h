@@ -1796,6 +1796,11 @@ public:
         element.write(out);
     }
 
+    static ViewType at(const OwnerType& owner, ElementType& element, size_t index)
+    {
+        return ELEMENT_FACTORY::at(owner, element, index);
+    }
+
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
 };

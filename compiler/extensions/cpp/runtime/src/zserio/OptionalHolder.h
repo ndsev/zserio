@@ -243,19 +243,6 @@ public:
             m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(value)))
     {}
 
-    // called from allocatorPropagatingCopy
-    /**
-     * Constructor from a given value passed by rvalue reference which prevents initialization.
-     *
-     * \param value Value to store in the holder.
-     * \param allocator Allocator to be used to perform dynamic memory allocations.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    heap_optional_holder(NoInitT, T&& value, const allocator_type& allocator = allocator_type()) :
-            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, NoInit, std::move(value)))
-    {}
-
     /**
      * Constructor that initializes the value inplace by forwarding the arguments to the object's constructor.
      *
@@ -283,18 +270,6 @@ public:
     {}
 
     /**
-     * Copy constructor which prevents initialization.
-     *
-     * \param other Other holder to copy.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    heap_optional_holder(NoInitT, const heap_optional_holder& other) :
-            m_storage(copy_initialize(NoInit, other,
-                    allocator_traits::select_on_container_copy_construction(other.get_allocator())))
-    {}
-
-    /**
      * Allocator-extended copy constructor.
      *
      * \param other Other holder to copy.
@@ -310,17 +285,6 @@ public:
      * \param other Other holder to move.
      */
     heap_optional_holder(heap_optional_holder&& other) noexcept = default;
-
-    /**
-     * Move constructor which prevents initialization.
-     *
-     * \param other Other holder to move.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    heap_optional_holder(NoInitT, heap_optional_holder&& other) :
-            m_storage(move_initialize(NoInit, std::move(other), other.get_allocator()))
-    {}
 
     /**
      * Allocator-extended move constructor.
@@ -352,27 +316,6 @@ public:
     }
 
     /**
-     * Assignment operator which prevents initialization.
-     *
-     * \param other Other holder to copy-assign.
-     *
-     * \return Reference to the current holder.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    heap_optional_holder& assign(NoInitT, const heap_optional_holder& other)
-    {
-        if (this == &other)
-            return *this;
-
-        m_storage = copy_initialize(NoInit, other,
-                select_allocator(other.get_allocator(),
-                        typename allocator_traits::propagate_on_container_copy_assignment()));
-
-        return *this;
-    }
-
-    /**
      * Move assignment operator.
      *
      * \param other Other holder to move-assign.
@@ -385,27 +328,6 @@ public:
             return *this;
 
         m_storage = move_initialize(std::move(other),
-                select_allocator(other.get_allocator(),
-                        typename allocator_traits::propagate_on_container_move_assignment()));
-
-        return *this;
-    }
-
-    /**
-     * Move assignment operator which prevents initialization.
-     *
-     * \param other Other holder to move-assign.
-     *
-     * \return Reference to the current holder.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    heap_optional_holder& assign(NoInitT, heap_optional_holder&& other)
-    {
-        if (this == &other)
-            return *this;
-
-        m_storage = move_initialize(NoInit, std::move(other),
                 select_allocator(other.get_allocator(),
                         typename allocator_traits::propagate_on_container_move_assignment()));
 
@@ -510,15 +432,6 @@ private:
             return storage_type(nullptr, allocator);
     }
 
-    static storage_type copy_initialize(
-            NoInitT, const heap_optional_holder& other, const allocator_type& allocator)
-    {
-        if (other.hasValue())
-            return zserio::allocate_unique<T, allocator_type>(allocator, NoInit, *other);
-        else
-            return storage_type(nullptr, allocator);
-    }
-
     static storage_type move_initialize(heap_optional_holder&& other, const allocator_type& allocator)
     {
         if (other.hasValue())
@@ -527,21 +440,6 @@ private:
                 return std::move(other.m_storage);
 
             return zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
-        }
-        else
-        {
-            return storage_type(nullptr, allocator);
-        }
-    }
-
-    static storage_type move_initialize(NoInitT, heap_optional_holder&& other, const allocator_type& allocator)
-    {
-        if (other.hasValue())
-        {
-            if (allocator == other.get_allocator())
-                return std::move(other.m_storage);
-
-            return zserio::allocate_unique<T, allocator_type>(allocator, NoInit, std::move(*other));
         }
         else
         {
@@ -588,21 +486,6 @@ public:
     in_place_storage& operator=(in_place_storage&& other)
     {
         new (&m_inPlace) T(std::move(*other.getObject()));
-        other.getObject()->~T(); // ensure that destructor of object in original storage is called
-
-        return *this;
-    }
-
-    /**
-     * Move assignment operator which prevents initialization.
-     *
-     * \param other Other storage to move.
-     *
-     * \return Reference to the current storage.
-     */
-    in_place_storage& assign(NoInitT, in_place_storage&& other)
-    {
-        new (&m_inPlace) T(NoInit, std::move(*other.getObject()));
         other.getObject()->~T(); // ensure that destructor of object in original storage is called
 
         return *this;
@@ -691,20 +574,6 @@ public:
         m_hasValue = true;
     }
 
-    // called from allocatorPropagatingCopy
-    /**
-     * Constructor from a given value passed by rvalue reference which prevents initialization.
-     *
-     * \param value Value to store in the holder.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder(NoInitT, T&& value)
-    {
-        new (m_storage.getStorage()) T(NoInit, std::move(value));
-        m_hasValue = true;
-    }
-
     /**
      * Copy constructor.
      *
@@ -720,22 +589,6 @@ public:
     }
 
     /**
-     * Copy constructor which prevents initialization.
-     *
-     * \param other Other holder to copy.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder(NoInitT, const inplace_optional_holder& other)
-    {
-        if (other.hasValue())
-        {
-            new (m_storage.getStorage()) T(NoInit, *other.m_storage.getObject());
-            m_hasValue = true;
-        }
-    }
-
-    /**
      * Move constructor.
      *
      * \param other Other holder to move.
@@ -746,24 +599,6 @@ public:
         if (other.hasValue())
         {
             m_storage = std::move(other.m_storage);
-            other.m_hasValue = false;
-            m_hasValue = true;
-        }
-    }
-
-    /**
-     * Move constructor which prevents initialization.
-     *
-     * \param other Other holder to move.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder(NoInitT, inplace_optional_holder&& other) noexcept(
-            std::is_nothrow_move_constructible<in_place_storage<T>>::value)
-    {
-        if (other.hasValue())
-        {
-            m_storage.assign(NoInit, std::move(other.m_storage));
             other.m_hasValue = false;
             m_hasValue = true;
         }
@@ -812,30 +647,6 @@ public:
     }
 
     /**
-     * Assignment operator which prevents initialization.
-     *
-     * \param other Other holder to copy-assign.
-     *
-     * \return Reference to the current holder.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder& assign(NoInitT, const inplace_optional_holder& other)
-    {
-        if (this != &other)
-        {
-            reset();
-            if (other.hasValue())
-            {
-                new (m_storage.getStorage()) T(NoInit, *other.m_storage.getObject());
-                m_hasValue = true;
-            }
-        }
-
-        return *this;
-    }
-
-    /**
      * Move assignment operator.
      *
      * \param other Other holder to move-assign.
@@ -850,31 +661,6 @@ public:
             if (other.hasValue())
             {
                 m_storage = std::move(other.m_storage);
-                other.m_hasValue = false;
-                m_hasValue = true;
-            }
-        }
-
-        return *this;
-    }
-
-    /**
-     * Move assignment operator which prevents initialization.
-     *
-     * \param other Other holder to move-assign.
-     *
-     * \return Reference to the current holder.
-     */
-    template <typename U = T,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder& assign(NoInitT, inplace_optional_holder&& other)
-    {
-        if (this != &other)
-        {
-            reset();
-            if (other.hasValue())
-            {
-                m_storage.assign(NoInit, std::move(other.m_storage));
                 other.m_hasValue = false;
                 m_hasValue = true;
             }

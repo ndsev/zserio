@@ -31,7 +31,9 @@
 <@type_includes types.anyHolder/>
 <@type_includes types.allocator/>
 <@system_includes headerSystemIncludes/>
+<@system_includes cppSystemIncludes/>
 <@user_includes headerUserIncludes/>
+<@user_includes cppUserIncludes/>
 <@namespace_begin package.path/>
 
 <#if withCodeComments && docComments??>
@@ -408,10 +410,9 @@ ${I}}
 <#macro choice_field_view_read member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-    <@field_view_read member.compoundField, indent/>
-    <#else>
-${I}break;
+    <@field_view_read member.compoundField, indent, packed/>
     </#if>
+${I}break;
 </#macro>
 <#macro choice_tag_no_match name indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -438,12 +439,19 @@ public:
         UNDEFINED_CHOICE = -1
     };
 
+<#if isPackable && usedInPackedArray>
+    <@compound_declare_packing_context fieldList/>
+
+</#if>
 <#list fieldList as field>
     <#if needs_array_expressions(field)>
         <@declare_array_expressions name, field/>
     </#if>
     <#if needs_field_element_factory(field)>
         <@declare_element_factory name, field/>
+    </#if>
+    <#if needs_field_element_bit_size(field)>
+        <@declare_element_bit_size name, field/>
     </#if>
 </#list>
     <@arrays_typedefs fieldList/>
@@ -496,6 +504,23 @@ public:
         {
             <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3/>
         }
+<#if isPackable && usedInPackedArray>
+
+        View(ZserioPackingContext& context, ::zserio::BitStreamReader& reader, <#rt>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                Storage& storage, const allocator_type& allocator = allocator_type()) :
+    <#else>
+                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+    </#if>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+    </#if>
+                m_storage(storage)
+        {
+            <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3/>
+        }
+</#if>
 
         ChoiceTag choiceTag() const
         {
@@ -515,6 +540,17 @@ public:
         Storage& m_storage;
     };
 };
+<#list fieldList as field>
+    <#if needs_array_expressions(field)>
+<@define_array_expressions_methods name, field/>
+    </#if>
+    <#if needs_field_element_factory(field)>
+<@define_element_factory_methods name, field/>
+    </#if>
+    <#if needs_field_element_bit_size(field)>
+<@define_element_bit_size_methods name, field/>
+    </#if>
+</#list>
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>
