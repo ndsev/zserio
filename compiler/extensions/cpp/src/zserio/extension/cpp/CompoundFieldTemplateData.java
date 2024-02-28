@@ -777,54 +777,44 @@ public final class CompoundFieldTemplateData
         for (Field field : compoundType.getFields())
         {
             TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            if (fieldTypeInstantiation instanceof ArrayInstantiation)
+
+            ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            if (fieldBaseType instanceof EnumType)
             {
-                numBytes.add(24); // vector
+                fieldTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+                fieldBaseType = fieldTypeInstantiation.getBaseType();
+            }
+            else if (fieldBaseType instanceof BitmaskType)
+            {
+                fieldTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+                fieldBaseType = fieldTypeInstantiation.getBaseType();
+            }
+
+            if (fieldBaseType instanceof CompoundType)
+            {
+                if (fieldBaseType == compoundType)
+                {
+                    numBytes.addReason("recursion");
+                    return true;
+                }
+                if (isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes))
+                    return true;
+            }
+            else if (fieldBaseType instanceof IntegerType)
+            {
+                final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+                final NativeIntegralType nativeIntegralType =
+                        cppNativeMapper.getCppIntegralType(fieldTypeInstantiation);
+                numBytes.add(nativeIntegralType.getNumBits() / Byte.SIZE);
+            }
+            else if (fieldBaseType instanceof BooleanType)
+            {
+                numBytes.add(1);
             }
             else
             {
-                ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
-                if (fieldBaseType instanceof EnumType)
-                {
-                    fieldTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
-                    fieldBaseType = fieldTypeInstantiation.getBaseType();
-                }
-                else if (fieldBaseType instanceof BitmaskType)
-                {
-                    fieldTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
-                    fieldBaseType = fieldTypeInstantiation.getBaseType();
-                }
-
-                if (fieldBaseType instanceof CompoundType)
-                {
-                    if (fieldBaseType == compoundType)
-                    {
-                        numBytes.addReason("recursion");
-                        return true;
-                    }
-                    if (isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes))
-                        return true;
-                }
-                else if (fieldBaseType instanceof IntegerType)
-                {
-                    final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-                    final NativeIntegralType nativeIntegralType =
-                            cppNativeMapper.getCppIntegralType(fieldTypeInstantiation);
-                    numBytes.add(nativeIntegralType.getNumBits() / Byte.SIZE);
-                }
-                else if (fieldBaseType instanceof BooleanType)
-                {
-                    numBytes.add(1);
-                }
-                else if (fieldBaseType instanceof StringType)
-                {
-                    numBytes.add(32);
-                }
-                else
-                {
-                    numBytes.addReason("unsupported type '" + fieldBaseType.getName() + "'");
-                    return true; // type which doesn't have fixed size of the mapped native type
-                }
+                numBytes.addReason("unsupported type '" + fieldBaseType.getName() + "'");
+                return true; // type which doesn't have fixed size of the mapped native type
             }
 
             if (numBytes.get() > context.getCompoundParameterTreshold())
