@@ -428,7 +428,7 @@ ${I}return UNDEFINED_CHOICE;
 </#macro>
 public:
     using allocator_type = ${types.allocator.default};
-    class Storage;
+    struct Storage;
     class View;
 
     enum ChoiceTag : int32_t

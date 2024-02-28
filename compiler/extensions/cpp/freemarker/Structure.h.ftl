@@ -433,7 +433,7 @@ private:
 </#function>
 public:
     using allocator_type = ${types.allocator.default};
-    class Storage;
+    struct Storage;
     class View;
 
 <#if isPackable && usedInPackedArray>
@@ -463,7 +463,7 @@ public:
         {}
 
 <#assign storageDefaultConstructorArguments=compound_field_default_constructor_arguments(fieldList)/>
-        Storage(const allocator_type&<#if storageDefaultConstructorArguments?has_content> allocator) :<#else>)</#if>
+        explicit Storage(const allocator_type&<#if storageDefaultConstructorArguments?has_content> allocator) :<#else>)</#if>
 <#list storageDefaultConstructorArguments as argument>
                 ${argument}<#if argument?has_next>,</#if>
 </#list>

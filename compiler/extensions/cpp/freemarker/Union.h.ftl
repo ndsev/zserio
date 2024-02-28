@@ -353,7 +353,7 @@ private:
 -->
 public:
     using allocator_type = ${types.allocator.default};
-    class Storage;
+    struct Storage;
     class View;
 
     enum ChoiceTag : int32_t
@@ -390,7 +390,7 @@ public:
                 Storage(allocator_type())
         {}
 
-        Storage(const allocator_type& allocator) noexcept :
+        explicit Storage(const allocator_type& allocator) noexcept :
                 any(allocator)
         {}
 
