@@ -43,7 +43,7 @@ ${I}<@parameter_member_name compoundParameter.name/> = <@parameter_argument_name
             <#-- TODO[Mi-L@]: const? -->
             const <@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/>&<#t>
         <#else>
-            ${compoundParameter.typeInfo.typeFullName}<#t>
+            const ${compoundParameter.typeInfo.typeFullName}&<#t>
         </#if>
     </#local>
 ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
@@ -55,7 +55,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_declaration compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        
+
         <#if compoundParameter.usesSharedPointer>
             <#if withWriterCode>
     <@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/> ${compoundParameter.getterName}();
