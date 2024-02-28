@@ -503,6 +503,18 @@ public:
         return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>())->get();
     }
 
+    template <typename T>
+    T& uncheckedGet()
+    {
+        return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>())->get();
+    }
+
+    template <typename T>
+    const T& uncheckedGet() const
+    {
+        return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>())->get();
+    }
+
     /**
      * Check whether the holder holds the given type.
      *

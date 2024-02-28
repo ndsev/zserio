@@ -148,6 +148,16 @@ public:
         return get();
     }
 
+    T& uncheckedValue()
+    {
+        return getDerived()->uncheckedGet();
+    }
+
+    const T& uncheckedValue() const
+    {
+        return getDerived()->uncheckedGet();
+    }
+
 protected:
     void checkHasValue() const
     {
@@ -403,6 +413,11 @@ public:
     T& operator*()
     {
         this->checkHasValue();
+        return *m_storage.get();
+    }
+
+    T& uncheckedGet()
+    {
         return *m_storage.get();
     }
 
@@ -742,6 +757,11 @@ public:
     T& operator*()
     {
         this->checkHasValue();
+        return *m_storage.getObject();
+    }
+
+    T& uncheckedGet()
+    {
         return *m_storage.getObject();
     }
 

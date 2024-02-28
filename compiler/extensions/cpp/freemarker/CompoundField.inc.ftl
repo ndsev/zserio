@@ -100,9 +100,9 @@ ${I}}
     </#local>
     <#local getFromHolder>
         <#if field.usesAnyHolder>
-            .get<<@field_storage_type_inner field/>>()<#t>
+            .uncheckedGet<<@field_storage_type_inner field/>>()<#t>
         <#elseif field.optional??>
-            .value()<#t>
+            .uncheckedValue()<#t>
         </#if>
     </#local>
     <#local compoundParamsArguments>
