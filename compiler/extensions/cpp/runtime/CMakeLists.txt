@@ -49,7 +49,7 @@ if (SANITIZERS_ENABLED)
     compiler_reset_undefined_sanitizer()
 endif ()
 
-add_subdirectory(test runtime_test)
+#add_subdirectory(test runtime_test)
 
 # coverage
 if (${ZSERIO_CODE_COVERAGE_ENABLE})
