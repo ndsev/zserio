@@ -27,17 +27,24 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
             final CompoundFieldTemplateData data =
                     new CompoundFieldTemplateData(context, compoundType, fieldType, this);
 
+            if (data.getUsesSharedPointer())
+            {
+                System.out.println("INFO: field '" + ZserioTypeUtil.getFullName(compoundType)
+                        + "." + fieldType.getName() + "' is used as shared pointer.");
+            }
+
             fieldList.add(data);
         }
 
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
         for (CompoundParameterTemplateData.CompoundParameter parameter : compoundParametersData.getList())
         {
-            System.out.println("INFO: param '" + ZserioTypeUtil.getFullName(compoundType)
-                    + "." + parameter.getName() + "' is used "
-                    + (parameter.getUsesSharedPointer() ? "as shared pointer" : "by value")
-                    + (parameter.getTypeInfo().getIsCompound() ? " (compound)" : " (non-compound)")
-                    + " reason: " + parameter.getNumBytes().getReason());
+            if (parameter.getUsesSharedPointer())
+            {
+                    System.out.println("INFO: param '" + ZserioTypeUtil.getFullName(compoundType)
+                            + "." + parameter.getName() + "' is used as shared pointer, "
+                            + "reason: '" + parameter.getNumBytes().getReason() + "'.");
+            }
         }
 
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);

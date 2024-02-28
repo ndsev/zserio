@@ -86,9 +86,10 @@ public class ParameterFieldsCollector extends ZserioAstWalker
                         if (referencedFieldType instanceof CompoundType ||
                                 referencedFieldType instanceof ArrayType)
                         {
-                            System.out.println("INFO: Found field '" + referencedField.getName() +
-                                    "' in compound '" +  ZserioTypeUtil.getFullName(compoundType) +
-                                    "' which is used as compound parameter!");
+                            System.out.println("INFO: Found field '" + referencedField.getName() + "'  of type '" +
+                                    ZserioTypeUtil.getFullName(referencedFieldType) +
+                                    "' which is used as a compound parameter" +
+                                    "' in compound '" +  ZserioTypeUtil.getFullName(compoundType) + "'!");
                             parameterFields.add(referencedField);
                         }
                     }
