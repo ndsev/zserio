@@ -63,6 +63,12 @@ struct packing_context_type<T, typename std::enable_if<has_zserio_packing_contex
     using type = typename T::ZserioPackingContext;
 };
 
+template <typename T>
+struct packing_context_type<std::shared_ptr<T>, typename std::enable_if<has_zserio_packing_context<T>::value>::type>
+{
+    using type = typename T::ZserioPackingContext;
+};
+
 // calls the initializeOffset static method on ARRAY_EXPRESSIONS if available
 template <typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
         typename std::enable_if<has_initialize_offset<ARRAY_EXPRESSIONS>::value, int>::type = 0>

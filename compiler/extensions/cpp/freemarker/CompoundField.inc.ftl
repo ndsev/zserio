@@ -6,11 +6,11 @@
 <#macro field_storage_type_inner field>
     <#if field.array??>
         <#local storageType>
-            ${field.array.elementTypeInfo.typeFullName}<#if field.array.elementCompound??>::Storage</#if><#t>
+            <#if field.array.elementCompound??>std::shared_ptr<</#if>${field.array.elementTypeInfo.typeFullName}<#if field.array.elementCompound??>::Storage></#if><#t>
         </#local>
         <@vector_type_name storageType/><#t>
     <#else>
-        ${field.typeInfo.typeFullName}<#if field.compound??>::Storage</#if><#t>
+        <#if field.compound??>std::shared_ptr<</#if>${field.typeInfo.typeFullName}<#if field.compound??>::Storage></#if><#t>
     </#if>
 </#macro>
 
@@ -62,14 +62,14 @@
 ${I}return <@field_view_type field/>(<#rt>
         <#if field.compound.instantiatedParameters?has_content>
             <#lt><@compound_field_compound_ctor_params field.compound, false/>,
-${I}        m_storage.${fieldName}${getFromHolder});
+${I}        m_storage->${fieldName}${getFromHolder});
         <#else>
-            <#lt>m_storage.${fieldName}${getFromHolder});
+            <#lt>m_storage->${fieldName}${getFromHolder});
         </#if>
     <#elseif field.array??>
-${I}return <@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage.${fieldName}${getFromHolder});
+${I}return <@array_typedef_name field/>(<#if array_needs_owner(field)>*this, </#if>m_storage->${fieldName}${getFromHolder});
     <#else>
-${I}return m_storage.${fieldName}${getFromHolder};
+${I}return m_storage->${fieldName}${getFromHolder};
     </#if>
 </#macro>
 
@@ -119,50 +119,50 @@ ${I}reader.alignTo(UINT32_C(8));
     <#if packed && uses_field_packing_context(field)>
         <#if field.compound??>
             <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+${I}m_storage->${fieldName} = std::allocate_shared<${field.typeInfo.typeFullName}::Storage>(allocator, allocator);
             </#if>
 ${I}<@field_view_type field/>(context.${field.getterName}(), reader, <#rt>
             <#if compoundParamsArguments?has_content>
             <#lt>${compoundParamsArguments},
-${I}        m_storage.${fieldName}${getFromHolder}, allocator);
+${I}        m_storage->${fieldName}${getFromHolder}, allocator);
             <#else>
-            <#lt>m_storage.${fieldName}${getFromHolder}, allocator);
+            <#lt>m_storage->${fieldName}${getFromHolder}, allocator);
             </#if>
         <#elseif field.typeInfo.isBitmask>
-${I}m_storage.${fieldName} = <@field_view_type field/>(context.${field.getterName}(), reader);
+${I}m_storage->${fieldName} = <@field_view_type field/>(context.${field.getterName}(), reader);
         <#elseif field.typeInfo.isEnum>
-${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), reader);
+${I}m_storage->${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), reader);
         <#else>
-${I}m_storage.${fieldName} = context.${field.getterName}().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>reader);
+${I}m_storage->${fieldName} = context.${field.getterName}().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>reader);
         </#if>
     <#elseif field.typeInfo.isCompound>
         <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+${I}m_storage->${fieldName} = std::allocate_shared<${field.typeInfo.typeFullName}::Storage>(allocator, allocator);
         </#if>
 ${I}<@field_view_type field/>(reader, <#rt>
         <#if compoundParamsArguments?has_content>
             <#lt>${compoundParamsArguments},
-${I}        m_storage.${fieldName}${getFromHolder}, allocator);
+${I}        m_storage->${fieldName}${getFromHolder}, allocator);
         <#else>
-            <#lt>m_storage.${fieldName}${getFromHolder}, allocator);
+            <#lt>m_storage->${fieldName}${getFromHolder}, allocator);
         </#if>
     <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
             ${field.runtimeFunction.arg!}<#if field.needsAllocator><#if field.runtimeFunction.arg??>, </#if>allocator</#if><#t>
         </#local>
-${I}m_storage.${fieldName} = static_cast<<@field_cpp_type_name field/>>(reader.read${field.runtimeFunction.suffix}(${readCommandArgs}));
+${I}m_storage->${fieldName} = static_cast<<@field_cpp_type_name field/>>(reader.read${field.runtimeFunction.suffix}(${readCommandArgs}));
     <#elseif field.typeInfo.isEnum>
-${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reader);
+${I}m_storage->${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reader);
     <#elseif !field.array??>
         <#-- bitmask -->
-${I}m_storage.${fieldName} = <@field_cpp_type_name field/>(reader);
+${I}m_storage->${fieldName} = <@field_cpp_type_name field/>(reader);
     </#if>
     <#if field.array??>
         <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+${I}m_storage->${fieldName} = <@field_storage_type_inner field/>(allocator);
         </#if>
 ${I}<@array_typedef_name field/>(<#lt><#if array_needs_owner(field)>*this, </#if><#rt>
-        <#lt>m_storage.${fieldName}${getFromHolder}).read<@array_field_packed_suffix field, packed/>(<#rt>
+        <#lt>m_storage->${fieldName}${getFromHolder}).read<@array_field_packed_suffix field, packed/>(<#rt>
         <#lt>reader<#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
     </#if>
 </#macro>
@@ -523,7 +523,7 @@ ${I}}
 
 <#macro array_type_name field>
     <#local storageType>
-        ${field.array.elementTypeInfo.typeFullName}<#if field.array.elementCompound??>::Storage</#if><#t>
+        <#if field.array.elementCompound??>std::shared_ptr<</#if>${field.array.elementTypeInfo.typeFullName}<#if field.array.elementCompound??>::Storage></#if><#t>
     </#local>
     ${field.typeInfo.typeFullName}<<#t>
             <@vector_type_name storageType/>, <@array_traits_type_name field/>, <#t>
@@ -660,7 +660,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(Ow
                 ::zserio::BitStreamReader& in, size_t index);
 
         static ${field.array.elementTypeInfo.typeFullName}::View at(const OwnerType& owner,
-                ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index);
+                const std::shared_ptr<${field.array.elementTypeInfo.typeFullName}::Storage>& element, size_t index);
     <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         static void create(<#if !withWriterCode>const </#if>OwnerType& owner,
@@ -686,15 +686,19 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         ::zserio::BitStreamReader& in, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
+    const allocator_type allocator = array.get_allocator();
     ${field.array.elementTypeInfo.typeFullName}::View(in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
-            <#lt>, array.emplace_back(allocator_type(array.get_allocator())), array.get_allocator());
+            <#lt>,
+            array.emplace_back(std::allocate_shared<${field.array.elementTypeInfo.typeFullName}::Storage>(allocator, allocator)),
+            allocator);
 }
 
 ${field.array.elementTypeInfo.typeFullName}::View ${compoundName}::<@element_factory_name field.name/>::at(
-        const OwnerType& owner, ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index)
+        const OwnerType& owner, const std::shared_ptr<${field.array.elementTypeInfo.typeFullName}::Storage>& element,
+        size_t index)
 {
     return ${field.array.elementTypeInfo.typeFullName}::View(
             <#if extraConstructorArguments?has_content>${extraConstructorArguments}, </#if>
@@ -709,11 +713,14 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
+    const allocator_type allocator = array.get_allocator();
     ${field.array.elementTypeInfo.typeFullName}::View(context, in<#rt>
         <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
         </#if>
-            <#lt>, array.emplace_back(allocator_type(array.get_allocator())), array.get_allocator());
+            <#lt>,
+            array.emplace_back(std::allocate_shared<${field.array.elementTypeInfo.typeFullName}::Storage>(allocator, allocator)),
+            allocator);
 }
     </#if>
 </#macro>

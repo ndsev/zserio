@@ -484,9 +484,22 @@ public:
         View(<#rt>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
         <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage) noexcept :
+                const allocator_type& allocator = allocator_type()) noexcept :
 <#else>
-                <#lt>Storage& storage) noexcept :
+                <#lt>const allocator_type& allocator = allocator_type()) noexcept :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(std::allocate_shared<Storage>(allocator, allocator))
+        {}
+
+        View(<#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+        <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                const std::shared_ptr<Storage>& storage) noexcept :
+<#else>
+                <#lt>const std::shared_ptr<Storage>& storage) noexcept :
 </#if>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -497,9 +510,24 @@ public:
         View(::zserio::BitStreamReader& reader, <#rt>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage, const allocator_type& allocator = allocator_type()) :
+                const allocator_type& allocator = allocator_type()) :
 <#else>
-                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+                <#lt>const allocator_type& allocator = allocator_type()) :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(std::allocate_shared<Storage>(allocator, allocator))
+        {
+            <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3/>
+        }
+
+        View(::zserio::BitStreamReader& reader, <#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
+<#else>
+                <#lt>const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
 </#if>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -513,9 +541,24 @@ public:
         View(ZserioPackingContext& context, ::zserio::BitStreamReader& reader, <#rt>
     <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage, const allocator_type& allocator = allocator_type()) :
+                const allocator_type& allocator = allocator_type()) :
     <#else>
-                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+                <#lt>const allocator_type& allocator = allocator_type()) :
+    </#if>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+    </#if>
+                m_storage(zserio::allocate_storage<Storage>(allocator, allocator))
+        {
+            <@choice_switch "choice_field_view_read", "choice_no_match", selectorExpression, 3, true/>
+        }
+
+        View(ZserioPackingContext& context, ::zserio::BitStreamReader& reader, <#rt>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
+    <#else>
+                <#lt>const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
     </#if>
     <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -539,9 +582,14 @@ public:
         }
 </#list>
 
+        operator std::shared_ptr<Storage>() const
+        {
+            return m_storage;
+        }
+
     private:
         <@compound_parameter_view_members compoundParametersData/>
-        Storage& m_storage;
+        std::shared_ptr<Storage> m_storage;
     };
 };
 <#list fieldList as field>

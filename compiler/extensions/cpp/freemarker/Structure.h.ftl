@@ -424,6 +424,9 @@ private:
         <#elseif field.array??>
             <#local argument>${field.name}(allocator)</#local>
             <#local arguments+=[argument]/>
+        <#elseif field.compound??>
+            <#local argument>${field.name}(std::allocate_shared<${field.typeInfo.typeFullName}::Storage>(allocator, allocator))</#local>
+            <#local arguments+=[argument]/>
         <#elseif field.needsAllocator>
             <#local argument>${field.name}(allocator)</#local>
             <#local arguments+=[argument]/>
@@ -498,9 +501,22 @@ public:
         View(<#rt>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
         <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage) noexcept :
+                const allocator_type& allocator = allocator_type()) noexcept :
 <#else>
-                <#lt>Storage& storage) noexcept :
+                <#lt>const allocator_type& allocator = allocator_type()) noexcept :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(std::allocate_shared<${name}::Storage>(allocator, allocator))
+        {}
+
+        View(<#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+        <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                const std::shared_ptr<${name}::Storage>& storage) noexcept :
+<#else>
+                <#lt>const std::shared_ptr<${name}::Storage>& storage) noexcept :
 </#if>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -511,9 +527,30 @@ public:
         View(::zserio::BitStreamReader& reader, <#rt>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage, const allocator_type& allocator = allocator_type()) :
+                const allocator_type& allocator = allocator_type()) :
 <#else>
-                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+                <#lt>const allocator_type& allocator = allocator_type()) :
+</#if>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+</#if>
+                m_storage(std::allocate_shared<${name}::Storage>(allocator, allocator))
+        {
+<#list fieldList as field>
+            // ${field.name}
+            <@field_view_read field, 3/>
+    <#if field?has_next>
+
+    </#if>
+</#list>
+        }
+
+        View(::zserio::BitStreamReader& reader, <#rt>
+<#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
+<#else>
+                <#lt>const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
 </#if>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -533,9 +570,30 @@ public:
         View(ZserioPackingContext& context, ::zserio::BitStreamReader& reader, <#rt>
     <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage, const allocator_type& allocator = allocator_type()) :
+                const allocator_type& allocator = allocator_type()) :
     <#else>
-                <#lt>Storage& storage, const allocator_type& allocator = allocator_type()) :
+                <#lt>const allocator_type& allocator = allocator_type()) :
+    </#if>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
+    </#if>
+                m_storage(std::allocate_shared<${name}::Storage>(allocator, allocator))
+        {
+    <#list fieldList as field>
+            // ${field.name}
+            <@field_view_read field, 3, true/>
+        <#if field?has_next>
+
+        </#if>
+    </#list>
+        }
+
+        View(ZserioPackingContext& context, ::zserio::BitStreamReader& reader, <#rt>
+    <#if compoundConstructorsData.compoundParametersData.list?has_content>
+                <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
+                const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
+    <#else>
+                <#lt>const std::shared_ptr<Storage>& storage, const allocator_type& allocator = allocator_type()) :
     </#if>
     <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -557,7 +615,7 @@ public:
 
         bool ${field.optional.isSetIndicatorName}() const
         {
-            return m_storage.${field.name}.hasValue();
+            return m_storage->${field.name}.hasValue();
         }
 
         bool ${field.optional.isUsedIndicatorName}() const
@@ -579,9 +637,14 @@ public:
         }
 </#list>
 
+        operator std::shared_ptr<Storage>() const
+        {
+            return m_storage;
+        }
+
     private:
         <@compound_parameter_view_members compoundParametersData/>
-        Storage& m_storage;
+        std::shared_ptr<Storage> m_storage;
     };
 };
 <#list fieldList as field>

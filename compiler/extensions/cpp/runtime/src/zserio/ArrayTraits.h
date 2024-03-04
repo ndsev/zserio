@@ -1734,7 +1734,7 @@ class ObjectArrayTraits
 {
 public:
     /** Element type. */
-    using ElementType = typename T::Storage;
+    using ElementType = std::shared_ptr<typename T::Storage>;
 
     /** View type. */
     using ViewType = typename T::View;
