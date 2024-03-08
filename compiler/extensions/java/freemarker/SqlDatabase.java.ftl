@@ -310,7 +310,7 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
         return new java.lang.String[]
         {
 <#list fields as field>
-            ${field.name}_TABLE_NAME<#if field_has_next>,</#if>
+            ${field.name}_TABLE_NAME<#if field?has_next>,</#if>
 </#list>
         };
     }

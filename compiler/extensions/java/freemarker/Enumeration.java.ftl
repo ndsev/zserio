@@ -25,7 +25,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedIn
     <#if item.isDeprecated>
     @Deprecated
     </#if>
-    ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
+    ${item.name}(${item.value})<#if item?has_next>,<#else>;</#if>
 </#list>
 
     private ${name}(${underlyingTypeInfo.typeFullName} value)

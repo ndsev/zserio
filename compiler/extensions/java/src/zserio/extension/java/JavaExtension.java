@@ -82,6 +82,7 @@ public final class JavaExtension implements Extension
         emitters.add(new SqlTableEmitter(outputFileManager, javaParameters, packedTypesCollector));
         emitters.add(new ConstEmitter(outputFileManager, javaParameters, packedTypesCollector));
         emitters.add(new ServiceEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new SubtypeEmitter(outputFileManager, javaParameters, packedTypesCollector));
         emitters.add(new PubsubEmitter(outputFileManager, javaParameters, packedTypesCollector));
 
         // emit Java code

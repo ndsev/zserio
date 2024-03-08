@@ -202,9 +202,9 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 <available file="@{srcPath}" type="dir"/>
             </condition>
             <echo if:set="src_path.exists">
-    Command hints to reformat source manually using clang-format tool (in case of format errors):
-        git clang-format
-        clang-format --style=file -i [SOURCE]
+Command hints to reformat source manually using clang-format tool (in case of format errors):
+    git clang-format
+    clang-format --style=file -i [SOURCE]
             </echo>
             <apply if:set="src_path.exists" executable="${clang_format.exec_file}" failonerror="true">
                 <arg value="--style=file"/>

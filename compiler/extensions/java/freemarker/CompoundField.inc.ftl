@@ -113,7 +113,7 @@ ${I}}
         <#if instantiatedParameter.typeInfo.isSimple>(${instantiatedParameter.typeInfo.typeFullName})(</#if><#t>
             ${instantiatedParameter.expression}<#t>
         <#if instantiatedParameter.typeInfo.isSimple>)</#if><#t>
-        <#if instantiatedParameter_has_next>, </#if><#t>
+        <#if instantiatedParameter?has_next>, </#if><#t>
     </#list>
 </#macro>
 

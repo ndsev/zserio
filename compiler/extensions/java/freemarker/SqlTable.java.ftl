@@ -16,7 +16,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public final class ${name}
+public class ${name}
 {
 <#if needsParameterProvider>
     <#if withCodeComments>
@@ -185,7 +185,7 @@ public final class ${name}
         // assemble sql query
         final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("SELECT " +
 <#list fields as field>
-                "${field.name}<#if field_has_next>, </#if>" +
+                "${field.name}<#if field?has_next>, </#if>" +
 </#list>
                 " FROM ");
         appendTableNameToQuery(sqlQuery);
@@ -233,11 +233,11 @@ public final class ${name}
         appendTableNameToQuery(sqlQuery);
         sqlQuery.append(" (" +
     <#list fields as field>
-                "${field.name}<#if field_has_next>, </#if>" +
+                "${field.name}<#if field?has_next>, </#if>" +
     </#list>
                 ") VALUES (<#rt>
     <#list fields as field>
-                ?<#if field_has_next>, </#if><#t>
+                ?<#if field?has_next>, </#if><#t>
     </#list>
                 )");<#lt>
 
@@ -275,7 +275,7 @@ public final class ${name}
         appendTableNameToQuery(sqlQuery);
         sqlQuery.append(" SET" +
     <#list fields as field>
-                " ${field.name}=?<#if field_has_next>,</#if>" +
+                " ${field.name}=?<#if field?has_next>,</#if>" +
     </#list>
                 " WHERE ");
         sqlQuery.append(whereCondition);
@@ -339,7 +339,7 @@ public final class ${name}
             <#-- don't use rowid because WITHOUT ROWID tables can be used even if Zserio does not support them -->
             final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("SELECT " +
         <#list fields as field>
-                    "${field.name}<#if field_has_next>, </#if>" +
+                    "${field.name}<#if field?has_next>, </#if>" +
         </#list>
                     " FROM ");
             appendTableNameToQuery(sqlQuery);
@@ -440,7 +440,7 @@ public final class ${name}
         <#list fields as field>
             <#if !field.isVirtual>
                 "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
-                    <#lt><#if field.sqlConstraint??> + " " + ${field.sqlConstraint}</#if><#if field_has_next> + ","</#if> +
+                    <#lt><#if field.sqlConstraint??> + " " + ${field.sqlConstraint}</#if><#if field?has_next> + ","</#if> +
             </#if>
         </#list>
         <#if hasNonVirtualField && sqlConstraint??>
@@ -549,7 +549,7 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
             statement.set${field.typeInfo.typeName?cap_first}(${field?index + 1}, value);
         </#if>
         }
-        <#if field_has_next>
+        <#if field?has_next>
 
         </#if>
     </#list>

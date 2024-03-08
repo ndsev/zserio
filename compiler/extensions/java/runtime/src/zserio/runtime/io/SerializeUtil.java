@@ -71,7 +71,7 @@ public final class SerializeUtil
      *
      * @return Generated object created from given bit buffer.
      */
-    public static <T> T deserialize(final Class<T> clazz, BitBuffer bitBuffer, Object... arguments)
+    public static <T> T deserialize(Class<T> clazz, BitBuffer bitBuffer, Object... arguments)
     {
         return deserializeFromBytes(clazz, bitBuffer.getBuffer(), arguments);
     }
@@ -136,7 +136,7 @@ public final class SerializeUtil
      *
      * @return Generated object created from given byte array.
      */
-    public static <T> T deserializeFromBytes(final Class<T> clazz, byte[] buffer, Object... arguments)
+    public static <T> T deserializeFromBytes(Class<T> clazz, byte[] buffer, Object... arguments)
     {
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer))
         {
@@ -231,7 +231,7 @@ public final class SerializeUtil
      *
      * @return Generated object created from given file contents.
      */
-    public static <T> T deserializeFromFile(final Class<T> clazz, String fileName, Object... arguments)
+    public static <T> T deserializeFromFile(Class<T> clazz, String fileName, Object... arguments)
     {
         return deserializeFromFile(clazz, new File(fileName), arguments);
     }
@@ -258,7 +258,7 @@ public final class SerializeUtil
      *
      * @return Generated object created from given file contents.
      */
-    public static <T> T deserializeFromFile(final Class<T> clazz, File file, Object... arguments)
+    public static <T> T deserializeFromFile(Class<T> clazz, File file, Object... arguments)
     {
         try
         {
@@ -281,8 +281,7 @@ public final class SerializeUtil
         object.write(writer);
     }
 
-    private static <T> T deserializeFromReader(
-            final Class<T> clazz, BitStreamReader reader, Object... arguments)
+    private static <T> T deserializeFromReader(Class<T> clazz, BitStreamReader reader, Object... arguments)
     {
         try
         {

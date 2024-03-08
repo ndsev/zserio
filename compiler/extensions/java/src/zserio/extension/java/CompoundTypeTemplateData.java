@@ -18,17 +18,15 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         super(context, compoundType, compoundType);
 
         usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(compoundType);
+        isPackable = compoundType.isPackable();
 
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType);
-        compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData);
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType);
 
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
             fieldList.add(new CompoundFieldTemplateData(context, compoundType, fieldType));
-
-        isPackable = compoundType.isPackable();
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType);
     }
@@ -38,14 +36,14 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return usedInPackedArray;
     }
 
+    public boolean getIsPackable()
+    {
+        return isPackable;
+    }
+
     public CompoundParameterTemplateData getCompoundParametersData()
     {
         return compoundParametersData;
-    }
-
-    public CompoundConstructorTemplateData getCompoundConstructorsData()
-    {
-        return compoundConstructorsData;
     }
 
     public CompoundFunctionTemplateData getCompoundFunctionsData()
@@ -58,21 +56,15 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return fieldList;
     }
 
-    public boolean getIsPackable()
-    {
-        return isPackable;
-    }
-
     public TemplateInstantiationTemplateData getTemplateInstantiation()
     {
         return templateInstantiation;
     }
 
     private final boolean usedInPackedArray;
+    private final boolean isPackable;
     private final CompoundParameterTemplateData compoundParametersData;
-    private final CompoundConstructorTemplateData compoundConstructorsData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
     private final List<CompoundFieldTemplateData> fieldList;
-    private final boolean isPackable;
     private final TemplateInstantiationTemplateData templateInstantiation;
 }

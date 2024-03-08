@@ -22,6 +22,7 @@ import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
+import zserio.ast.Subtype;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
@@ -55,6 +56,7 @@ import zserio.extension.java.types.NativeShortType;
 import zserio.extension.java.types.NativeSqlDatabaseType;
 import zserio.extension.java.types.NativeSqlTableType;
 import zserio.extension.java.types.NativeStringType;
+import zserio.extension.java.types.NativeSubtype;
 
 /**
  * Java native mapper.
@@ -99,9 +101,8 @@ final class JavaNativeMapper
         final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
-            final ZserioType referencedType = typeInstantiation.getTypeReference().getType();
             throw new ZserioExtensionException(
-                    "Unhandled type '" + referencedType.getClass().getName() + "' in JavaNativeMapper!");
+                    "Unhandled type '" + typeInstantiation.getClass().getName() + "' in JavaNativeMapper!");
         }
 
         return nativeType;
@@ -113,9 +114,8 @@ final class JavaNativeMapper
         final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
-            final ZserioType referencedType = typeReference.getType();
             throw new ZserioExtensionException(
-                    "Unhandled type '" + referencedType.getClass().getName() + "' in JavaNativeMapper!");
+                    "Unhandled type '" + typeReference.getClass().getName() + "' in JavaNativeMapper!");
         }
 
         return nativeType;
@@ -327,6 +327,23 @@ final class JavaNativeMapper
         public void visitUnionType(UnionType type)
         {
             javaTypes = mapCompoundType(type);
+        }
+
+        @Override
+        public void visitSubtype(Subtype type)
+        {
+            try
+            {
+                final JavaNativeType nativeBaseType = getJavaType(type.getBaseTypeReference());
+                final PackageName packageName = type.getPackage().getPackageName();
+                final String name = type.getName();
+                final JavaNativeType javaType = new NativeSubtype(packageName, name, nativeBaseType.isSimple());
+                javaTypes = new JavaNativeTypes(javaType);
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override

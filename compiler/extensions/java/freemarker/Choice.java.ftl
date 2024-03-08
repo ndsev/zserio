@@ -1,5 +1,4 @@
 <#include "FileHeader.inc.ftl">
-<#include "CompoundConstructor.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
@@ -22,7 +21,7 @@
         </#list>
     <#else>
         <#list caseList as case>
-selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
+selector == (${case.expressionForIf})<#if case?has_next> || </#if><#rt>
         </#list>
     </#if>
 </#macro>
@@ -64,7 +63,7 @@ ${I}final java.math.BigInteger selector = ${selectorExpression};
         </#if>
 
         <#list caseMemberList as caseMember>
-            <#if caseMember_has_next || !isDefaultUnreachable>
+            <#if caseMember?has_next || !isDefaultUnreachable>
 ${I}<#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMember.caseList/>)
             <#else>
 ${I}else
@@ -89,7 +88,7 @@ ${I}}
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public final class ${name} implements <#rt>
+public class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
         <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
 {
@@ -97,7 +96,73 @@ public final class ${name} implements <#rt>
     <@compound_declare_packing_context fieldList/>
 
 </#if>
-    <@compound_constructors compoundConstructorsData/>
+<#if withWriterCode>
+    <#if withCodeComments>
+    /**
+     * Default constructor.
+     *
+     <@compound_parameter_comments compoundParametersData/>
+     */
+    </#if>
+    public ${name}(<#if !compoundParametersData.list?has_content>)</#if>
+    <#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/><#if parameter?has_next>,<#else>)</#if>
+    </#list>
+    {
+        <@compound_set_parameters compoundParametersData/>
+    }
+
+</#if>
+<#if withCodeComments>
+    /**
+     * Read constructor.
+     *
+     * @param in Bit stream reader to use.
+     <@compound_parameter_comments compoundParametersData/>
+     *
+     * @throws IOException If the reading from bit stream failed.
+     */
+</#if>
+    public ${name}(zserio.runtime.io.BitStreamReader in<#if compoundParametersData.list?has_content>,<#else>)</#if>
+<#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/><#if parameter?has_next>,<#else>)</#if>
+</#list>
+            throws java.io.IOException
+    {
+        <@compound_set_parameters compoundParametersData/>
+<#if compoundParametersData.list?has_content>
+
+</#if>
+        read(in);
+    }
+<#if isPackable && usedInPackedArray>
+
+    <#if withCodeComments>
+    /**
+     * Read constructor.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param context Context for packed arrays.
+     * @param in Bit stream reader to use.
+     <@compound_parameter_comments compoundParametersData/>
+     *
+     * @throws IOException If the reading from bit stream failed.
+     */
+    </#if>
+    public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in<#if compoundParametersData.list?has_content>,<#else>)</#if>
+    <#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/><#if parameter?has_next>,<#else>)</#if>
+    </#list>
+            throws java.io.IOException
+    {
+        <@compound_set_parameters compoundParametersData/>
+    <#if compoundParametersData.list?has_content>
+
+    </#if>
+        read(context, in);
+    }
+</#if>
 <#if withTypeInfoCode>
 
     <#if withCodeComments>
@@ -293,7 +358,7 @@ ${I}break;
 
             return
     <#list compoundParametersData.list as parameter>
-                    <@compound_compare_parameter parameter/><#if parameter_has_next || fieldList?has_content> &&<#else>;</#if>
+                    <@compound_compare_parameter parameter/><#if parameter?has_next || fieldList?has_content> &&<#else>;</#if>
     </#list>
     <#if fieldList?has_content>
                     (

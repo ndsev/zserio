@@ -1,5 +1,4 @@
 <#include "FileHeader.inc.ftl">
-<#include "CompoundConstructor.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
@@ -22,7 +21,7 @@
 <#function extended_field_index numFields numExtendedFields fieldIndex>
     <#return fieldIndex - (numFields - numExtendedFields)>
 </#function>
-public final class ${name} implements <#rt>
+public class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
         <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
 {
@@ -30,29 +29,108 @@ public final class ${name} implements <#rt>
     <@compound_declare_packing_context fieldList/>
 
 </#if>
-    <@compound_constructors compoundConstructorsData, numExtendedFields/>
+<#if withWriterCode>
+    <#if withCodeComments>
+    /**
+     * Default constructor.
+     *
+     <@compound_parameter_comments compoundParametersData/>
+     */
+    </#if>
+    public ${name}(<#if !compoundParametersData.list?has_content>)</#if>
+    <#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/><#if parameter?has_next>,<#else>)</#if>
+    </#list>
+    {
+        <@compound_set_parameters compoundParametersData/>
+    <#if (numExtendedFields > 0)>
+        this.numExtendedFields = ${numExtendedFields};
+    </#if>
+    }
+
+</#if>
+<#if withCodeComments>
+    /**
+     * Read constructor.
+     *
+     * @param in Bit stream reader to use.
+     <@compound_parameter_comments compoundParametersData/>
+     *
+     * @throws IOException If the reading from bit stream failed.
+     */
+</#if>
+    public ${name}(zserio.runtime.io.BitStreamReader in<#if compoundParametersData.list?has_content>,<#else>)</#if>
+<#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/><#if parameter?has_next>,<#else>)</#if>
+</#list>
+            throws java.io.IOException
+    {
+        <@compound_set_parameters compoundParametersData/>
+<#if (numExtendedFields > 0)>
+        this.numExtendedFields = 0;
+</#if>
+<#if compoundParametersData.list?has_content>
+
+</#if>
+        read(in);
+    }
+<#if isPackable && usedInPackedArray>
+
+    <#if withCodeComments>
+    /**
+     * Read constructor.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param context Context for packed arrays.
+     * @param in Bit stream reader to use.
+     <@compound_parameter_comments compoundParametersData/>
+     *
+     * @throws IOException If the reading from bit stream failed.
+     */
+    </#if>
+    public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in<#if compoundParametersData.list?has_content>,<#else>)</#if>
+    <#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/><#if parameter?has_next>,<#else>)</#if>
+    </#list>
+            throws java.io.IOException
+    {
+        <@compound_set_parameters compoundParametersData/>
+    <#if (numExtendedFields > 0)>
+        this.numExtendedFields = 0;
+    </#if>
+    <#if compoundParametersData.list?has_content>
+
+    </#if>
+        read(context, in);
+    }
+</#if>
 <#if withWriterCode && fieldList?has_content>
 
-    <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
     <#if withCodeComments>
     /**
      * Fields constructor.
      *
-        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
-     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
-        </#list>
+     <@compound_parameter_comments compoundParametersData/>
         <#list fieldList as field>
      * @param <@field_argument_name field/> Value of the field {@link #${field.getterName}() ${field.name}}.
         </#list>
      */
     </#if>
-    public ${name}(<#if constructorArgumentTypeList?has_content>${constructorArgumentTypeList},</#if>
+    public ${name}(
+    <#list compoundParametersData.list as parameter>
+            ${parameter.typeInfo.typeFullName} <@parameter_argument_name parameter/>,
+    </#list>
     <#list fieldList as field>
-            ${field.typeInfo.typeFullName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
+            ${field.typeInfo.typeFullName} <@field_argument_name field/><#if field?has_next>,<#else>)</#if>
     </#list>
     {
-    <#if constructorArgumentTypeList?has_content>
-        this(<@compound_constructor_argument_list compoundConstructorsData/>);
+    <#if compoundParametersData.list?has_content>
+        this(<#rt>
+        <#list compoundParametersData.list as parameter>
+                <#lt><@parameter_argument_name parameter/><#if parameter?has_next>, </#if><#rt>
+        </#list>
+                <#lt>);
 
     </#if>
     <#list fieldList as field>
@@ -280,15 +358,15 @@ public final class ${name} implements <#rt>
 
             return
     <#list compoundParametersData.list as parameter>
-                    <@compound_compare_parameter parameter/><#if parameter_has_next || fieldList?has_content> &&<#else>;</#if>
+                    <@compound_compare_parameter parameter/><#if parameter?has_next || fieldList?has_content> &&<#else>;</#if>
     </#list>
     <#list fieldList as field>
         <#if field.optional??>
             <#-- if optional is not auto and is used the that should be is used as well because all previous paramaters and fields were the same. -->
                     ((!${field.optional.isUsedIndicatorName}()) ? !that.${field.optional.isUsedIndicatorName}() :
-                        <@compound_compare_field field/>)<#if field_has_next> &&<#else>;</#if>
+                        <@compound_compare_field field/>)<#if field?has_next> &&<#else>;</#if>
         <#else>
-                    <@compound_compare_field field/><#if field_has_next> &&<#else>;</#if>
+                    <@compound_compare_field field/><#if field?has_next> &&<#else>;</#if>
         </#if>
     </#list>
         }
@@ -344,7 +422,7 @@ public final class ${name} implements <#rt>
         <#else>
     <@compound_read_field field, name, 2/>
         </#if>
-        <#if field_has_next>
+        <#if field?has_next>
 
         </#if>
     </#list>
@@ -386,7 +464,7 @@ public final class ${name} implements <#rt>
         <#else>
     <@compound_read_field field, name, 2, true/>
         </#if>
-        <#if field_has_next>
+        <#if field?has_next>
 
         </#if>
     </#list>
@@ -447,7 +525,7 @@ public final class ${name} implements <#rt>
         </#if>
         <#list fieldList as field>
         <@compound_write_field field, name, 2/>
-            <#if field_has_next>
+            <#if field?has_next>
 
             </#if>
         </#list>
@@ -468,7 +546,7 @@ public final class ${name} implements <#rt>
         </#if>
         <#list fieldList as field>
         <@compound_write_field field, name, 2, true/>
-            <#if field_has_next>
+            <#if field?has_next>
 
             </#if>
         </#list>
