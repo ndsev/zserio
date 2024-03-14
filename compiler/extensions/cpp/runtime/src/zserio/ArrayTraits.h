@@ -1753,9 +1753,10 @@ public:
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(const OwnerType&, size_t bitPosition, const ElementType& element)
+    static size_t bitSizeOf(const OwnerType& owner, size_t bitPosition,
+            const ElementType& element, size_t index)
     {
-        return element.bitSizeOf(bitPosition);
+        return at(owner, element, index).bitSizeOf(bitPosition);
     }
 
     /**
@@ -1766,10 +1767,10 @@ public:
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    static size_t initializeOffsets(OwnerType&, size_t bitPosition, ElementType& element)
+    /*static size_t initializeOffsets(OwnerType&, size_t bitPosition, ElementType& element)
     {
         return element.initializeOffsets(bitPosition);
-    }
+    }*/
 
     /**
      * Reads the single array element.
@@ -1791,12 +1792,12 @@ public:
      * \param out Bit stream writer to use.
      * \param element Element to write.
      */
-    static void write(const OwnerType&, BitStreamWriter& out, const ElementType& element)
+    static void write(const OwnerType& owner, BitStreamWriter& out, const ElementType& element, size_t index)
     {
-        element.write(out);
+        at(owner, element, index).write(out);
     }
 
-    static ViewType at(const OwnerType& owner, ElementType& element, size_t index)
+    static ViewType at(const OwnerType& owner, const ElementType& element, size_t index)
     {
         return ELEMENT_FACTORY::at(owner, element, index);
     }
@@ -2173,13 +2174,13 @@ public:
     using ArrayTraits = ObjectArrayTraits<T, ELEMENT_FACTORY>;
 
     /** Element type. */
-    using ElementType = T;
+    using ElementType = typename T::Storage;
 
     /** Allocator type. */
     using allocator_type = typename T::allocator_type;
 
     /** Typedef for the array's owner type. */
-    using OwnerType = typename ArrayTraits::OwnerType;
+    using OwnerType = typename ELEMENT_FACTORY::OwnerType;
 
     /**
      * Calls context initialization step for the current element.
@@ -2188,9 +2189,10 @@ public:
      */
     template <typename PACKING_CONTEXT>
     static void initContext(
-            const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext, const ElementType& element)
+            const typename ArrayTraits::OwnerType& owner, PACKING_CONTEXT& packingContext,
+            const ElementType& element, size_t index)
     {
-        element.initPackingContext(packingContext);
+        ArrayTraits::at(owner, element, index).initPackingContext(packingContext);
     }
 
     /**
@@ -2203,10 +2205,10 @@ public:
      * \return Length of the array element stored in the bit stream in bits.
      */
     template <typename PACKING_CONTEXT>
-    static size_t bitSizeOf(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
-            size_t bitPosition, const ElementType& element)
+    static size_t bitSizeOf(const typename ArrayTraits::OwnerType& owner, PACKING_CONTEXT& packingContext,
+            size_t bitPosition, const ElementType& element, size_t index)
     {
-        return element.bitSizeOf(packingContext, bitPosition);
+        return ArrayTraits::at(owner, element, index).bitSizeOf(packingContext, bitPosition);
     }
 
     /**
@@ -2250,10 +2252,10 @@ public:
      * \param element Element to write.
      */
     template <typename PACKING_CONTEXT>
-    static void write(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
-            BitStreamWriter& out, const ElementType& element)
+    static void write(const typename ArrayTraits::OwnerType& owner, PACKING_CONTEXT& packingContext,
+            BitStreamWriter& out, const ElementType& element, size_t index)
     {
-        element.write(packingContext, out);
+        ArrayTraits::at(owner, element, index).write(packingContext, out);
     }
 };
 

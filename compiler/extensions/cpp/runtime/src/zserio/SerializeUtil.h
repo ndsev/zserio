@@ -73,7 +73,7 @@ template <typename T, typename ALLOC, typename... ARGS>
 BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
 {
     detail::initialize(object, std::forward<ARGS>(arguments)...);
-    BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(), allocator);
+    BasicBitBuffer<ALLOC> bitBuffer(object.bitSizeOf(0), allocator);
     BitStreamWriter writer(bitBuffer);
     object.write(writer);
     return bitBuffer;

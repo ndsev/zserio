@@ -19,6 +19,9 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+<#if has_field_with_constraint(fieldList)>
+#include <zserio/ConstraintException.h>
+</#if>
 <#if isPackable && usedInPackedArray>
 #include <zserio/DeltaContext.h>
 </#if>
@@ -498,9 +501,9 @@ public:
         View(<#rt>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
         <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage) noexcept :
+                const Storage& storage) noexcept :
 <#else>
-                <#lt>Storage& storage) noexcept :
+                <#lt>const Storage& storage) noexcept :
 </#if>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -578,10 +581,82 @@ public:
             <@field_view_get field, 3/>
         }
 </#list>
+<#list compoundFunctionsData.list as compoundFunction>
+
+        <@function_return_view_type compoundFunction/> ${compoundFunction.name}() const
+        {
+    <#if compoundFunction.returnTypeInfo.isSimple>
+            return static_cast<${compoundFunction.returnTypeInfo.typeFullName}>(${compoundFunction.resultExpression});
+    <#else>
+            return ${compoundFunction.resultExpression};
+    </#if>
+        }
+</#list>
+<#if isPackable && usedInPackedArray>
+
+        void initPackingContext(ZserioPackingContext& context) const
+        {
+    <#list fieldList as field>
+        <@compound_init_packing_context_field field, 3/>
+    </#list>
+        }
+</#if>
+
+        size_t bitSizeOf(size_t bitPosition) const
+        {
+<#if fieldList?has_content>
+            size_t endBitPosition = bitPosition;
+
+    <#list fieldList as field>
+            <@compound_bitsizeof_field field, 3/>
+    </#list>
+
+            return endBitPosition - bitPosition;
+<#else>
+            return 0;
+</#if>
+        }
+<#if isPackable && usedInPackedArray>
+
+        size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const
+        {
+            size_t endBitPosition = bitPosition;
+
+    <#list fieldList as field>
+            <@compound_bitsizeof_field field, 3, true/>
+    </#list>
+
+            return endBitPosition - bitPosition;
+        }
+</#if>
+
+        void write(::zserio::BitStreamWriter& writer) const
+        {
+<#if fieldList?has_content>
+    <#list fieldList as field>
+            <@compound_write_field field, name, 3/>
+        <#if field?has_next>
+
+        </#if>
+    </#list>
+</#if>
+        }
+<#if isPackable && usedInPackedArray>
+
+        void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& writer) const
+        {
+    <#list fieldList as field>
+            <@compound_write_field field, name, 3, true/>
+        <#if field?has_next>
+
+        </#if>
+    </#list>
+        }
+</#if>
 
     private:
         <@compound_parameter_view_members compoundParametersData/>
-        Storage& m_storage;
+        const Storage& m_storage;
     };
 };
 <#list fieldList as field>

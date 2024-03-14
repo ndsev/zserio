@@ -119,51 +119,52 @@ ${I}reader.alignTo(UINT32_C(8));
     <#if packed && uses_field_packing_context(field)>
         <#if field.compound??>
             <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+${I}storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
             </#if>
 ${I}<@field_view_type field/>(context.${field.getterName}(), reader, <#rt>
             <#if compoundParamsArguments?has_content>
             <#lt>${compoundParamsArguments},
-${I}        m_storage.${fieldName}${getFromHolder}, allocator);
+${I}        storage.${fieldName}${getFromHolder}, allocator);
             <#else>
-            <#lt>m_storage.${fieldName}${getFromHolder}, allocator);
+            <#lt>storage.${fieldName}${getFromHolder}, allocator);
             </#if>
         <#elseif field.typeInfo.isBitmask>
-${I}m_storage.${fieldName} = <@field_view_type field/>(context.${field.getterName}(), reader);
+${I}storage.${fieldName} = <@field_view_type field/>(context.${field.getterName}(), reader);
         <#elseif field.typeInfo.isEnum>
-${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), reader);
+${I}storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(context.${field.getterName}(), reader);
         <#else>
-${I}m_storage.${fieldName} = context.${field.getterName}().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>reader);
+${I}storage.${fieldName} = context.${field.getterName}().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>reader);
         </#if>
     <#elseif field.typeInfo.isCompound>
         <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+${I}storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
         </#if>
 ${I}<@field_view_type field/>(reader, <#rt>
         <#if compoundParamsArguments?has_content>
             <#lt>${compoundParamsArguments},
-${I}        m_storage.${fieldName}${getFromHolder}, allocator);
+${I}        storage.${fieldName}${getFromHolder}, allocator);
         <#else>
-            <#lt>m_storage.${fieldName}${getFromHolder}, allocator);
+            <#lt>storage.${fieldName}${getFromHolder}, allocator);
         </#if>
     <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
             ${field.runtimeFunction.arg!}<#if field.needsAllocator><#if field.runtimeFunction.arg??>, </#if>allocator</#if><#t>
         </#local>
-${I}m_storage.${fieldName} = static_cast<<@field_cpp_type_name field/>>(reader.read${field.runtimeFunction.suffix}(${readCommandArgs}));
+${I}storage.${fieldName} = static_cast<<@field_cpp_type_name field/>>(reader.read${field.runtimeFunction.suffix}(${readCommandArgs}));
     <#elseif field.typeInfo.isEnum>
-${I}m_storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reader);
+${I}storage.${fieldName} = ::zserio::read<<@field_cpp_type_name field/>>(reader);
     <#elseif !field.array??>
         <#-- bitmask -->
-${I}m_storage.${fieldName} = <@field_cpp_type_name field/>(reader);
+${I}storage.${fieldName} = <@field_cpp_type_name field/>(reader);
     </#if>
     <#if field.array??>
         <#if field.optional?? || field.usesAnyHolder>
-${I}m_storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
+${I}storage.${fieldName} = <@field_storage_type_inner field/>(allocator);
         </#if>
 ${I}<@array_typedef_name field/>(<#lt><#if array_needs_owner(field)>*this, </#if><#rt>
-        <#lt>m_storage.${fieldName}${getFromHolder}).read<@array_field_packed_suffix field, packed/>(<#rt>
-        <#lt>reader<#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
+        <#lt>storage.${fieldName}${getFromHolder}, reader<#rt>
+        <@array_field_packed_tag field, packed/><#t>
+        <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
     </#if>
 </#macro>
 
@@ -354,7 +355,7 @@ ${I}}
     <#if field.isExtended>
 ${I}if (${field.isPresentIndicatorName}())
 ${I}{
-${I}    out.alignTo(UINT32_C(8));
+${I}    writer.alignTo(UINT32_C(8));
         <@compound_write_field_optional field, compoundName, indent+1, packed/>
 ${I}}
     <#else>
@@ -368,14 +369,14 @@ ${I}}
 ${I}if (<@field_optional_condition field/>)
 ${I}{
         <#if !field.optional.clause??>
-${I}    out.writeBool(true);
+${I}    writer.writeBool(true);
         </#if>
         <@compound_write_field_inner field, compoundName, indent+1, packed/>
 ${I}}
         <#if !field.optional.clause??>
 ${I}else
 ${I}{
-${I}    out.writeBool(false);
+${I}    writer.writeBool(false);
 ${I}}
         </#if>
     <#else>
@@ -388,22 +389,22 @@ ${I}}
     <@compound_write_field_prolog field, compoundName, indent/>
     <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
-${I}<@compound_get_field field/>.write(context.${field.getterName}(), out);
+${I}${field.getterName}().write(context.${field.getterName}(), writer);
         <#elseif field.typeInfo.isEnum>
-${I}::zserio::write(context.${field.getterName}(), out, <@compound_get_field field/>);
+${I}::zserio::write(context.${field.getterName}(), writer, ${field.getterName}());
         <#else>
 ${I}context.${field.getterName}().write<<@array_traits_type_name field/>>(<#rt>
-        <#lt><#if array_traits_needs_owner(field)>*this, </#if>out, <@compound_get_field field/>);
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if>writer, ${field.getterName}());
         </#if>
     <#elseif field.runtimeFunction??>
-${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
+${I}writer.write${field.runtimeFunction.suffix}(${field.getterName}()<#if field.runtimeFunction.arg??>,<#rt>
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.typeInfo.isEnum>
-${I}::zserio::write(out, <@compound_get_field field/>);
+${I}::zserio::write(writer, ${field.getterName}());
     <#elseif field.array??>
-${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(<#if array_needs_owner(field)>*this, </#if>out);
+${I}${field.getterName}().write<@array_field_packed_suffix field, packed/>(writer);
     <#else>
-${I}<@compound_get_field field/>.write(out);
+${I}${field.getterName}().write(writer);
     </#if>
 </#macro>
 
@@ -436,16 +437,18 @@ ${I}    throw ::zserio::ConstraintException("${actionName}: Constraint violated 
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array?? && field.array.length??>
 ${I}// check array length
-${I}if (<@compound_get_field field/>.getRawArray().size() != static_cast<size_t>(${field.array.length}))
+${I}if (${field.getterName}().size() != static_cast<size_t>(${field.array.length}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: ") <<
-${I}            <@compound_get_field field/>.getRawArray().size() << " != " <<
+${I}            ${field.getterName}().size() << " != " <<
 ${I}            static_cast<size_t>(${field.array.length}) << "!";
 ${I}}
     </#if>
 </#macro>
 
 <#macro compound_check_parameterized_field field compoundName indent>
+    <#--
+    TODO[Mi-L@]: Not needed to check?
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.compound?? && field.compound.instantiatedParameters?has_content>
 ${I}// check parameters
@@ -455,19 +458,20 @@ ${I}// check parameters
                 <#local instantiatedExpression>
                     static_cast<${instantiatedParameter.typeInfo.typeFullName}>(${instantiatedParameter.expression})<#t>
                 </#local>
-${I}if (<@compound_get_field field/>.${parameter.getterName}() != ${instantiatedExpression})
+${I}if (${field.getterName}().${parameter.getterName}() != ${instantiatedExpression})
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: ") <<
-${I}            <@compound_get_field field/>.${parameter.getterName}() << " != " << ${instantiatedExpression} << "!";
+${I}            ${field.getterName}().${parameter.getterName}() << " != " << ${instantiatedExpression} << "!";
 ${I}}
             <#else>
-${I}if (&(<@compound_get_field field/>.${parameter.getterName}()) != &(${instantiatedParameter.expression}))
+${I}if (&(${field.getterName}().${parameter.getterName}()) != &(${instantiatedParameter.expression}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("Write: Inconsistent parameter ${parameter.name} for field ${compoundName}.${field.name}!");
 ${I}}
             </#if>
         </#list>
     </#if>
+    -->
 </#macro>
 
 <#macro compound_check_range_field field compoundName indent>
@@ -509,6 +513,12 @@ ${I}    throw ::zserio::CppRuntimeException("Value ") << ${value} <<
 ${I}            " of ${compoundName}.${valueName} exceeds the range of <" <<
 ${I}            lowerBound << ".." << upperBound << ">!";
 ${I}}
+</#macro>
+
+<#macro array_field_packed_tag field packed>
+    <#if field.isPackable && (packed || field.array.isPacked)>
+        , ::zserio::PackedTag()<#t>
+    </#if>
 </#macro>
 
 <#macro array_field_packed_suffix field packed>
@@ -660,7 +670,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(Ow
                 ::zserio::BitStreamReader& in, size_t index);
 
         static ${field.array.elementTypeInfo.typeFullName}::View at(const OwnerType& owner,
-                ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index);
+                const ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index);
     <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         static void create(<#if !withWriterCode>const </#if>OwnerType& owner,
@@ -694,7 +704,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
 }
 
 ${field.array.elementTypeInfo.typeFullName}::View ${compoundName}::<@element_factory_name field.name/>::at(
-        const OwnerType& owner, ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index)
+        const OwnerType& owner, const ${field.array.elementTypeInfo.typeFullName}::Storage& element, size_t index)
 {
     return ${field.array.elementTypeInfo.typeFullName}::View(
             <#if extraConstructorArguments?has_content>${extraConstructorArguments}, </#if>
@@ -858,15 +868,15 @@ ${I}}
     <@compound_align_field field, indent/>
     <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(context.${field.getterName}(), endBitPosition);
+${I}endBitPosition += ${field.getterName}().bitSizeOf(context.${field.getterName}(), endBitPosition);
         <#elseif field.typeInfo.isEnum>
-${I}endBitPosition += ::zserio::bitSizeOf(context.${field.getterName}(), <@compound_get_field field/>);
+${I}endBitPosition += ::zserio::bitSizeOf(context.${field.getterName}(), ${field.getterName}());
         <#else>
 ${I}endBitPosition += context.${field.getterName}().bitSizeOf<<@array_traits_type_name field/>>(<#rt>
-        <#lt><#if array_traits_needs_owner(field)>*this, </#if><@compound_get_field field/>);
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if>${field.getterName}());
         </#if>
     <#elseif field.typeInfo.isEnum>
-${I}endBitPosition += ::zserio::bitSizeOf(<@compound_get_field field/>);
+${I}endBitPosition += ::zserio::bitSizeOf(${field.getterName}());
     <#elseif field.bitSize??>
         <#if field.bitSize.isDynamicBitField>
 ${I}endBitPosition += static_cast<uint8_t>(${field.bitSize.value});
@@ -874,11 +884,11 @@ ${I}endBitPosition += static_cast<uint8_t>(${field.bitSize.value});
 ${I}endBitPosition += ${field.bitSize.value};
         </#if>
     <#elseif field.runtimeFunction??>
-${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(${field.getterName}());
     <#elseif field.array??>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(<#if array_needs_owner(field)>*this, </#if>endBitPosition);
+${I}endBitPosition += ${field.getterName}().bitSizeOf<@array_field_packed_suffix field, packed/>(endBitPosition);
     <#else>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
+${I}endBitPosition += ${field.getterName}().bitSizeOf(endBitPosition);
     </#if>
 </#macro>
 
@@ -1231,12 +1241,12 @@ ${I}}
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.compound?? || field.typeInfo.isBitmask>
-${I}<@compound_get_field field/>.initPackingContext(context.${field.getterName}());
+${I}${field.getterName}().initPackingContext(context.${field.getterName}());
     <#elseif field.typeInfo.isEnum>
-${I}::zserio::initPackingContext(context.${field.getterName}(), <@compound_get_field field/>);
+${I}::zserio::initPackingContext(context.${field.getterName}(), ${field.getterName}());
     <#else>
 ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
-        <#lt><#if array_traits_needs_owner(field)>*this, </#if><@compound_get_field field/>);
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if>${field.getterName}());
     </#if>
 </#macro>
 

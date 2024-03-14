@@ -396,8 +396,9 @@ public:
 
         template <typename T,
                 typename std::enable_if<!std::is_same<T, allocator_type>::value, int>::type = 0>
-        Storage(ChoiceTag choiceTag, T&& value, const allocator_type& allocator = allocator_type()) :
-                any(std::forward<T>(value), allocator)
+        Storage(ChoiceTag choiceTag_, T&& value_, const allocator_type& allocator = allocator_type()) :
+                choiceTag(choiceTag_),
+                any(std::forward<T>(value_), allocator)
         {}
 
         ChoiceTag choiceTag;
@@ -410,9 +411,9 @@ public:
         View(<#rt>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
         <@compound_parameter_view_constructor_type_list compoundConstructorsData.compoundParametersData, 4/><#t>
-                Storage& storage) noexcept :
+                const Storage& storage) noexcept :
 <#else>
-                <#lt>Storage& storage) noexcept :
+                <#lt>const Storage& storage) noexcept :
 </#if>
 <#if compoundConstructorsData.compoundParametersData.list?has_content>
                 <#lt><@compound_parameter_view_constructor_initializers compoundConstructorsData.compoundParametersData, 4, true/>
@@ -432,7 +433,7 @@ public:
 </#if>
                 m_storage(storage)
         {
-            m_storage.choiceTag = static_cast<${name}::ChoiceTag>(reader.readVarSize());
+            storage.choiceTag = static_cast<${name}::ChoiceTag>(reader.readVarSize());
 
             switch (choiceTag())
             {
@@ -457,7 +458,7 @@ public:
     </#if>
                 m_storage(storage)
         {
-            m_storage.choiceTag = return static_cast<${name}::ChoiceTag>(
+            storage.choiceTag = return static_cast<${name}::ChoiceTag>(
                     static_cast<int32_t>(context.getChoiceTag().read<::zserio::VarSizeArrayTraits>(reader)));
 
             switch (choiceTag())
@@ -483,10 +484,121 @@ public:
             <@field_view_get field, 3/>
         }
 </#list>
+<#list compoundFunctionsData.list as compoundFunction>
+
+        <@function_return_view_type compoundFunction/> ${compoundFunction.name}() const
+        {
+    <#if compoundFunction.returnTypeInfo.isSimple>
+            return static_cast<${compoundFunction.returnTypeInfo.typeFullName}>(${compoundFunction.resultExpression});
+    <#else>
+            return ${compoundFunction.resultExpression};
+    </#if>
+        }
+</#list>
+<#if isPackable && usedInPackedArray>
+
+        void initPackingContext(ZserioPackingContext& context) const
+        {
+            context.getChoiceTag().init<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
+
+            switch (choiceTag())
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@compound_init_packing_context_field field, 2/>
+                break;
+    </#list>
+            default:
+                throw ::zserio::CppRuntimeException("No match in union ${name}!");
+            }
+        }
+</#if>
+
+        size_t bitSizeOf(size_t bitPosition) const
+        {
+<#if fieldList?has_content>
+            size_t endBitPosition = bitPosition;
+
+            endBitPosition += ::zserio::bitSizeOfVarSize(static_cast<uint32_t>(m_storage.choiceTag));
+
+            switch (choiceTag())
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@compound_bitsizeof_field field, 4/>
+                break;
+    </#list>
+            default:
+                throw ::zserio::CppRuntimeException("No match in union ${name}!");
+            }
+
+            return endBitPosition - bitPosition;
+<#else>
+            return 0;
+</#if>
+        }
+<#if isPackable && usedInPackedArray>
+
+        size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const
+        {
+            size_t endBitPosition = bitPosition;
+
+            endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_storage.choiceTag));
+
+            switch (choiceTag())
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@compound_bitsizeof_field field, 2, true/>
+                break;
+    </#list>
+            default:
+                throw ::zserio::CppRuntimeException("No match in union ${name}!");
+            }
+
+            return endBitPosition - bitPosition;
+        }
+</#if>
+
+        void write(::zserio::BitStreamWriter& writer) const
+        {
+<#if fieldList?has_content>
+            writer.writeVarSize(static_cast<uint32_t>(choiceTag()));
+
+            switch (choiceTag())
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@compound_write_field field, name, 4/>
+                break;
+    </#list>
+            default:
+                throw ::zserio::CppRuntimeException("No match in union ${name}!");
+            }
+</#if>
+        }
+<#if isPackable && usedInPackedArray>
+
+        void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& writer) const
+        {
+            context.getChoiceTag().write<${choiceTagArrayTraits}>(writer, static_cast<uint32_t>(choiceTag()));
+
+            switch (choiceTag())
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@compound_write_field field, name, 2, true/>
+                break;
+    </#list>
+            default:
+                throw ::zserio::CppRuntimeException("No match in union ${name}!");
+            }
+        }
+</#if>
 
     private:
         <@compound_parameter_view_members compoundParametersData/>
-        Storage& m_storage;
+        const Storage& m_storage;
     };
 };
 <#list fieldList as field>
