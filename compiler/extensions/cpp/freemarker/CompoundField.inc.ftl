@@ -411,7 +411,7 @@ ${I}${field.getterName}().write(writer);
 <#macro compound_write_field_prolog field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}out.alignTo(${field.alignmentValue});
+${I}writer.alignTo(${field.alignmentValue});
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
     <@compound_check_offset_field field, compoundName, "Write", "out", indent/>
