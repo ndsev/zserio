@@ -434,6 +434,49 @@ private:
     </#list>
     <#return arguments/>
 </#function>
+<#macro structure_compare_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#-- if optional is not auto and is used the other should be is used as well because all previous paramaters
+             and fields were the same. -->
+${I}(!${field.name}.hasValue() ? !other.${field.name}.hasValue() : <#rt>
+            (${field.name} == other.${field.name}))<#t>
+    <#else>
+${I}(${field.name} == other.${field.name})<#rt>
+    </#if>
+</#macro>
+<#macro structure_less_than_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#local lhs>${field.name}</#local>
+    <#local rhs>other.${field.name}</#local>
+    <#if field.optional??>
+${I}if (${field.name}.hasValue() && other.${field.name}.hasValue())
+${I}{
+${I}    if (<@compound_field_less_than_compare field, lhs, rhs/>)
+${I}        return true;
+${I}    if (<@compound_field_less_than_compare field, rhs, lhs/>)
+${I}        return false;
+${I}}
+${I}else if (${field.name}.hasValue() != other.${field.name}.hasValue())
+${I}{
+${I}    return !${field.name}.hasValue();
+${I}}
+    <#else>
+${I}if (<@compound_field_less_than_compare field, lhs, rhs/>)
+${I}    return true;
+${I}if (<@compound_field_less_than_compare field, rhs, lhs/>)
+${I}    return false;
+    </#if>
+</#macro>
+<#macro structure_hash_code_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+${I}if (${field.name}.hasValue())
+${I}    result = ::zserio::calcHashCode(result, ${field.name});
+    <#else>
+${I}result = ::zserio::calcHashCode(result, ${field.name});
+    </#if>
+</#macro>
 public:
     using allocator_type = ${types.allocator.default};
     struct Storage;
@@ -488,6 +531,44 @@ public:
         </#list>
         {}
 </#if>
+
+        bool operator==(const Storage& other) const
+        {
+<#if fieldList?has_content>
+            if (this != &other)
+            {
+                return
+    <#list fieldList as field>
+                        <@structure_compare_field field, 4/><#if field?has_next> &&<#else>;</#if>
+    </#list>
+            }
+
+</#if>
+            return true;
+        }
+
+        bool operator<(const Storage& other) const
+        {
+<#if fieldList?has_content>
+    <#list fieldList as field>
+            <@structure_less_than_field field, 3/>
+    </#list>
+</#if>
+            return false;
+        }
+
+        uint32_t hashCode() const
+        {
+            uint32_t result = ::zserio::HASH_SEED;
+<#if fieldList?has_content>
+
+    <#list fieldList as field>
+            <@structure_hash_code_field field, 3/>
+    </#list>
+
+</#if>
+            return result;
+        }
 
         <#-- TODO[Mi-L@]: What about allocator extended copy/move constructors? -->
 <#list fieldList as field>

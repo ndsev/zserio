@@ -351,6 +351,15 @@ private:
     ${types.anyHolder.name} m_objectChoice;
 </#if>
 -->
+<#macro union_less_than_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#local lhs>any.get<<@field_storage_type_inner field/>>()</#local>
+    <#local rhs>other.any.get<<@field_storage_type_inner field/>>()</#local>
+${I}if (any.hasValue() && other.any.hasValue())
+${I}    return <@compound_field_less_than_compare field, lhs, rhs/>;
+${I}else
+${I}    return !any.hasValue() && other.any.hasValue();
+</#macro>
 public:
     using allocator_type = ${types.allocator.default};
     struct Storage;
@@ -394,12 +403,87 @@ public:
                 any(allocator)
         {}
 
-        template <typename T,
-                typename std::enable_if<!std::is_same<T, allocator_type>::value, int>::type = 0>
+        template <typename T>
         Storage(ChoiceTag choiceTag_, T&& value_, const allocator_type& allocator = allocator_type()) :
                 choiceTag(choiceTag_),
                 any(std::forward<T>(value_), allocator)
         {}
+
+        bool operator==(const Storage& other) const
+        {
+            if (this == &other)
+                return true;
+
+            if (choiceTag != other.choiceTag)
+                return false;
+
+<#if fieldList?has_content>
+            if (any.hasValue() != other.any.hasValue())
+                return false;
+
+            if (!any.hasValue())
+                return true;
+
+            switch (choiceTag)
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                return any.get<<@field_storage_type_inner field/>>() == other.any.get<<@field_storage_type_inner field/>>();
+    </#list>
+            default:
+                return true; // UNDEFINED_CHOICE
+            }
+<#else>
+            return true;
+</#if>
+        }
+
+        bool operator<(const Storage& other) const
+        {
+            if (choiceTag < other.choiceTag)
+                return true;
+            if (other.choiceTag < choiceTag)
+                return false;
+<#if fieldList?has_content>
+
+            switch (choiceTag)
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@union_less_than_field field, 2/>
+    </#list>
+            default:
+                return false; // UNDEFINED_CHOICE
+            }
+<#else>
+            return false;
+</#if>
+        }
+
+        uint32_t hashCode() const
+        {
+            uint32_t result = ::zserio::HASH_SEED;
+
+            result = ::zserio::calcHashCode(result, static_cast<int32_t>(choiceTag));
+<#if fieldList?has_content>
+            if (any.hasValue())
+            {
+                switch (choiceTag)
+                {
+    <#list fieldList as field>
+                case <@choice_tag_name field/>:
+                    result = ::zserio::calcHashCode(result, any.get<<@field_storage_type_inner field/>>());
+                    break;
+    </#list>
+                default:
+                    // UNDEFINED_CHOICE
+                    break;
+                }
+            }
+</#if>
+
+            return result;
+        }
 
         ChoiceTag choiceTag;
         ${types.anyHolder.name} any;

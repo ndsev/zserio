@@ -410,9 +410,32 @@ ${I}}
 <#macro choice_field_view_read member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
+${I}storage.choiceTag = <@choice_tag_name member.compoundField/>;
     <@field_view_read member.compoundField, indent, packed/>
+    <#else>
+${I}storage.choiceTag = UNDEFINED_CHOICE;
     </#if>
 ${I}break;
+</#macro>
+<#macro choice_compare_member member packed indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return (!any.hasValue() && !other.any.hasValue()) ||
+${I}        (any.hasValue() && other.any.hasValue() &&
+${I}        any.get<<@field_cpp_type_name member.compoundField/>>() == <#rt>
+            <#lt>other.any.get<<@field_cpp_type_name member.compoundField/>>());
+    <#else>
+${I}return true; // empty
+    </#if>
+</#macro>
+<#macro choice_less_than_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#local lhs>any.get<<@field_storage_type_inner field/>>()</#local>
+    <#local rhs>other.any.get<<@field_storage_type_inner field/>>()</#local>
+${I}if (any.hasValue() && other.any.hasValue())
+${I}    return <@compound_field_less_than_compare field, lhs, rhs/>;
+${I}else
+${I}    return !any.hasValue() && other.any.hasValue();
 </#macro>
 <#macro choice_tag_no_match name indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -502,12 +525,93 @@ public:
                 any(allocator)
         {}
 
-        template <typename T,
-                typename std::enable_if<!std::is_same<T, allocator_type>::value, int>::type = 0>
-        explicit Storage(T&& value, const allocator_type& allocator = allocator_type()) :
-                any(std::forward<T>(value), allocator)
-        {}
+        template <typename T>
+        explicit Storage(ChoiceTag choiceTag_, T&& value, const allocator_type& allocator = allocator_type()) :
+                choiceTag(choiceTag_), any(std::forward<T>(value), allocator)
+        {
+            <#--
+            TODO[Mi-L@]: We should check somewhere that the storage's choiceTag matches the selector expression
+                         and also that the type stored in the any holder matches the choiceTag!
+            -->
+        }
 
+        bool operator==(const Storage& other) const
+        {
+            if (this == &other)
+                return true;
+
+            if (choiceTag != other.choiceTag)
+                return false;
+
+<#if fieldList?has_content>
+            if (any.hasValue() != other.any.hasValue())
+                return false;
+
+            if (!any.hasValue())
+                return true;
+
+            switch (choiceTag)
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                return any.get<<@field_storage_type_inner field/>>() == other.any.get<<@field_storage_type_inner field/>>();
+    </#list>
+            default:
+                return true; // UNDEFINED_CHOICE
+            }
+<#else>
+            return true;
+</#if>
+        }
+
+        bool operator<(const Storage& other) const
+        {
+            if (choiceTag < other.choiceTag)
+                return true;
+            if (other.choiceTag < choiceTag)
+                return false;
+<#if fieldList?has_content>
+
+            switch (choiceTag)
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                <@choice_less_than_field field, 2/>
+    </#list>
+            default:
+                return false; // UNDEFINED_CHOICE
+            }
+<#else>
+            return false;
+</#if>
+        }
+
+        uint32_t hashCode() const
+        {
+            uint32_t result = ::zserio::HASH_SEED;
+
+            result = ::zserio::calcHashCode(result, static_cast<int32_t>(choiceTag));
+<#if fieldList?has_content>
+            if (any.hasValue())
+            {
+                switch (choiceTag)
+                {
+    <#list fieldList as field>
+                case <@choice_tag_name field/>:
+                    result = ::zserio::calcHashCode(result, any.get<<@field_storage_type_inner field/>>());
+                    break;
+    </#list>
+                default:
+                    // UNDEFINED_CHOICE
+                    break;
+                }
+            }
+</#if>
+
+            return result;
+        }
+
+        ChoiceTag choiceTag;<#-- TODO[Mi-L@]: just to emulate std::variant? -->
         ${types.anyHolder.name} any;
     };
 
