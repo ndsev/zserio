@@ -200,7 +200,7 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
 
 <#macro compound_parameter_comparison compoundParametersData, trailingAnd>
     <#list compoundParametersData.list as compoundParameter>
-                (${compoundParameter.getterName}() == other.${compoundParameter.getterName}())<#if compoundParameter?has_next || trailingAnd> &&<#else>;</#if>
+                    (${compoundParameter.getterName}() == other.${compoundParameter.getterName}())<#if compoundParameter?has_next || trailingAnd> &&<#else>;</#if>
     </#list>
 </#macro>
 
@@ -242,7 +242,7 @@ ${I}    return false;
 
 <#macro compound_parameter_hash_code compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());
+            result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());
     </#list>
 </#macro>
 

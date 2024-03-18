@@ -568,6 +568,33 @@ public:
             <@field_view_get field, 3/>
         }
 </#list>
+
+        bool operator==(const View& other) const
+        {
+            return
+<#if compoundParametersData.list?has_content>
+                    <@compound_parameter_comparison compoundParametersData, true/>
+</#if>
+                    m_storage == other.m_storage;
+        }
+
+        bool operator<(const View& other) const
+        {
+            <@compound_parameter_less_than compoundParametersData, 3/>
+
+            return m_storage < other.m_storage;
+        }
+
+        uint32_t hashCode() const
+        {
+            uint32_t result = ::zserio::HASH_SEED;
+
+            <@compound_parameter_hash_code compoundParametersData/>
+
+            result = ::zserio::calcHashCode(result, m_storage);
+
+            return result;
+        }
 <#list compoundFunctionsData.list as compoundFunction>
 
         <@function_return_view_type compoundFunction/> ${compoundFunction.name}() const
