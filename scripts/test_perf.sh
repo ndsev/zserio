@@ -557,7 +557,8 @@ EOF
 else
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     zserio::BitStreamReader reader(bitBuffer);
-    auto readBlob = ${BLOB_CLASS_FULL_NAME}::View(reader, allocator);
+    ${BLOB_CLASS_FULL_NAME}::Storage readBlobStorage(allocator);
+    auto readBlob = ${BLOB_CLASS_FULL_NAME}::View(reader, readBlobStorage, allocator);
 EOF
 fi
 
@@ -586,9 +587,9 @@ EOF
         "READ_WRITE")
             cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
         zserio::BitStreamReader reader(bitBuffer);
-        readBlobs.emplace_back(reader);
+        ${BLOB_CLASS_FULL_NAME}::View(reader, readBlobs.emplace_back(allocator), allocator);
         zserio::BitStreamWriter writer(bitBuffer);
-        readBlobs.back().write(writer);
+        ${BLOB_CLASS_FULL_NAME}::View(readBlobs.back()).write(writer);
 EOF
             ;;
 
