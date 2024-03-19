@@ -139,6 +139,11 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
 
+    # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
+    - name: Reduce ASLR entropy as a temporary workaround
+      run: |
+        sudo sysctl -w vm.mmap_rnd_bits=28
+
     - name: Build Zserio C++ runtime (Debug Build)
       run: |
         if [ -f "`which clang-tidy-14`" ] ; then
