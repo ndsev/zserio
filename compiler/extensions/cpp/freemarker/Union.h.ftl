@@ -19,6 +19,9 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+<#if has_field_with_constraint(fieldList)>
+#include <zserio/ConstraintException.h>
+</#if>
 <#if isPackable && usedInPackedArray>
 #include <zserio/DeltaContext.h>
 </#if>
