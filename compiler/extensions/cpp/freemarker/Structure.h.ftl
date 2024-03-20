@@ -516,18 +516,13 @@ public:
         {}
 <#if fieldList?has_content>
 
-        template <
-    <#list fieldList as field>
-                typename ZSERIO_TYPE_${field.name},
-    </#list>
-                typename std::enable_if<!std::is_same<ZSERIO_TYPE_${fieldList[0].name}, allocator_type>::value, int>::type = 0>
         Storage(
     <#list fieldList as field>
-                ZSERIO_TYPE_${field.name}&& <@field_argument_name field/>,
+                <@field_storage_type field/> <@field_argument_name field/><#if field?has_next>,</#if>
     </#list>
-                const allocator_type& allocator = allocator_type()) :
+        ) :
         <#list fieldList as field>
-                ${field.name}(std::forward<ZSERIO_TYPE_${field.name}>(<@field_argument_name field/>)<#if (field.optional?? && field.holderNeedsAllocator) || (!field.optional?? && field.array??)>, allocator</#if>)<#if field?has_next>,<#else></#if>
+                ${field.name}(std::move(<@field_argument_name field/>))<#if field?has_next>,</#if>
         </#list>
         {}
 </#if>
