@@ -392,6 +392,12 @@ public:
     </#if>
 </#list>
     <@arrays_typedefs fieldList/>
+<#if fieldList?has_content>
+    <#list fieldList as field>
+    using ChoiceType_${field.name} = <@field_storage_type_inner field/>;
+    </#list>
+
+</#if>
     struct Storage
     {
 <#if isPackable && usedInPackedArray>

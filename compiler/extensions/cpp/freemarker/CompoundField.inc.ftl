@@ -1167,6 +1167,10 @@ ${I};
     CHOICE_${field.name}<#t>
 </#macro>
 
+<#macro choice_type_name field>
+    ChoiceType_${field.name}<#t>
+</#macro>
+
 <#macro compound_field_constructor_template_arg_list compoundName fieldList>
     <#local numTemplateArgs=0/>
     <#local firstTemplateArgName=""/>
