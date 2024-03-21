@@ -8,7 +8,7 @@ endfunction()
 # Prepares warnings setup for current target
 function(compiler_get_warnings_setup VARNAME)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(WARNINGS_SETUP "-Wall -Wextra -pedantic -Wno-long-long")
+        set(WARNINGS_SETUP "-Wall -Wextra -pedantic -Wconversion -Wno-long-long")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(WARNINGS_SETUP_LIST "-Weverything"
                 "-Wno-system-headers"
