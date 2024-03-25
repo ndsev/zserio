@@ -8,226 +8,93 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_windows:
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: ["windows-2022"]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        java-version: ["8"]
-        cxx-standard-version: ["11"]
-        msvc-toolset-version: ["v141"]
-        mingw-version: ["7.5.0"]
-        include:
-          # Java 11
-          - os: "windows-2022"
-            python-version: "3.8"
-            java-version: "11"
-            cxx-standard-version: "11"
-            msvc-toolset-version: "v141"
-            mingw-version: "7.5.0"
-          # Java 17
-          - os: "windows-2022"
-            python-version: "3.8"
-            java-version: "17"
-            cxx-standard-version: "11"
-            msvc-toolset-version: "v141"
-            mingw-version: "7.5.0"
-          # C++11, MSVC toolset v142 (MSVC 2019), MinGW 9.4.0
-          - os: "windows-2022"
-            python-version: "3.8"
-            java-version: "8"
-            cxx-standard-version: "11"
-            msvc-toolset-version: "v142"
-            mingw-version: "9.4.0"
-          # C++17, MSVC toolset v142 (MSVC 2019), MinGW 9.4.0
-          - os: "windows-2022"
-            python-version: "3.8"
-            java-version: "8"
-            cxx-standard-version: "17"
-            msvc-toolset-version: "v142"
-            mingw-version: "9.4.0"
-    name: |
-      OS ${{matrix.os}}, Python ${{matrix.python-version}},
-      Java ${{matrix.java-version}}, C++${{matrix.cxx-standard-version}},
-      MSVC ${{matrix.msvc-toolset-version}}, MinGW ${{matrix.mingw-version}}
-    env:
-      CPPCHECK_HOME: "/c/Program Files/Cppcheck"
-      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
-      PYLINT_ENABLED: 1
-      MYPY_ENABLED: 1
-      NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
-      XMLLINT_ENABLED: 1
-      CMAKE_CXX_STANDARD: "${{matrix.cxx-standard-version}}"
-      MINGW64_TOOLCHAIN_ROOT: "/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64"
-      MSVC_CMAKE_TOOLSET: ${{matrix.msvc-toolset-version}}
+  zserio:
+    uses: "./.github/workflows/build_windows_zserio.yml"
+
+  cpp:
+    needs: [zserio]
+    uses: "./.github/workflows/build_windows_cpp.yml"
+  java:
+    needs: [zserio]
+    uses: "./.github/workflows/build_windows_java.yml"
+  python:
+    needs: [zserio]
+    uses: "./.github/workflows/build_windows_python.yml"
+  doc:
+    needs: [zserio]
+    uses: "./.github/workflows/build_windows_doc.yml"
+  xml:
+    needs: [zserio]
+    uses: "./.github/workflows/build_windows_xml.yml"
+
+  release:
+    needs: [cpp, java, python, doc, xml]
+    runs-on: "windows-2022"
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - name: Set up Java ${{matrix.java-version}}
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: ${{matrix.java-version}}
-
-    - name: Convert environment variables to POSIX paths
-      run: |
-        echo "SPOTBUGS_HOME=/${SPOTBUGS_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
-        echo "NU_HTML_VALIDATOR=/${NU_HTML_VALIDATOR}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
-        echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+    - name: Install dependencies
       shell: bash
-
-    - name: Set ANT variable
       run: |
-        echo "ANT=/${ANT_HOME}/bin/ant" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
-      shell: bash
-
-    - name: Set up Python ${{matrix.python-version}}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{matrix.python-version}}
-
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install virtualenv
-        python -m pip install setuptools # necessary for pkg_resources on Python 3.12
-        python -m pip install gcovr
-
-    - name: Install dependecies
-      run: |
-        choco install wget
-        choco install doxygen.portable
-        choco install graphviz
         choco install zip
-        choco install mingw --version ${{matrix.mingw-version}}
+
+    # update when https://github.com/actions/download-artifact/issues/315 is fixed
+    - name: "Download Zserio release artifacts"
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+        path: zserio-bin-java8
+    - name: "Download Java runtime release artifacts"
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-runtime-java8
+        path: zserio-runtime-java8
+    - name: "Download C++ runtime release artifacts"
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-runtime-cpp
+        path: zserio-runtime-cpp
+    - name: "Download Python runtime release artifacts"
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-runtime-python
+        path: zserio-runtime-python
+
+    - name: "Get Zserio version"
       shell: bash
-
-    - name: Install specific version of C++ static code analysis tool (cppcheck)
-      run: choco install cppcheck --version=2.6
-
-    - name: Install specific version of Java static code analysis tool (spotbugs)
       run: |
-        wget -P "${{github.workspace}}" https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip
-        unzip "${{github.workspace}}\spotbugs-4.8.2.zip"
+        RELEASE_DIR=$(ls -1 zserio-bin-java8 | head -n 1)
+        ZSERIO_VERSION=${RELEASE_DIR#release-}
+        echo "ZSERIO_VERSION=${ZSERIO_VERSION}" >> ${GITHUB_ENV}
 
-    - name: Install specific version of HTML validator (v.Nu)
+    - name: "Compose final release"
+      shell: bash
       run: |
-        wget -P "${{github.workspace}}" https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip
-        unzip "${{github.workspace}}\vnu.jar_20.6.30.zip" -d "${{github.workspace}}"
-        mv "${{github.workspace}}\dist" "${{github.workspace}}\vnu-20.6.30"
+        RELEASE_DIR=release-${ZSERIO_VERSION}
+        mkdir ${RELEASE_DIR}
 
-    - name: Install XML validator (xmllint)
-      run: choco install xsltproc
+        # zserio compiler with all extensions
+        cp zserio-bin-java8/release-*/zserio-*-bin.zip ${RELEASE_DIR}/.
 
-    - name: Build Zserio
-      run: scripts/build.sh all-windows64-mingw cpp_rt-windows64-msvc
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
+        # prepare all runtime libraries
+        mkdir runtime_libs
 
-    - name: Build Zserio C++ runtime (Debug Build)
-      run: scripts/build.sh cpp_rt-windows64-mingw cpp_rt-windows64-msvc
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
+        # add zserio java runtime library
+        unzip -q zserio-runtime-java8/release-*/zserio-*-runtime-libs.zip -d zserio-runtime-java8
+        cp -r zserio-runtime-java8/runtime_libs/java runtime_libs/.
 
-    - name: Pack Zserio release
-      run: scripts/release.sh
-      shell: bash
+        # add zserio cpp runtime library
+        unzip -q zserio-runtime-cpp/release-*/zserio-*-runtime-libs.zip -d zserio-runtime-cpp
+        cp -r zserio-runtime-cpp/runtime_libs/cpp runtime_libs/.
 
-    - name: Run Zserio tests
-      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
-      run: |
-        scripts/test.sh all-windows64-mingw cpp-windows64-msvc
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+        # add zserio python runtime library
+        unzip -q zserio-runtime-python/release-*/zserio-*-runtime-libs.zip -d zserio-runtime-python
+        cp -r zserio-runtime-python/runtime_libs/python runtime_libs/.
 
-    - name: Run Zserio tests (Debug Build)
-      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
-      # allocation tests do not work for MSVC Debug
-      run: |
-        scripts/test.sh cpp-windows64-mingw
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        # zip runtime libraries
+        zip -rq ${RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip "runtime_libs"
 
-    - name: Run Zserio tests with extra arguments
-      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
-      run: |
-        # -withRangeCheckCode -withValidationCode conflicts with -withoutWriterCode
-        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
-        scripts/test.sh -p -i arguments/without_writer_code java python
-        ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -setCppAllocator polymorphic -withReflectionCode" \
-              scripts/test.sh -p -i arguments/without_writer_code cpp-windows64-mingw cpp-windows64-msvc
-        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withRangeCheckCode -withValidationCode"
-        scripts/test.sh -p -x arguments/without_writer_code java python
-        ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -setCppAllocator polymorphic -withReflectionCode" \
-              scripts/test.sh -p -x arguments/without_writer_code cpp-windows64-mingw cpp-windows64-msvc
-        export ZSERIO_EXTRA_ARGS="-setTopLevelPackage top.level"
-        scripts/test.sh doc xml
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
-
-    - name: Run Zserio tests with extra arguments (Debug Build)
-      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
-      # allocation tests do not work for MSVC Debug
-      run: |
-        # -withRangeCheckCode -withValidationCode conflicts with -withoutWriterCode
-        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments \
-              -setCppAllocator polymorphic -withReflectionCode"
-        scripts/test.sh -p -i arguments/without_writer_code cpp-windows64-mingw
-        # disabled because of 6 hours time limit
-        # export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withRangeCheckCode -withValidationCode"
-        # scripts/test.sh -p -x arguments/without_writer_code cpp-windows64-mingw
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
-
-    - name: Run Zserio integration tests for repeated generation
-      run: scripts/test_gen.sh all-windows64-mingw cpp-windows64-msvc
-      shell: bash
-
-    - name: Run Zserio API compatibility checks
-      run: scripts/test_compat_api.sh java python cpp-windows64-msvc
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        CPPCHECK_HOME: ""
-        SPOTBUGS_HOME: ""
-        PYLINT_ENABLED: 0
-        MYPY_ENABLED: 0
-
-    - name: Run Zserio performance tests
-      run: |
-        scripts/test_perf.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
-              --source-dir test/others/gif/zs --source gif.zs \
-              --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
-              --num-iterations 1000 --test-config READ_WRITE
-      shell: bash
-
-    - name: Run Zserio benchmarks
-      run: |
-        scripts/benchmark.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
-              --num-iterations 1
-      shell: bash
-
-    - name: Archive Zserio release artifacts
+    - name: "Archive release artifacts"
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-release-${{matrix.os}}-python${{matrix.python-version}}-java${{matrix.java-version}}-msvc${{matrix.msvc-toolset-version}}-mingw${{matrix.mingw-version}}
-        path: release-*
-
-    - name: Archive Zserio build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: zserio-build-${{matrix.os}}-python${{matrix.python-version}}-java${{matrix.java-version}}-msvc${{matrix.msvc-toolset-version}}-mingw${{matrix.mingw-version}}
-        path: |
-          build/runtime_libs/python/**/zserio_cpp/**/*.pyd
-          build/runtime_libs/cpp/**/runtime/*.a
-          build/runtime_libs/cpp/**/runtime/**/*.lib
+        name: windows-release-${{env.ZSERIO_VERSION}}
+        path: release-${{env.ZSERIO_VERSION}}

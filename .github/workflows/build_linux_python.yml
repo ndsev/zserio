@@ -1,0 +1,122 @@
+name: Linux Python
+
+on:
+  workflow_call:
+
+jobs:
+  python:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "ubuntu-20.04", python-version: "3.8" }
+#        - { os: "ubuntu-20.04", python-version: "3.9" }
+#        - { os: "ubuntu-20.04", python-version: "3.10" }
+#        - { os: "ubuntu-22.04", python-version: "3.11" }
+#        - { os: "ubuntu-22.04", python-version: "3.12" }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}-python${{matrix.python-version}}
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "PYLINT_ENABLED=1" >> ${GITHUB_ENV}
+        echo "MYPY_ENABLED=1" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Install dependencies
+      run: sudo apt-get install gcc g++ graphviz doxygen
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Set up Python ${{matrix.python-version}}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{matrix.python-version}}
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install virtualenv
+        python -m pip install setuptools # necessary for pkg_resources on Python 3.12
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Build zserio C++ runtime (needed for python_cpp)
+      run: |
+        scripts/build.sh cpp_rt-linux64-gcc
+
+    - name: Build Zserio Python runtime
+      run: |
+        scripts/build.sh python_rt
+
+    - name: Pack Zserio Python runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      run: |
+        scripts/test.sh python
+
+    - name: Run Zserio tests with extra arguments
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
+        scripts/test.sh -p -i arguments/without_writer_code python
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code python
+
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+        scripts/test_gen.sh python
+
+    - name: Run Zserio API compatibility checks
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        MYPY_ENABLED: 0
+        PYLINT_ENABLED: 0
+      run: |
+        scripts/test_compat_api.sh python
+
+    - name: Run Zserio performance tests
+      run: |
+        scripts/test_perf.sh python python-cpp \
+            --source-dir test/others/gif/zs --source gif.zs \
+            --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
+            --num-iterations 1000 --test-config READ_WRITE
+
+    - name: Run Zserio benchmarks
+      run: |
+        scripts/benchmark.sh python python-cpp --num-iterations 1
+
+    - name: Upload Zserio Python runtime artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      # we want this artifact only once since it contains only sources
+      if: ${{ matrix.python-version == '3.8' }}
+      with:
+        name: "zserio-runtime-python"
+        path: release-*/*runtime-libs*
+
+    - name: Upload Zserio Python build artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "zserio-build-${{matrix.os}}-python${{matrix.python-version}}"
+        path: |
+          build/runtime_libs/python/**/zserio_cpp/**/*.so

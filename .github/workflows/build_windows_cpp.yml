@@ -1,0 +1,185 @@
+name: Windows C++
+
+on:
+  workflow_call:
+
+jobs:
+  cpp:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "windows-2022", msvc-toolset: "v141", cxx-standard: "11", build-type: "Release" }
+        - { os: "windows-2022", msvc-toolset: "v141", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "windows-2022", mingw-version: "7.5.0", cxx-standard: "11", build-type: "Release" }
+        - { os: "windows-2022", mingw-version: "7.5.0", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "11", build-type: "Release" }
+        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "11", build-type: "Release" }
+        - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Release" }
+        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Debug" }
+
+        - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "17", build-type: "Release" }
+        - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "17", build-type: "Debug" }
+
+    runs-on: ${{matrix.os}}
+    name: "\
+      ${{matrix.os}}-\
+      ${{ matrix.msvc-toolset && format('msvc-{0}', matrix.msvc-toolset)
+          || format('mingw{0}', matrix.mingw-version) }}-\
+      c++${{matrix.cxx-standard}}-${{matrix.build-type}}"
+
+    steps:
+    - name: "Set up environment"
+      shell: bash
+      run: |
+        echo "CMAKE_CXX_STANDARD=${{matrix.cxx-standard}}" >> ${GITHUB_ENV}
+        if [[ "${{matrix.msvc-toolset}}" != "" ]] ; then
+          echo "MSVC_CMAKE_TOOLSET=${{matrix.msvc-toolset}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=windows64-msvc" >> ${GITHUB_ENV}
+        elif [[ "${{matrix.mingw-version}}" != "" ]] ; then
+          echo "MINGW64_TOOLCHAIN_ROOT=/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64" >> ${GITHUB_ENV}
+          echo "PACKAGE=windows64-mingw" >> ${GITHUB_ENV}
+        fi
+
+        if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
+          echo "CPPCHECK_HOME=/c/Program Files/Cppcheck" >> ${GITHUB_ENV}
+        fi
+        if [[ "${{matrix.msvc-toolset}}" != "" ]] ; then
+          # msvc produces some warnings, https://github.com/ndsev/zserio/issues/587
+          echo "CMAKE_EXTRA_ARGS=-DCMAKE_BUILD_TYPE=${{matrix.build-type}}" >> ${GITHUB_ENV}
+        else
+          echo "CMAKE_EXTRA_ARGS=-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=${{matrix.build-type}}" >> ${GITHUB_ENV}
+        fi
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        choco install wget
+        choco install doxygen.portable
+        choco install graphviz
+        choco install zip
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install mingw ${{matrix.mingw-version}} compiler
+      shell: bash
+      if: ${{ matrix.mingw-version != '' }}
+      run: |
+        choco install mingw --version ${{matrix.mingw-version}}
+
+    - name: Install specific version of C++ static code analysis tool (cppcheck)
+      shell: bash
+      if: ${{ env.CPPCHECK_HOME != '' }}
+      run: choco install cppcheck --version=2.6
+
+    - name: "Convert environment variables to POSIX paths"
+      shell: bash
+      run: |
+        echo "ANT=/${ANT_HOME}/bin/ant" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Build Zserio C++ runtime
+      shell: bash
+      run: |
+        scripts/build.sh cpp_rt-${PACKAGE}
+
+    - name: Pack Zserio C++ runtime release
+      shell: bash
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      shell: bash
+      run: |
+        if [[ "${{matrix.msvc-toolset}}" != "" && "${{matrix.build-type}}" == "Debug" ]] ; then
+          # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
+          EXCLUDE_SET_CPP_ALLOCATOR="-x arguments/set_cpp_allocator"
+        fi
+
+        scripts/test.sh ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
+
+    - name: Run Zserio tests with extra arguments
+      shell: bash
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic"
+        scripts/test.sh -p -i arguments/without_writer_code cpp-${PACKAGE}
+
+        if [[ "${{matrix.msvc-toolset}}" != "" && "${{matrix.build-type}}" == "Debug" ]] ; then
+          # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
+          EXCLUDE_SET_CPP_ALLOCATOR="-x arguments/set_cpp_allocator"
+        fi
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
+
+    - name: Run Zserio integration tests for repeated generation
+      shell: bash
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}
+
+    - name: Run Zserio API compatibility checks
+      # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
+      if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
+      shell: bash
+      env:
+        CPPCHECK_HOME: ""
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      run: |
+        scripts/test_compat_api.sh cpp-${PACKAGE}
+
+    - name: Run Zserio performance tests
+      shell: bash
+      run: |
+        scripts/test_perf.sh cpp-${PACKAGE} \
+            --source-dir test/others/gif/zs --source gif.zs \
+            --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
+            --num-iterations 1000 --test-config READ_WRITE
+
+    - name: Run Zserio benchmarks
+      # MinGW Debug build does not work, https://github.com/ndsev/zserio/issues/588
+      if: ${{ matrix.mingw-version == '' || matrix.build-type == 'Release' }}
+      shell: bash
+      run: |
+        scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
+
+    - name: Archive Zserio C++ runtime artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      # we want this artifact only once since it contains only sources
+      if: ${{ matrix.msvc-toolset == 'v141' && matrix.cxx-standard && matrix.build-type == 'Release' }}
+      with:
+        name: "zserio-runtime-cpp"
+        path: release-*/*runtime-libs*
+
+    - name: Archive Zseiro C++ build artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "\
+          zserio-build-${{matrix.os}}-\
+          ${{ matrix.msvc-toolset && format('msvc-{0}', matrix.msvc-toolset)
+              || format('mingw{0}', matrix.mingw-version)}}-\
+          cxx${{matrix.cxx-standard}}-${{matrix.build-type}}"
+        path: |
+          build/runtime_libs/cpp/**/runtime/*.a
+          build/runtime_libs/cpp/**/runtime/*.lib

@@ -75,13 +75,16 @@ unpack_release()
         return 1
     fi
 
-    # runtime-libs (don't extract "zserio_doc" which is not needed and which has very deep nested directories
+    # runtime-libs if exists
+    # (don't extract "zserio_doc" which is not needed and which has very deep nested directories
     # failing on Windows - too long path)
-    "${UNZIP}" -q "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
-        -d "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}" -x "*zserio_doc*"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Cannot unzip zserio runtime libraries to ${UNPACKED_ZSERIO_RELEASE_DIR_LOC}!"
-        return 1
+    if [[ -f "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" ]] ; then
+        "${UNZIP}" -q "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
+            -d "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}" -x "*zserio_doc*"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Cannot unzip zserio runtime libraries to ${UNPACKED_ZSERIO_RELEASE_DIR_LOC}!"
+            return 1
+        fi
     fi
 
     eval ${UNPACKED_ZSERIO_RELEASE_DIR_OUT}="'${UNPACKED_ZSERIO_RELEASE_DIR_LOC}'"
