@@ -1,0 +1,195 @@
+name: Linux C++
+
+on:
+  workflow_call:
+
+jobs:
+  cpp:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "ubuntu-20.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-20.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-20.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-20.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "ubuntu-20.04", platform: "64", clang-version: "11", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-20.04", platform: "64", clang-version: "11", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-20.04", platform: "32", clang-version: "11", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-20.04", platform: "32", clang-version: "11", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "32", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "32", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "11", build-type: "Debug" }
+
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "17", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
+
+    runs-on: ${{matrix.os}}
+    name: "\
+      ${{matrix.os}}-${{matrix.platform}}-\
+      ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+          || format('clang{0}', matrix.clang-version) }}-\
+      c++${{matrix.cxx-standard}}-${{matrix.build-type}}"
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "CMAKE_BUILD_OPTIONS=-j2" >> ${GITHUB_ENV}
+        echo "CMAKE_CXX_STANDARD=${{matrix.cxx-standard}}" >> ${GITHUB_ENV}
+        if [[ "${{matrix.gcc-version}}" != "" ]] ; then
+          echo "GCC_VERSION_SUFFIX=-${{matrix.gcc-version}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=linux${{matrix.platform}}-gcc" >> ${GITHUB_ENV}
+        elif [[ "${{matrix.clang-version}}" != "" ]] ; then
+          echo "CLANG_VERSION_SUFFIX=-${{matrix.clang-version}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=linux${{matrix.platform}}-clang" >> ${GITHUB_ENV}
+        fi
+
+        if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
+          echo "CPPCHECK_HOME=${RUNNER_WORKSPACE}/cppcheck-2.6" >> ${GITHUB_ENV}
+          if [[ "${{matrix.clang-version}}" == "14" ]] ; then
+            echo "CLANG_FORMAT_BIN=clang-format-${{matrix.clang-version}}" >> ${GITHUB_ENV}
+            echo "CLANG_TIDY_BIN=clang-tidy-${{matrix.clang-version}}" >> ${GITHUB_ENV}
+          fi
+          if [[ "${{matrix.gcc-version}}" != "" && `gcc --version` == *" ${{matrix.gcc-version}}."* ]] ; then
+            # gcovr works only for default gcc version
+            export GCOVR_BIN="gcovr"
+          fi
+          if [[ "${{matrix.clang-version}}" != "" ]] ; then
+            export LLVM_PROFDATA_BIN="llvm-profdata-${{matrix.clang-version}}"
+            export LLVM_COV_BIN="llvm-cov-${{matrix.clang-version}}"
+          fi
+          if [[ ! ( "${{matrix.platform}}" == "32" && "${{matrix.clang-version}}" == 14 ) ]] ; then
+            # sanitizers do not work with clang-14 32-bit when cross-compiling
+            # https://github.com/ndsev/zserio/issues/473
+            echo "SANITIZERS_ENABLED=1" >> ${GITHUB_ENV}
+          fi
+        fi
+        echo "CMAKE_EXTRA_ARGS=-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=${{matrix.build-type}}" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz g++-multilib gcovr
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install gcc ${{matrix.gcc-version}} compiler
+      if: ${{ matrix.gcc-version != '' }}
+      run: |
+        sudo apt-get install gcc-${{matrix.gcc-version}}
+        sudo apt-get install g++-${{matrix.gcc-version}} g++-${{matrix.gcc-version}}-multilib
+
+    - name: Install clang ${{matrix.clang-version}} compiler
+      if: ${{ matrix.clang-version != '' }}
+      run: |
+        sudo apt-get install clang-${{matrix.clang-version}}
+        sudo apt-get install llvm-${{matrix.clang-version}}
+
+    - name: Install specific version of C++ static code analysis tool (cppcheck)
+      if: ${{ env.CPPCHECK_HOME != '' }}
+      run: |
+        wget https://github.com/danmar/cppcheck/archive/2.6.tar.gz -O "${RUNNER_WORKSPACE}"/cppcheck-2.6.tar.gz
+        tar -xf "${RUNNER_WORKSPACE}"/cppcheck-2.6.tar.gz -C "${RUNNER_WORKSPACE}"
+        mkdir "${RUNNER_WORKSPACE}/cppcheck-2.6/build"
+        pushd "${RUNNER_WORKSPACE}/cppcheck-2.6/build"
+        cmake .. -DHAVE_RULES=ON -DUSE_MATCHCOMPILER=ON \
+               -DCMAKE_INSTALL_PREFIX="${RUNNER_WORKSPACE}"/cppcheck-2.6 \
+               -DCMAKE_INSTALL_BINDIR=. \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DFILESDIR=.
+        cmake --build . --target install
+        popd
+
+    # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
+    - name: Reduce ASLR entropy as a temporary workaround
+      if: ${{ env.SANITIZERS_ENABLED == 1 }}
+      run: |
+        sudo sysctl -w vm.mmap_rnd_bits=28
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Build Zserio C++ runtime
+      run: |
+        scripts/build.sh cpp_rt-${PACKAGE}
+
+    - name: Pack Zserio C++ runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      run: |
+        scripts/test.sh cpp-${PACKAGE}
+
+    - name: Run Zserio tests with extra arguments
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic"
+        scripts/test.sh -p -i arguments/without_writer_code cpp-${PACKAGE}
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code cpp-${PACKAGE}
+
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}
+
+    - name: Run Zserio API compatibility checks
+      env:
+        CPPCHECK_HOME: ""
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      run: |
+        scripts/test_compat_api.sh cpp-${PACKAGE}
+
+    - name: Run Zserio performance tests
+      run: |
+        scripts/test_perf.sh cpp-${PACKAGE} \
+            --source-dir test/others/gif/zs --source gif.zs \
+            --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
+            --num-iterations 1000 --test-config READ_WRITE
+
+    - name: Run Zserio benchmarks
+      run: |
+        scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
+
+    - name: Upload Zserio C++ runtime artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      # we need to collect this artifact from a build which has both clang coverage and clang-tidy reports
+      if: ${{ matrix.platform == '64' && matrix.clang-version == '14' && matrix.cxx-standard == '11' &&
+              matrix.build-type == 'Debug' }}
+      with:
+        name: "zserio-runtime-cpp"
+        path: release-*/*runtime-libs*
+
+    - name: Upload Zserio C++ build artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "\
+          zserio-build-${{matrix.os}}-${{matrix.platform}}-\
+          ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+              || format('clang{0}', matrix.clang-version) }}-\
+          cxx${{matrix.cxx-standard}}-${{matrix.build-type}}"
+        path: build/runtime_libs/cpp/**/runtime/*.a

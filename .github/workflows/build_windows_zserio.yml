@@ -1,0 +1,106 @@
+name: Windows Zserio
+
+on:
+  workflow_call:
+
+jobs:
+  zserio:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "windows-2022", java-version: "8" }
+        - { os: "windows-2022", java-version: "11" }
+        - { os: "windows-2022", java-version: "17" }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}-java${{matrix.java-version}}
+
+    steps:
+    - name: "Set up environment"
+      shell: bash
+      run: |
+        echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        choco install wget
+        choco install zip
+
+    - name: Set up Java ${{matrix.java-version}}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{matrix.java-version}}
+
+    - name: Install specific version of Java static code analysis tool (spotbugs)
+      shell: bash
+      run: |
+        wget -P "${RUNNER_WORKSPACE}" \
+            https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip
+        unzip "${RUNNER_WORKSPACE}\spotbugs-4.8.2.zip" -d "${RUNNER_WORKSPACE}"
+
+    - name: "Convert environment variables to POSIX paths"
+      shell: bash
+      run: |
+        echo "ANT=/${ANT_HOME}/bin/ant" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "SPOTBUGS_HOME=/${SPOTBUGS_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Build ant task
+      shell: bash
+      run: |
+        scripts/build.sh ant_task
+
+    - name: Build Zserio core
+      shell: bash
+      run: |
+        scripts/build.sh core
+
+    - name: Build Zserio C++ extension
+      shell: bash
+      run: |
+        scripts/build.sh cpp
+
+    - name: Build Zserio Java extension
+      shell: bash
+      run: |
+        scripts/build.sh java
+
+    - name: Build Zserio python extension
+      shell: bash
+      run: |
+        scripts/build.sh python
+
+    - name: Build Zserio Doc extension
+      shell: bash
+      run: |
+        scripts/build.sh doc
+
+    - name: Build Zserio Xml extension
+      shell: bash
+      run: |
+        scripts/build.sh xml
+
+    - name: Build Zserio bundle
+      shell: bash
+      run: |
+        scripts/build.sh zserio
+
+    - name: Pack Zserio release
+      shell: bash
+      run: |
+        scripts/release.sh -p zserio
+
+    - name: Archive Zserio compiler artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "zserio-bin-java${{matrix.java-version}}"
+        path: release-*

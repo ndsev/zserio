@@ -1,0 +1,96 @@
+name: Linux Java
+
+on:
+  workflow_call:
+
+jobs:
+  java:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "ubuntu-20.04", java-version: 8 }
+        - { os: "ubuntu-20.04", java-version: 11 }
+        - { os: "ubuntu-22.04", java-version: 17 }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}-java${{matrix.java-version}}
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Set up Java ${{matrix.java-version}}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{matrix.java-version}}
+
+    - name: Install specific version of Java static code analysis tool (spotbugs)
+      run: |
+        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip \
+            -P "${RUNNER_WORKSPACE}"
+        unzip "${RUNNER_WORKSPACE}"/spotbugs-4.8.2.zip -d "${RUNNER_WORKSPACE}"
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Build Zserio Java runtime
+      run: |
+        scripts/build.sh java_rt
+
+    - name: Pack Zserio Java runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      run: |
+        scripts/test.sh java
+
+    - name: Run Zserio tests with extra arguments
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
+        scripts/test.sh -p -i arguments/without_writer_code java
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code java
+
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+        scripts/test_gen.sh java
+
+    - name: Run Zserio API compatibility checks
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        SPOTBUGS_HOME: ""
+      run: |
+        scripts/test_compat_api.sh java
+
+    - name: Run Zserio performance tests
+      run: |
+        scripts/test_perf.sh java \
+            --source-dir test/others/gif/zs --source gif.zs \
+            --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
+            --num-iterations 1000 --test-config READ_WRITE
+
+    - name: Run Zserio benchmarks
+      run: |
+        scripts/benchmark.sh java --num-iterations 1
+
+    - name: Upload Zserio Java runtime artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "zserio-runtime-java${{matrix.java-version}}"
+        path: release-*/*runtime-libs*

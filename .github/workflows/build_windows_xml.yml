@@ -1,0 +1,72 @@
+name: Windows Xml
+
+on:
+  workflow_call:
+
+jobs:
+  xml:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "windows-2022" }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}
+
+    steps:
+    - name: "Set up environment"
+      shell: bash
+      run: |
+        echo "XMLLINT_ENABLED=1" >> ${GITHUB_ENV}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        choco install zip
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install XML validator (xmllint)
+      shell: bash
+      run: |
+        choco install xsltproc
+
+    - name: "Convert environment variables to POSIX paths"
+      shell: bash
+      run: |
+        echo "ANT=/${ANT_HOME}/bin/ant" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Run Zserio tests
+      shell: bash
+      run: |
+        scripts/test.sh xml
+
+    - name: Run Zserio tests with extra arguments
+      shell: bash
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
+        scripts/test.sh -p -i arguments/without_writer_code xml
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code xml
+
+    - name: Run Zserio integration tests for repeated generation
+      shell: bash
+      run: |
+        scripts/test_gen.sh xml

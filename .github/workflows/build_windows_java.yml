@@ -1,0 +1,116 @@
+name: Windows Java
+
+on:
+  workflow_call:
+
+jobs:
+  java:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "windows-2022", java-version: "8" }
+        - { os: "windows-2022", java-version: "11" }
+        - { os: "windows-2022", java-version: "17" }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}-java${{matrix.java-version}}
+
+    steps:
+    - name: "Set up environment"
+      shell: bash
+      run: |
+        echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        choco install wget
+        choco install zip
+
+    - name: Set up Java ${{matrix.java-version}}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{matrix.java-version}}
+
+    - name: Install specific version of Java static code analysis tool (spotbugs)
+      shell: bash
+      run: |
+        wget -P "${RUNNER_WORKSPACE}" \
+            https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip
+        unzip "${RUNNER_WORKSPACE}\spotbugs-4.8.2.zip" -d "${RUNNER_WORKSPACE}"
+
+    - name: "Convert environment variables to POSIX paths"
+      shell: bash
+      run: |
+        echo "ANT=/${ANT_HOME}/bin/ant" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "SPOTBUGS_HOME=/${SPOTBUGS_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Build Zserio Java runtime
+      shell: bash
+      run: |
+        scripts/build.sh java_rt
+
+    - name: Pack Zserio Java runtime release
+      shell: bash
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      shell: bash
+      run: |
+        scripts/test.sh java
+
+    - name: Run Zserio tests with extra arguments
+      shell: bash
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
+        scripts/test.sh -p -i arguments/without_writer_code java
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code java
+
+    - name: Run Zserio integration tests for repeated generation
+      shell: bash
+      run: |
+        scripts/test_gen.sh java
+
+    - name: Run Zserio API compatibility checks
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        SPOTBUGS_HOME: ""
+      run: |
+        scripts/test_compat_api.sh java
+
+    - name: Run Zserio performance tests
+      shell: bash
+      run: |
+        scripts/test_perf.sh java \
+            --source-dir test/others/gif/zs --source gif.zs \
+            --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
+            --num-iterations 1000 --test-config READ_WRITE
+
+    - name: Run Zserio benchmarks
+      shell: bash
+      run: |
+        scripts/benchmark.sh java --num-iterations 1
+
+    - name: Archive Zserio Java runtime artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "zserio-runtime-java${{matrix.java-version}}"
+        path: release-*/*runtime-libs*

@@ -180,35 +180,40 @@ EOF
 # This requires the Zserio tool to be already built (by build.sh).
 make_release()
 {
-    exit_if_argc_ne $# 3
+    exit_if_argc_ne $# 4
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_RELEASE_SRC_DIR="$1"; shift
     local ZSERIO_RELEASE_ZIP_DIR="$1"; shift
+    local PACKAGE_NAME="$1"; shift
 
     echo "The release source directory: ${ZSERIO_RELEASE_SRC_DIR}"
     echo "The release target directory: ${ZSERIO_RELEASE_ZIP_DIR}"
     echo
 
     echo -ne "Creating release ${ZSERIO_VERSION}..."
-    rm -rf "${ZSERIO_RELEASE_ZIP_DIR}"
-    mkdir -p "${ZSERIO_RELEASE_ZIP_DIR}"
 
     # create zips
     pushd "${ZSERIO_RELEASE_SRC_DIR}" > /dev/null
 
     # create zip: jar
-    "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" "ant_task" "cmake" \
-            "zserio_libs" "zserio.jar" "zserio_javadocs.jar" "zserio_sources.jar"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Can't zip Zserio release (bin)."
-        return 1
+    if [[ "${PACKAGE_NAME}" == "" || "${PACKAGE_NAME}" == "zserio" ]] ; then
+        rm -f "zserio-${ZSERIO_VERSION}-bin.zip"
+        "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" "ant_task" "cmake" \
+                "zserio_libs" "zserio.jar" "zserio_javadocs.jar" "zserio_sources.jar"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Can't zip Zserio release (bin)."
+            return 1
+        fi
     fi
 
     # create zip: runtime-libs
-    "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" "runtime_libs"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Can't zip Zserio release (runtime_libs)."
-        return 1
+    if [[ "${PACKAGE_NAME}" == "" || "${PACKAGE_NAME}" == "runtime_libs" ]] ; then
+        rm -f "zserio-${ZSERIO_VERSION}-runtime-libs.zip"
+        "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" "runtime_libs"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Can't zip Zserio release (runtime_libs)."
+            return 1
+        fi
     fi
 
     popd > /dev/null
@@ -827,6 +832,8 @@ Arguments:
                    Update Zserio Web Pages branch after Zserio release.
     -o <dir>, --output-directory <dir>
                    Output directory where build and distr are located.
+    -p <name>, --package-name <name>
+                   Package name to pack. Can be 'zserio', 'runtime_libs' or remain empty for both.
 
 Examples:
     $0
@@ -847,6 +854,7 @@ parse_arguments()
     local NUM_OF_ARGS=3
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
+    local PARAM_PACKAGE_NAME_OUT="$1"; shift
     local SWITCH_ALL_UPDATE_OUT="$1"; shift
     local SWITCH_JAVA_TUTORIAL_UPDATE_OUT="$1"; shift
     local SWITCH_WEB_PAGES_UPDATE_OUT="$1"; shift
@@ -894,6 +902,21 @@ parse_arguments()
                 shift 2
                 ;;
 
+            "-p" | "--package")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing package name!"
+                    echo
+                    return 1
+                fi
+                if [[ "$2" != "zserio" && "$2" != "runtime_libs" ]] ; then
+                    stderr_echo "Invalid package name!"
+                    echo
+                    return 1
+                fi
+                eval ${PARAM_PACKAGE_NAME_OUT}="$2"
+                shift 2
+                ;;
+
             "-"*)
                 stderr_echo "Invalid switch '${ARG}'!"
                 echo
@@ -920,10 +943,12 @@ main()
 
     # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
+    local PARAM_PACKAGE_NAME=""
     local SWITCH_ALL_UPDATE
     local SWITCH_JAVA_TUTORIAL_UPDATE
     local SWITCH_WEB_PAGES_UPDATE
-    parse_arguments PARAM_OUT_DIR SWITCH_ALL_UPDATE SWITCH_JAVA_TUTORIAL_UPDATE SWITCH_WEB_PAGES_UPDATE "$@"
+    parse_arguments PARAM_OUT_DIR PARAM_PACKAGE_NAME \
+                    SWITCH_ALL_UPDATE SWITCH_JAVA_TUTORIAL_UPDATE SWITCH_WEB_PAGES_UPDATE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -962,12 +987,12 @@ main()
         if [ $? -ne 0 ] ; then
             return 1
         fi
-        rm -rf "${ZSERIO_RELEASE_DIR}"
+
         mkdir -p "${ZSERIO_RELEASE_DIR}"
 
         # make a release
         local ZSERIO_DISTR_DIR="${PARAM_OUT_DIR}/distr"
-        make_release "${ZSERIO_VERSION}" "${ZSERIO_DISTR_DIR}" "${ZSERIO_RELEASE_DIR}"
+        make_release "${ZSERIO_VERSION}" "${ZSERIO_DISTR_DIR}" "${ZSERIO_RELEASE_DIR}" "${PARAM_PACKAGE_NAME}"
         if [ $? -ne 0 ] ; then
             return 1
         fi

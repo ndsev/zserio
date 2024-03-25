@@ -8,256 +8,86 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_linux:
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: ["ubuntu-20.04"]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        java-version: ["8"]
-        cxx-standard-version: ["11"]
-        gcc-version: ["7"]
-        clang-version: ["11"]
-        include:
-          # Java 11
-          - os: "ubuntu-20.04"
-            python-version: "3.8"
-            java-version: "11"
-            cxx-standard-version: "11"
-            gcc-version: "7"
-            clang-version: "11"
-          # Java 17
-          - os: "ubuntu-20.04"
-            python-version: "3.8"
-            java-version: "17"
-            cxx-standard-version: "11"
-            gcc-version: "7"
-            clang-version: "11"
-          # Ubuntu 22.04, C++11, gcc 11 with gcovr, Clang 14 (needed for clang-format and clang-tidy)
-          - os: "ubuntu-22.04"
-            python-version: "3.8"
-            java-version: "8"
-            cxx-standard-version: "11"
-            gcc-version: "11"
-            clang-version: "14"
-          # Ubuntu 22.04, C++17, gcc 11 with gcovr, Clang 14 (needed for clang-format and clang-tidy)
-          - os: "ubuntu-22.04"
-            python-version: "3.8"
-            java-version: "8"
-            cxx-standard-version: "17"
-            gcc-version: "11"
-            clang-version: "14"
-    name: |
-      OS ${{matrix.os}}, Python ${{matrix.python-version}},
-      Java ${{matrix.java-version}}, C++${{matrix.cxx-standard-version}},
-      gcc ${{matrix.gcc-version}}, Clang ${{matrix.clang-version}}
-    env:
-      CPPCHECK_HOME: "${{github.workspace}}/cppcheck-2.6"
-      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
-      PYLINT_ENABLED: 1
-      MYPY_ENABLED: 1
-      NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
-      XMLLINT_ENABLED: 1
-      CMAKE_CXX_STANDARD: "${{matrix.cxx-standard-version}}"
-      GCC_VERSION_SUFFIX: "-${{matrix.gcc-version}}"
-      CLANG_VERSION_SUFFIX: "-${{matrix.clang-version}}"
-      CMAKE_BUILD_OPTIONS: "-j2"
+  zserio:
+    uses: "./.github/workflows/build_linux_zserio.yml"
+
+  cpp:
+    needs: [zserio]
+    uses: "./.github/workflows/build_linux_cpp.yml"
+  java:
+    needs: [zserio]
+    uses: "./.github/workflows/build_linux_java.yml"
+  python:
+    needs: [zserio]
+    uses: "./.github/workflows/build_linux_python.yml"
+  doc:
+    needs: [zserio]
+    uses: "./.github/workflows/build_linux_doc.yml"
+  xml:
+    needs: [zserio]
+    uses: "./.github/workflows/build_linux_xml.yml"
+
+  release:
+    needs: [cpp, java, python, doc, xml]
+    runs-on: "ubuntu-22.04"
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+    # update when https://github.com/actions/download-artifact/issues/315 is fixed
+    - name: "Download Zserio compiler artifacts"
+      uses: actions/download-artifact@v3
       with:
-        submodules: recursive
-
-    - name: Set up Java ${{matrix.java-version}}
-      uses: actions/setup-java@v3
+        name: zserio-bin-java8
+        path: zserio-bin-java8
+    - name: "Download Java runtime release artifacts"
+      uses: actions/download-artifact@v3
       with:
-        distribution: temurin
-        java-version: ${{matrix.java-version}}
-
-    - name: Set up Python ${{matrix.python-version}}
-      uses: actions/setup-python@v4
+        name: zserio-runtime-java8
+        path: zserio-runtime-java8
+    - name: "Download C++ runtime release artifacts"
+      uses: actions/download-artifact@v3
       with:
-        python-version: ${{matrix.python-version}}
+        name: zserio-runtime-cpp
+        path: zserio-runtime-cpp
+    - name: "Download Python runtime release artifacts"
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-runtime-python
+        path: zserio-runtime-python
 
-    - name: Install Python dependencies
+    - name: "Get Zserio version"
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install virtualenv
-        python -m pip install setuptools # necessary for pkg_resources on Python 3.12
-        python -m pip install gcovr
+        RELEASE_DIR=$(ls -1 zserio-bin-java8 | head -n 1)
+        ZSERIO_VERSION=${RELEASE_DIR#release-}
+        echo "ZSERIO_VERSION=${ZSERIO_VERSION}" >> ${GITHUB_ENV}
 
-    - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
-      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
-
-    - name: Install gcc-${{matrix.gcc-version}} compiler
+    - name: "Compose final release"
       run: |
-        sudo apt-get update
-        sudo apt-get install gcc-${{matrix.gcc-version}}
-        sudo apt-get install g++-${{matrix.gcc-version}} g++-${{matrix.gcc-version}}-multilib
+        RELEASE_DIR=release-${ZSERIO_VERSION}
+        mkdir ${RELEASE_DIR}
 
-    - name: Install clang-${{matrix.clang-version}} compiler
-      run: |
-        sudo apt-get install clang-${{matrix.clang-version}}
-        sudo apt-get install llvm-${{matrix.clang-version}}
-        if [ -f "`which clang-format-14`" ] ; then
-           echo "CLANG_FORMAT_BIN=clang-format-14" >> ${GITHUB_ENV}
-        fi
+        # zserio compiler with all extensions
+        cp zserio-bin-java8/release-*/zserio-*-bin.zip ${RELEASE_DIR}/.
 
-    - name: Install dependencies
-      run: sudo apt-get install cmake doxygen graphviz g++-multilib
+        # prepare all runtime libraries
+        mkdir runtime_libs
 
-    - name: Install specific version of C++ static code analysis tool (cppcheck)
-      run: |
-        wget https://github.com/danmar/cppcheck/archive/2.6.tar.gz -P "${GITHUB_WORKSPACE}" -O cppcheck-2.6.tar.gz
-        tar -xf "${GITHUB_WORKSPACE}"/cppcheck-2.6.tar.gz
-        mkdir "${GITHUB_WORKSPACE}/cppcheck-2.6/build"
-        pushd "${GITHUB_WORKSPACE}/cppcheck-2.6/build"
-        cmake .. -DHAVE_RULES=ON -DUSE_MATCHCOMPILER=ON \
-               -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}"/cppcheck-2.6 \
-               -DCMAKE_INSTALL_BINDIR=. \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DFILESDIR=.
-        cmake --build . --target install
-        popd
+        # add zserio java runtime library
+        unzip -q zserio-runtime-java8/release-*/zserio-*-runtime-libs.zip -d zserio-runtime-java8
+        cp -r zserio-runtime-java8/runtime_libs/java runtime_libs/.
 
-    - name: Install specific version of Java static code analysis tool (spotbugs)
-      run: |
-        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip -P "${GITHUB_WORKSPACE}"
-        unzip "${GITHUB_WORKSPACE}"/spotbugs-4.8.2.zip
+        # add zserio cpp runtime library
+        unzip -q zserio-runtime-cpp/release-*/zserio-*-runtime-libs.zip -d zserio-runtime-cpp
+        cp -r zserio-runtime-cpp/runtime_libs/cpp runtime_libs/.
 
-    - name: Install specific version of HTML validator (v.Nu)
-      run: |
-        wget https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip -P "${GITHUB_WORKSPACE}"
-        unzip "${GITHUB_WORKSPACE}"/vnu.jar_20.6.30.zip -d "${GITHUB_WORKSPACE}"
-        mv "${GITHUB_WORKSPACE}"/dist "${GITHUB_WORKSPACE}"/vnu-20.6.30
+        # add zserio python runtime library
+        unzip -q zserio-runtime-python/release-*/zserio-*-runtime-libs.zip -d zserio-runtime-python
+        cp -r zserio-runtime-python/runtime_libs/python runtime_libs/.
 
-    - name: Install XML validator (xmllint)
-      run: sudo apt-get install libxml2-utils
+        # zip runtime libraries
+        zip -rq ${RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip "runtime_libs"
 
-    - name: Build Zserio
-      run: scripts/build.sh all-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang cpp_rt-linux32-clang
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
-
-    # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
-    - name: Reduce ASLR entropy as a temporary workaround
-      run: |
-        sudo sysctl -w vm.mmap_rnd_bits=28
-
-    - name: Build Zserio C++ runtime (Debug Build)
-      run: |
-        if [ -f "`which clang-tidy-14`" ] ; then
-           export CLANG_TIDY_BIN=clang-tidy-14
-        fi
-        # gcovr works only for default gcc version
-        if [[ `gcc --version` == *" ${{matrix.gcc-version}}."* ]] ; then
-           export GCOVR_BIN="gcovr"
-        fi
-        # sanitizers do not work on cpp_rt-linux32-clang when cross-compiling
-        scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
-        LLVM_PROFDATA_BIN: "llvm-profdata-${{matrix.clang-version}}"
-        LLVM_COV_BIN: "llvm-cov-${{matrix.clang-version}}"
-        SANITIZERS_ENABLED: 1
-
-    - name: Pack Zserio release
-      run: scripts/release.sh
-
-    - name: Run Zserio tests
-      # -DZSERIO_ENABLE_WERROR=1 fails for gcc because of false positive warning
-      run: |
-        scripts/test.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
-
-    - name: Run Zserio C++ tests (Debug Build)
-      # sanitizers do not work on cpp-linux32-clang when cross-compiling
-      run: |
-        if [ -f "`which clang-tidy-14`" ] ; then
-           export CLANG_TIDY_BIN=clang-tidy-14
-        fi
-        scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1  -DCMAKE_BUILD_TYPE=Debug"
-        SANITIZERS_ENABLED: 1
-
-    - name: Run Zserio tests with extra arguments
-      # -DZSERIO_ENABLE_WERROR=1 fails for gcc because of false positive warning
-      run: |
-        # -withRangeCheckCode -withValidationCode conflicts with -withoutWriterCode
-        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
-        scripts/test.sh -p -i arguments/without_writer_code java python
-        ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -setCppAllocator polymorphic -withReflectionCode" \
-              scripts/test.sh -p -i arguments/without_writer_code cpp-linux64-gcc cpp-linux32-gcc \
-              cpp-linux64-clang cpp-linux32-clang
-        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withRangeCheckCode -withValidationCode"
-        scripts/test.sh -p -x arguments/without_writer_code java python
-        ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -setCppAllocator polymorphic -withReflectionCode" \
-              scripts/test.sh -p -x arguments/without_writer_code cpp-linux64-gcc cpp-linux32-gcc \
-              cpp-linux64-clang cpp-linux32-clang
-        export ZSERIO_EXTRA_ARGS="-setTopLevelPackage top.level"
-        ZSERIO_EXTRA_ARGS="-setTopLevelPackage top.level" scripts/test.sh doc xml
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
-
-    - name: Run Zserio tests with extra arguments (Debug Build)
-      # sanitizers do not work on cpp-linux32-clang when cross-compiling
-      # -DZSERIO_ENABLE_WERROR=1 fails for gcc because of false positive warning
-      run: |
-        if [ -f "`which clang-tidy-14`" ] ; then
-           export CLANG_TIDY_BIN=clang-tidy-14
-        fi
-        # -withRangeCheckCode -withValidationCode conflicts with -withoutWriterCode
-        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments \
-              -setCppAllocator polymorphic -withReflectionCode"
-        scripts/test.sh -p -i arguments/without_writer_code cpp-linux64-gcc cpp-linux32-gcc \
-              cpp-linux64-clang
-        # disabled because of 6 hours time limit
-        # export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withRangeCheckCode -withValidationCode"
-        # scripts/test.sh -p -x arguments/without_writer_code cpp-linux64-gcc cpp-linux32-gcc \
-        #      cpp-linux64-clang
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1  -DCMAKE_BUILD_TYPE=Debug"
-        SANITIZERS_ENABLED: 1
-
-    - name: Run Zserio integration tests for repeated generation
-      run: |
-        scripts/test_gen.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
-
-    - name: Run Zserio API compatibility checks
-      run: |
-        scripts/test_compat_api.sh java python cpp-linux64-clang
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        CPPCHECK_HOME: ""
-        SPOTBUGS_HOME: ""
-        PYLINT_ENABLED: 0
-        MYPY_ENABLED: 0
-
-    - name: Run Zserio performance tests
-      run: |
-        scripts/test_perf.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
-              python python-cpp java \
-              --source-dir test/others/gif/zs --source gif.zs \
-              --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
-              --num-iterations 1000 --test-config READ_WRITE
-
-    - name: Run Zserio benchmarks
-      run: |
-        scripts/benchmark.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
-              python python-cpp java --num-iterations 1
-
-    - name: Archive Zserio release artifacts
+    - name: "Archive release artifacts"
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-release-${{matrix.os}}-python${{matrix.python-version}}-java${{matrix.java-version}}-gcc${{matrix.gcc-version}}-clang${{matrix.clang-version}}
-        path: release-*
-
-    - name: Archive Zserio build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: zserio-build-${{matrix.os}}-python${{matrix.python-version}}-java${{matrix.java-version}}-gcc${{matrix.gcc-version}}-clang${{matrix.clang-version}}
-        path: |
-          build/runtime_libs/python/**/zserio_cpp/**/*.so
-          build/runtime_libs/cpp/**/runtime/*.a
+        name: linux-release-${{env.ZSERIO_VERSION}}
+        path: release-${{env.ZSERIO_VERSION}}

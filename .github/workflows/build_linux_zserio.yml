@@ -1,0 +1,85 @@
+name: Linux Zserio
+
+on:
+  workflow_call:
+
+jobs:
+  zserio:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "ubuntu-20.04", java-version: 8 }
+        - { os: "ubuntu-20.04", java-version: 11 }
+        - { os: "ubuntu-22.04", java-version: 17 }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}-java${{matrix.java-version}}
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Set up Java ${{matrix.java-version}}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{matrix.java-version}}
+
+    - name: Install specific version of Java static code analysis tool (spotbugs)
+      run: |
+        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip \
+            -P "${RUNNER_WORKSPACE}"
+        unzip "${RUNNER_WORKSPACE}"/spotbugs-4.8.2.zip -d "${RUNNER_WORKSPACE}"
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Build ant task
+      run: |
+        scripts/build.sh ant_task
+
+    - name: Build Zserio core
+      run: |
+        scripts/build.sh core
+
+    - name: Build Zserio C++ extension
+      run: |
+        scripts/build.sh cpp
+
+    - name: Build Zserio Java extension
+      run: |
+        scripts/build.sh java
+
+    - name: Build Zserio python extension
+      run: |
+        scripts/build.sh python
+
+    - name: Build Zserio Doc extension
+      run: |
+        scripts/build.sh doc
+
+    - name: Build Zserio Xml extension
+      run: |
+        scripts/build.sh xml
+
+    - name: Build Zserio bundle
+      run: |
+        scripts/build.sh zserio
+
+    - name: Pack Zserio release
+      run: |
+        scripts/release.sh -p zserio
+
+    - name: Archive Zserio compiler artifacts
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: "zserio-bin-java${{matrix.java-version}}"
+        path: release-*

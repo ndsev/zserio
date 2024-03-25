@@ -1,0 +1,59 @@
+name: Linux Xml
+
+on:
+  workflow_call:
+
+jobs:
+  xml:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: "ubuntu-20.04" }
+        - { os: "ubuntu-22.04" }
+
+    runs-on: ${{matrix.os}}
+    name: ${{matrix.os}}
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "XMLLINT_ENABLED=1" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install XML validator (xmllint)
+      run: sudo apt-get install libxml2-utils
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: zserio-bin-java8
+
+    - name: Run Zserio tests
+      run: |
+        scripts/test.sh xml
+
+    - name: Run Zserio tests with extra arguments
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
+        scripts/test.sh -p -i arguments/without_writer_code xml
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code xml
+
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+        scripts/test_gen.sh xml
