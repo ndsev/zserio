@@ -47,7 +47,7 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
      *
      * @param fileName Database file name to use.
      *
-     * @throws SQLException If database opening fails.
+     * @throws java.sql.SQLException If database opening fails.
      */
 </#if>
     public ${name}(java.lang.String fileName) throws java.sql.SQLException
@@ -65,7 +65,7 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
      * @param fileName Database file name to use.
      * @param tableToDbFileNameRelocationMap Mapping of relocated table name to database file name.
      *
-     * @throws SQLException If database opening fails.
+     * @throws java.sql.SQLException If database opening fails.
      */
 </#if>
     public ${name}(java.lang.String fileName,
@@ -270,7 +270,7 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
         </#if>
      * @return Validation report which contains validation result.
      *
-     * @throws SQLException If any access to database fails.
+     * @throws java.sql.SQLException If any access to database fails.
      */
     </#if>
     public zserio.runtime.validation.ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)

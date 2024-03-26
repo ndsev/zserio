@@ -57,7 +57,7 @@ public final class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if
      *
      * @param in Bit stream reader to use.
      *
-     * @throws IOException If the reading from the bit stream failed.
+     * @throws java.io.IOException If the reading from the bit stream failed.
      */
 </#if>
     public ${name}(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
@@ -76,7 +76,7 @@ public final class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if
      * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
-     * @throws IOException If the reading from the bit stream failed.
+     * @throws java.io.IOException If the reading from the bit stream failed.
      */
     </#if>
     public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)

@@ -44,7 +44,7 @@ public class ${name} implements <#rt>
      * @param in Bit stream reader to use.
      <@compound_parameter_comments compoundParametersData/>
      *
-     * @throws IOException If the reading from bit stream failed.
+     * @throws java.io.IOException If the reading from bit stream failed.
      */
 </#if>
     public ${name}(zserio.runtime.io.BitStreamReader in<#if compoundParametersData.list?has_content>,<#else>)</#if>
@@ -71,7 +71,7 @@ public class ${name} implements <#rt>
      * @param in Bit stream reader to use.
      <@compound_parameter_comments compoundParametersData/>
      *
-     * @throws IOException If the reading from bit stream failed.
+     * @throws java.io.IOException If the reading from bit stream failed.
      */
     </#if>
     public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in<#if compoundParametersData.list?has_content>,<#else>)</#if>
@@ -330,7 +330,7 @@ public class ${name} implements <#rt>
      *
      * @param in Bit stream reader to use.
      *
-     * @throws IOException If the reading from the bit stream failed.
+     * @throws java.io.IOException If the reading from the bit stream failed.
      */
 </#if>
     public void read(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
@@ -362,7 +362,7 @@ public class ${name} implements <#rt>
      * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
-     * @throws IOException If the reading from the bit stream failed.
+     * @throws java.io.IOException If the reading from the bit stream failed.
      */
     </#if>
     public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)

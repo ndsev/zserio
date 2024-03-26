@@ -192,7 +192,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedIn
      *
      * @param in Bit stream reader to use.
      *
-     * @throws IOException If the reading from the bit stream failed.
+     * @throws java.io.IOException If the reading from the bit stream failed.
      */
 </#if>
     public static ${name} readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
@@ -211,7 +211,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedIn
      * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
-     * @throws IOException If the reading from the bit stream failed.
+     * @throws java.io.IOException If the reading from the bit stream failed.
      */
     </#if>
     public static ${name} readEnum(zserio.runtime.array.PackingContext context,

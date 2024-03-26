@@ -67,7 +67,7 @@ public class ${name} extends ${referencedTypeFullName}
      * @param in Bit stream reader to use.
      <@compound_parameter_comments referencedCompoundType.compoundParametersData/>
      *
-     * @throws IOException If the reading from bit stream failed.
+     * @throws java.io.IOException If the reading from bit stream failed.
      */
     </#if>
     public ${name}(zserio.runtime.io.BitStreamReader in<#if referencedCompoundType.compoundParametersData.list?has_content>,<#else>)</#if>
@@ -94,7 +94,7 @@ public class ${name} extends ${referencedTypeFullName}
      * @param in Bit stream reader to use.
      <@compound_parameter_comments referencedCompoundType.compoundParametersData/>
      *
-     * @throws IOException If the reading from bit stream failed.
+     * @throws java.io.IOException If the reading from bit stream failed.
      */
         </#if>
     public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in<#rt>

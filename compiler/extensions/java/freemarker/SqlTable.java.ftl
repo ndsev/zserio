@@ -102,7 +102,7 @@ public class ${name}
     /**
      * Creates the table using database connection given by constructor.
      *
-     * @throws SQLException If table creation fails.
+     * @throws java.sql.SQLException If table creation fails.
      */
     </#if>
     public void createTable() throws java.sql.SQLException
@@ -121,7 +121,7 @@ public class ${name}
      *
      * The method creates the table as ordinary row id even if it is specified as without row id in schema.
      *
-     * @throws SQLException If table creation fails.
+     * @throws java.sql.SQLException If table creation fails.
      */
         </#if>
     public void createOrdinaryRowIdTable() throws java.sql.SQLException
@@ -135,7 +135,7 @@ public class ${name}
     /**
      * Deletes the table using database connection given by constructor.
      *
-     * @throws SQLException If table delete fails.
+     * @throws java.sql.SQLException If table delete fails.
      */
     </#if>
     public void deleteTable() throws java.sql.SQLException
@@ -154,8 +154,8 @@ public class ${name}
      * @param parameterProvider Explicit parameter provider to be used during reading.
      *
     </#if>
-     * @throws SQLException In case of any failure during reading from the database.
-     * @throws IOException In case of any failure during reading from the database file.
+     * @throws java.sql.SQLException In case of any failure during reading from the database.
+     * @throws java.io.IOException In case of any failure during reading from the database file.
      */
 </#if>
     public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
@@ -175,8 +175,8 @@ public class ${name}
      *
      * @return Read rows.
      *
-     * @throws SQLException In case of any failure during reading from the database.
-     * @throws IOException In case of any failure during reading from the database file.
+     * @throws java.sql.SQLException In case of any failure during reading from the database.
+     * @throws java.io.IOException In case of any failure during reading from the database file.
      */
 </#if>
     public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider,</#if>
@@ -221,8 +221,8 @@ public class ${name}
      *
      * @param rows Table rows to write.
      *
-     * @throws SQLException In case of any failure during writing to the database.
-     * @throws IOException In case of any failure during writing to the database file.
+     * @throws java.sql.SQLException In case of any failure during writing to the database.
+     * @throws java.io.IOException In case of any failure during writing to the database file.
      */
     </#if>
     public void write(java.util.List<${rowName}> rows)
@@ -263,8 +263,8 @@ public class ${name}
      * @param row Table row to update.
      * @param whereCondition SQL where condition to use.
      *
-     * @throws SQLException In case of any failure during database update.
-     * @throws IOException In case of any failure during updating of the database file.
+     * @throws java.sql.SQLException In case of any failure during database update.
+     * @throws java.io.IOException In case of any failure during updating of the database file.
      */
     </#if>
     public void update(${rowName} row, java.lang.String whereCondition)
@@ -318,7 +318,7 @@ public class ${name}
         </#if>
      * @return Validation report which contains validation result.
      *
-     * @throws SQLException In case of any failure during access to the database.
+     * @throws java.sql.SQLException In case of any failure during access to the database.
      */
     </#if>
     public zserio.runtime.validation.ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
