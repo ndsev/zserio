@@ -265,7 +265,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedIn
     /**
      * Converts enumeration item name to the enumeration item.
      *
-     * @param value Enumeration item name to convert.
+     * @param itemName Enumeration item name to convert.
      *
      * @return The enumeration item matching its string name.
      */
