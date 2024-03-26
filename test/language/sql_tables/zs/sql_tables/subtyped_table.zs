@@ -12,3 +12,4 @@ sql_table TestTable
 };
 
 subtype TestTable SubtypedTable;
+subtype SubtypedTable AnotherSubtypedTable;

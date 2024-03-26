@@ -18,47 +18,50 @@ template <typename ALLOC>
 struct MethodNames
 {
     // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
-    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY = ">& getParameterizedSubtypeArray()";
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY = ">& getAnotherParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
-            ">& getParameterizedSubtypeArray() const";
-    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY = "void setParameterizedSubtypeArray(const ::";
+            ">& getAnotherParameterizedSubtypeArray() const";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
+            "void setAnotherParameterizedSubtypeArray(const ::";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
-            "void setParameterizedSubtypeArray(::";
+            "void setAnotherParameterizedSubtypeArray(::";
 };
 
 template <>
 struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 {
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
-            "::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-            "getParameterizedSubtypeArray()";
+            "::zserio::pmr::vector<::subtypes::param_structure_subtype::AnotherParameterizedSubtype>& "
+            "getAnotherParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
-            "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-            "getParameterizedSubtypeArray() const";
+            "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::AnotherParameterizedSubtype>& "
+            "getAnotherParameterizedSubtypeArray() const";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
-            "void setParameterizedSubtypeArray("
-            "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-            "parameterizedSubtypeArray_)";
+            "void setAnotherParameterizedSubtypeArray("
+            "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::AnotherParameterizedSubtype>& "
+            "anotherParameterizedSubtypeArray_)";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
-            "void setParameterizedSubtypeArray(::zserio::pmr::vector<::subtypes::param_structure_subtype::"
-            "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
+            "void setAnotherParameterizedSubtypeArray("
+            "::zserio::pmr::vector<::subtypes::param_structure_subtype::"
+            "AnotherParameterizedSubtype>&& anotherParameterizedSubtypeArray_)";
 };
 
 template <>
 struct MethodNames<::std::allocator<uint8_t>>
 {
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
-            "::zserio::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-            "getParameterizedSubtypeArray()";
+            "::zserio::vector<::subtypes::param_structure_subtype::AnotherParameterizedSubtype>& "
+            "getAnotherParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
-            "const ::zserio::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-            "getParameterizedSubtypeArray() const";
+            "const ::zserio::vector<::subtypes::param_structure_subtype::AnotherParameterizedSubtype>& "
+            "getAnotherParameterizedSubtypeArray() const";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
-            "void setParameterizedSubtypeArray(const ::zserio::vector<::subtypes::param_structure_subtype::"
-            "ParameterizedSubtype>& parameterizedSubtypeArray_)";
+            "void setAnotherParameterizedSubtypeArray("
+            "const ::zserio::vector<::subtypes::param_structure_subtype::"
+            "AnotherParameterizedSubtype>& anotherParameterizedSubtypeArray_)";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
-            "void setParameterizedSubtypeArray(::zserio::vector<::subtypes::param_structure_subtype::"
-            "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
+            "void setAnotherParameterizedSubtypeArray(::zserio::vector<::subtypes::param_structure_subtype::"
+            "AnotherParameterizedSubtype>&& anotherParameterizedSubtypeArray_)";
 };
 
 namespace
@@ -84,14 +87,16 @@ bool isCodeInFilePresent(const char* fileName, const char* code)
 
 TEST(ParamStructureSubtypeTest, testSubtype)
 {
-    // just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
+    // just check that Another/ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
     ParameterizedSubtypeStruct subtypeStruct;
     ParameterizedSubtype& parameterizedSubtype = subtypeStruct.getParameterizedSubtype();
     ParameterizedStruct& parameterizedStruct = subtypeStruct.getParameterizedSubtype();
-    auto& parameterizedSubtypeArray = subtypeStruct.getParameterizedSubtypeArray();
-    auto& parameterizedStructArray = subtypeStruct.getParameterizedSubtypeArray();
+    const ::zserio::vector<AnotherParameterizedSubtype>& anotherParameterizedSubtypeArray =
+            subtypeStruct.getAnotherParameterizedSubtypeArray();
+    const ::zserio::vector<ParameterizedStruct>& parameterizedStructArray =
+            subtypeStruct.getAnotherParameterizedSubtypeArray();
     ASSERT_EQ(&parameterizedSubtype, &parameterizedStruct);
-    ASSERT_EQ(&parameterizedSubtypeArray, &parameterizedStructArray);
+    ASSERT_EQ(&anotherParameterizedSubtypeArray, &parameterizedStructArray);
 
     // ensure that include to the subtype is present and that the subtype is used in
     // ParameterizedSubtypeStruct's accessors

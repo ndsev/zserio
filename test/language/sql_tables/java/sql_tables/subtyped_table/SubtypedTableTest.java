@@ -46,34 +46,53 @@ public class SubtypedTableTest
     @Test
     public void testSubtypedTable() throws SQLException
     {
-        assertTrue(isTableInDb());
+        final String tableName = "subtypedTable";
+        assertTrue(isTableInDb(tableName));
 
         final TestTable subtypedTable = database.getSubtypedTable();
         assertTrue(subtypedTable != null);
     }
 
-    private boolean isTableInDb() throws SQLException
+    @Test
+    public void testGenSubtypedTable() throws SQLException
+    {
+        final String tableName = "genSubtypedTable";
+        final SubtypedTable genSubtypedTable = new SubtypedTable(database.connection(), tableName);
+        genSubtypedTable.createTable();
+        assertTrue(isTableInDb(tableName));
+    }
+
+    @Test
+    public void testAnotherSubtypedTable() throws SQLException
+    {
+        final String tableName = "anotherSubtypedTable";
+        final AnotherSubtypedTable anotherSubtypedTable =
+                new AnotherSubtypedTable(database.connection(), tableName);
+        anotherSubtypedTable.createTable();
+        assertTrue(isTableInDb(tableName));
+    }
+
+    private boolean isTableInDb(String tableName) throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery =
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'";
-
-        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-                final ResultSet resultSet = statement.executeQuery();)
+        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);)
         {
-            if (!resultSet.next())
-                return false;
+            statement.setString(1, tableName);
+            try (final ResultSet resultSet = statement.executeQuery();)
+            {
+                if (!resultSet.next())
+                    return false;
 
-            // read table name
-            final String tableName = resultSet.getString(1);
-            if (resultSet.wasNull() || !tableName.equals(TABLE_NAME))
-                return false;
+                // read table name
+                final String readTableName = resultSet.getString(1);
+                if (resultSet.wasNull() || !readTableName.equals(tableName))
+                    return false;
+            }
         }
 
         return true;
     }
-
-    private static final String TABLE_NAME = "subtypedTable";
 
     private static final String FILE_NAME = "subtyped_table_test.sqlite";
 

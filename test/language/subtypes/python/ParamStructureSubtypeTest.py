@@ -11,6 +11,8 @@ class ParamStructureSubtypeTest(Subtypes.TestCase):
         parameterizedSubtypeStruct.parameterized_subtype = parameterizedSubtype
         self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.parameterized_subtype)
 
-        parameterizedSubtypeStruct.parameterized_subtype_array = [parameterizedSubtype for i in range(length)]
+        parameterizedSubtypeStruct.another_parameterized_subtype_array = [
+            parameterizedSubtype for i in range(length)]
         for i in range(length):
-            self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.parameterized_subtype_array[i])
+            self.assertEqual(parameterizedSubtype,
+                             parameterizedSubtypeStruct.another_parameterized_subtype_array[i])

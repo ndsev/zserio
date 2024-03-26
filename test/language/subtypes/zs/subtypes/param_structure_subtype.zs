@@ -7,10 +7,11 @@ struct ParameterizedStruct(uint32 length)
 };
 
 subtype ParameterizedStruct ParameterizedSubtype;
+subtype ParameterizedSubtype AnotherParameterizedSubtype;
 
 struct ParameterizedSubtypeStruct
 {
-    int32                           length;
-    ParameterizedSubtype(length)    parameterizedSubtype;
-    ParameterizedSubtype(length)    parameterizedSubtypeArray[];
+    int32 length;
+    ParameterizedSubtype(length) parameterizedSubtype;
+    AnotherParameterizedSubtype(length) anotherParameterizedSubtypeArray[];
 };
