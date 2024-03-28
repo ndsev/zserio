@@ -187,5 +187,5 @@ client implementation to communicate with the appropriate server.
 
 Contributions are very welcome but we encourage to open a
 [discussion](https://github.com/ndsev/zserio/discussions/new/choose) or
-an [issue](https://github.com/ndsev/zserio/issues/new) first to agree on a solution or to avoid useless work
-in case we are already solving a similar problem. Please see [Contribution Guide](CONTRIBUTING.md).
+an [issue](https://github.com/ndsev/zserio/issues/new/choose) first to agree on a solution or to avoid useless
+work in case we are already solving a similar problem. Please see [Contribution Guide](CONTRIBUTING.md).
