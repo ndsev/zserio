@@ -49,6 +49,8 @@ import zserio.extension.cpp.types.NativeStringViewType;
 import zserio.extension.cpp.types.NativeTemplatedArrayTraits;
 import zserio.extension.cpp.types.NativeUserArrayableType;
 import zserio.extension.cpp.types.NativeUserType;
+import zserio.extension.cpp.types.WrappedBuiltinType;
+import zserio.extension.cpp.types.WrappedIntegralType;
 
 /**
  * C++ native mapper.
@@ -67,36 +69,36 @@ public final class CppNativeMapper
                 new NativeRuntimeAllocType(typesContext.getHeapOptionalHolder(), allocatorDefinition);
         inplaceOptionalHolderType = new NativeRuntimeType("InplaceOptionalHolder", "zserio/OptionalHolder.h");
 
-        stringType = new NativeRuntimeAllocArrayableType(
-                typesContext.getString(), allocatorDefinition, "char", typesContext.getStringArrayTraits());
+        stringType = new NativeRuntimeAllocArrayableType(typesContext.getString(), allocatorDefinition, "char", typesContext.getStringArrayTraits());
+        stringFieldType = new NativeRuntimeAllocArrayableType(typesContext.getStringField(), allocatorDefinition, "char", typesContext.getStringArrayTraits());
         stringViewType = new NativeStringViewType();
         vectorType = new NativeRuntimeAllocType(typesContext.getVector(), allocatorDefinition);
         mapType = new NativeRuntimeAllocType(typesContext.getMap(), allocatorDefinition);
         setType = new NativeRuntimeAllocType(typesContext.getSet(), allocatorDefinition);
-        bytesType = new NativeBytesType(typesContext, stdUInt8Type);
+        bytesType = new NativeBytesType(typesContext, stdByteType);
         bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(), allocatorDefinition,
-                stdUInt8Type, typesContext.getBitBufferArrayTraits());
+        		stdByteType, typesContext.getBitBufferArrayTraits());
         typeInfoType =
-                new NativeRuntimeAllocType(typesContext.getTypeInfo(), allocatorDefinition, stdUInt8Type);
+                new NativeRuntimeAllocType(typesContext.getTypeInfo(), allocatorDefinition, stdByteType);
         reflectableFactoryType = new NativeRuntimeAllocType(
-                typesContext.getRelectableFactory(), allocatorDefinition, stdUInt8Type);
+                typesContext.getRelectableFactory(), allocatorDefinition, stdByteType);
         reflectablePtrType =
-                new NativeRuntimeAllocType(typesContext.getReflectablePtr(), allocatorDefinition, stdUInt8Type);
+                new NativeRuntimeAllocType(typesContext.getReflectablePtr(), allocatorDefinition, stdByteType);
         reflectableConstPtrType = new NativeRuntimeAllocType(
-                typesContext.getReflectableConstPtr(), allocatorDefinition, stdUInt8Type);
-        serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdUInt8Type);
+                typesContext.getReflectableConstPtr(), allocatorDefinition, stdByteType);
+        serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdByteType);
         serviceClientType =
-                new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition, stdUInt8Type);
+                new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition, stdByteType);
         serviceDataPtrType =
-                new NativeRuntimeAllocType(typesContext.getServiceDataPtr(), allocatorDefinition, stdUInt8Type);
+                new NativeRuntimeAllocType(typesContext.getServiceDataPtr(), allocatorDefinition, stdByteType);
         reflectableServiceDataType = new NativeRuntimeAllocType(
-                typesContext.getReflectableServiceData(), allocatorDefinition, stdUInt8Type);
+                typesContext.getReflectableServiceData(), allocatorDefinition, stdByteType);
         objectServiceDataType = new NativeRuntimeAllocType(
-                typesContext.getObjectServiceData(), allocatorDefinition, stdUInt8Type);
+                typesContext.getObjectServiceData(), allocatorDefinition, stdByteType);
         rawServiceDataHolderType = new NativeRuntimeAllocType(
-                typesContext.getRawServiceDataHolder(), allocatorDefinition, stdUInt8Type);
+                typesContext.getRawServiceDataHolder(), allocatorDefinition, stdByteType);
         rawServiceDataViewType = new NativeRuntimeAllocType(
-                typesContext.getRawServiceDataView(), allocatorDefinition, stdUInt8Type);
+                typesContext.getRawServiceDataView(), allocatorDefinition, stdByteType);
     }
 
     public CppNativeSymbol getCppSymbol(AstNode symbol) throws ZserioExtensionException
@@ -114,26 +116,9 @@ public final class CppNativeMapper
                     "Unhandled symbol '" + symbol.getClass().getName() + "' in CppNativeMapper!");
     }
 
-    public CppNativeType getCppType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
-    {
-        if (typeInstantiation instanceof ArrayInstantiation)
-            return mapArray((ArrayInstantiation)typeInstantiation);
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-            return mapDynamicBitFieldInstantiation((DynamicBitFieldInstantiation)typeInstantiation);
-
-        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
-        return getCppType(typeInstantiation.getType());
-    }
-
-    public CppNativeType getCppType(TypeReference typeReference) throws ZserioExtensionException
-    {
-        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
-        return getCppType(typeReference.getType());
-    }
-
     public CppNativeType getCppType(ZserioType type) throws ZserioExtensionException
     {
-        final TypeMapperVisitor visitor = new TypeMapperVisitor();
+        final TypeMapperVisitor visitor = new TypeMapperVisitor(false);
         type.accept(visitor);
 
         final ZserioExtensionException thrownException = visitor.getThrownException();
@@ -147,7 +132,19 @@ public final class CppNativeMapper
 
         return nativeType;
     }
-
+    
+    public CppNativeType getCppType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    {
+    	return getCppType(typeInstantiation.getType());
+    }
+    
+    public CppNativeType getCppType(TypeReference typeReference) throws ZserioExtensionException
+    {
+        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
+        return getCppType(typeReference.getType());
+    }
+    
+  //used f.e. for Enum underlying type
     public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation)
             throws ZserioExtensionException
     {
@@ -170,7 +167,41 @@ public final class CppNativeMapper
 
         return (NativeIntegralType)nativeType;
     }
+    
+    public CppNativeType getFieldCppType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    {
+        if (typeInstantiation instanceof ArrayInstantiation)
+            return mapFieldArray((ArrayInstantiation)typeInstantiation);
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+            return mapFieldDynamicBitFieldInstantiation((DynamicBitFieldInstantiation)typeInstantiation);
 
+        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
+        return getFieldCppType(typeInstantiation.getType());
+    }
+
+    public CppNativeType getFieldCppType(TypeReference typeReference) throws ZserioExtensionException
+    {
+        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
+        return getFieldCppType(typeReference.getType());
+    }
+
+    public CppNativeType getFieldCppType(ZserioType type) throws ZserioExtensionException
+    {
+        final TypeMapperVisitor visitor = new TypeMapperVisitor(true);
+        type.accept(visitor);
+
+        final ZserioExtensionException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
+        final CppNativeType nativeType = visitor.getCppType();
+        if (nativeType == null)
+            throw new ZserioExtensionException(
+                    "Unhandled type '" + type.getClass().getName() + "' in CppNativeMapper!");
+
+        return nativeType;
+    }
+    
     public NativeRuntimeAllocType getAnyHolderType()
     {
         return anyHolderType;
@@ -285,12 +316,12 @@ public final class CppNativeMapper
     {
         return stdInt64Type;
     }
-
-    private CppNativeType mapArray(ArrayInstantiation instantiation) throws ZserioExtensionException
+    
+    private CppNativeType mapFieldArray(ArrayInstantiation instantiation) throws ZserioExtensionException
     {
         final TypeInstantiation elementInstantiation = instantiation.getElementTypeInstantiation();
 
-        final CppNativeType nativeType = getCppType(elementInstantiation);
+        final CppNativeType nativeType = getFieldCppType(elementInstantiation);
         if (!(nativeType instanceof CppNativeArrayableType))
         {
             throw new ZserioExtensionException("Unhandled arrayable type '" +
@@ -306,6 +337,15 @@ public final class CppNativeMapper
         final boolean isSigned = instantiation.getBaseType().isSigned();
         final int maxBitSize = instantiation.getMaxBitSize();
         return mapDynamicBitFieldType(isSigned, maxBitSize);
+    }
+
+    private static CppNativeType mapFieldDynamicBitFieldInstantiation(DynamicBitFieldInstantiation instantiation)
+            throws ZserioExtensionException
+    {
+        final boolean isSigned = instantiation.getBaseType().isSigned();
+        final int maxBitSize = instantiation.getMaxBitSize();    
+        //no need to output bit size, dynamic size has to be specified at the point of member function call
+    	return new WrappedIntegralType(maxBitSize, isSigned, new NativeDynamicBitFieldArrayTraits());
     }
 
     private static CppNativeType mapBitFieldType(boolean isSigned, int numBits)
@@ -347,6 +387,11 @@ public final class CppNativeMapper
 
     private class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
+    	TypeMapperVisitor(boolean fieldType)
+    	{
+    		this.fieldType = fieldType;
+    	}
+    	
         public CppNativeType getCppType()
         {
             return cppType;
@@ -362,41 +407,67 @@ public final class CppNativeMapper
         {
             final int numBits = type.getBitSize();
             final boolean isSigned = type.isSigned();
-            if (numBits <= 8)
-                cppType = isSigned ? stdInt8Type : stdUInt8Type;
-            else if (numBits <= 16)
-                cppType = isSigned ? stdInt16Type : stdUInt16Type;
-            else if (numBits <= 32)
-                cppType = isSigned ? stdInt32Type : stdUInt32Type;
-            else
-                cppType = isSigned ? stdInt64Type : stdUInt64Type;
+            if (fieldType)
+            {
+	            if (numBits <= 8)
+	                cppType = isSigned ? stdInt8FieldType : stdUInt8FieldType;
+	            else if (numBits <= 16)
+	                cppType = isSigned ? stdInt16FieldType : stdUInt16FieldType;
+	            else if (numBits <= 32)
+	                cppType = isSigned ? stdInt32FieldType : stdUInt32FieldType;
+	            else
+	                cppType = isSigned ? stdInt64FieldType : stdUInt64FieldType;
+            }
+            else 
+            {
+	            if (numBits <= 8)
+	                cppType = isSigned ? stdInt8Type : stdUInt8Type;
+	            else if (numBits <= 16)
+	                cppType = isSigned ? stdInt16Type : stdUInt16Type;
+	            else if (numBits <= 32)
+	                cppType = isSigned ? stdInt32Type : stdUInt32Type;
+	            else
+	                cppType = isSigned ? stdInt64Type : stdUInt64Type;
+            }
         }
 
         @Override
         public void visitVarIntegerType(VarIntegerType type)
         {
-            switch (type.getMaxBitSize())
+        	switch (type.getMaxBitSize())
             {
             case 16:
-                cppType = (type.isSigned()) ? varInt16Type : varUInt16Type;
-                break;
+            	if (fieldType)
+            		cppType = (type.isSigned()) ? varInt16FieldType : varUInt16FieldType;
+            	else
+            		cppType = (type.isSigned()) ? varInt16Type : varUInt16Type;
+            	break;
 
             case 32:
-                cppType = (type.isSigned()) ? varInt32Type : varUInt32Type;
+                if (fieldType)
+                	cppType = (type.isSigned()) ? varInt32FieldType : varUInt32FieldType;
+                else
+                	cppType = (type.isSigned()) ? varInt32Type : varUInt32Type;
                 break;
 
             case 40:
                 if (!type.isSigned())
-                    cppType = varSizeType;
+                    cppType = fieldType ? varSizeFieldType : varSizeType;
                 break;
 
             case 64:
-                cppType = (type.isSigned()) ? varInt64Type : varUInt64Type;
+            	if (fieldType)
+            		cppType = (type.isSigned()) ? varInt64FieldType : varUInt64FieldType;
+            	else
+            		cppType = (type.isSigned()) ? varInt64Type : varUInt64Type;
                 break;
 
             case 72:
-                cppType = (type.isSigned()) ? varIntType : varUIntType;
-                break;
+            	if (fieldType)
+            		cppType = (type.isSigned()) ? varIntFieldType : varUIntFieldType;
+            	else
+            		cppType = (type.isSigned()) ? varIntType : varUIntType;
+            	break;
 
             default:
                 // not supported
@@ -407,7 +478,7 @@ public final class CppNativeMapper
         @Override
         public void visitBooleanType(BooleanType type)
         {
-            cppType = booleanType;
+        	cppType = fieldType ? booleanFieldType : booleanType;
         }
 
         @Override
@@ -445,18 +516,18 @@ public final class CppNativeMapper
         @Override
         public void visitFloatType(FloatType type)
         {
-            switch (type.getBitSize())
+        	switch (type.getBitSize())
             {
             case 16:
-                cppType = float16Type;
+                cppType = fieldType ? float16FieldType : float16Type;
                 break;
 
             case 32:
-                cppType = float32Type;
+                cppType = fieldType ? float32FieldType : float32Type;
                 break;
 
             case 64:
-                cppType = float64Type;
+                cppType = fieldType ? float64FieldType : float64Type;
                 break;
 
             default:
@@ -509,7 +580,7 @@ public final class CppNativeMapper
         @Override
         public void visitStringType(StringType type)
         {
-            cppType = stringType;
+            cppType = fieldType ? stringFieldType : stringType;
         }
 
         @Override
@@ -539,14 +610,21 @@ public final class CppNativeMapper
         @Override
         public void visitFixedBitFieldType(FixedBitFieldType type)
         {
-            cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getBitSize());
+        	if (fieldType)
+        		cppType = new WrappedIntegralType(type.getBitSize(), type.isSigned(), new NativeBitFieldArrayTraits());
+        	else
+        		cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getBitSize());
         }
 
         @Override
         public void visitDynamicBitFieldType(DynamicBitFieldType type)
         {
-            // this is only for reference to dynamic bit field type (e.g. when used as compound parameter)
-            cppType = CppNativeMapper.mapDynamicBitFieldType(type.isSigned(), DynamicBitFieldType.MAX_BIT_SIZE);
+        	//no need to output bit size, dynamic size has to be specified at the point of member function call
+        	if (fieldType)
+        		cppType = new WrappedIntegralType(DynamicBitFieldType.MAX_BIT_SIZE, type.isSigned(), new NativeBitFieldArrayTraits());
+        	else
+        		// this is only for reference to dynamic bit field type (e.g. when used as compound parameter)
+            	cppType = CppNativeMapper.mapDynamicBitFieldType(type.isSigned(), DynamicBitFieldType.MAX_BIT_SIZE);	
         }
 
         private void mapCompoundType(CompoundType type)
@@ -585,6 +663,7 @@ public final class CppNativeMapper
 
         private CppNativeType cppType = null;
         private ZserioExtensionException thrownException = null;
+        private boolean fieldType;
     }
 
     private final static String INCLUDE_DIR_SEPARATOR = "/";
@@ -595,6 +674,7 @@ public final class CppNativeMapper
     private final NativeRuntimeAllocType heapOptionalHolderType;
     private final NativeRuntimeType inplaceOptionalHolderType;
 
+    private final NativeRuntimeAllocArrayableType stringFieldType;
     private final NativeRuntimeAllocArrayableType stringType;
     private final NativeStringViewType stringViewType;
     private final NativeRuntimeAllocType vectorType;
@@ -614,6 +694,8 @@ public final class CppNativeMapper
     private final NativeRuntimeAllocType rawServiceDataHolderType;
     private final NativeRuntimeAllocType rawServiceDataViewType;
 
+    private final static NativeIntegralType stdByteType =
+            new NativeIntegralType(8, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));
     private final static NativeBuiltinType float16Type =
@@ -622,7 +704,7 @@ public final class CppNativeMapper
             new NativeBuiltinType("float", new NativeArrayTraits("Float32ArrayTraits"));
     private final static NativeBuiltinType float64Type =
             new NativeBuiltinType("double", new NativeArrayTraits("Float64ArrayTraits"));
-
+    
     private final static NativeIntegralType stdInt8Type =
             new NativeIntegralType(8, true, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
     private final static NativeIntegralType stdInt16Type =
@@ -640,6 +722,24 @@ public final class CppNativeMapper
             new NativeIntegralType(32, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
     private final static NativeIntegralType stdUInt64Type =
             new NativeIntegralType(64, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+
+    private final static WrappedIntegralType stdInt8FieldType =
+            new WrappedIntegralType(8, true, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+    private final static WrappedIntegralType stdInt16FieldType =
+            new WrappedIntegralType(16, true, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+    private final static WrappedIntegralType stdInt32FieldType =
+            new WrappedIntegralType(32, true, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+    private final static WrappedIntegralType stdInt64FieldType =
+            new WrappedIntegralType(64, true, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+
+    private final static WrappedIntegralType stdUInt8FieldType =
+            new WrappedIntegralType(8, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+    private final static WrappedIntegralType stdUInt16FieldType =
+            new WrappedIntegralType(16, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+    private final static WrappedIntegralType stdUInt32FieldType =
+            new WrappedIntegralType(32, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
+    private final static WrappedIntegralType stdUInt64FieldType =
+            new WrappedIntegralType(64, false, new NativeTemplatedArrayTraits("StdIntArrayTraits"));
 
     private final static NativeIntegralType int8Type =
             new NativeIntegralType(8, true, new NativeBitFieldArrayTraits());
@@ -697,4 +797,34 @@ public final class CppNativeMapper
 
     private final static NativeIntegralType varSizeType =
             new NativeIntegralType(32, false, new NativeArrayTraits("VarSizeArrayTraits"));
+    
+    private final static WrappedBuiltinType booleanFieldType =
+            new WrappedBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));
+    private final static WrappedBuiltinType float16FieldType =
+            new WrappedBuiltinType("float", new NativeArrayTraits("Float16ArrayTraits"));
+    private final static WrappedBuiltinType float32FieldType =
+            new WrappedBuiltinType("float", new NativeArrayTraits("Float32ArrayTraits"));
+    private final static WrappedBuiltinType float64FieldType =
+            new WrappedBuiltinType("double", new NativeArrayTraits("Float64ArrayTraits"));
+
+    private final static WrappedIntegralType varUInt16FieldType =
+            new WrappedIntegralType(16, false, new NativeTemplatedArrayTraits("VarIntNNArrayTraits"));
+    private final static WrappedIntegralType varUInt32FieldType =
+            new WrappedIntegralType(32, false, new NativeTemplatedArrayTraits("VarIntNNArrayTraits"));
+    private final static WrappedIntegralType varUInt64FieldType =
+            new WrappedIntegralType(64, false, new NativeTemplatedArrayTraits("VarIntNNArrayTraits"));
+    private final static WrappedIntegralType varUIntFieldType =
+            new WrappedIntegralType(64, false, new NativeTemplatedArrayTraits("VarIntArrayTraits"));
+
+    private final static WrappedIntegralType varInt16FieldType =
+            new WrappedIntegralType(16, true, new NativeTemplatedArrayTraits("VarIntNNArrayTraits"));
+    private final static WrappedIntegralType varInt32FieldType =
+            new WrappedIntegralType(32, true, new NativeTemplatedArrayTraits("VarIntNNArrayTraits"));
+    private final static WrappedIntegralType varInt64FieldType =
+            new WrappedIntegralType(64, true, new NativeTemplatedArrayTraits("VarIntNNArrayTraits"));
+    private final static WrappedIntegralType varIntFieldType =
+            new WrappedIntegralType(64, true, new NativeTemplatedArrayTraits("VarIntArrayTraits"));
+
+    private final static WrappedIntegralType varSizeFieldType =
+            new WrappedIntegralType(32, false, new NativeArrayTraits("VarSizeArrayTraits"));
 }

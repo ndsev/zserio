@@ -18,6 +18,7 @@ public final class TypesContext
             vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector", true, false, "zserio/Vector.h");
             array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "Array", true, false, "zserio/Array.h");
             string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string", true, false, "zserio/String.h");
+            stringField = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "String", false, false, "zserio/TypeWrappers.h");
             map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map", true, false, "map");
             set = new NativeTypeDefinition(STD_PACKAGE_NAME, "set", true, false, "set");
             anyHolder = new NativeTypeDefinition(
@@ -65,6 +66,7 @@ public final class TypesContext
                     ZSERIO_PMR_PACKAGE_NAME, "Array", true, false, "zserio/pmr/Array.h");
             string = new NativeTypeDefinition(
                     ZSERIO_PMR_PACKAGE_NAME, "string", false, false, "zserio/pmr/String.h");
+            stringField = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "String", false, false, "zserio/TypeWrappers.h");
             map = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "map", true, false, "zserio/pmr/Map.h");
             set = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "set", true, false, "zserio/pmr/Set.h");
             anyHolder = new NativeTypeDefinition(
@@ -109,6 +111,7 @@ public final class TypesContext
             vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector", true, true, "vector");
             array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicArray", true, true, "zserio/Array.h");
             string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string", true, true, "zserio/String.h");
+            stringField = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicString", true, true, "zserio/TypeWrappers.h");
             map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map", true, true, "map");
             set = new NativeTypeDefinition(STD_PACKAGE_NAME, "set", true, true, "set");
             anyHolder = new NativeTypeDefinition(
@@ -203,6 +206,11 @@ public final class TypesContext
     public NativeTypeDefinition getString()
     {
         return string;
+    }
+    
+    public NativeTypeDefinition getStringField()
+    {
+    	return stringField;
     }
 
     public NativeTypeDefinition getMap()
@@ -353,6 +361,7 @@ public final class TypesContext
     private final NativeTypeDefinition vector;
     private final NativeTypeDefinition array;
     private final NativeTypeDefinition string;
+    private final NativeTypeDefinition stringField;
     private final NativeTypeDefinition map;
     private final NativeTypeDefinition set;
     private final NativeTypeDefinition heapOptionalHolder;

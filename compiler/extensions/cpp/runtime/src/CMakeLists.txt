@@ -102,6 +102,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/TypeInfo.h
     zserio/TypeInfoUtil.cpp
     zserio/TypeInfoUtil.h
+    zserio/TypeWrappers.h
     zserio/Types.h
     zserio/UniquePtr.h
     zserio/ValidationSqliteUtil.h

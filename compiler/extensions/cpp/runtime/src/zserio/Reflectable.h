@@ -3416,21 +3416,21 @@ public:
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator, value);
     }
 
-    template <typename T, typename std::enable_if<std::is_signed<T>::value, int>::type = 0>
+    template <typename T /*TODO Integral<>, typename std::enable_if<std::is_signed<T>::value, int>::type = 0*/>
     static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
             T value, uint8_t bitSize, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<FixedSignedBitFieldReflectable<ALLOC, T>>(allocator, value, bitSize);
     }
 
-    template <typename T, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
+    template <typename T /*TODO Integral<>, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0*/>
     static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
             T value, uint8_t bitSize, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<FixedUnsignedBitFieldReflectable<ALLOC, T>>(allocator, value, bitSize);
     }
 
-    template <typename T, typename std::enable_if<std::is_signed<T>::value, int>::type = 0>
+    template <typename T /*TODO Integral<>, typename std::enable_if<std::is_signed<T>::value, int>::type = 0*/>
     static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
             T value, uint8_t maxBitSize, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
     {
@@ -3451,7 +3451,7 @@ public:
         return getDynamicSignedBitField(value, maxBitSize, maxBitSize, allocator);
     }
 
-    template <typename T, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
+    template <typename T /*TODO Integral<>, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0*/>
     static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
             T value, uint8_t maxBitSize, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
     {

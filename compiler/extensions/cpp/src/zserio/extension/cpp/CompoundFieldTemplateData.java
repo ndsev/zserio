@@ -34,7 +34,7 @@ public final class CompoundFieldTemplateData
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        final CppNativeType fieldNativeType = cppNativeMapper.getCppType(fieldTypeInstantiation);
+        final CppNativeType fieldNativeType = cppNativeMapper.getFieldCppType(fieldTypeInstantiation);
         includeCollector.addHeaderIncludesForType(fieldNativeType);
 
         optional = (field.isOptional())
@@ -466,7 +466,7 @@ public final class CompoundFieldTemplateData
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
             length = createLength(arrayInstantiation, cppExpressionFormatter);
             final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-            final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
+            final CppNativeType elementNativeType = cppNativeMapper.getFieldCppType(elementTypeInstantiation);
             includeCollector.addHeaderIncludesForType(elementNativeType);
             elementBitSize = BitSizeTemplateData.create(context, elementTypeInstantiation, includeCollector);
             elementCompound = createCompound(context, elementTypeInstantiation, includeCollector);

@@ -7,11 +7,11 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Native C++ integral type mapping.
  */
-public final class NativeIntegralType extends NativeBuiltinType
+public class NativeIntegralType extends NativeBuiltinType
 {
-    public NativeIntegralType(int numBits, boolean isSigned, NativeArrayTraits arrayTraits)
+    public NativeIntegralType(String name, int numBits, boolean isSigned, NativeArrayTraits arrayTraits)
     {
-        super(getTypeName(numBits, isSigned), arrayTraits);
+        super(name, arrayTraits);
         addSystemIncludeFile(STDINT_INCLUDE);
 
         this.numBits = numBits;
@@ -26,6 +26,11 @@ public final class NativeIntegralType extends NativeBuiltinType
             lowerBound = BigInteger.ZERO;
             upperBound = BigInteger.ONE.shiftLeft(numBits).subtract(BigInteger.ONE);
         }
+    }
+    
+    public NativeIntegralType(int numBits, boolean isSigned, NativeArrayTraits arrayTraits)
+    {
+    	this(getTypeName(numBits, isSigned), numBits, isSigned, arrayTraits);
     }
 
     public BigInteger getLowerBound()
