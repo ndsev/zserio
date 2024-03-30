@@ -530,6 +530,23 @@ template <class T, int N>
 struct VarIntArrayTraits<Integer<T, N>> : VarIntArrayTraits<T>
 {};
 
+namespace detail
+{
+
+template <class T, int N>
+inline void write_bits(BitStreamWriter& out, Integer<T, N> val, uint8_t numBits)
+{
+    write_bits(out, (T)val, numBits);
+}
+
+template <class T, int N>
+inline Integer<T, N> read_bits<Integer<T, N>>(BitStreamReader& in, uint8_t numBits)
+{
+    return read_bits<T>(in, numBits);
+}
+
+} // namespace detail
+
 // Reflectable.h
 
 template <typename ALLOC, typename T, int N>
