@@ -540,7 +540,7 @@ inline void write_bits(BitStreamWriter& out, Integer<T, N> val, uint8_t numBits)
 }
 
 template <class T, int N>
-inline Integer<T, N> read_bits<Integer<T, N>>(BitStreamReader& in, uint8_t numBits)
+inline Integer<T, N> read_bits_impl(Integer<T, N>*, BitStreamReader& in, uint8_t numBits)
 {
     return read_bits<T>(in, numBits);
 }

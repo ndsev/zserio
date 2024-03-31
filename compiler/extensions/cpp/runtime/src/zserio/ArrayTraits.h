@@ -20,55 +20,51 @@ namespace zserio
 namespace detail
 {
 
-template <typename T>
-T read_bits(BitStreamReader& in, uint8_t numBits);
-
-template <>
-inline int8_t read_bits<int8_t>(BitStreamReader& in, uint8_t numBits)
+inline int8_t read_bits_impl(int8_t*, BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<int8_t>(in.readSignedBits(numBits));
 }
 
-template <>
-inline int16_t read_bits<int16_t>(BitStreamReader& in, uint8_t numBits)
+inline int16_t read_bits_impl(int16_t*, BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<int16_t>(in.readSignedBits(numBits));
 }
 
-template <>
-inline int32_t read_bits<int32_t>(BitStreamReader& in, uint8_t numBits)
+inline int32_t read_bits_impl(int32_t*, BitStreamReader& in, uint8_t numBits)
 {
     return in.readSignedBits(numBits);
 }
 
-template <>
-inline int64_t read_bits<int64_t>(BitStreamReader& in, uint8_t numBits)
+inline int64_t read_bits_impl(int64_t*, BitStreamReader& in, uint8_t numBits)
 {
     return in.readSignedBits64(numBits);
 }
 
-template <>
-inline uint8_t read_bits<uint8_t>(BitStreamReader& in, uint8_t numBits)
+inline uint8_t read_bits_impl(uint8_t*, BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<uint8_t>(in.readBits(numBits));
 }
 
-template <>
-inline uint16_t read_bits<uint16_t>(BitStreamReader& in, uint8_t numBits)
+inline uint16_t read_bits_impl(uint16_t*, BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<uint16_t>(in.readBits(numBits));
 }
 
-template <>
-inline uint32_t read_bits<uint32_t>(BitStreamReader& in, uint8_t numBits)
+inline uint32_t read_bits_impl(uint32_t*, BitStreamReader& in, uint8_t numBits)
 {
     return in.readBits(numBits);
 }
 
-template <>
-inline uint64_t read_bits<uint64_t>(BitStreamReader& in, uint8_t numBits)
+inline uint64_t read_bits_impl(uint64_t*, BitStreamReader& in, uint8_t numBits)
 {
     return in.readBits64(numBits);
+}
+
+template <typename T>
+T read_bits(BitStreamReader& in, uint8_t numBits)
+{
+    //function partial spec is not allowed so transform it to template parameter
+    return read_bits_impl((T*)nullptr, in, numBits); 
 }
 
 template <typename T>
