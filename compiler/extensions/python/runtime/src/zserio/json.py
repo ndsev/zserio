@@ -968,6 +968,7 @@ class JsonReader:
         def begin_array(self) -> None:
             if self._state == JsonReader._BitBufferAdapter._State.BEGIN_ARRAY_BUFFER:
                 self._state = JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER
+                self._buffer = []
             else:
                 raise PythonRuntimeException("JsonReader: Unexpected begin array in Bit Buffer!")
 
@@ -989,11 +990,9 @@ class JsonReader:
                 raise PythonRuntimeException(f"JsonReader: Unexpected key '{key}' in Bit Buffer!")
 
         def visit_value(self, value: typing.Any) -> None:
-            if self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER and isinstance(value, int):
-                if self._buffer is None:
-                    self._buffer = [value]
-                else:
-                    self._buffer.append(value)
+            if (self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER and
+                               self._buffer is not None and isinstance(value, int)):
+                self._buffer.append(value)
             elif (self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BITSIZE and
                                  isinstance(value, int)):
                 self._bit_size = value

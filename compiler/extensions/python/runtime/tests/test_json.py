@@ -1031,6 +1031,44 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual(CreatorEnum.ONE, creator_object.nested.creator_enum)
         self.assertEqual(CreatorBitmask.Values.READ, creator_object.nested.creator_bitmask)
 
+    def test_read_empty_bit_buffer(self):
+        text_io = io.StringIO(
+                "{\n" +
+                "    \"value\": 13,\n" +
+                "    \"nested\": {\n" +
+                "        \"value\": 10,\n" +
+                "        \"text\": \"nested\",\n" +
+                "        \"externData\": {\n" +
+                "             \"buffer\": [\n" +
+                "             ],\n" +
+                "             \"bitSize\": 0\n" +
+                "        },\n" +
+                "        \"bytesData\": {\n" +
+                "           \"buffer\": [\n" +
+                "               202,\n" +
+                "               254\n" +
+                "           ]\n" +
+                "        },\n" +
+                "        \"creatorEnum\": 0,\n" +
+                "        \"creatorBitmask\": 1\n" +
+                "    }\n" +
+                "}"
+                )
+
+        json_reader = JsonReader(text_io)
+        creator_object = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object is not None)
+        self.assertTrue(isinstance(creator_object, CreatorObject))
+
+        self.assertEqual(13, creator_object.value)
+        self.assertEqual(13, creator_object.nested.param)
+        self.assertEqual(10, creator_object.nested.value)
+        self.assertEqual("nested", creator_object.nested.text)
+        self.assertEqual(BitBuffer(bytes()), creator_object.nested.extern_data)
+        self.assertEqual(bytes([0xCA, 0xFE]), creator_object.nested.bytes_data)
+        self.assertEqual(CreatorEnum.ONE, creator_object.nested.creator_enum)
+        self.assertEqual(CreatorBitmask.Values.READ, creator_object.nested.creator_bitmask)
+
     def test_read_stringified_enum(self):
         self._check_read_stringified_enum("ONE", CreatorEnum.ONE)
         self._check_read_stringified_enum("MinusOne", CreatorEnum.MINUS_ONE)

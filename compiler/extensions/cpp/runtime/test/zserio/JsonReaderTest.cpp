@@ -444,6 +444,50 @@ TEST(JsonReaderTest, readUnorderedBitBuffer)
             reflectable->find("nested.creatorBitmask")->getUInt8());
 }
 
+TEST(JsonReaderTest, readEmptyBitBuffer)
+{
+    std::stringstream str(
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "             ],\n"
+            "             \"bitSize\": 0\n"
+            "        },\n"
+            "        \"bytesData\": {\n"
+            "           \"buffer\": [\n"
+            "               202,\n"
+            "               254\n"
+            "           ]\n"
+            "        },\n"
+            "        \"creatorEnum\": -1,\n"
+            "        \"creatorBitmask\": 1\n"
+            "    }\n"
+            "}");
+
+    JsonReader jsonReader(str);
+    auto reflectable = jsonReader.read(CreatorObject::typeInfo());
+    ASSERT_TRUE(reflectable);
+
+    reflectable->initializeChildren();
+
+    ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
+    ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
+    ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
+    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
+    ASSERT_EQ(BitBuffer(), reflectable->find("nested.externData")->getBitBuffer());
+    const Span<const uint8_t> bytesData = reflectable->find("nested.bytesData")->getBytes();
+    ASSERT_EQ(2, bytesData.size());
+    ASSERT_EQ(0xCA, bytesData[0]);
+    ASSERT_EQ(0xFE, bytesData[1]);
+    ASSERT_EQ(enumToValue(CreatorEnum::MinusOne), reflectable->find("nested.creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ).getValue(),
+            reflectable->find("nested.creatorBitmask")->getUInt8());
+}
+
 TEST(JsonReaderTest, readStringifiedEnum)
 {
     checkReadStringifiedEnum("ONE", CreatorEnum::ONE);

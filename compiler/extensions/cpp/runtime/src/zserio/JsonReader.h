@@ -261,18 +261,27 @@ template <typename ALLOC>
 void BitBufferAdapter<ALLOC>::beginArray()
 {
     if (m_state == BEGIN_ARRAY_BUFFER)
+    {
         m_state = VISIT_VALUE_BUFFER;
+        m_buffer = vector<uint8_t, ALLOC>(get_allocator());
+    }
     else
+    {
         throw CppRuntimeException("JsonReader: Unexpected beginArray in BitBuffer!");
+    }
 }
 
 template <typename ALLOC>
 void BitBufferAdapter<ALLOC>::endArray()
 {
     if (m_state == VISIT_VALUE_BUFFER)
+    {
         m_state = VISIT_KEY;
+    }
     else
+    {
         throw CppRuntimeException("JsonReader: Unexpected endArray in BitBuffer!");
+    }
 }
 
 template <typename ALLOC>
@@ -322,10 +331,7 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
                     << uintValue << "'!";
         }
 
-        if (!m_buffer.hasValue())
-            m_buffer = vector<uint8_t, ALLOC>(1, static_cast<uint8_t>(uintValue), get_allocator());
-        else
-            m_buffer->push_back(static_cast<uint8_t>(uintValue));
+        m_buffer->push_back(static_cast<uint8_t>(uintValue));
     }
     else if (m_state == VISIT_VALUE_BITSIZE)
     {
