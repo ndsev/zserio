@@ -7,14 +7,14 @@ assignees: ''
 
 ---
 
-**What version of Zserio and what language are you using?**
-Zserio: 2.12.0
+**Zserio version and language**
+Zserio: 2.?.?
 Language: C++/Java/Python
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+**How to reproduce**
 Steps to reproduce the behavior:
 * Schema (minimum working example)
 * Zserio command line options (e.g. -withTypeInfoCode)
@@ -24,5 +24,5 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Additional context:**
+**Additional context**
 Provide relevant information about your OS, used Java version, Python version and/or C++ compiler version.
