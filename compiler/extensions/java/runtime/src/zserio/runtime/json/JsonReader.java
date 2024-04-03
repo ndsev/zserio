@@ -266,18 +266,27 @@ public final class JsonReader implements AutoCloseable
         public void beginArray()
         {
             if (state == State.BEGIN_ARRAY_BUFFER)
+            {
                 state = State.VISIT_VALUE_BUFFER;
+                buffer = new ArrayList<Byte>();
+            }
             else
+            {
                 throw new ZserioError("JsonReader: Unexpected begin array in bytes!");
+            }
         }
 
         @Override
         public void endArray()
         {
             if (state == State.VISIT_VALUE_BUFFER)
+            {
                 state = State.VISIT_KEY;
+            }
             else
+            {
                 throw new ZserioError("JsonReader: Unexpected end array in bytes!");
+            }
         }
 
         @Override
@@ -301,9 +310,6 @@ public final class JsonReader implements AutoCloseable
         {
             if (state == State.VISIT_VALUE_BUFFER && value instanceof BigInteger)
             {
-                if (buffer == null)
-                    buffer = new ArrayList<Byte>();
-
                 // bit buffer stores 8-bit unsigned values in byte type
                 final BigInteger intValue = (BigInteger)value;
                 if (intValue.compareTo(BigInteger.ZERO) < 0 || intValue.compareTo(BigInteger.valueOf(255)) > 0)

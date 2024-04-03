@@ -1040,6 +1040,7 @@ class JsonReader:
         def begin_array(self) -> None:
             if self._state == JsonReader._BytesAdapter._State.BEGIN_ARRAY_BUFFER:
                 self._state = JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER
+                self._buffer = bytearray()
             else:
                 raise PythonRuntimeException("JsonReader: Unexpected begin array in bytes!")
 
@@ -1059,11 +1060,9 @@ class JsonReader:
                 raise PythonRuntimeException(f"JsonReader: Unexpected key '{key}' in bytes!")
 
         def visit_value(self, value: typing.Any) -> None:
-            if self._state == JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER and isinstance(value, int):
-                if self._buffer is None:
-                    self._buffer = bytearray([value])
-                else:
-                    self._buffer.append(value)
+            if (self._state == JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER and self._buffer is not None
+                               and isinstance(value, int)):
+                self._buffer.append(value)
             else:
                 raise PythonRuntimeException(f"JsonReader: Unexpected value '{value}' in bytes!")
 

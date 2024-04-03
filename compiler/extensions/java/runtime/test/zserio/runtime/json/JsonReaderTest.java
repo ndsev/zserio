@@ -239,6 +239,45 @@ public class JsonReaderTest
     }
 
     @Test
+    public void readEmptyBytes() throws IOException
+    {
+        final Reader reader = new StringReader("{\n"
+                + "    \"value\": 13,\n"
+                + "    \"nested\": {\n"
+                + "        \"value\": 10,\n"
+                + "        \"text\": \"nested\",\n"
+                + "        \"externData\": {\n"
+                + "             \"bitSize\": 0,\n"
+                + "             \"buffer\": [\n"
+                + "             ]\n"
+                + "        },\n"
+                + "        \"bytesData\": {\n"
+                + "           \"buffer\": [\n"
+                + "           ]\n"
+                + "        },\n"
+                + "        \"creatorEnum\": -1,\n"
+                + "        \"creatorBitmask\": 1\n"
+                + "    }\n"
+                + "}");
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());
+        assertTrue(zserioObject != null);
+        final CreatorObject creatorObject = (CreatorObject)zserioObject;
+
+        assertEquals(13, creatorObject.getValue());
+        assertEquals(13, creatorObject.getNested().getParam());
+        assertEquals(10, creatorObject.getNested().getValue());
+        assertEquals("nested", creatorObject.getNested().getText());
+        assertEquals(new BitBuffer(new byte[] {}), creatorObject.getNested().getExternData());
+        assertArrayEquals(new byte[] {}, creatorObject.getNested().getBytesData());
+        assertEquals(CreatorEnum.MinusOne, creatorObject.getNested().getCreatorEnum());
+        assertEquals(CreatorBitmask.Values.READ, creatorObject.getNested().getCreatorBitmask());
+
+        jsonReader.close();
+    }
+
+    @Test
     public void readStringifiedEnum() throws IOException
     {
         checkReadStringifiedEnum("ONE", CreatorEnum.ONE);
