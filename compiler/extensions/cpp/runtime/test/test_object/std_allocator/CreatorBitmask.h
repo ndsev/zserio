@@ -129,12 +129,12 @@ inline CreatorBitmask operator^(const CreatorBitmask& lhs, const CreatorBitmask&
 
 inline CreatorBitmask operator~(CreatorBitmask::Values lhs)
 {
-    return CreatorBitmask(~static_cast<CreatorBitmask::underlying_type>(lhs));
+    return CreatorBitmask(static_cast<CreatorBitmask::underlying_type>(~static_cast<CreatorBitmask::underlying_type>(lhs)));
 }
 
 inline CreatorBitmask operator~(const CreatorBitmask& lhs)
 {
-    return CreatorBitmask(~lhs.getValue());
+    return CreatorBitmask(static_cast<CreatorBitmask::underlying_type>(~lhs.getValue()));
 }
 
 inline CreatorBitmask operator|=(CreatorBitmask& lhs, const CreatorBitmask& rhs)

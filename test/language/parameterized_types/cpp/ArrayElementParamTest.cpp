@@ -18,7 +18,7 @@ protected:
         for (uint16_t i = 0; i < NUM_BLOCKS; ++i)
         {
             BlockHeader blockHeader;
-            blockHeader.setNumItems(i + 1);
+            blockHeader.setNumItems(static_cast<uint16_t>(i + 1));
             blockHeader.setOffset(0);
             headers.push_back(blockHeader);
         }

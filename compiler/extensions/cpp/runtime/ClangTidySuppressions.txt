@@ -55,7 +55,7 @@ cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:389
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:395
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:577
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:640
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:641
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:89
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:90
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:93

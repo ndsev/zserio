@@ -327,7 +327,7 @@ TEST_F(UnionWithArrayTest, operatorLessThan)
     ASSERT_FALSE(testUnion1 < testUnion2);
     ASSERT_FALSE(testUnion2 < testUnion1);
 
-    testUnion2.getArray16().back() -= 1;
+    testUnion2.getArray16().back() = static_cast<int16_t>(testUnion2.getArray16().back() - 1);
     ASSERT_FALSE(testUnion1 < testUnion2);
     ASSERT_TRUE(testUnion2 < testUnion1);
 }

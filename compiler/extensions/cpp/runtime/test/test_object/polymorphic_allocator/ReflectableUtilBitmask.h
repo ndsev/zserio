@@ -129,12 +129,12 @@ inline ReflectableUtilBitmask operator^(const ReflectableUtilBitmask& lhs, const
 
 inline ReflectableUtilBitmask operator~(ReflectableUtilBitmask::Values lhs)
 {
-    return ReflectableUtilBitmask(~static_cast<ReflectableUtilBitmask::underlying_type>(lhs));
+    return ReflectableUtilBitmask(static_cast<ReflectableUtilBitmask::underlying_type>(~static_cast<ReflectableUtilBitmask::underlying_type>(lhs)));
 }
 
 inline ReflectableUtilBitmask operator~(const ReflectableUtilBitmask& lhs)
 {
-    return ReflectableUtilBitmask(~lhs.getValue());
+    return ReflectableUtilBitmask(static_cast<ReflectableUtilBitmask::underlying_type>(~lhs.getValue()));
 }
 
 inline ReflectableUtilBitmask operator|=(ReflectableUtilBitmask& lhs, const ReflectableUtilBitmask& rhs)

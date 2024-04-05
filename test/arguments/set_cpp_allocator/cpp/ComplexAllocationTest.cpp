@@ -79,8 +79,10 @@ protected:
         writer.writeBool(true);
         writer.writeBits(STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0, 16);
-        writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA, STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1);
-        writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA, STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1));
+        writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1));
         writer.writeVarSize(STRUCT_PACKED_ELEMENT_ARRAY_SIZE);
         // x0
         writer.writeBool(true);
@@ -95,23 +97,23 @@ protected:
         writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, 32);
         // x1
-        writer.writeSignedBits(
-                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1));
         // y1
-        writer.writeSignedBits(
-                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1));
         // z1
-        writer.writeSignedBits(
-                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1));
         // x2
-        writer.writeSignedBits(
-                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1));
         // y2
-        writer.writeSignedBits(
-                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1));
         // z2
-        writer.writeSignedBits(
-                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                static_cast<uint8_t>(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1));
 
         // structOptionalField
         writer.writeBool(true);
@@ -140,14 +142,14 @@ protected:
 
         // bytesField
         writer.writeVarSize(BYTES_FIELD_VAR_SIZE);
-        writer.writeBits(BYTES_FIELD_DATA, BYTES_FIELD_VAR_SIZE * 8);
+        writer.writeBits(BYTES_FIELD_DATA, static_cast<uint8_t>(BYTES_FIELD_VAR_SIZE * 8));
 
         // bytesArray
         writer.writeVarSize(BYTES_ARRAY_SIZE);
         writer.writeVarSize(BYTES_ARRAY_ELEMENT0_VAR_SIZE);
-        writer.writeBits(BYTES_ARRAY_ELEMENT0_DATA, BYTES_ARRAY_ELEMENT0_VAR_SIZE * 8);
+        writer.writeBits(BYTES_ARRAY_ELEMENT0_DATA, static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_VAR_SIZE * 8));
         writer.writeVarSize(BYTES_ARRAY_ELEMENT1_VAR_SIZE);
-        writer.writeBits(BYTES_ARRAY_ELEMENT1_DATA, BYTES_ARRAY_ELEMENT1_VAR_SIZE * 8);
+        writer.writeBits(BYTES_ARRAY_ELEMENT1_DATA, static_cast<uint8_t>(BYTES_ARRAY_ELEMENT1_VAR_SIZE * 8));
     }
 
     void fillStringArray(vector_type<string_type>& stringArray, const allocator_type& allocator)
@@ -423,8 +425,8 @@ protected:
         const auto& externalField = mainStructure.getExternalField();
         ASSERT_EQ(EXTERNAL_FIELD_VAR_SIZE, externalField.getBitSize());
         const uint8_t* externalFieldBuffer = externalField.getBuffer();
-        const uint16_t externalFieldData =
-                (static_cast<uint16_t>(externalFieldBuffer[0] << 8U)) | (externalFieldBuffer[1]);
+        const uint16_t externalFieldData = static_cast<uint16_t>(
+                static_cast<uint16_t>(externalFieldBuffer[0] << 8U) | externalFieldBuffer[1]);
         ASSERT_EQ(EXTERNAL_FIELD_DATA, externalFieldData);
 
         // externalArray
@@ -437,14 +439,15 @@ protected:
         const auto& externalArrayElement1 = externalArray[1];
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, externalArrayElement1.getBitSize());
         const uint8_t* externalBufferElement1 = externalArrayElement1.getBuffer();
-        const uint16_t externalDataElement1 =
-                (static_cast<uint16_t>(externalBufferElement1[0] << 8U)) | (externalBufferElement1[1]);
+        const uint16_t externalDataElement1 = static_cast<uint16_t>(
+                static_cast<uint16_t>(externalBufferElement1[0] << 8U) | externalBufferElement1[1]);
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_DATA, externalDataElement1);
 
         // bytesField
         const auto& bytesField = mainStructure.getBytesField();
         ASSERT_EQ(BYTES_FIELD_VAR_SIZE, bytesField.size());
-        const uint16_t bytesFieldData = (static_cast<uint16_t>(bytesField[0] << 8U)) | (bytesField[1]);
+        const uint16_t bytesFieldData =
+                static_cast<uint16_t>(static_cast<uint16_t>(bytesField[0] << 8U) | bytesField[1]);
         ASSERT_EQ(BYTES_FIELD_DATA, bytesFieldData);
 
         // bytesArray
@@ -452,8 +455,8 @@ protected:
         ASSERT_EQ(BYTES_ARRAY_SIZE, bytesArray.size());
         const auto& bytesArrayElement0 = bytesArray[0];
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_VAR_SIZE, bytesArrayElement0.size());
-        const uint16_t bytesDataElement0 =
-                (static_cast<uint16_t>(bytesArrayElement0[0] << 8U)) | (bytesArrayElement0[1]);
+        const uint16_t bytesDataElement0 = static_cast<uint16_t>(
+                static_cast<uint16_t>(bytesArrayElement0[0] << 8U) | bytesArrayElement0[1]);
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_DATA, bytesDataElement0);
         const auto& bytesArrayElement1 = bytesArray[1];
         ASSERT_EQ(BYTES_ARRAY_ELEMENT1_VAR_SIZE, bytesArrayElement1.size());

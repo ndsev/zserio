@@ -135,8 +135,9 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
         uint8_t writtenTestValue = static_cast<uint8_t>(bitBuffer.getData()[offset / 8U] << (offset % 8U));
         if (offset % 8 != 0)
         {
-            writtenTestValue |=
+            const uint8_t val =
                     static_cast<uint8_t>(bitBuffer.getData()[offset / 8U + 1U] >> (8U - (offset % 8U)));
+            writtenTestValue = static_cast<uint8_t>(writtenTestValue | val);
         }
         ASSERT_EQ(testValue, writtenTestValue) << "Offset: " << offset;
     }

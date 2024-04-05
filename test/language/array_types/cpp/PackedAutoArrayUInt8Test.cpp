@@ -49,10 +49,12 @@ protected:
         writer.writeBits(PACKED_ARRAY_ELEMENT0, 8);
         if (numElements > 1)
         {
-            writer.writeSignedBits(PACKED_ARRAY_DELTA * 2, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+            writer.writeSignedBits(
+                    PACKED_ARRAY_DELTA * 2, static_cast<uint8_t>(PACKED_ARRAY_MAX_BIT_NUMBER + 1));
             for (size_t i = 0; i < numElements - 2; ++i)
             {
-                writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+                writer.writeSignedBits(
+                        PACKED_ARRAY_DELTA, static_cast<uint8_t>(PACKED_ARRAY_MAX_BIT_NUMBER + 1));
             }
         }
     }

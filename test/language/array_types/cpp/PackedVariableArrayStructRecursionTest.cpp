@@ -38,7 +38,7 @@ protected:
         }
         else
         {
-            const uint8_t blockTerminator = byteCount + 1;
+            const uint8_t blockTerminator = static_cast<uint8_t>(byteCount + 1);
             block.setBlockTerminator(blockTerminator);
             block.setNextData(createBlock(blockTerminator, blockTerminator > 5));
             return block;
@@ -62,7 +62,7 @@ protected:
         bitSize += 8; // blockTerminator
         if (!isLast)
         {
-            const uint8_t blockTerminator = byteCount + 1;
+            const uint8_t blockTerminator = static_cast<uint8_t>(byteCount + 1);
             bitSize += getUnpackedBlockBitSize(blockTerminator, blockTerminator > 5);
         }
 

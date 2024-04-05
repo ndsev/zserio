@@ -17,7 +17,7 @@ class StructureArrayTest : public ::testing::Test
 protected:
     void writeStructureArrayToByteArray(zserio::BitStreamWriter& writer, uint16_t pos)
     {
-        writer.writeBits(ITEMS.size(), 16);
+        writer.writeBits(static_cast<uint32_t>(ITEMS.size()), 16);
 
         for (Item item : ITEMS)
         {
@@ -30,7 +30,7 @@ protected:
 
     void createStructureArray(StructureArray& structureArray, uint16_t pos)
     {
-        structureArray.setNumElements(ITEMS.size());
+        structureArray.setNumElements(static_cast<uint16_t>(ITEMS.size()));
 
         auto& values = structureArray.getValues();
         values.assign(ITEMS.begin(), ITEMS.end());

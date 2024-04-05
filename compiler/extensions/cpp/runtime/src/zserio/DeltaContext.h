@@ -167,7 +167,7 @@ public:
         {
             if (m_maxBitNumber > 0)
             {
-                const int64_t delta = in.readSignedBits64(m_maxBitNumber + 1);
+                const int64_t delta = in.readSignedBits64(static_cast<uint8_t>(m_maxBitNumber + 1));
                 const typename ARRAY_TRAITS::ElementType element =
                         static_cast<typename ARRAY_TRAITS::ElementType>(
                                 m_previousElement + static_cast<uint64_t>(delta));
@@ -206,7 +206,7 @@ public:
             {
                 // it's already checked in the init phase that the delta will fit into int64_t
                 const int64_t delta = detail::calcUncheckedDelta(element, m_previousElement);
-                out.writeSignedBits64(delta, m_maxBitNumber + 1);
+                out.writeSignedBits64(delta, static_cast<uint8_t>(m_maxBitNumber + 1));
                 m_previousElement = static_cast<uint64_t>(element);
             }
         }

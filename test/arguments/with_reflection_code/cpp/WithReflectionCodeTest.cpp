@@ -29,7 +29,7 @@ protected:
     {
         auto parameterized = Parameterized{vector_type<uint8_t>(5)};
         for (uint8_t i = 0; i < param; ++i)
-            parameterized.getArray()[i] = i + 1;
+            parameterized.getArray()[i] = static_cast<uint8_t>(i + 1);
         return parameterized;
     }
 

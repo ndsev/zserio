@@ -138,12 +138,12 @@ inline ArrayBitmask operator^(const ArrayBitmask& lhs, const ArrayBitmask& rhs)
 
 inline ArrayBitmask operator~(ArrayBitmask::Values lhs)
 {
-    return ArrayBitmask(~static_cast<ArrayBitmask::underlying_type>(lhs));
+    return ArrayBitmask(static_cast<ArrayBitmask::underlying_type>(~static_cast<ArrayBitmask::underlying_type>(lhs)));
 }
 
 inline ArrayBitmask operator~(const ArrayBitmask& lhs)
 {
-    return ArrayBitmask(~lhs.getValue());
+    return ArrayBitmask(static_cast<ArrayBitmask::underlying_type>(~lhs.getValue()));
 }
 
 inline ArrayBitmask operator|=(ArrayBitmask& lhs, const ArrayBitmask& rhs)

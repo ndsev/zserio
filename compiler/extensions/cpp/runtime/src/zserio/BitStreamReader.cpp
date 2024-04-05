@@ -249,7 +249,7 @@ inline void loadCacheNext(ReaderContext& ctx, uint8_t numBits)
         ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
 
         // buffer must be always available in full bytes, even if some last bits are not used
-        const uint8_t alignedNumBits = (ctx.cacheNumBits + 7U) & ~0x7U;
+        const uint8_t alignedNumBits = static_cast<uint8_t>((ctx.cacheNumBits + 7U) & ~0x7U);
 
         switch (alignedNumBits)
         {
@@ -294,7 +294,7 @@ inline BaseType readBitsImpl(ReaderContext& ctx, uint8_t numBits)
         // read all remaining cache bits
         value = ctx.cache & MASK_TABLE[ctx.cacheNumBits];
         ctx.bitIndex += ctx.cacheNumBits;
-        numBits -= ctx.cacheNumBits;
+        numBits = static_cast<uint8_t>(numBits - ctx.cacheNumBits);
 
         // load next piece of buffer into cache
         loadCacheNext(ctx, numBits);
@@ -305,7 +305,7 @@ inline BaseType readBitsImpl(ReaderContext& ctx, uint8_t numBits)
             value <<= numBits;
     }
     value |= ((ctx.cache >> static_cast<uint8_t>(ctx.cacheNumBits - numBits)) & MASK_TABLE[numBits]);
-    ctx.cacheNumBits -= numBits;
+    ctx.cacheNumBits = static_cast<uint8_t>(ctx.cacheNumBits - numBits);
     ctx.bitIndex += numBits;
 
     return value;
@@ -334,7 +334,7 @@ inline BaseSignedType readSignedBitsImpl(ReaderContext& ctx, uint8_t numBits)
 inline uint64_t readBits64Impl(ReaderContext& ctx, uint8_t numBits)
 {
     // read the first 32 bits
-    numBits -= 32;
+    numBits = static_cast<uint8_t>(numBits - 32);
     uint64_t value = readBitsImpl(ctx, 32);
 
     // add the remaining bits
@@ -507,7 +507,8 @@ int16_t BitStreamReader::readVarInt16()
     if ((byte & VARINT_HAS_NEXT_1) == 0)
         return sign ? static_cast<int16_t>(-result) : static_cast<int16_t>(result);
 
-    result = static_cast<uint16_t>(result << 8U) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    result = static_cast<uint16_t>(result << 8U);
+    result = static_cast<uint16_t>(result | readBitsImpl(m_context, 8)); // byte 2
     return sign ? static_cast<int16_t>(-result) : static_cast<int16_t>(result);
 }
 
@@ -580,7 +581,8 @@ uint16_t BitStreamReader::readVarUInt16()
     if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
-    result = static_cast<uint16_t>(result << 8U) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    result = static_cast<uint16_t>(result << 8U);
+    result = static_cast<uint16_t>(result | readBitsImpl(m_context, 8)); // byte 2
     return result;
 }
 

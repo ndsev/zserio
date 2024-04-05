@@ -43,7 +43,7 @@ protected:
         writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(0, 7);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH - 1; ++i)
-            writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+            writer.writeSignedBits(PACKED_ARRAY_DELTA, static_cast<uint8_t>(PACKED_ARRAY_MAX_BIT_NUMBER + 1));
     }
 
     size_t getAutoArrayHolderBitSize()

@@ -38,7 +38,7 @@ protected:
             row.setInt32Value(-3 * static_cast<int8_t>(i));
             row.setInt64Value(-4 * static_cast<int8_t>(i));
             row.setUint8Value(1 * static_cast<uint8_t>(i));
-            row.setUint16Value(2 * static_cast<uint16_t>(i));
+            row.setUint16Value(static_cast<uint16_t>(2 * static_cast<uint16_t>(i)));
             row.setUint32Value(3 * static_cast<uint32_t>(i));
             row.setUint64Value(4 * i);
             row.setFloat16Value(1.1F * static_cast<float>(i));

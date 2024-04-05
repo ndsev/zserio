@@ -25,7 +25,7 @@ protected:
         writer.writeBits(VERSION_VALUE, 16);
         writer.writeBits(numSentences, 16);
 
-        const uint16_t numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
+        const uint16_t numStrings = (wrongArrayLength) ? static_cast<uint16_t>(numSentences - 1) : numSentences;
         for (uint16_t i = 0; i < numStrings; ++i)
             writer.writeString(getSentence(i));
     }
@@ -51,7 +51,7 @@ protected:
         header.setVersion(VERSION_VALUE);
         header.setNumSentences(numSentences);
 
-        const uint16_t numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
+        const uint16_t numStrings = (wrongArrayLength) ? static_cast<uint16_t>(numSentences - 1) : numSentences;
         vector_type<string_type>& sentences = message.getSentences();
         sentences.reserve(numStrings);
         for (uint16_t i = 0; i < numStrings; ++i)
