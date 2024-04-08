@@ -903,14 +903,17 @@ compile_cpp_for_target()
             return 1
         fi
 
+        # run coverage target if it is requested and if exists
         if [[ (! -z "${GCOVR_BIN}" && "${TARGET}" == *"gcc"*) ||
                 (! -z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}" && "${TARGET}" == *"clang"*) ]] ; then
-            "${CMAKE}" --build . --target coverage
-            local COVERAGE_RESULT=$?
-            if [ ${COVERAGE_RESULT} -ne 0 ] ; then
-                stderr_echo "Generating of coverage report failed with return code ${COVERAGE_RESULT}."
-                popd > /dev/null
-                return 1
+            if [[ `cmake --build . -- help | grep coverage` ]] ; then
+                "${CMAKE}" --build . --target coverage
+                local COVERAGE_RESULT=$?
+                if [ ${COVERAGE_RESULT} -ne 0 ] ; then
+                    stderr_echo "Generating of coverage report failed with return code ${COVERAGE_RESULT}."
+                    popd > /dev/null
+                    return 1
+                fi
             fi
         fi
     fi
