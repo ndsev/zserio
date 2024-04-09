@@ -11,6 +11,7 @@
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/cpp/coverage/clang/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/cpp/coverage/clang)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/java/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/java/coverage)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/python/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/python/coverage)
+[![](https://sonarcloud.io/api/project_badges/measure?project=ndsev_zserio&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ndsev_zserio)
 [![](https://img.shields.io/github/release-date/ndsev/zserio)](https://github.com/ndsev/zserio/releases/latest)
 [![](https://img.shields.io/github/commits-since/ndsev/zserio/latest)](https://github.com/ndsev/zserio/commits/master)
 [![](https://img.shields.io/github/commit-activity/m/ndsev/zserio)](https://github.com/ndsev/zserio/commits/master)
