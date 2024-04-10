@@ -35,11 +35,9 @@ jobs:
 
     - name: Run build-wrapper
       run: |
-        build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} \
-              scripts/build.sh cpp zserio cpp_rt-linux64-gcc && scripts/release.sh && scripts/test.sh cpp-linux64-gcc
-      env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
-        CMAKE_BUILD_OPTIONS: "-j4"
+        mkdir build
+        cmake -S compiler/extensions/cpp/runtime/src -B build
+        build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Release
 
     - name: Run sonar-scanner
       env:
