@@ -458,7 +458,7 @@ inline ${name} operator^(const ${name}& lhs, const ${name}& rhs)
 </#if>
 inline ${name} operator~(${name}::Values lhs)
 {
-    return ${name}(~static_cast<${name}::underlying_type>(lhs)<#if upperBound??> & ${upperBound}</#if>);
+    return ${name}(static_cast<${name}::underlying_type>(~static_cast<${name}::underlying_type>(lhs)<#if upperBound??> & ${upperBound}</#if>));
 }
 
 <#if withCodeComments>
@@ -472,7 +472,7 @@ inline ${name} operator~(${name}::Values lhs)
 </#if>
 inline ${name} operator~(const ${name}& lhs)
 {
-    return ${name}(~lhs.getValue()<#if upperBound??> & ${upperBound}</#if>);
+    return ${name}(static_cast<${name}::underlying_type>(~lhs.getValue()<#if upperBound??> & ${upperBound}</#if>));
 }
 
 <#if withCodeComments>
