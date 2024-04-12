@@ -33,10 +33,22 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install cmake doxygen graphviz
 
-    - name: Run build-wrapper
+    - name: Build Zserio compiler with C++ extension
       run: |
-        build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} \
-              scripts/build.sh cpp zserio cpp_rt-linux64-gcc && scripts/release.sh
+        scripts/build.sh core cpp zserio
+        scripts/release.sh -p zserio
+
+    - name: Build C++ runtime and C++ tests under build-wrapper
+      run: |
+        cat > build_and_test.sh << EOF
+        #!/bin/bash
+        scripts/build.sh cpp_rt-linux64-gcc && scripts/release.sh -p runtime_libs && \
+            scripts/test.sh cpp-linux64-gcc
+        EOF
+
+        chmod a+x build_and_test.sh
+
+        build-wrapper-linux-x86-64 --out-dir ${{env.BUILD_WRAPPER_OUT_DIR}} ./build_and_test.sh
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
         CMAKE_BUILD_OPTIONS: "-j4"
@@ -44,6 +56,16 @@ jobs:
     - name: Run sonar-scanner
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        sonar-scanner --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
+        sonar-scanner \
+            --define sonar.projectKey="ndsev_zserio" \
+            --define sonar.organization="ndsev" \
+            --define sonar.sourceEncoding="UTF-8" \
+            --define sonar.sources="compiler/extensions/cpp/runtime/src,build/test/cpp/linux64-gcc/release" \
+            --define sonar.inclusions="**/*.h,**/*.cpp" \
+            --define sonar.exclusions="**/CMakeFiles/**/*" \
+            --define sonar.tests="compiler/extensions/cpp/runtime/test,test" \
+            --define sonar.test.inclusions="compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp" \
+            --define sonar.scm.exclusions.disabled="true" \
+            --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
