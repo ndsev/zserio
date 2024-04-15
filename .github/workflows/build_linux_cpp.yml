@@ -44,7 +44,7 @@ jobs:
     steps:
     - name: "Set up environment"
       run: |
-        echo "CMAKE_BUILD_OPTIONS=-j2" >> ${GITHUB_ENV}
+        echo "CMAKE_BUILD_OPTIONS=-j$(nproc)" >> ${GITHUB_ENV}
         echo "CMAKE_CXX_STANDARD=${{matrix.cxx-standard}}" >> ${GITHUB_ENV}
         if [[ "${{matrix.gcc-version}}" != "" ]] ; then
           echo "GCC_VERSION_SUFFIX=-${{matrix.gcc-version}}" >> ${GITHUB_ENV}
