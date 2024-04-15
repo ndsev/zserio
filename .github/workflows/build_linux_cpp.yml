@@ -158,6 +158,12 @@ jobs:
     - name: Run Zserio API compatibility checks
       env:
         CPPCHECK_HOME: ""
+        CLANG_FORMAT_BIN: ""
+        CLANG_TIDY_BIN: ""
+        GCOVR_BIN: ""
+        LLVM_PROFDATA_BIN: ""
+        LLVM_COV_BIN: ""
+        SANITIZERS_ENABLED: 0
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
         scripts/test_compat_api.sh cpp-${PACKAGE}
