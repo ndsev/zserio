@@ -19,6 +19,9 @@ jobs:
     steps:
     - name: "Set up environment"
       run: |
+        if [[ "${{matrix.os}}" == "ubuntu-22.04" ]] ; then
+            echo "CLANG_FORMAT_BIN=clang-format-14" >> ${GITHUB_ENV}
+        fi
         echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
 
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
@@ -29,6 +32,11 @@ jobs:
       with:
         distribution: temurin
         java-version: ${{matrix.java-version}}
+
+    - name: Install clang-format-14 tool
+      if: ${{ env.CLANG_FORMAT_BIN != '' }}
+      run: |
+        sudo apt-get install clang-format-14
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
       run: |
