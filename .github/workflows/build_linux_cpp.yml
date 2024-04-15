@@ -62,11 +62,11 @@ jobs:
           fi
           if [[ "${{matrix.gcc-version}}" != "" && `gcc --version` == *" ${{matrix.gcc-version}}."* ]] ; then
             # gcovr works only for default gcc version
-            export GCOVR_BIN="gcovr"
+            echo "GCOVR_BIN=gcovr" >> ${GITHUB_ENV}
           fi
           if [[ "${{matrix.clang-version}}" != "" ]] ; then
-            export LLVM_PROFDATA_BIN="llvm-profdata-${{matrix.clang-version}}"
-            export LLVM_COV_BIN="llvm-cov-${{matrix.clang-version}}"
+            echo "LLVM_PROFDATA_BIN=llvm-profdata-${{matrix.clang-version}}" >> ${GITHUB_ENV}
+            echo "LLVM_COV_BIN=llvm-cov-${{matrix.clang-version}}" >> ${GITHUB_ENV}
           fi
           if [[ ! ( "${{matrix.platform}}" == "32" && "${{matrix.clang-version}}" == 14 ) ]] ; then
             # sanitizers do not work with clang-14 32-bit when cross-compiling
