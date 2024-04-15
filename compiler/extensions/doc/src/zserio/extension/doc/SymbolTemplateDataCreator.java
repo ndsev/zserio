@@ -6,6 +6,7 @@ import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.Constant;
 import zserio.ast.DocTagSee;
 import zserio.ast.Expression;
 import zserio.ast.Package;
@@ -72,12 +73,10 @@ final class SymbolTemplateDataCreator
             TemplateDataContext context, ZserioType zserioType, AstNode member, String memberName, String alias)
     {
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
-
         final Package zserioPackage = AstNodePackageMapper.getPackage(zserioType);
+
         final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackage);
-
         final String htmlLinkPage = createHtmlLinkPage(context, zserioPackage);
-
         final String zserioTypeName = AstNodeTypeNameMapper.getTypeName(zserioType);
         final String zserioName = zserioType.getName();
         final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + ANCHOR_SEPARATOR +
@@ -133,9 +132,14 @@ final class SymbolTemplateDataCreator
     public static SymbolTemplateData createData(TemplateDataContext context, Expression expression)
             throws ZserioExtensionException
     {
-        final ZserioType expressionZserioType = expression.getExprZserioType();
         final AstNode expressionSymbolObject = expression.getExprSymbolObject();
+        if (expressionSymbolObject instanceof Constant)
+        {
+            return createData(context, expressionSymbolObject, AstNodeNameMapper.getName(expressionSymbolObject));
+        }
+
         final String name = context.getExpressionFormatter().formatGetter(expression);
+        final ZserioType expressionZserioType = expression.getExprZserioType();
         if (expressionZserioType != null && expressionSymbolObject != null)
         {
             return createData(context, expressionZserioType, expressionSymbolObject,

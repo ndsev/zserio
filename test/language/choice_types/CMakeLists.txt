@@ -22,6 +22,7 @@ add_custom_test(choice_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BoolParamChoiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceCompatibilityCheckTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceWithArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ConstantInChoiceCaseTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DefaultEmptyChoiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceWithCaseTest.cpp

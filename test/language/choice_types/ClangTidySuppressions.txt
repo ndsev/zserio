@@ -8,6 +8,7 @@ cppcoreguidelines-pro-type-member-init:gen/choice_types/bool_param_choice/BoolPa
 cppcoreguidelines-pro-type-member-init:gen/choice_types/choice_compatibility_check/ChoiceVersion1.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/choice_compatibility_check/ChoiceVersion2.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/choice_with_array/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/choice_types/constant_in_choice_case/ConstantInChoiceCase.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/default_empty_choice/DefaultEmptyChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/empty_choice/EmptyChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/empty_choice_with_case/EmptyChoiceWithCase.cpp
@@ -44,6 +45,7 @@ readability-make-member-function-const:gen/choice_types/choice_compatibility_che
 readability-make-member-function-const:gen/choice_types/choice_compatibility_check/HolderVersion1.cpp
 readability-make-member-function-const:gen/choice_types/choice_compatibility_check/HolderVersion2.cpp
 readability-make-member-function-const:gen/choice_types/choice_with_array/Data8.cpp
+readability-make-member-function-const:gen/choice_types/constant_in_choice_case/ConstantInChoiceCase.cpp
 readability-make-member-function-const:gen/choice_types/default_empty_choice/DefaultEmptyChoice.cpp
 readability-make-member-function-const:gen/choice_types/enum_param_choice/EnumParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/enum_with_removed_item_param_choice/EnumWithRemovedItemParamChoice.cpp
