@@ -22,9 +22,9 @@ Zserio C++ generator supports the following platforms:
 
 Zserio C++ generator supports the following C++ compilers:
 
-- g++ 5.4.0
-- clang 14.0.6
-- MinGW 5.4.0
+- g++ 7.5.0
+- clang 11.0.0
+- MinGW 7.5.0
 - MSVC 2017
 
 Although newer C++ compilers are not tested, they should work as well as long as they are backward compatible.
@@ -150,7 +150,7 @@ contribute to the framework's safety and trustworthiness.
 
 The following describes features which minimize the risk of Zserio C++ runtime library malfunctioning behavior:
 
-- Supported compilers (minimum versions): gcc 5.4.0, Clang 14.0.6, MinGW 5.4.0, MSVC 2017
+- Supported compilers (minimum versions): gcc 7.5.0, Clang 11.0.0, MinGW 7.5.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
 - All features are properly tested by [unit test](runtime/test/) for all supported compilers (>600 tests)
 - Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 14.0.6 (see
@@ -181,7 +181,7 @@ during compilation using CMake (see [CMake runtime configuration](runtime/CMakeL
 
 The following describes features which minimize the risk of Zserio C++ generated code malfunctioning behavior:
 
-- Supported compilers (minimum versions): gcc 5.4.0, clang 14.0.6, MinGW 5.4.0, MSVC 2017
+- Supported compilers (minimum versions): gcc 7.5.0, clang 11.0.0, MinGW 7.5.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
 - All zserio language features are properly tested by [unit tests](../../../test) for all supported compilers
   (>1700 tests)
