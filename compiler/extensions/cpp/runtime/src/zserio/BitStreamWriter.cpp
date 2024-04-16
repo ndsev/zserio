@@ -556,7 +556,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
         // first part
         const uint8_t shiftNum = static_cast<uint8_t>(restNumBits - bitsFree);
         const uint8_t maskedByte = static_cast<uint8_t>(m_buffer[byteIndex] & ~(0xFFU >> bitsUsed));
-        m_buffer[byteIndex++] = maskedByte | static_cast<uint8_t>(data >> shiftNum);
+        m_buffer[byteIndex++] = static_cast<uint8_t>(maskedByte | (data >> shiftNum));
         restNumBits = static_cast<uint8_t>(restNumBits - bitsFree);
 
         // middle parts
@@ -577,7 +577,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
         const uint32_t mask = MAX_U32_VALUES[restNumBits];
         const uint8_t maskedByte =
                 m_buffer[byteIndex] & static_cast<uint8_t>(~static_cast<uint8_t>(mask << shiftNum));
-        m_buffer[byteIndex] = maskedByte | static_cast<uint8_t>((data & mask) << shiftNum);
+        m_buffer[byteIndex] = static_cast<uint8_t>(maskedByte | ((data & mask) << shiftNum));
     }
 
     m_bitIndex += numBits;
