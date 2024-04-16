@@ -188,7 +188,7 @@ ${name}::Row ${name}::Reader::next()
     <#if field.sqlTypeData.isBlob>
         const void* blobData = sqlite3_column_blob(m_stmt.get(), ${field?index});
         const int blobDataLength = sqlite3_column_bytes(m_stmt.get(), ${field?index});
-        ::zserio::BitStreamReader reader(reinterpret_cast<const uint8_t*>(blobData),
+        ::zserio::BitStreamReader reader(static_cast<const uint8_t*>(blobData),
                 static_cast<size_t>(blobDataLength));
         <@read_blob field, "m_parameterProvider"/>
         row.${field.setterName}(::std::move(blob));
@@ -524,7 +524,7 @@ bool ${name}::validateBlob${field.name?cap_first}(::zserio::IValidationObserver&
     try
     {
         const int blobDataLength = sqlite3_column_bytes(statement, ${field?index});
-        ::zserio::BitStreamReader reader(reinterpret_cast<const uint8_t*>(blobData),
+        ::zserio::BitStreamReader reader(static_cast<const uint8_t*>(blobData),
                 static_cast<size_t>(blobDataLength));
         <@read_blob field "parameterProvider"/>
         ${types.bitBuffer.name} bitBuffer(reader.getBitPosition(), get_allocator_ref());

@@ -76,11 +76,6 @@ cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:664
 # standard C++17 'any' and 'optional' abstractions.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h
-# This is necessary for implementation of reading and writing of floats to the binary stream.
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:167
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:174
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:181
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:188
 # This is necessary for implementation of reading and writing to the file.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:17
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:42

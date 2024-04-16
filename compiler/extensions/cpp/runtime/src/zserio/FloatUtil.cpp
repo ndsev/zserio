@@ -164,28 +164,28 @@ uint16_t convertFloatToUInt16(float float32)
 
 float convertUInt32ToFloat(uint32_t float32Value)
 {
-    const float* convertedFloat = reinterpret_cast<const float*>(static_cast<void*>(&float32Value));
+    const float* convertedFloat = static_cast<const float*>(static_cast<void*>(&float32Value));
 
     return *convertedFloat;
 }
 
 uint32_t convertFloatToUInt32(float float32)
 {
-    const uint32_t* float32ValuePtr = reinterpret_cast<const uint32_t*>(static_cast<void*>(&float32));
+    const uint32_t* float32ValuePtr = static_cast<const uint32_t*>(static_cast<void*>(&float32));
 
     return *float32ValuePtr;
 }
 
 double convertUInt64ToDouble(uint64_t float64Value)
 {
-    const double* convertedDouble = reinterpret_cast<const double*>(static_cast<void*>(&float64Value));
+    const double* convertedDouble = static_cast<const double*>(static_cast<void*>(&float64Value));
 
     return *convertedDouble;
 }
 
 uint64_t convertDoubleToUInt64(double float64)
 {
-    const uint64_t* float64ValuePtr = reinterpret_cast<const uint64_t*>(static_cast<void*>(&float64));
+    const uint64_t* float64ValuePtr = static_cast<const uint64_t*>(static_cast<void*>(&float64));
 
     return *float64ValuePtr;
 }
