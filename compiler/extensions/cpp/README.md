@@ -158,7 +158,7 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 - AddressSanitizer is run with no findings
 - UndefinedBehaviourSanitizer is run with no findings
 - C++ runtime library sources are checked by static analysis tool clang-tidy version 14.0.6
-- C++ runtime library sources are checked by CodeQL queries from [GitHub](https://github.com/ndsev/zserio/security/code-scanning)
+- C++ runtime library sources are checked by [SonarCloud](https://sonarcloud.io/summary/new_code?id=ndsev_zserio)
 
 #### Clang-tidy Usage
 
@@ -188,7 +188,7 @@ The following describes features which minimize the risk of Zserio C++ generated
 - Unit tests check C++ code generated from small zserio schemas (>70 schemas)
 - Generated sources are checked by static analysis tool clang-tidy version 14.0.6 using
   [this configuration](runtime/ClangTidyConfig.txt)
-- Generated sources are checked by CodeQL queries from [GitHub](https://github.com/ndsev/zserio/security/code-scanning)
+- Generated sources are checked by [SonarCloud](https://sonarcloud.io/summary/new_code?id=ndsev_zserio)
 
 ### Exceptions
 
