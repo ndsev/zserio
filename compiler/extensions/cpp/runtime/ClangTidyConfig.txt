@@ -95,7 +95,6 @@ Checks: "-*,\
   modernize-deprecated-ios-base-aliases,\
   modernize-loop-convert,\
   modernize-make-shared,\
-  modernize-make-unique,\
   modernize-redundant-void-arg,\
   modernize-replace-auto-ptr,\
   modernize-replace-random-shuffle,\
