@@ -557,8 +557,11 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     <#if field.isExtended>
     if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
     {
-        return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
-                <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
+        <#if !field.typeInfo.isSimple && !(field.typeInfo.isString && field.initializer??)>
+        return <@field_member_type_name field/>(<@field_default_constructor_arguments field/>);
+        <#else>
+        return <@field_default_constructor_arguments field/>;
+        </#if>
     }
     ++m_numExtendedFields;
     in.alignTo(UINT32_C(8));
@@ -579,8 +582,11 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
         <#if field.isExtended>
     if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
     {
-        return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
-                <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
+            <#if !field.typeInfo.isSimple && !(field.typeInfo.isString && field.initializer??)>
+        return <@field_member_type_name field/>(<@field_default_constructor_arguments field/>);
+            <#else>
+        return <@field_default_constructor_arguments field/>;
+            </#if>
     }
     ++m_numExtendedFields;
     in.alignTo(UINT32_C(8));
@@ -589,5 +595,6 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     <@compound_read_field field, name, 1, true/>
 }
     </#if>
+
 </#list>
 <@namespace_end package.path/>
