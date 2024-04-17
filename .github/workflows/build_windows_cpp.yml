@@ -21,8 +21,9 @@ jobs:
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "11", build-type: "Release" }
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "11", build-type: "Debug" }
 
-        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Release" }
-        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Debug" }
+        # enable it when https://github.com/ndsev/zserio/issues/596 is fixed
+        #- { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Release" }
+        #- { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Debug" }
 
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "17", build-type: "Release" }
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "17", build-type: "Debug" }
@@ -38,7 +39,6 @@ jobs:
     - name: "Set up environment"
       shell: bash
       run: |
-        echo "CMAKE_CXX_STANDARD=${{matrix.cxx-standard}}" >> ${GITHUB_ENV}
         if [[ "${{matrix.msvc-toolset}}" != "" ]] ; then
           echo "MSVC_CMAKE_TOOLSET=${{matrix.msvc-toolset}}" >> ${GITHUB_ENV}
           echo "PACKAGE=windows64-msvc" >> ${GITHUB_ENV}
@@ -50,12 +50,14 @@ jobs:
         if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
           echo "CPPCHECK_HOME=/c/Program Files/Cppcheck" >> ${GITHUB_ENV}
         fi
-        if [[ "${{matrix.msvc-toolset}}" != "" ]] ; then
+
+        CMAKE_EXTRA_ARGS=("-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
+        if [[ "${{matrix.msvc-toolset}}" == "" ]] ; then
           # msvc produces some warnings, https://github.com/ndsev/zserio/issues/587
-          echo "CMAKE_EXTRA_ARGS=-DCMAKE_BUILD_TYPE=${{matrix.build-type}}" >> ${GITHUB_ENV}
-        else
-          echo "CMAKE_EXTRA_ARGS=-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=${{matrix.build-type}}" >> ${GITHUB_ENV}
+          CMAKE_EXTRA_ARGS+=("-DZSERIO_ENABLE_WERROR=1")
         fi
+        echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
     - name: Install dependencies
       shell: bash

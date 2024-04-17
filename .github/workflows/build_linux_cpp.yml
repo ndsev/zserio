@@ -45,7 +45,6 @@ jobs:
     - name: "Set up environment"
       run: |
         echo "CMAKE_BUILD_OPTIONS=-j$(nproc)" >> ${GITHUB_ENV}
-        echo "CMAKE_CXX_STANDARD=${{matrix.cxx-standard}}" >> ${GITHUB_ENV}
         if [[ "${{matrix.gcc-version}}" != "" ]] ; then
           echo "GCC_VERSION_SUFFIX=-${{matrix.gcc-version}}" >> ${GITHUB_ENV}
           echo "PACKAGE=linux${{matrix.platform}}-gcc" >> ${GITHUB_ENV}
@@ -54,10 +53,13 @@ jobs:
           echo "PACKAGE=linux${{matrix.platform}}-clang" >> ${GITHUB_ENV}
         fi
 
+        if [[ "${{matrix.os}}" == "ubuntu-22.04" ]] ; then
+            echo "CLANG_FORMAT_BIN=clang-format-14" >> ${GITHUB_ENV}
+        fi
+
         if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
           echo "CPPCHECK_HOME=${RUNNER_WORKSPACE}/cppcheck-2.6" >> ${GITHUB_ENV}
           if [[ "${{matrix.clang-version}}" == "14" ]] ; then
-            echo "CLANG_FORMAT_BIN=clang-format-${{matrix.clang-version}}" >> ${GITHUB_ENV}
             echo "CLANG_TIDY_BIN=clang-tidy-${{matrix.clang-version}}" >> ${GITHUB_ENV}
           fi
           if [[ "${{matrix.gcc-version}}" != "" && `gcc --version` == *" ${{matrix.gcc-version}}."* ]] ; then
@@ -74,7 +76,11 @@ jobs:
             echo "SANITIZERS_ENABLED=1" >> ${GITHUB_ENV}
           fi
         fi
-        echo "CMAKE_EXTRA_ARGS=-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=${{matrix.build-type}}" >> ${GITHUB_ENV}
+
+        CMAKE_EXTRA_ARGS=("-DZSERIO_ENABLE_WERROR=1"
+                          "-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
+        echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
