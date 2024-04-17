@@ -1,12 +1,48 @@
 # C++ Generator for Zserio
 
-Zserio extension which generates C++ serialization API from the Zserio schema.
+Zserio extension which generates C++ [serialization API](serialization-api) from the Zserio schema
+together with [additional API](#additional-api).
+
+The generated code must be always linked with [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp)
+which provides functionality common for all generated code.
 
 For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial).
 
-For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp).
+## Content
 
-## Supported C++ Standard
+[Supported C++ Standards](#supported-c-standards)
+
+[Supported Platforms](#supported-platforms)
+
+[Supported Compilers](#supported-compilers)
+
+[Serialization API](#serialization-api)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Ordering Rules](#ordering-rules)
+
+[Additional API](#additional-api)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Range Check](#range-check)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Validation](#validation)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Code Comments](#code-comments)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Type Information](#type-information)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Reflections](#reflections)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [JSON Debug String](#json-debug-string)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Polymorphic Allocators](#polymorphic-allocators)
+
+[Using Zserio CMake Helper](#using-zserio-cmake-helper)
+
+[Functional Safety](#functional-safety)
+
+[Compatibility Check](#compatibility-check)
+
+## Supported C++ Standards
 
 Zserio C++ generator supports the C++11 standard which was published as ISO/IEC 14882:2011.
 
@@ -29,18 +65,190 @@ Zserio C++ generator supports the following C++ compilers:
 
 Although newer C++ compilers are not tested, they should work as well as long as they are backward compatible.
 
+## Serialization API
+
+The serialization API provides the following features for all Zserio structures, choices and unions:
+
+- Full [`std::allocator`](https://en.cppreference.com/w/cpp/memory/allocator) support in constructors.
+- Serialization of all Zserio objects to the bit stream
+  (method [`zserio::serialize()`](https://zserio.org/doc/runtime/latest/cpp/SerializeUtil_8h.html)).
+- Deserialization of all Zserio objects from the bit stream
+  (method [`zserio::deserialize()`](https://zserio.org/doc/runtime/latest/cpp/SerializeUtil_8h.html)).
+- Getters and setters for all fields
+- Method `bitSizeOf()` which calculates a number of bits needed for serialization of the Zserio object.
+- Comparison operator which compares two Zserio objects field by field.
+- Less than operator which compares two Zserio objects field by field using the
+  [Ordering Rules](#ordering-rules).
+- Method `hashCode()` which calculates a hash code of the Zserio object.
+
+### Ordering Rules
+
+Both C++ runtime and generator provide `operator<` (in addition to `operator==`) on all objects which can
+occur in generated API. Thus it's possible to easily use generated objects in `std::set` or `std::map`.
+
+In general, all compound objects are compared lexicographically (inspired by
+[lexicographical_compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare)):
+
+* Parameters are compared first in order of definition.
+* Fields are compared:
+   * In case of [structures](../../../doc/ZserioLanguageOverview.md#structure-type),
+     all fields are compared in order of definition.
+   * In case of [unions](../../../doc/ZserioLanguageOverview.md#union-type),
+     the `choiceTag` is compared first and then the selected field is compared.
+   * In case of [choices](../../../doc/ZserioLanguageOverview.md#choice-type),
+     only the selected field is compared (if any).
+
+Comparison of [optional fields](../../../doc/ZserioLanguageOverview.md#optional-members)
+(kept in `InplaceOptionalHolder` or `HeapOptionalHolder`):
+
+* When both fields are present, they are compared.
+* Otherwise the missing field is less than the other field if and only if the other field is present.
+* If both fields are missing, they are equal.
+
+> Note that same rules applies for
+  [extended fields](../../../doc/ZserioLanguageOverview.md#extended-members) and for fields in unions
+  and choices, which are internally kept in `AnyHolder`.
+
+Comparison of [arrays](../../../doc/ZserioLanguageOverview.md#array-types)
+(`Array`) uses native comparison of the underlying `std::vector`.
+
+Comparison of [`extern` fields](../../../doc/ZserioLanguageOverview.md#extern-type) (kept in `BitBuffer`):
+
+* Compares byte by byte and follows the rules of
+  [lexicographical compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare).
+* The last byte is properly masked to use only the proper number of bits.
+
+Comparison of [`bytes` fields](../../../doc/ZserioLanguageOverview.md#bytes-type) uses native comparison
+on the underlying `std::vector`.
+
+## Additional API
+
+The following additional API features which are disabled by default, are available for users:
+
+- [Range Check](#range-check) - Generation of code for the range checking for fields and parameters (integer types only).
+- [Validation](#validation) - Generation of code which is used for SQLite databases validation.
+- [Code Comments](#code-comments) - Generation of C++ doxygen comments in code.
+- [Type Information](#type-information) - Generation of static information about Zserio objects like schema names, types, etc.
+- [Reflections](#reflections) - Generation of code which supports generic access to any Zserio objects using reflections.
+- [JSON Debug String](#json-debug-string) - Supports export/import of all Zserio objects to/from the JSON file.
+- [Polymorphic Allocators](#polymorphic-allocators) - Generation of code which accepts polymorphic allocators instead of standard allocators.
+
+All of these features can be enabled using command line options which are described in the
+[Zserio User Guide](../../../doc/ZserioUserGuide.md#zserio-command-line-interface) document.
+
+### Range Check
+
+Because not all Zserio integer types can be directly mapped to the C++ types (e.g. `bit:4` is mapped to
+`uint8_t`), it can be helpful to explicitly check values stored in C++ types for the correct ranges
+(e.g to check if `uint8_t` value which holds `bit:4`, is from range `<0, 15>`). Such explicit checks allow
+throwing exception with the detailed description of the Zserio field with wrong value.
+
+The range check code is generated only in the `write()` method directly before the field is written to the
+bit stream.
+
+### Validation
+
+The validation generates method `validate()` in all generated SQL databases. This method validates all
+SQL tables which are present in the SQL database. The SQL table validation consists of the following steps:
+
+- The check of the SQL table schema making sure that SQL table has the same schema as defined in Zserio.
+- The check of all columns in all rows making sure that values stored in the SQL table columns are valid.
+
+The check of all columns consists of the following steps:
+
+- The check of the column type making sure that SQL column type is the same as defined in Zserio.
+- The check of all blobs making sure that the blob is possible to parse successfully.
+- The check of all integer types making sure that integer values are in the correct range as defined in Zserio.
+- The check of all enumeration types making sure that enumeration values are valid as defined in Zserio.
+- The check of all bitmask types making sure that bitmask values are valid as defined in Zserio.
+
+### Code Comments
+
+The code comments generate [Doxygen](https://www.doxygen.nl/index.html) comments for all generated Zserio
+objects. Some comments available in Zserio schema are used as well.
+
+### Type Information
+
+The type information generates static method `typeInfo()` in all generated Zserio types (except of Zserio
+subtypes). This method returns all static information of Zserio type which is available in the Zserio schema
+(e.g. schema name, if field is optional, if field is array, etc...).
+
+### Reflections
+
+The reflections generate method `reflectable()` in the following Zserio types:
+
+- structures
+- choices
+- unions
+- bitmasks
+
+The reflections generate as well method `enumReflectable()` for Zserio enums.
+
+The reflection method returns pointer to the reflectable interface which allows application generic access to
+the Zserio types (e.g. `getField()` method to get field value according to the schema name).
+
+> Note that the reflections use type information, so type information must be enabled as well!
+
+> Note that inspiration and more implementation details how to use reflections can be found in our
+  [reflection test](../../../test/arguments/with_reflection_code/cpp/WithReflectionCodeTest.cpp).
+
+### JSON Debug String
+
+JSON debug string feature provides export and import to/from JSON string for all Zserio structures,
+choices and unions:
+
+- Export to the JSON string
+  (method [`zserio::toJsonString()`](https://zserio.org/doc/runtime/latest/cpp/DebugStringUtil_8h.html)).
+- Import from the JSON string
+  (method [`zserio::toJsonString()`](https://zserio.org/doc/runtime/latest/cpp/DebugStringUtil_8h.html)).
+
+> Note that this feature is available only if type information and reflections are enabled!
+
+### Polymorphic Allocators
+
+By default, all generated Zserio objects support the
+[`std::allocator`](https://en.cppreference.com/w/cpp/memory/allocator). However, C++ generator supports as well
+[`zserio::pmr::PolymorphicAllocator`](https://zserio.org/doc/runtime/latest/cpp/PolymorphicAllocator_8h.html),
+which is inspired by the
+[`std::pmr::polymorphic_allocator`](https://en.cppreference.com/w/cpp/memory/polymorphic_allocator) from C++17
+standard.
+
+To enable Zserio polymorphic allocators, it is necessary to specify command line
+option `-setCppAllocator polymorphic`.
+
+Usage:
+
+- The application must implement firstly user memory resource by inheriting
+  [`zserio::pmr::MemoryResource`](https://zserio.org/doc/runtime/latest/cpp/MemoryResource_8h.html).
+- Then, the application must construct user memory resource.
+- Created user memory resource must be used to construct Zserio polymorphic allocator.
+- The constructed Zserio polymorphic allocator must be passed to the Zserio object constructor.
+
+```
+MyMemoryResource memoryResource;
+ZserioObject::allocator_type allocator(memoryResource);
+ZserioObject zserioObject(allocator);
+```
+
+> Note that the Zserio polymorphic allocator has empty constructor which uses default memory resource
+  with standard C++ operator new and delete.
+
+> Note that inspiration and more implementation details how to use memory resource and polymorphic allocators
+  can be found in our [test utilities](../../../test/utils/cpp/test_utils/MemoryResources.h) and in
+  [polymorphic allocators test](../../../test/arguments/set_cpp_allocator/cpp/ComplexAllocationTest.cpp).
+
 ## Using Zserio CMake Helper
 
 Zserio provides [`zserio_compiler.cmake`](../../../cmake/zserio_compiler.cmake) helper, which defines custom function `zserio_generate_cpp`.
 This function can be used for automatic generation of C++ sources from zserio schemas.
 
-#### Prerequisites
+### Prerequisites
 
 * CMake 3.15+
 * Java must be available - the function calls `find_package(JAVA java)`
 * `ZSERIO_JAR_FILE` must be defined either as an environment or CMake variable
 
-#### Usage
+### Usage
 
     zserio_generate_cpp(
         TARGET <target>
@@ -55,7 +263,7 @@ This function can be used for automatic generation of C++ sources from zserio sc
         [FORCE_REGENERATION]
         [CLEAN_GEN_DIR]
 
-#### Arguments
+### Arguments
 
 `TARGET`
 
@@ -110,7 +318,7 @@ Cleans `GEN_DIR` when generation in CMake configure-time is run.
 > the configure-time - i.e. for the first time or when zserio schema sources are changed, etc.
 > See "[How if works](#how-it-works)" for more info.
 
-#### Example
+### Example
 
     set(CMAKE_MODULE_PATH "${ZSERIO_RELEASE}/cmake")
     set(ZSERIO_JAR_FILE "${ZSERIO_RELEASE}/zserio.jar")
@@ -121,7 +329,7 @@ Cleans `GEN_DIR` when generation in CMake configure-time is run.
         TARGET sample_zs
         GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
-#### How it works
+### How it works
 
 First time the CMake configure is run, the sources are generated using `execute_process` directly in
 configure-time and auxiliary information (timestamps, list of generated sources, etc.) is stored in the
@@ -152,7 +360,7 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 
 - Supported compilers (minimum versions): gcc 7.5.0, Clang 11.0.0, MinGW 7.5.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
-- All features are properly tested by [unit test](runtime/test/) for all supported compilers (>600 tests)
+- All features are properly tested by [unit tests](runtime/test/) for all supported compilers (>600 tests)
 - Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 14.0.6 (see
   [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 99%)
 - AddressSanitizer is run with no findings
@@ -218,7 +426,7 @@ a `zserio::CppRuntimeException` during parsing of binary data:
 | Generated Sources | Bitmask constructor | "Value for bitmask [NAME] out of bounds: [VALUE]!" | Throws if value stored in stream is bigger than bitmask upper bound. This could happen only in case of data inconsistency when bitmask value stored in the stream is wrong. |
 | Generated Sources | `valueToEnum` | "Unknown value for enumeration [NAME]: [VALUE]!" | Throws in case of unknown enumeration value. This could happen only in case of data inconsistency when enumeration value stored in the stream is wrong. |
 
-## Compatibility check
+## Compatibility Check
 
 C++ generator honors the `zserio_compatibility_version` specified in the schema. However note that only
 the version specified in the root package of the schema is taken into account. The generator checks that
@@ -227,42 +435,3 @@ compatibility version and fires an error when it detects any problem.
 
 > Note: Binary encoding of packed arrays has been changed in version `2.5.0` and thus versions `2.4.x` are
 binary incompatible with later versions.
-
-## Ordering rules
-
-Both C++ runtime and generator provide `operator<` (in addition to `operator==`) on all objects which can
-occur in generated API. Thus it's possible to easily use generated objects in `std::set` or `std::map`.
-
-In general, all compound objects are compared lexicographically (inspired by
-[lexicographical_compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare)):
-
-* Parameters are compared first in order of definition.
-* Fields are compared:
-   * In case of [structures](../../../doc/ZserioLanguageOverview.md#structure-type),
-     all fields are compared in order of definition.
-   * In case of [unions](../../../doc/ZserioLanguageOverview.md#union-type),
-     the `choiceTag` is compared first and then the selected field is compared.
-   * In case of [choices](../../../doc/ZserioLanguageOverview.md#choice-type),
-     only the selected field is compared (if any).
-
-Comparison of [optional fields](../../../doc/ZserioLanguageOverview.md#optional-members)
-(kept in `InplaceOptionalHolder` or `HeapOptionalHolder`):
-
-* When both fields are present, they are compared.
-* Otherwise the missing field is less than the other field if and only if the other field is present.
-* If both fields are missing, they are equal.
-
-> Note that same rules applies for
-  [extended fields](../../../doc/ZserioLanguageOverview.md#extended-members) and for fields in unions
-  and choices, which are internally kept in `AnyHolder`.
-
-Comparison of [arrays](../../../doc/ZserioLanguageOverview.md#array-types)
-(`Array`) uses native comparison of the underlying `std::vector`.
-
-Comparison of [`extern` fields](../../../doc/ZserioLanguageOverview.md#extern-type) (kept in `BitBuffer`):
-
-* Compares byte by byte and follows the rules of
-  [lexicographical compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare).
-* The last byte is properly masked to use only the proper number of bits.
-
-Comparison of [`bytes` fields](../../../doc/ZserioLanguageOverview.md#bytes-type) uses native comparison on the underlying `std::vector`.

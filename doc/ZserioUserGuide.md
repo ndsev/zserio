@@ -196,9 +196,8 @@ Allows to enable/disable specific warnings. Use '--help warnings' for detailed d
 
 **`-withValidationCode|-withoutValidationCode`**
 
-Enables/disables generation of the API extension, which is used for SQLite database validation. Currently,
-database validation is not supported by C++ API. By default is disabled. Note that validation code can be
-enabled only when writer code is enabled (see `-withWriterCode` option).
+Enables/disables generation of the API extension, which is used for SQLite database validation. By default is
+disabled. Note that validation code can be enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withWriterCode|-withoutWriterCode`**
 
