@@ -135,7 +135,8 @@ final class SymbolTemplateDataCreator
         final AstNode expressionSymbolObject = expression.getExprSymbolObject();
         if (expressionSymbolObject instanceof Constant)
         {
-            return createData(context, expressionSymbolObject, AstNodeNameMapper.getName(expressionSymbolObject));
+            return createData(
+                    context, expressionSymbolObject, AstNodeNameMapper.getName(expressionSymbolObject));
         }
 
         final String name = context.getExpressionFormatter().formatGetter(expression);
