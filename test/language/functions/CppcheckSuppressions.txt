@@ -1,8 +1,0 @@
-uninitMemberVar:*/choice_array/ItemRef.cpp
-uninitMemberVar:*/structure_array_param/ChildStructure.cpp
-uninitMemberVar:*/structure_array_param/ChildStructure.h
-uninitMemberVar:*/structure_optional/ValueConsumer.cpp
-uninitMemberVar:*/structure_optional/ValueConsumer.h
-uninitMemberVar:*/structure_param/MetresConverter.cpp
-uninitMemberVar:*/structure_param/MetresConverter.h
-uninitMemberVar:*/union_array/ItemRef.cpp

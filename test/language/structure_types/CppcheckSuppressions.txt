@@ -1,1 +1,0 @@
-uninitMemberVar:*/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp

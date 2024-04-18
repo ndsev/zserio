@@ -58,7 +58,6 @@ jobs:
         fi
 
         if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
-          echo "CPPCHECK_HOME=${RUNNER_WORKSPACE}/cppcheck-2.6" >> ${GITHUB_ENV}
           if [[ "${{matrix.clang-version}}" == "14" ]] ; then
             echo "CLANG_TIDY_BIN=clang-tidy-${{matrix.clang-version}}" >> ${GITHUB_ENV}
           fi
@@ -106,21 +105,6 @@ jobs:
         sudo apt-get install clang-${{matrix.clang-version}}
         sudo apt-get install llvm-${{matrix.clang-version}}
 
-    - name: Install specific version of C++ static code analysis tool (cppcheck)
-      if: ${{ env.CPPCHECK_HOME != '' }}
-      run: |
-        wget https://github.com/danmar/cppcheck/archive/2.6.tar.gz -O "${RUNNER_WORKSPACE}"/cppcheck-2.6.tar.gz
-        tar -xf "${RUNNER_WORKSPACE}"/cppcheck-2.6.tar.gz -C "${RUNNER_WORKSPACE}"
-        mkdir "${RUNNER_WORKSPACE}/cppcheck-2.6/build"
-        pushd "${RUNNER_WORKSPACE}/cppcheck-2.6/build"
-        cmake .. -DHAVE_RULES=ON -DUSE_MATCHCOMPILER=ON \
-               -DCMAKE_INSTALL_PREFIX="${RUNNER_WORKSPACE}"/cppcheck-2.6 \
-               -DCMAKE_INSTALL_BINDIR=. \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DFILESDIR=.
-        cmake --build . --target install
-        popd
-
     # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
     - name: Reduce ASLR entropy as a temporary workaround
       if: ${{ env.SANITIZERS_ENABLED == 1 }}
@@ -163,7 +147,6 @@ jobs:
 
     - name: Run Zserio API compatibility checks
       env:
-        CPPCHECK_HOME: ""
         CLANG_FORMAT_BIN: ""
         CLANG_TIDY_BIN: ""
         GCOVR_BIN: ""

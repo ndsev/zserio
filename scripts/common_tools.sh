@@ -96,9 +96,6 @@ set_global_cpp_variables()
     # Extra arguments to be passed by CMake to a native build tool
     CMAKE_BUILD_OPTIONS="${CMAKE_BUILD_OPTIONS:-""}"
 
-    # cppcheck home directoty is empty by default
-    CPPCHECK_HOME="${CPPCHECK_HOME:-""}"
-
     # gcovr binary to use for coverage report (gcc), by default is empty
     GCOVR_BIN="${GCOVR_BIN:-""}"
     if [[ (! -z "${GCOVR_BIN}" && ! -f "`which "${GCOVR_BIN}"`") ]] ; then
@@ -444,9 +441,6 @@ Uses the following environment variables for building:
     SPOTBUGS_HOME          Home directory of spotbugs tool where lib is located
                            (e.g. /usr/share/spotbugs). If set, spotbugs will be
                            called. Default is empty string.
-    CPPCHECK_HOME          Home directory of cppcheck tool where cppcheck
-                           binary is located. If set, cppcheck will be called.
-                           Default is empty string.
     CLANG_TIDY_BIN         Name of clang-tidy binary. If not set, clang-tidy tool is not called.
     CLANG_FORMAT_BIN       Name of clang-format binary. If not set, clang-format tool is not called.
     GCOVR_BIN              Gcovr binary to use for coverage report generation (gcc).
@@ -815,12 +809,6 @@ compile_cpp_for_target()
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
                 "-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE}"
                 "-DCMAKE_PREFIX_PATH=${SQLITE_RELEASE_ROOT}/${TARGET}")
-
-    if [ -n "${CPPCHECK_HOME}" ] ; then
-        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCPPCHECK_HOME=${CPPCHECK_HOME}")
-    else
-        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCPPCHECK_HOME")
-    fi
 
     if [ ${SANITIZERS_ENABLED} -eq 1 ] ; then
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DSANITIZERS_ENABLED=ON")

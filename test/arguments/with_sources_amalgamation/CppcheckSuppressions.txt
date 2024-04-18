@@ -1,2 +1,0 @@
-noExplicitConstructor:*/with_sources_amalgamation/Group.h
-noExplicitConstructor:*/with_sources_amalgamation/Permission.h

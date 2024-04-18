@@ -11,7 +11,6 @@ project(ZserioCppTest)
 enable_testing()
 
 # input parameters
-set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
 set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 set(CLANG_FORMAT_BIN "" CACHE STRING "Name of clang-format binary. If empty, clang-format tool is not called.")
@@ -32,7 +31,6 @@ set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
 include(cmake_utils)
 include(clang_tidy_utils)
 include(clang_format_utils)
-include(cppcheck_utils)
 
 # setup compiler
 include(compiler_utils)
@@ -84,16 +82,6 @@ function(check_zserio_warnings ZSERIO_LOG EXPECTED_WARNINGS)
     endif ()
 endfunction()
 
-# cppcheck needs to know all include directories in generated code
-function(get_generated_dirs GENERATED_SOURCES GENERATED_INCLUDES_VAR)
-    foreach (SOURCE ${GENERATED_SOURCES})
-        string(REGEX REPLACE "^(${CMAKE_CURRENT_BINARY_DIR}/[^/]*)/.*$" "\\1" INC_DIR "${SOURCE}")
-        list(APPEND INCLUDE_DIRS "${INC_DIR}")
-    endforeach ()
-    list(REMOVE_DUPLICATES INCLUDE_DIRS)
-    set(${GENERATED_INCLUDES_VAR} "${INCLUDE_DIRS}" PARENT_SCOPE)
-endfunction()
-
 # functions to set globals called by included CMake lists
 set(TEST_DEPENDENCIES_LIST "" CACHE INTERNAL "Test objects")
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
@@ -128,18 +116,6 @@ function(add_custom_test TEST_NAME)
                                      WERROR
                                         ON)
     endif ()
-
-    get_generated_dirs("${TEST_ARG_GENERATED_SOURCES}" GENERATED_DIRS)
-    cppcheck_add_custom_command(TARGET ${TEST_NAME}
-                                SOURCE_DIR
-                                    "${TEST_ARG_SOURCES}"
-                                    "${GENERATED_DIRS}"
-                                INCLUDE_DIR
-                                    "${CMAKE_CURRENT_SOURCE_DIR}"
-                                    "${GENERATED_DIRS}"
-                                SUPPRESSION_FILE
-                                    "${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt"
-                                OPTIONS --library=googletest.cfg --suppress=assertWithSideEffect)
 
     set(TEST_DEPENDENCIES_LIST "${TEST_DEPENDENCIES_LIST};${TEST_ARG_DEPENDS}" CACHE INTERNAL "")
     if (DEFINED TEST_ARG_SOURCES)

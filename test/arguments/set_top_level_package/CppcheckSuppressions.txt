@@ -1,1 +1,0 @@
-uninitMemberVar:*/company/appl/SimpleChoice.cpp

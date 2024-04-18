@@ -1,7 +1,0 @@
-noExplicitConstructor:*/with_type_info_code/TestBitmask.h
-uninitMemberVar:*/with_type_info_code/ParameterizedStruct.cpp
-uninitMemberVar:*/with_type_info_code/ParameterizedStruct.h
-uninitMemberVar:*/with_type_info_code/RecursiveChoice.cpp
-uninitMemberVar:*/with_type_info_code/SimpleChoice.cpp
-uninitMemberVar:*/with_type_info_code/TemplatedParameterizedStruct_TS32.cpp
-uninitMemberVar:*/with_type_info_code/TemplatedParameterizedStruct_TS32.h

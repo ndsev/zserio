@@ -213,7 +213,6 @@ enable_testing()
 set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
 set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
-set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "The C++ standard to use.")
@@ -249,17 +248,6 @@ clang_tidy_add_custom_target(\${PROJECT_NAME}-clang-tidy
     CONFIG_FILE "\${ZSERIO_ROOT}/compiler/extensions/cpp/runtime/ClangTidyConfig.txt"
     HEADER_FILTER "\${CMAKE_CURRENT_SOURCE_DIR}/gen/.*"
     WERROR OFF
-)
-
-# add cppcheck custom command
-include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET \${PROJECT_NAME}
-    SOURCE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
-    INCLUDE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
-    OPTIONS
-        --suppress=variableScope --suppress=uninitMemberVar
-        --suppress=noExplicitConstructor --suppress=duplicateCondition --suppress=duplicateExpression
-        --suppress=syntaxError # needed on Windows
 )
 
 add_test(compile_generated_cpp \${CMAKE_COMMAND} -E echo "Generated sources were successfully compiled!")

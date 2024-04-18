@@ -1,4 +1,0 @@
-uninitMemberVar:*/service_types/complex_types_service/ColorModelChoice.cpp
-uninitMemberVar:*/service_types/complex_types_service/RequestData.cpp
-uninitMemberVar:*/service_types/complex_types_service/RequestData.h
-uninitMemberVar:*/service_types/complex_types_service/ResponseData.cpp

@@ -1,8 +1,0 @@
-uninitMemberVar:*/unused_type_warning/gen/unused_type_warning/BoolChoice.cpp
-uninitMemberVar:*/unused_type_warning/gen/unused_type_warning/BoolStructure.cpp
-uninitMemberVar:*/unused_type_warning/gen/unused_type_warning/BoolStructure.h
-uninitMemberVar:*/unused_type_warning/gen/unused_type_warning/UnusedChoice.cpp
-uninitMemberVar:*/unused_type_warning/gen/unused_type_warning/UnusedStructure.cpp
-uninitMemberVar:*/unused_type_warning/gen/unused_type_warning/UnusedStructure.h
-
-variableScope:*/unused_type_warning/gen/unused_type_warning/BoolStructureTable.cpp

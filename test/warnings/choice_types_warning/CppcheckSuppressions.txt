@@ -1,1 +1,0 @@
-uninitMemberVar:*/choice_types_warning/optional_references_in_selector/TestChoice.cpp

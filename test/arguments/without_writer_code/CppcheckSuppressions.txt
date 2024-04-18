@@ -1,1 +1,0 @@
-noExplicitConstructor:*/without_writer_code/VersionAvailability.h

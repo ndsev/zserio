@@ -1,1 +1,0 @@
-uninitMemberVar:*/with_range_check_code/choice_bit4_range_check/ChoiceBit4RangeCheckCompound.cpp

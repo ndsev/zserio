@@ -47,10 +47,6 @@ jobs:
           echo "PACKAGE=windows64-mingw" >> ${GITHUB_ENV}
         fi
 
-        if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
-          echo "CPPCHECK_HOME=/c/Program Files/Cppcheck" >> ${GITHUB_ENV}
-        fi
-
         CMAKE_EXTRA_ARGS=("-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
                           "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
         if [[ "${{matrix.msvc-toolset}}" == "" ]] ; then
@@ -78,11 +74,6 @@ jobs:
       if: ${{ matrix.mingw-version != '' }}
       run: |
         choco install mingw --version ${{matrix.mingw-version}}
-
-    - name: Install specific version of C++ static code analysis tool (cppcheck)
-      shell: bash
-      if: ${{ env.CPPCHECK_HOME != '' }}
-      run: choco install cppcheck --version=2.6
 
     - name: "Convert environment variables to POSIX paths"
       shell: bash
@@ -144,7 +135,6 @@ jobs:
       if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
       shell: bash
       env:
-        CPPCHECK_HOME: ""
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
         scripts/test_compat_api.sh cpp-${PACKAGE}

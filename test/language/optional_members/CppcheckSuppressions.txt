@@ -1,5 +1,0 @@
-duplicateCondition:*/optional_members/optional_expression/Container.cpp
-uninitMemberVar:*/optional_members/optional_expression/BlackColor.cpp
-uninitMemberVar:*/optional_members/optional_expression/BlackColor.h
-uninitMemberVar:*/optional_members/optional_recursion/Block.cpp
-uninitMemberVar:*/optional_members/optional_recursion/Block.h

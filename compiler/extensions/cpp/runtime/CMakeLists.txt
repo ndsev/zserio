@@ -12,7 +12,6 @@ project(ZserioCppRuntimeTests)
 
 enable_testing()
 
-set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
 set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 set(CLANG_FORMAT_BIN "" CACHE STRING "Name of clang-format binary. If empty, clang-format tool is not called.")
@@ -107,19 +106,6 @@ clang_format_add_custom_target(ZserioCppRuntime-clang-format
                                 "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
                              CONFIG_FILE "${ZSERIO_PROJECT_ROOT}/.clang-format"
                              WERROR ON)
-
-# add cppcheck custom command
-include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET ZserioCppRuntime
-                            SOURCE_DIR
-                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio"
-                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
-                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*/*.h"
-                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio"
-                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
-                            INCLUDE_DIR
-                                "${CMAKE_CURRENT_SOURCE_DIR}/src"
-                            OPTIONS --library=googletest.cfg -UZSERIO_STANDARD_TYPES_HEADER)
 
 # build and install doxygen documentation
 find_package(Doxygen REQUIRED)

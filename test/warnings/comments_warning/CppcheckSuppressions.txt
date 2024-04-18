@@ -1,4 +1,0 @@
-noExplicitConstructor:*/doc_comment_missing_warning/all_nodes/BitmaskType.h
-noExplicitConstructor:*/doc_comment_missing_warning/documented/DocumentedBitmaskType.h
-uninitMemberVar:*/doc_comment_missing_warning/all_nodes/ChoiceType.cpp
-uninitMemberVar:*/doc_comment_missing_warning/documented/DocumentedChoiceType.cpp

@@ -1,1 +1,0 @@
-noExplicitConstructor:*/identifiers/bitmask_name_clashing_with_java/String.h

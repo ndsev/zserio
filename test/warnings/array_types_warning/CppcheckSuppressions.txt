@@ -1,2 +1,0 @@
-noExplicitConstructor:*/array_types_warning/packed_array_unpackable_bool_element/TestBitmask.h
-uninitMemberVar:*/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp
