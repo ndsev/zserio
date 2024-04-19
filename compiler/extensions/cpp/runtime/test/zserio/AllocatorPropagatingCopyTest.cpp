@@ -306,12 +306,12 @@ TEST(AllocatorPropagatingCopyTest, copyVectorRegular)
 
 TEST(AllocatorPropagatingCopyTest, copyString)
 {
-    RegularWithAllocatorSupport::allocator_type allocator;
+    TrackingAllocatorNonProp<char> allocator;
 
-    const std::basic_string<char, std::char_traits<char>, RegularWithAllocatorSupport::allocator_type>
-            emptyString(allocator);
-    std::basic_string<char, std::char_traits<char>, RegularWithAllocatorSupport::allocator_type>
-            emptyStringCopy(allocatorPropagatingCopy(emptyString, allocator));
+    const std::basic_string<char, std::char_traits<char>, TrackingAllocatorNonProp<char>> emptyString(
+            allocator);
+    std::basic_string<char, std::char_traits<char>, TrackingAllocatorNonProp<char>> emptyStringCopy(
+            allocatorPropagatingCopy(emptyString, allocator));
     ASSERT_EQ(emptyString.get_allocator(), emptyStringCopy.get_allocator());
 }
 

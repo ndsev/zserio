@@ -61,7 +61,7 @@ class TrackingAllocatorImpl
 {
 public:
     using value_type = typename std::allocator<T>::value_type;
-    using pointer = typename std::allocator<T>::pointer;
+    using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
 
     TrackingAllocatorImpl() :
             m_tracker(std::make_shared<detail::AllocationTracker>())

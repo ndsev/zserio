@@ -21,9 +21,8 @@ jobs:
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "11", build-type: "Release" }
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "11", build-type: "Debug" }
 
-        # enable it when https://github.com/ndsev/zserio/issues/596 is fixed
-        #- { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Release" }
-        #- { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Debug" }
+        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Release" }
+        - { os: "windows-2022", msvc-toolset: "v142", cxx-standard: "17", build-type: "Debug" }
 
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "17", build-type: "Release" }
         - { os: "windows-2022", mingw-version: "9.4.0", cxx-standard: "17", build-type: "Debug" }
