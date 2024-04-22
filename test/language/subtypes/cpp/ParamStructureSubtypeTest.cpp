@@ -13,6 +13,8 @@ namespace param_structure_subtype
 {
 
 using allocator_type = zserio::RebindAlloc<ParameterizedSubtypeStruct::allocator_type, uint8_t>;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
 
 template <typename ALLOC>
 struct MethodNames
@@ -91,9 +93,9 @@ TEST(ParamStructureSubtypeTest, testSubtype)
     ParameterizedSubtypeStruct subtypeStruct;
     ParameterizedSubtype& parameterizedSubtype = subtypeStruct.getParameterizedSubtype();
     ParameterizedStruct& parameterizedStruct = subtypeStruct.getParameterizedSubtype();
-    const ::zserio::vector<AnotherParameterizedSubtype>& anotherParameterizedSubtypeArray =
+    const vector_type<AnotherParameterizedSubtype>& anotherParameterizedSubtypeArray =
             subtypeStruct.getAnotherParameterizedSubtypeArray();
-    const ::zserio::vector<ParameterizedStruct>& parameterizedStructArray =
+    const vector_type<ParameterizedStruct>& parameterizedStructArray =
             subtypeStruct.getAnotherParameterizedSubtypeArray();
     ASSERT_EQ(&parameterizedSubtype, &parameterizedStruct);
     ASSERT_EQ(&anotherParameterizedSubtypeArray, &parameterizedStructArray);
