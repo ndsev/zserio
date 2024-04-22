@@ -69,8 +69,8 @@ jobs:
             echo "LLVM_PROFDATA_BIN=llvm-profdata-${{matrix.clang-version}}" >> ${GITHUB_ENV}
             echo "LLVM_COV_BIN=llvm-cov-${{matrix.clang-version}}" >> ${GITHUB_ENV}
           fi
-          if [[ ! ( "${{matrix.platform}}" == "32" && "${{matrix.clang-version}}" == 14 ) ]] ; then
-            # sanitizers do not work with clang-14 32-bit when cross-compiling
+          if [[ ! ( "${{matrix.platform}}" == "32" && "${{matrix.clang-version}}" != "" ) ]] ; then
+            # sanitizers do not work with clang 32-bit when cross-compiling
             # https://github.com/ndsev/zserio/issues/473
             echo "SANITIZERS_ENABLED=1" >> ${GITHUB_ENV}
           fi
