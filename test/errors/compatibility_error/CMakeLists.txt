@@ -5,7 +5,7 @@ zserio_generate_cpp(
     TARGET packed_array_in_template_240_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_PACKED_ARRAY_IN_TEMPLATE_240
     ERROR_VAR ZSERIO_LOG_PACKED_ARRAY_IN_TEMPLATE_240
     RESULT_VAR ZSERIO_RESULT
@@ -23,7 +23,7 @@ zserio_generate_cpp(
     TARGET packed_compound_array_242_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_PACKED_COMPOUND_ARRAY_242
     ERROR_VAR ZSERIO_LOG_PACKED_COMPOUND_ARRAY_242
     RESULT_VAR ZSERIO_RESULT
@@ -41,7 +41,7 @@ zserio_generate_cpp(
     TARGET packed_uint32_array_241_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_PACKED_UINT32_ARRAY_241
     ERROR_VAR ZSERIO_LOG_PACKED_UINT32_ARRAY_241
     RESULT_VAR ZSERIO_RESULT
@@ -59,7 +59,7 @@ zserio_generate_cpp(
     TARGET version_less_than_min_supported_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_VERSION_LESS_THAN_MIN_SUPPORTED
     ERROR_VAR ZSERIO_LOG_VERSION_LESS_THAN_MIN_SUPPORTED
     RESULT_VAR ZSERIO_RESULT
@@ -79,7 +79,7 @@ zserio_generate_cpp(
     TARGET wrong_compatibility_version_format_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_WRONG_COMPATIBILITY_VERSION_FORMAT
     ERROR_VAR ZSERIO_LOG_WRONG_COMPATIBILITY_VERSION_FORMAT
     RESULT_VAR ZSERIO_RESULT

@@ -5,7 +5,7 @@ zserio_generate_cpp(
     TARGET wrong_set_cpp_allocator_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck -setCppAllocator wrong
+    EXTRA_ARGS -withoutCrossExtensionCheck -setCppAllocator wrong ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_WRONG_SET_CPP_ALLOCATOR
     ERROR_VAR ZSERIO_LOG_WRONG_SET_CPP_ALLOCATOR
     RESULT_VAR ZSERIO_RESULT
@@ -23,7 +23,7 @@ zserio_generate_cpp(
     TARGET bitmask_values_class_clash_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_BITMASK_VALUES_CLASS_CLASH
     ERROR_VAR ZSERIO_LOG_BITMASK_VALUES_CLASS_CLASH
     RESULT_VAR ZSERIO_RESULT
@@ -42,7 +42,7 @@ zserio_generate_cpp(
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_ZS sql_table_provider_class_clash_error.zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_SQL_TABLE_PROVIDER_CLASS_CLASH
     ERROR_VAR ZSERIO_LOG_SQL_TABLE_PROVIDER_CLASS_CLASH
     RESULT_VAR ZSERIO_RESULT
@@ -60,7 +60,7 @@ zserio_generate_cpp(
     TARGET sql_table_reader_class_clash_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_SQL_TABLE_READER_CLASS_CLASH
     ERROR_VAR ZSERIO_LOG_SQL_TABLE_READER_CLASS_CLASH
     RESULT_VAR ZSERIO_RESULT
@@ -78,7 +78,7 @@ zserio_generate_cpp(
     TARGET sql_table_row_class_clash_error_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${ZSERIO_GEN_DIR}
-    EXTRA_ARGS -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_SQL_TABLE_ROW_CLASS_CLASH
     ERROR_VAR ZSERIO_LOG_SQL_TABLE_ROW_CLASS_CLASH
     RESULT_VAR ZSERIO_RESULT

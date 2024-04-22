@@ -124,6 +124,8 @@ function(add_custom_test TEST_NAME)
 endfunction()
 
 # add all test suites (filter out utils and data subdirectories)
+set(ZSERIO_EXTRA_ARGS "$ENV{ZSERIO_EXTRA_ARGS}")
+separate_arguments(ZSERIO_EXTRA_ARGS)
 foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
     file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${TEST_SUITE}/CMakeLists.txt")
     foreach (subproject ${SUBPROJECTS})

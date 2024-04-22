@@ -3,7 +3,7 @@ zserio_generate_cpp(
     TARGET without_service_code_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
-    EXTRA_ARGS -withoutSourcesAmalgamation -withoutServiceCode
+    EXTRA_ARGS -withoutSourcesAmalgamation -withoutServiceCode ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
     OUTPUT_VAR ZSERIO_LOG
     ERROR_VAR ZSERIO_LOG

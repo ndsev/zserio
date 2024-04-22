@@ -3,7 +3,7 @@ zserio_generate_cpp(
     TARGET invalid_in_java_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_java
-    EXTRA_ARGS -withoutSourcesAmalgamation -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutSourcesAmalgamation -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_JAVA
     OUTPUT_VAR ZSERIO_LOG_INVALID_IN_JAVA
     ERROR_VAR ZSERIO_LOG_INVALID_IN_JAVA
@@ -19,7 +19,7 @@ zserio_generate_cpp(
     TARGET invalid_in_python_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_python
-    EXTRA_ARGS -withoutSourcesAmalgamation -withoutCrossExtensionCheck
+    EXTRA_ARGS -withoutSourcesAmalgamation -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_PYTHON
     OUTPUT_VAR ZSERIO_LOG_INVALID_IN_PYTHON
     ERROR_VAR ZSERIO_LOG_INVALID_IN_PYTHON

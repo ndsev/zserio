@@ -3,7 +3,7 @@ zserio_generate_cpp(
     TARGET comments_warning_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_comments
-    EXTRA_ARGS -withWarnings unused -withoutSourcesAmalgamation
+    EXTRA_ARGS -withWarnings unused -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_COMMENTS
     OUTPUT_VAR ZSERIO_LOG_COMMENTS
     ERROR_VAR ZSERIO_LOG_COMMENTS
@@ -20,7 +20,7 @@ zserio_generate_cpp(
     TARGET doc_comment_missing_warning_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_doc_comment_missing
-    EXTRA_ARGS -withWarnings "doc-comment-missing" -withoutSourcesAmalgamation
+    EXTRA_ARGS -withWarnings "doc-comment-missing" -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_DOC_COMMENT_MISSING
     OUTPUT_VAR ZSERIO_LOG_DOC_COMMENT_MISSING
     ERROR_VAR ZSERIO_LOG_DOC_COMMENT_MISSING

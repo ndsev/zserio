@@ -5,7 +5,7 @@ zserio_generate_cpp(
     TARGET root_with_diff_compatibility_warning_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_root_with
-    EXTRA_ARGS -withoutCrossExtensionCheck -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutCrossExtensionCheck -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_ROOT_WITH
     OUTPUT_VAR ZSERIO_LOG_ROOT_WITH
     ERROR_VAR ZSERIO_LOG_ROOT_WITH
@@ -23,7 +23,7 @@ zserio_generate_cpp(
     TARGET root_without_compatibility_warning_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_root_without
-    EXTRA_ARGS -withoutCrossExtensionCheck -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutCrossExtensionCheck -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_ROOT_WITHOUT
     OUTPUT_VAR ZSERIO_LOG_ROOT_WITHOUT
     ERROR_VAR ZSERIO_LOG_ROOT_WITHOUT

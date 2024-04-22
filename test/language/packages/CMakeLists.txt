@@ -3,7 +3,7 @@ zserio_generate_cpp(
     TARGET default_package_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package
-    EXTRA_ARGS -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_DEFAULT_PACKAGE
     OUTPUT_VAR ZSERIO_LOG_DEFAULT_PACKAGE
     ERROR_VAR ZSERIO_LOG_DEFAULT_PACKAGE
@@ -35,7 +35,7 @@ zserio_generate_cpp(
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_index
     # we must use 'index_workaround' to prevent clash with global function 'index' which is included
     # via gtest.h -> ... -> strings.h
-    EXTRA_ARGS -withoutSourcesAmalgamation -setTopLevelPackage index_workaround
+    EXTRA_ARGS -withoutSourcesAmalgamation -setTopLevelPackage index_workaround ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_INDEX
     OUTPUT_VAR ZSERIO_LOG_INDEX
     ERROR_VAR ZSERIO_LOG_INDEX
@@ -51,7 +51,7 @@ zserio_generate_cpp(
     TARGET package_name_conflict_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_package_name_conflict
-    EXTRA_ARGS -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_PACKAGE_NAME_CONFLICT
     OUTPUT_VAR ZSERIO_LOG_PACKAGE_NAME_CONFLICT
     ERROR_VAR ZSERIO_LOG_PACKAGE_NAME_CONFLICT
@@ -68,7 +68,7 @@ zserio_generate_cpp(
     TARGET packages_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_packages
-    EXTRA_ARGS -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
     OUTPUT_VAR ZSERIO_LOG_PACKAGES
     ERROR_VAR ZSERIO_LOG_PACKAGES
@@ -84,7 +84,7 @@ zserio_generate_cpp(
     TARGET reader_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_reader
-    EXTRA_ARGS -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
     OUTPUT_VAR ZSERIO_LOG_READER
     ERROR_VAR ZSERIO_LOG_READER

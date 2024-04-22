@@ -3,7 +3,7 @@ zserio_generate_cpp(
     TARGET complex_allocation_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_complex_allocation
-    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_COMPLEX_ALLOCATION
     OUTPUT_VAR ZSERIO_LOG_COMPLEX_ALLOCATION
     ERROR_VAR ZSERIO_LOG_COMPLEX_ALLOCATION
@@ -19,7 +19,7 @@ zserio_generate_cpp(
     TARGET pubsub_allocation_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_pubsub_allocation
-    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_PUBSUB_ALLOCATION
     OUTPUT_VAR ZSERIO_LOG_PUBSUB_ALLOCATION
     ERROR_VAR ZSERIO_LOG_PUBSUB_ALLOCATION
@@ -35,7 +35,7 @@ zserio_generate_cpp(
     TARGET service_allocation_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_service_allocation
-    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_SERVICE_ALLOCATION
     OUTPUT_VAR ZSERIO_LOG_SERVICE_ALLOCATION
     ERROR_VAR ZSERIO_LOG_SERVICE_ALLOCATION
@@ -51,7 +51,7 @@ zserio_generate_cpp(
     TARGET sql_allocation_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_sql_allocation
-    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic -withValidationCode
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic -withValidationCode ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
     OUTPUT_VAR ZSERIO_LOG_SQL_ALLOCATION
     ERROR_VAR ZSERIO_LOG_SQL_ALLOCATION

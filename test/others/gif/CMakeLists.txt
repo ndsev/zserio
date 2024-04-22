@@ -3,7 +3,7 @@ zserio_generate_cpp(
     TARGET gif_zs
     SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
-    EXTRA_ARGS -withoutSourcesAmalgamation
+    EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
     OUTPUT_VAR ZSERIO_LOG
     ERROR_VAR ZSERIO_LOG
