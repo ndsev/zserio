@@ -29,10 +29,12 @@ google-explicit-constructor:gen/comments/markdown_doc/bitmask_comments/Permissio
 hicpp-signed-bitwise:gen/comments/classic_doc/bitmask_comments/Permission.h
 hicpp-signed-bitwise:gen/comments/markdown_doc/bitmask_comments/Permission.h
 
+performance-move-const-arg:gen/comments/classic_doc/service_comments/SimpleService.cpp
 performance-move-const-arg:gen/comments/classic_doc/struct_comments/DirectionStructure.cpp
 performance-move-const-arg:gen/comments/classic_doc/struct_template_comments/Field_Compound.cpp
 performance-move-const-arg:gen/comments/classic_doc/struct_template_comments/StructTemplatedField.cpp
 performance-move-const-arg:gen/comments/classic_doc/union_comments/TestUnion.cpp
+performance-move-const-arg:gen/comments/markdown_doc/service_comments/SimpleService.cpp
 performance-move-const-arg:gen/comments/markdown_doc/struct_comments/DirectionStructure.cpp
 performance-move-const-arg:gen/comments/markdown_doc/struct_template_comments/Field_Compound.cpp
 performance-move-const-arg:gen/comments/markdown_doc/struct_template_comments/StructTemplatedField.cpp
