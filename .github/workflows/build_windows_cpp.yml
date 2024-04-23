@@ -112,6 +112,8 @@ jobs:
         scripts/test.sh ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
 
     - name: Run Zserio tests with extra arguments
+      # MinGW 7.5.0 Debug does not work, https://github.com/ndsev/zserio/issues/599
+      if: ${{ matrix.mingw-version != '7.5.0' || matrix.build-type != 'Debug' }}
       shell: bash
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic"
