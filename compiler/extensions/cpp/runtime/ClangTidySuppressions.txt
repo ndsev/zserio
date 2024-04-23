@@ -79,9 +79,6 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h
 # This is necessary for implementation of reading and writing to the file.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:17
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:42
-# This is necessary for cast the return value from SQLite3 low level API call (sqlite3_column_text).
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:99
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:100
 
 # This multiple inheritance is intended and we think that to avoid it would mean much more obscure design.
 fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1999
@@ -154,9 +151,6 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:8
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:92
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:156
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:209
-
-# Intentional tests.
-cppcoreguidelines-pro-type-reinterpret-cast:test/zserio/SqliteConnectionTest.cpp:318
 
 # Intentional tests. It is necessary for readability.
 google-build-using-namespace:test/zserio/ReflectableTest.cpp:22

@@ -96,8 +96,10 @@ struct ValidationSqliteUtil
         int result = SQLITE_OK;
         while ((result = sqlite3_step(statement.get())) == SQLITE_ROW)
         {
-            const char* columnName = reinterpret_cast<const char*>(sqlite3_column_text(statement.get(), 1));
-            const char* columnType = reinterpret_cast<const char*>(sqlite3_column_text(statement.get(), 2));
+            const unsigned char* columnNameText = sqlite3_column_text(statement.get(), 1);
+            const char* columnName = static_cast<const char*>(static_cast<const void*>(columnNameText));
+            const unsigned char* columnTypeText = sqlite3_column_text(statement.get(), 2);
+            const char* columnType = static_cast<const char*>(static_cast<const void*>(columnTypeText));
             tableSchema.emplace(string_type(columnName, allocator),
                     ColumnDescription{
                             string_type(columnName, allocator), string_type(columnType, allocator),
