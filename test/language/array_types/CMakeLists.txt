@@ -14,15 +14,6 @@ if (ZSERIO_LOG)
     check_zserio_warnings("${ZSERIO_LOG}" 0)
 endif ()
 
-if (MSVC)
-    set_property(
-        SOURCE
-            ${CMAKE_CURRENT_BINARY_DIR}/gen/array_types/arrays_mapping/ArraysMapping.cpp
-        APPEND
-            PROPERTY COMPILE_OPTIONS /bigobj
-    )
-endif ()
-
 add_custom_test(array_types
     DEPENDS
         array_types_zs

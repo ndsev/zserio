@@ -193,16 +193,6 @@ set(ZSERIO_CPP_RUNTIME_TEST_HEADERS
     zserio/TrackingAllocator.h
 )
 
-if (MSVC)
-    set_property(
-        SOURCE
-            zserio/ReflectableTest.cpp
-            zserio/ArrayTest.cpp
-        APPEND
-            PROPERTY COMPILE_OPTIONS /bigobj
-    )
-endif ()
-
 add_executable(${PROJECT_NAME}
     ${TEST_OBJECT_SRCS}
     ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
