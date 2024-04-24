@@ -74,8 +74,12 @@ cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:664
 
 # This is necessary for implementation of low level implementation of AnyHolder and OptionalHolder to mimic
 # standard C++17 'any' and 'optional' abstractions.
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:821
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:827
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:857
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:864
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:628
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:638
 # This is necessary for implementation of reading and writing to the file.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:17
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:42
