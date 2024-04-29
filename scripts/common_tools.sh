@@ -344,6 +344,7 @@ activate_python_virtualenv()
         "coverage==6.5.0" "sphinx"
         "astroid==3.0.3" "pylint==3.0.3" "mypy==0.931"
         "pybind11>=2.10.0"
+        "black==24.4.2"
     )
     local APSW_REQUIREMENTS=("apsw")
 

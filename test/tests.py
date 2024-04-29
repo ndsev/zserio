@@ -14,7 +14,8 @@ from multiprocessing import Process
 TEST_ROOT = os.path.dirname(os.path.realpath(__file__))
 TESTUTILS_PATH = os.path.join(TEST_ROOT, "utils", "python")
 sys.path.append(TESTUTILS_PATH)
-from testutils import TestConfig # pylint: disable=wrong-import-position
+from testutils import TestConfig  # pylint: disable=wrong-import-position
+
 
 def main():
     argParser = argparse.ArgumentParser()
@@ -58,7 +59,7 @@ def main():
     # run tests with pure python runtime
     print("\nRunning python language tests with pure python runtime.")
     os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "python"
-    if not _runTests(args, testDirs, testPattern) :
+    if not _runTests(args, testDirs, testPattern):
         return 1
 
     # run tests with python runtime and optimized zserio_cpp
@@ -67,6 +68,11 @@ def main():
     if not _runTests(args, testDirs, testPattern):
         return 1
 
+    # run black
+    blackResult = _runBlackOnAllSources(testDirs)
+    if blackResult != 0:
+        return blackResult
+
     # run pylint
     pylintResult = _runPylintOnAllSources(args, testDirs)
     if pylintResult != 0:
@@ -74,9 +80,10 @@ def main():
 
     return _runMypyOnAllSources(args, testDirs, runtimePath)
 
+
 def _initTestConfig(args):
     configDict = {}
-    configDict['zserio_root_dir'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..")
+    configDict["zserio_root_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..")
 
     if args.build_dir:
         configDict["build_dir"] = args.build_dir
@@ -95,14 +102,16 @@ def _initTestConfig(args):
 
     TestConfig.init(configDict)
 
+
 def _runTests(args, testDirs, testPattern):
     p = Process(target=_runTestsProcess, args=(args, testDirs, testPattern))
     p.start()
     p.join()
     return p.exitcode == 0
 
+
 def _runTestsProcess(args, testDirs, testPattern):
-    _initTestConfig(args) # needed on Windows since the subprocess is created using spawn method by default
+    _initTestConfig(args)  # needed on Windows since the subprocess is created using spawn method by default
 
     loader = unittest.TestLoader()
     testSuite = unittest.TestSuite()
@@ -115,26 +124,69 @@ def _runTestsProcess(args, testDirs, testPattern):
 
     sys.exit(0 if testResult.wasSuccessful() else 1)
 
+
+def _runBlackOnAllSources(testDirs):
+    print("\nRunning black on python tests and test utils")
+
+    from testutils import getTestSuiteName
+
+    testPaths = testDirs
+    testPaths.append(TESTUTILS_PATH)
+    for testPath in testPaths:
+        print(getTestSuiteName(testPath))
+        runBlackResult = _runBlack(testPath)
+        if runBlackResult != 0:
+            return runBlackResult
+
+    print("tests.py")
+    runBlackResult = _runBlack(os.path.realpath(__file__))
+    if runBlackResult != 0:
+        return runBlackResult
+
+    print("Black done.\n")
+
+    return 0
+
+
+def _runBlack(sourcePath):
+    import subprocess
+
+    # don't run "python" on Windows, it does not find python from venv but system python
+    result = subprocess.run(["black", sourcePath, "--line-length=112", "--check"], check=False)
+    if result.returncode != 0:
+        subprocess.run(["black", sourcePath, "--line-length=112", "--diff"], check=False)
+        which_python_result = subprocess.run(["which", "python"], check=False, capture_output=True, text=True)
+        print("Command hint to reformat source manually using black tool:")
+        print("  " + which_python_result.stdout.strip() + " -m black [SOURCE] --line-length=112")
+        return result.returncode
+
+    return 0
+
+
 def _runPylintOnAllSources(args, testDirs):
     print("\nRunning pylint on python tests")
 
-    if not "PYLINT_ENABLED" in os.environ or os.environ["PYLINT_ENABLED"] != '1':
+    if not "PYLINT_ENABLED" in os.environ or os.environ["PYLINT_ENABLED"] != "1":
         print("Pylint is disabled.\n")
         return 0
 
     from testutils import getApiDir, getTestSuiteName
 
-    testDisableOption = ("missing-docstring, duplicate-code, too-many-public-methods, unnecessary-dunder-call, "
-                         "too-few-public-methods, c-extension-no-member")
+    testDisableOption = (
+        "missing-docstring, duplicate-code, too-many-public-methods, unnecessary-dunder-call, "
+        "too-few-public-methods, c-extension-no-member"
+    )
     pylintOptions = ["--persistent=n", "--score=n"]
     if args.pylint_rcfile_test:
         pylintOptions.append(f"--rcfile={args.pylint_rcfile_test}")
 
-    genDisableOption = ("missing-docstring, duplicate-code, line-too-long, singleton-comparison, "
-                        "too-many-instance-attributes, too-many-arguments, too-many-public-methods, "
-                        "too-few-public-methods, too-many-locals, too-many-branches, too-many-statements, "
-                        "unneeded-not, superfluous-parens, import-self, invalid-unary-operand-type, "
-                        "invalid-character-sub, c-extension-no-member")
+    genDisableOption = (
+        "missing-docstring, duplicate-code, line-too-long, singleton-comparison, "
+        "too-many-instance-attributes, too-many-arguments, too-many-public-methods, "
+        "too-few-public-methods, too-many-locals, too-many-branches, too-many-statements, "
+        "unneeded-not, superfluous-parens, import-self, invalid-unary-operand-type, "
+        "invalid-character-sub, c-extension-no-member"
+    )
     genPylintOptions = ["--persistent=n", "--score=n", "--ignore=api.py"]
     if args.pylint_rcfile:
         genPylintOptions.append(f"--rcfile={args.pylint_rcfile}")
@@ -157,12 +209,15 @@ def _runPylintOnAllSources(args, testDirs):
 
         apiDir = getApiDir(testDir)
         if os.path.isdir(apiDir):
-            apiSources = [os.path.join(apiDir, child) for child in os.listdir(apiDir)
-                          if child.endswith(".py") or os.path.isdir(os.path.join(apiDir, child))]
+            apiSources = [
+                os.path.join(apiDir, child)
+                for child in os.listdir(apiDir)
+                if child.endswith(".py") or os.path.isdir(os.path.join(apiDir, child))
+            ]
 
             sys.path.append(apiDir)
 
-            print("    generated files...") # except api.py files
+            print("    generated files...")  # except api.py files
             pylintResult = _runPylint(apiSources, genPylintOptions, genDisableOption)
             if pylintResult != 0:
                 return pylintResult
@@ -177,6 +232,7 @@ def _runPylintOnAllSources(args, testDirs):
     print("Pylint done.\n")
 
     return 0
+
 
 def _runPylint(sources, options, disableOption=None):
     if not sources:
@@ -196,10 +252,11 @@ def _runPylint(sources, options, disableOption=None):
 
     return 0
 
+
 def _runMypyOnAllSources(args, testDirs, runtimePath):
     print("\nRunning mypy on python tests")
 
-    if not "MYPY_ENABLED" in os.environ or os.environ["MYPY_ENABLED"] != '1':
+    if not "MYPY_ENABLED" in os.environ or os.environ["MYPY_ENABLED"] != "1":
         print("Mypy is disabled.\n")
         return 0
 
@@ -214,12 +271,12 @@ def _runMypyOnAllSources(args, testDirs, runtimePath):
     mypyArgs.append(f"--cache-dir={mypyCacheDir}")
     if args.mypy_config_file:
         mypyArgs.append(f"--config-file={args.mypy_config_file}")
-    mypyArgs.append("--no-strict-optional") # Item "None" of "Optional[Blob]" has no attribute "..."
+    mypyArgs.append("--no-strict-optional")  # Item "None" of "Optional[Blob]" has no attribute "..."
 
     for testDir in testDirs:
         apiDir = getApiDir(testDir)
         testSuiteName = getTestSuiteName(testDir)
-        print(testSuiteName + " ... ", end='', flush=True)
+        print(testSuiteName + " ... ", end="", flush=True)
 
         mypyArgsForTest = list(mypyArgs)
         _loadMypyExtraArgsFile(testDir, mypyArgsForTest)
@@ -241,20 +298,22 @@ def _runMypyOnAllSources(args, testDirs, runtimePath):
             return mypyResult[2]
 
         else:
-            print(mypyResult[0], end='')
+            print(mypyResult[0], end="")
 
     print("Mypy done.\n")
 
     return 0
 
+
 def _loadMypyExtraArgsFile(testDir, mypyArgsForTest):
     argsFilename = os.path.join(testDir, "mypy_extra_args.txt")
     if os.path.isfile(argsFilename):
-        with open(argsFilename, 'r', encoding='utf-8') as argsFile:
+        with open(argsFilename, "r", encoding="utf-8") as argsFile:
             for argLine in argsFile:
-                arg = argLine.rstrip('\n')
-                if arg and not arg.startswith('#'):
+                arg = argLine.rstrip("\n")
+                if arg and not arg.startswith("#"):
                     mypyArgsForTest.append(arg)
+
 
 if __name__ == "__main__":
     sys.exit(main())

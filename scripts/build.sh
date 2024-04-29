@@ -77,6 +77,19 @@ test_python_runtime()
     popd > /dev/null
     echo
 
+    echo "Running black on python runtime sources and runtime test sources."
+    python -m black ${PYTHON_RUNTIME_ROOT} --line-length=112 --check
+    local BLACK_RESULT=$?
+    if [ ${BLACK_RESULT} -ne 0 ] ; then
+        python -m black ${PYTHON_RUNTIME_ROOT} --line-length=112 --diff
+        echo
+        echo "Command hint to reformat source manually using black tool:"
+        local PYTHON_EXECUTABLE=`which python`
+        echo "  ${PYTHON_EXECUTABLE} -m black [SOURCE] --line-length=112"
+        stderr_echo "Running black failed with return code ${BLACK_RESULT}!"
+        return 1
+    fi
+
     echo "Running pylint on python runtime sources."
 
     local PYTHON_VERSION=()
