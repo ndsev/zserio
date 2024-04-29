@@ -1,5 +1,6 @@
 import Expressions
 
+
 class ValueOfOperatorTest(Expressions.TestCase):
     def testGetValueOfWhiteColor(self):
         valueOfFunctions = self.api.ValueOfFunctions(self.api.Color.WHITE)

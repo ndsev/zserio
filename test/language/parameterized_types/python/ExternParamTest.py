@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class ExternParamTest(ParameterizedTypes.TestCase):
     def testWriteRead(self):
         externData = zserio.BitBuffer(bytearray([0xCA, 0xFE]), 15)

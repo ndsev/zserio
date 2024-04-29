@@ -1,5 +1,6 @@
 import Identifiers
 
+
 class BitmaskNameClashingWithJavaTest(Identifiers.TestCase):
     def testEmptyConstructor(self):
         bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava()

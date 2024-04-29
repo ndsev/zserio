@@ -4,6 +4,7 @@ import zserio
 import UnionTypes
 from testutils import getApiDir
 
+
 class UnionWithArrayTest(UnionTypes.TestCase):
     def testArray8(self):
         testUnion = self.api.TestUnion()

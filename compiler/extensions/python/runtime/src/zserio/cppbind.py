@@ -9,7 +9,8 @@ import typing
 ZSERIO_PYTHON_IMPLEMENTATION_ENV = "ZSERIO_PYTHON_IMPLEMENTATION"
 ZSERIO_CPP_MODULE = "zserio_cpp"
 
-def import_cpp_class(cppname: str, *, exception_class = None) -> typing.Optional[typing.Type[typing.Any]]:
+
+def import_cpp_class(cppname: str, *, exception_class=None) -> typing.Optional[typing.Type[typing.Any]]:
     """
     Tries to import optimized C++ implementation of the given python class if 'ZSERIO_PYTHON_IMPLEMENTATION'
     environment variable is either unset or set to 'cpp'.
@@ -30,6 +31,7 @@ def import_cpp_class(cppname: str, *, exception_class = None) -> typing.Optional
         # we need to break cyclic import from zserio.exception
         # pylint: disable-next=cyclic-import,import-outside-toplevel
         from zserio.exception import PythonRuntimeException
+
         exception_class = PythonRuntimeException
 
     impl = os.getenv(ZSERIO_PYTHON_IMPLEMENTATION_ENV)

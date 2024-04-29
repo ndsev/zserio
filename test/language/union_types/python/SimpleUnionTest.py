@@ -2,6 +2,7 @@ import zserio
 
 import UnionTypes
 
+
 class SimpleUnionTest(UnionTypes.TestCase):
     def testConstructor(self):
         simpleUnion = self.api.SimpleUnion()
@@ -71,7 +72,7 @@ class SimpleUnionTest(UnionTypes.TestCase):
         self.assertFalse(simpleUnion21 == simpleUnion11)
 
         simpleUnion4 = self.api.SimpleUnion()
-        simpleUnion4.case4_field = self.CASE1_FIELD # same value as simpleUnion11, but different choice
+        simpleUnion4.case4_field = self.CASE1_FIELD  # same value as simpleUnion11, but different choice
         self.assertFalse(simpleUnion11 == simpleUnion4)
 
     def testHash(self):
@@ -87,9 +88,9 @@ class SimpleUnionTest(UnionTypes.TestCase):
         self.assertEqual(31500, simpleUnion1.__hash__())
         self.assertEqual(31640, simpleUnion2.__hash__())
 
-        simpleUnion2.case4_field = self.CASE1_FIELD # same value as simpleUnion1
+        simpleUnion2.case4_field = self.CASE1_FIELD  # same value as simpleUnion1
         self.assertNotEqual(hash(simpleUnion1), hash(simpleUnion2))
-        simpleUnion1.case4_field = self.CASE1_FIELD # same value as simpleUnion2
+        simpleUnion1.case4_field = self.CASE1_FIELD  # same value as simpleUnion2
         self.assertEqual(hash(simpleUnion1), hash(simpleUnion2))
 
     def testGetSetCase1Field(self):

@@ -2,6 +2,7 @@ import zserio
 
 import EnumerationTypes
 
+
 class VarUIntEnumTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.DarkColor.NONE.value)
@@ -26,14 +27,18 @@ class VarUIntEnumTest(EnumerationTypes.TestCase):
 
     def testCalcHashCode(self):
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.NONE))
-        self.assertEqual(1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.DARK_RED))
-        self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.DARK_BLUE))
-        self.assertEqual(1957, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.DARK_GREEN))
+        self.assertEqual(
+            1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.NONE)
+        )
+        self.assertEqual(
+            1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.DARK_RED)
+        )
+        self.assertEqual(
+            1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.DARK_BLUE)
+        )
+        self.assertEqual(
+            1957, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.DARK_GREEN)
+        )
 
     def testBitSizeOf(self):
         self.assertEqual(DARK_COLOR_NONE_BITSIZEOF, self.api.DarkColor.NONE.bitsizeof())
@@ -45,14 +50,16 @@ class VarUIntEnumTest(EnumerationTypes.TestCase):
         self.assertEqual(DARK_COLOR_NONE_BITSIZEOF, self.api.DarkColor.NONE.initialize_offsets(0))
         self.assertEqual(DARK_COLOR_DARK_RED_BITSIZEOF + 1, self.api.DarkColor.DARK_RED.initialize_offsets(1))
         self.assertEqual(DARK_COLOR_DARK_BLUE_BITSIZEOF + 2, self.api.DarkColor.DARK_BLUE.initialize_offsets(2))
-        self.assertEqual(DARK_COLOR_DARK_GREEN_BITSIZEOF + 3,
-                         self.api.DarkColor.DARK_GREEN.initialize_offsets(3))
+        self.assertEqual(
+            DARK_COLOR_DARK_GREEN_BITSIZEOF + 3, self.api.DarkColor.DARK_GREEN.initialize_offsets(3)
+        )
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()
         self.api.DarkColor.DARK_RED.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self.assertEqual(DARK_RED_VALUE, reader.read_varuint())
+
 
 DARK_COLOR_NONE_BITSIZEOF = 8
 DARK_COLOR_DARK_RED_BITSIZEOF = 8

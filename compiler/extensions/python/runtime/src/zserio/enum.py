@@ -6,6 +6,7 @@ import enum
 import typing
 import warnings
 
+
 class _EnumType(enum.EnumMeta):
     """
     Special enum meta class which fires a warning whenever a deprecated enum item is accessed.
@@ -29,6 +30,7 @@ class _EnumType(enum.EnumMeta):
             warnings.warn(DeprecationWarning(f"Enum item '{obj}' is deprecated!"), stacklevel=2)
         return obj
 
+
 class DeprecatedItem:
     """
     Marker used to make enum items deprecated.
@@ -47,12 +49,13 @@ class DeprecatedItem:
             NEW = 3
     """
 
+
 class Enum(enum.Enum, metaclass=_EnumType):
     """
     Custom zserio enum base class which allows to mark items deprecated.
     """
 
-    def __new__(cls, value: typing.Any , deprecated: typing.Optional[DeprecatedItem] = None):
+    def __new__(cls, value: typing.Any, deprecated: typing.Optional[DeprecatedItem] = None):
         """
         Creator method which allows to mark the item as deprecated.
 
@@ -65,7 +68,8 @@ class Enum(enum.Enum, metaclass=_EnumType):
         member = object.__new__(cls)
         member._value_ = value
         if deprecated is not None and deprecated != DeprecatedItem:
-            raise ValueError(f"Invalid argument 'deprecated', which is {deprecated}! "
-                             f"Expecting {DeprecatedItem} or None.")
-        member._is_deprecated = deprecated is not None # type: ignore[attr-defined]
+            raise ValueError(
+                f"Invalid argument 'deprecated', which is {deprecated}! " f"Expecting {DeprecatedItem} or None."
+            )
+        member._is_deprecated = deprecated is not None  # type: ignore[attr-defined]
         return member

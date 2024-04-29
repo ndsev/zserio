@@ -3,6 +3,7 @@ import apsw
 
 import SqlDatabases
 
+
 class SimpleDbTest(SqlDatabases.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

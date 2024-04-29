@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedAutoArrayStructRecursionTest(ArrayTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)
@@ -54,15 +55,17 @@ class PackedAutoArrayStructRecursionTest(ArrayTypes.TestCase):
     def _checkBitSizeOf(self, numElements):
         packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
         bitPosition = 2
-        autoArrayRecursionBitSize = (
-            PackedAutoArrayStructRecursionTest._calcPackedAutoArrayRecursionBitSize(numElements))
+        autoArrayRecursionBitSize = PackedAutoArrayStructRecursionTest._calcPackedAutoArrayRecursionBitSize(
+            numElements
+        )
         self.assertEqual(autoArrayRecursionBitSize, packedAutoArrayRecursion.bitsizeof(bitPosition))
 
     def _checkInitializeOffsets(self, numElements):
         packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + (
-            PackedAutoArrayStructRecursionTest._calcPackedAutoArrayRecursionBitSize(numElements))
+            PackedAutoArrayStructRecursionTest._calcPackedAutoArrayRecursionBitSize(numElements)
+        )
         self.assertEqual(expectedEndBitPosition, packedAutoArrayRecursion.initialize_offsets(bitPosition))
 
     def _checkRead(self, numElements):
@@ -123,13 +126,13 @@ class PackedAutoArrayStructRecursionTest(ArrayTypes.TestCase):
 
     @staticmethod
     def _calcPackedAutoArrayRecursionBitSize(numElements):
-        bitSize = 8 # id
-        bitSize += 8 # varsize (length of auto array)
-        bitSize += 1 # packing descriptor: is_packed
+        bitSize = 8  # id
+        bitSize += 8  # varsize (length of auto array)
+        bitSize += 1  # packing descriptor: is_packed
         if numElements > 1:
-            bitSize += 6 # packing descriptor: max_bit_number
-        bitSize += 8 + 8 # first element
-        bitSize += (numElements - 1) * (8 + 2) # all deltas
+            bitSize += 6  # packing descriptor: max_bit_number
+        bitSize += 8 + 8  # first element
+        bitSize += (numElements - 1) * (8 + 2)  # all deltas
 
         return bitSize
 

@@ -4,6 +4,7 @@ import PubsubTypes
 
 from TestPubsub import TestPubsub, TestPubsubContext
 
+
 class SimplePubsubTest(PubsubTypes.TestCase):
     def setUp(self):
         pubsub = TestPubsub()
@@ -20,6 +21,7 @@ class SimplePubsubTest(PubsubTypes.TestCase):
         self.simplePubsubProvider.subscribe_request(requestCallback)
 
         result = {"value": 0}
+
         def powerOfTwoCallback(topic, value):
             self.assertEqual("simple_pubsub/power_of_two", topic)
             result["value"] = value.value
@@ -51,6 +53,7 @@ class SimplePubsubTest(PubsubTypes.TestCase):
         self.simplePubsub.subscribe_request(requestCallback)
 
         result = {"value": 0}
+
         def powerOfTwoCallback(topic, value):
             self.assertEqual("simple_pubsub/power_of_two", topic)
             result["value"] = value.value
@@ -84,6 +87,7 @@ class SimplePubsubTest(PubsubTypes.TestCase):
         self.simplePubsubProvider.subscribe_request_raw(requestRawCallback)
 
         result = {"value": 0}
+
         def powerOfTwoRawCallback(topic, value_data):
             self.assertEqual("simple_pubsub/power_of_two_raw", topic)
             value = zserio.deserialize_from_bytes(self.api.UInt64Value, value_data)
@@ -107,6 +111,7 @@ class SimplePubsubTest(PubsubTypes.TestCase):
         self.simplePubsub.subscribe_request_raw(requestRawCallback)
 
         result = {"value": 0}
+
         def powerOfTwoRawCallback(topic, value_data):
             self.assertEqual("simple_pubsub/power_of_two_raw", topic)
             value = zserio.deserialize_from_bytes(self.api.UInt64Value, value_data)
@@ -161,14 +166,14 @@ class SimplePubsubTest(PubsubTypes.TestCase):
         self.simplePubsub.unsubscribe(id1)
         request.value = 2
         self.simplePubsub.publish_request(request)
-        self.assertEqual(169, result["value1"]) # shall not be changed!
+        self.assertEqual(169, result["value1"])  # shall not be changed!
         self.assertEqual(4, result["value2"])
 
-        self.simplePubsub.unsubscribe(id0) # unsubscribe publisher
+        self.simplePubsub.unsubscribe(id0)  # unsubscribe publisher
         request.value = 3
         self.simplePubsub.publish_request(request)
-        self.assertEqual(169, result["value1"]) # shall not be changed!
-        self.assertEqual(4, result["value2"]) # shall not be changed!
+        self.assertEqual(169, result["value1"])  # shall not be changed!
+        self.assertEqual(4, result["value2"])  # shall not be changed!
 
         self.simplePubsub.unsubscribe(id2)
 

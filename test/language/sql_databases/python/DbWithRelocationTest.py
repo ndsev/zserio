@@ -3,14 +3,17 @@ import os
 import SqlDatabases
 from testutils import getApiDir
 
+
 class DbWithRelocationTest(SqlDatabases.TestCase):
     @classmethod
     def setUpClass(cls):
         super(DbWithRelocationTest, cls).setUpClass()
-        cls._europeDbFileName = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                             "db_with_relocation_test_europe.sqlite")
-        cls._americaDbFileName = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                              "db_with_relocation_test_america.sqlite")
+        cls._europeDbFileName = os.path.join(
+            getApiDir(os.path.dirname(__file__)), "db_with_relocation_test_europe.sqlite"
+        )
+        cls._americaDbFileName = os.path.join(
+            getApiDir(os.path.dirname(__file__)), "db_with_relocation_test_america.sqlite"
+        )
 
     def setUp(self):
         if os.path.exists(self._europeDbFileName):
@@ -21,8 +24,10 @@ class DbWithRelocationTest(SqlDatabases.TestCase):
         self._europeDb = self.api.EuropeDb.from_file(self._europeDbFileName)
         self._europeDb.create_schema()
 
-        tableToDbFileNameRelocationMap = {self.RELOCATED_SLOVAKIA_TABLE_NAME : self._europeDbFileName,
-                                          self.RELOCATED_CZECHIA_TABLE_NAME : self._europeDbFileName}
+        tableToDbFileNameRelocationMap = {
+            self.RELOCATED_SLOVAKIA_TABLE_NAME: self._europeDbFileName,
+            self.RELOCATED_CZECHIA_TABLE_NAME: self._europeDbFileName,
+        }
         self._americaDb = self.api.AmericaDb.from_file(self._americaDbFileName, tableToDbFileNameRelocationMap)
         self._americaDb.create_schema()
 
@@ -55,12 +60,12 @@ class DbWithRelocationTest(SqlDatabases.TestCase):
 
         # write to relocated table
         updateTileId = 1
-        writtenRows = [(updateTileId, self.api.Tile(ord('a'), ord('A')))]
+        writtenRows = [(updateTileId, self.api.Tile(ord("a"), ord("A")))]
         relocatedTable = self._americaDb.slovakia
         relocatedTable.write(writtenRows)
 
         # update it
-        updatedRows = [(updateTileId, self.api.Tile(ord('b'), ord('B')))]
+        updatedRows = [(updateTileId, self.api.Tile(ord("b"), ord("B")))]
         updateCondition = "tileId=" + str(updateTileId)
         relocatedTable.update(updatedRows[0], updateCondition)
 
@@ -81,12 +86,12 @@ class DbWithRelocationTest(SqlDatabases.TestCase):
 
         # write to relocated table
         updateTileId = 1
-        writtenRows = [(updateTileId, self.api.Tile(ord('c'), ord('C')))]
+        writtenRows = [(updateTileId, self.api.Tile(ord("c"), ord("C")))]
         relocatedTable = self._americaDb.czechia
         relocatedTable.write(writtenRows)
 
         # update it
-        updatedRows = [(updateTileId, self.api.Tile(ord('d'), ord('D')))]
+        updatedRows = [(updateTileId, self.api.Tile(ord("d"), ord("D")))]
         updateCondition = "tileId=" + str(updateTileId)
         relocatedTable.update(updatedRows[0], updateCondition)
 
@@ -99,9 +104,11 @@ class DbWithRelocationTest(SqlDatabases.TestCase):
         self.assertTrue(len(updatedRows), numReadRows)
 
     def testAttachedDatabases(self):
-        attachedDatabaseNames = ["main",
-                                 "AmericaDb_" + self.RELOCATED_SLOVAKIA_TABLE_NAME,
-                                 "AmericaDb_" + self.RELOCATED_CZECHIA_TABLE_NAME]
+        attachedDatabaseNames = [
+            "main",
+            "AmericaDb_" + self.RELOCATED_SLOVAKIA_TABLE_NAME,
+            "AmericaDb_" + self.RELOCATED_CZECHIA_TABLE_NAME,
+        ]
         sqlQuery = "PRAGMA database_list"
         rows = self._americaDb.connection.cursor().execute(sqlQuery)
         for row in rows:

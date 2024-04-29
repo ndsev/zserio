@@ -3,6 +3,7 @@ import apsw
 
 import SqlVirtualColumns
 
+
 class HiddenVirtualColumnsTest(SqlVirtualColumns.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class FullEnumParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.BLACK

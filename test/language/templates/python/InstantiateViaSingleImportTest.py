@@ -2,11 +2,11 @@ import zserio
 
 import Templates
 
+
 class InstantiateViaSingleImportTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateViaSingleImport = self.api.InstantiateViaSingleImport(
-            self.api.pkg.U32(13),
-            self.api.pkg.Test_string("test")
+            self.api.pkg.U32(13), self.api.pkg.Test_string("test")
         )
 
         writer = zserio.BitStreamWriter()

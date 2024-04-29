@@ -3,8 +3,14 @@ import os
 import apsw
 import zserio
 
-from testutils import (getZserioApi, getApiDir,
-                       assertMethodPresent, assertMethodNotPresent, assertPropertyPresent)
+from testutils import (
+    getZserioApi,
+    getApiDir,
+    assertMethodPresent,
+    assertMethodNotPresent,
+    assertPropertyPresent,
+)
+
 
 class WithoutWriterCodeTest(unittest.TestCase):
     @classmethod
@@ -220,7 +226,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         # Tile
         writer.write_bits(VERSION_AVAILABILITY, 3)
         writer.write_bits(VERSION, 8)
-        writer.write_bits(6, 32) # numElementsOffset
+        writer.write_bits(6, 32)  # numElementsOffset
         writer.alignto(8)
         writer.write_bits(NUM_ELEMENTS, 32)
 
@@ -229,16 +235,16 @@ class WithoutWriterCodeTest(unittest.TestCase):
         offset = zserio.bitposition.bits_to_bytes(writer.bitposition) + 4 * NUM_ELEMENTS
         for i in range(NUM_ELEMENTS):
             writer.write_bits(offset, 32)
-            hasItem = i % 2 == 0 # hasItem == True for even elements
+            hasItem = i % 2 == 0  # hasItem == True for even elements
             if hasItem:
                 offset += 8
             else:
                 offset += 3
 
         for i in range(NUM_ELEMENTS):
-            writer.alignto(8) # aligned because of indexed offsets
+            writer.alignto(8)  # aligned because of indexed offsets
             # ItemChoiceHolder
-            hasItem = i % 2 == 0 # hasItem == True for even elements
+            hasItem = i % 2 == 0  # hasItem == True for even elements
             writer.write_bool(hasItem)
             if hasItem:
                 # Item
@@ -271,6 +277,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         itemChoice1 = data[1].item_choice
         self.assertFalse(itemChoice1.has_item)
         self.assertEqual(PARAMS[1], itemChoice1.param)
+
 
 BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "without_writer_code.blob")
 

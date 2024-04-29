@@ -1,5 +1,6 @@
 import Subtypes
 
+
 class StructureSubtypeTest(Subtypes.TestCase):
     def testSubtype(self):
         identifier = 0xFFFF

@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTemplateArgument = self.api.InstantiateTemplateArgument(

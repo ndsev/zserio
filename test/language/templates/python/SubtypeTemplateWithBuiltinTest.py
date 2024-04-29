@@ -2,11 +2,10 @@ import zserio
 
 import Templates
 
+
 class SubtypeTemplateWithBuiltinTest(Templates.TestCase):
     def testReadWrite(self):
-        subtypeTemplateWithBuiltin = self.api.SubtypeTemplateWithBuiltin(
-            self.api.TestStructure_uint32(13)
-        )
+        subtypeTemplateWithBuiltin = self.api.SubtypeTemplateWithBuiltin(self.api.TestStructure_uint32(13))
 
         writer = zserio.BitStreamWriter()
         subtypeTemplateWithBuiltin.write(writer)

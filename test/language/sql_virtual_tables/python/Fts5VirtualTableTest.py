@@ -2,6 +2,7 @@ import os
 
 import SqlVirtualTables
 
+
 class Fts5VirtualTableTest(SqlVirtualTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

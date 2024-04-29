@@ -2,6 +2,7 @@ import zserio
 
 import IndexedOffsets
 
+
 class BoolIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
@@ -12,23 +13,27 @@ class BoolIndexedOffsetArrayTest(IndexedOffsets.TestCase):
         createWrongOffsets = False
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
-        self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         boolIndexedOffsetArray.bitsizeof(bitPosition))
+        self.assertEqual(
+            BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition, boolIndexedOffsetArray.bitsizeof(bitPosition)
+        )
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
-        self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         boolIndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE, boolIndexedOffsetArray.initialize_offsets(bitPosition)
+        )
         self._checkBoolIndexedOffsetArray(boolIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
         createWrongOffsets = True
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
-        self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         boolIndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
+            boolIndexedOffsetArray.initialize_offsets(bitPosition),
+        )
 
         offsetShift = 1
         self._checkOffsets(boolIndexedOffsetArray, offsetShift)
@@ -135,6 +140,7 @@ class BoolIndexedOffsetArrayTest(IndexedOffsets.TestCase):
 
         return self.api.BoolIndexedOffsetArray(offsets, SPACER_VALUE, data)
 
+
 NUM_ELEMENTS = 5
 
 WRONG_OFFSET = 0
@@ -146,5 +152,6 @@ ALIGNED_ELEMENT_BYTE_SIZE = 1
 
 SPACER_VALUE = 1
 
-BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE = (ELEMENT0_OFFSET * 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE +
-                                      ELEMENT_SIZE)
+BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE = (
+    ELEMENT0_OFFSET * 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE
+)

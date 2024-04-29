@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class ExplicitEnumParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(ExplicitEnumParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_enum_param
+
         class EnumParamTableParameterProvider(test_api.EnumParamTable.IParameterProvider):
             @staticmethod
             def count1(_row):
@@ -119,6 +121,7 @@ class ExplicitEnumParamTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "enumParamTable"
 NUM_ENUM_PARAM_TABLE_ROWS = 5

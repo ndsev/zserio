@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class VariableArraySubtypedStructTest(ArrayTypes.TestCase):
     def testBitSizeOf(self):
         numElements = 33

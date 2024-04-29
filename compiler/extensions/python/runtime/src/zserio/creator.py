@@ -5,16 +5,26 @@ The module implements creator of zserio object tree based on type info.
 import typing
 import enum
 
-from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo, MemberAttribute
+from zserio.typeinfo import (
+    TypeInfo,
+    RecursiveTypeInfo,
+    TypeAttribute,
+    MemberInfo,
+    MemberAttribute,
+)
 from zserio.exception import PythonRuntimeException
+
 
 class ZserioTreeCreator:
     """
     Allows to build zserio object tree defined by the given type info.
     """
 
-    def __init__(self, type_info: typing.Union[TypeInfo, RecursiveTypeInfo],
-                 *arguments: typing.List[typing.Any]) -> None:
+    def __init__(
+        self,
+        type_info: typing.Union[TypeInfo, RecursiveTypeInfo],
+        *arguments: typing.List[typing.Any],
+    ) -> None:
         """
         Constructor.
 
@@ -66,8 +76,9 @@ class ZserioTreeCreator:
 
         member_info = self._find_member_info(self._get_type_info(), name)
         if not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
-            raise PythonRuntimeException("ZserioTreeCreator: Field "
-                                         f"'{member_info.schema_name}' is not an array!")
+            raise PythonRuntimeException(
+                "ZserioTreeCreator: Field " f"'{member_info.schema_name}' is not an array!"
+            )
 
         self._member_info_stack.append(member_info)
         self._value_stack.append([])
@@ -84,7 +95,11 @@ class ZserioTreeCreator:
 
         member_info = self._member_info_stack.pop()
         value = self._value_stack.pop()
-        setattr(self._value_stack[-1], member_info.attributes[MemberAttribute.PROPERTY_NAME], value)
+        setattr(
+            self._value_stack[-1],
+            member_info.attributes[MemberAttribute.PROPERTY_NAME],
+            value,
+        )
         self._state = ZserioTreeCreator._State.IN_COMPOUND
 
     def begin_compound(self, name):
@@ -101,12 +116,14 @@ class ZserioTreeCreator:
         member_info = self._find_member_info(self._get_type_info(), name)
 
         if MemberAttribute.ARRAY_LENGTH in member_info.attributes:
-            raise PythonRuntimeException("ZserioTreeCreator: Field "
-                                         f"'{member_info.schema_name}' is an array!")
+            raise PythonRuntimeException(
+                "ZserioTreeCreator: Field " f"'{member_info.schema_name}' is an array!"
+            )
 
         if not TypeAttribute.FIELDS in member_info.type_info.attributes:
-            raise PythonRuntimeException(f"ZserioTreeCreator: Field "
-                                         f"'{member_info.schema_name}' is not a compound!")
+            raise PythonRuntimeException(
+                f"ZserioTreeCreator: Field " f"'{member_info.schema_name}' is not a compound!"
+            )
 
         compound = self._create_object(member_info, self._value_stack[-1])
 
@@ -122,15 +139,21 @@ class ZserioTreeCreator:
         """
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND or not self._member_info_stack:
-            raise PythonRuntimeException(f"ZserioTreeCreator: Cannot end compound in state '{self._state}'" +
-                                         (", expecting end_root!" if not self._member_info_stack else "!"))
+            raise PythonRuntimeException(
+                f"ZserioTreeCreator: Cannot end compound in state '{self._state}'"
+                + (", expecting end_root!" if not self._member_info_stack else "!")
+            )
 
         if MemberAttribute.ARRAY_LENGTH in self._member_info_stack[-1].attributes:
             raise PythonRuntimeException("ZserioTreeCreator: Cannot end compound, it's an array element!")
 
         member_info = self._member_info_stack.pop()
         value = self._value_stack.pop()
-        setattr(self._value_stack[-1], member_info.attributes[MemberAttribute.PROPERTY_NAME], value)
+        setattr(
+            self._value_stack[-1],
+            member_info.attributes[MemberAttribute.PROPERTY_NAME],
+            value,
+        )
 
     def set_value(self, name: str, value: typing.Any):
         """
@@ -149,14 +172,21 @@ class ZserioTreeCreator:
 
         if value is not None:
             if MemberAttribute.ARRAY_LENGTH in member_info.attributes:
-                raise PythonRuntimeException("ZserioTreeCreator: Expecting array in field "
-                                             f"'{member_info.schema_name}'!")
+                raise PythonRuntimeException(
+                    "ZserioTreeCreator: Expecting array in field " f"'{member_info.schema_name}'!"
+                )
 
             if not isinstance(value, member_info.type_info.py_type):
-                raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', "
-                                             f"expecting '{member_info.type_info.py_type}'!")
+                raise PythonRuntimeException(
+                    f"ZserioTreeCreator: Unexpected value type '{type(value)}', "
+                    f"expecting '{member_info.type_info.py_type}'!"
+                )
 
-        setattr(self._value_stack[-1], member_info.attributes[MemberAttribute.PROPERTY_NAME], value)
+        setattr(
+            self._value_stack[-1],
+            member_info.attributes[MemberAttribute.PROPERTY_NAME],
+            value,
+        )
 
     def get_field_type(self, name: str) -> typing.Union[TypeInfo, RecursiveTypeInfo]:
         """
@@ -181,14 +211,16 @@ class ZserioTreeCreator:
         """
 
         if self._state != ZserioTreeCreator._State.IN_ARRAY:
-            raise PythonRuntimeException("ZserioTreeCreator: Cannot begin compound element in state "
-                                         f"'{self._state}'!")
+            raise PythonRuntimeException(
+                "ZserioTreeCreator: Cannot begin compound element in state " f"'{self._state}'!"
+            )
 
         member_info = self._member_info_stack[-1]
 
         if not TypeAttribute.FIELDS in member_info.type_info.attributes:
-            raise PythonRuntimeException(f"ZserioTreeCreator: Field "
-                                         f"'{self._member_info_stack[-1].schema_name}' is not a compound!")
+            raise PythonRuntimeException(
+                f"ZserioTreeCreator: Field " f"'{self._member_info_stack[-1].schema_name}' is not a compound!"
+            )
 
         compound = self._create_object(member_info, self._value_stack[-2], len(self._value_stack[-1]))
 
@@ -203,9 +235,10 @@ class ZserioTreeCreator:
         """
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND or not self._member_info_stack:
-            raise PythonRuntimeException("ZserioTreeCreator: Cannot end compound element in state "
-                                         f"'{self._state}'" +
-                                         (", expecting end_root!" if not self._member_info_stack else "!"))
+            raise PythonRuntimeException(
+                "ZserioTreeCreator: Cannot end compound element in state "
+                f"'{self._state}'" + (", expecting end_root!" if not self._member_info_stack else "!")
+            )
 
         if not MemberAttribute.ARRAY_LENGTH in self._member_info_stack[-1].attributes:
             raise PythonRuntimeException("ZserioTreeCreator: Cannot end compound element, not in array!")
@@ -223,13 +256,16 @@ class ZserioTreeCreator:
         """
 
         if self._state != ZserioTreeCreator._State.IN_ARRAY:
-            raise PythonRuntimeException("ZserioTreeCreator: Cannot add value element in state "
-                                         f"'{self._state}'!")
+            raise PythonRuntimeException(
+                "ZserioTreeCreator: Cannot add value element in state " f"'{self._state}'!"
+            )
 
         element_type_info = self._member_info_stack[-1].type_info
         if value is not None and not isinstance(value, element_type_info.py_type):
-            raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', expecting "
-                                         f"'{element_type_info.py_type}'!")
+            raise PythonRuntimeException(
+                f"ZserioTreeCreator: Unexpected value type '{type(value)}', expecting "
+                f"'{element_type_info.py_type}'!"
+            )
 
         self._value_stack[-1].append(value)
 
@@ -256,12 +292,16 @@ class ZserioTreeCreator:
         for member in members:
             if member.schema_name == name:
                 return member
-        raise PythonRuntimeException(f"ZserioTreeCreator: Field '{name}' not found in "
-                                     f"'{type_info.schema_name}'!")
+        raise PythonRuntimeException(
+            f"ZserioTreeCreator: Field '{name}' not found in " f"'{type_info.schema_name}'!"
+        )
 
     @staticmethod
-    def _create_object(member_info: MemberInfo, parent: typing.Any,
-                       element_index: typing.Optional[int]=None) -> typing.Any:
+    def _create_object(
+        member_info: MemberInfo,
+        parent: typing.Any,
+        element_index: typing.Optional[int] = None,
+    ) -> typing.Any:
         args = []
         if MemberAttribute.TYPE_ARGUMENTS in member_info.attributes:
             for argument_lambda in member_info.attributes[MemberAttribute.TYPE_ARGUMENTS]:

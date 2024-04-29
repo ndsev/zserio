@@ -2,6 +2,7 @@ import unittest
 
 from zserio import PubsubInterface
 
+
 class PubsubTest(unittest.TestCase):
     def test_publish(self):
         pubsub = PubsubInterface()

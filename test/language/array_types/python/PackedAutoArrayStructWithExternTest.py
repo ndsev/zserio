@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedAutoArrayStructWithExternTest(ArrayTypes.TestCase):
     def testWriteRead(self):
         packedAutoArray = self._createPackedAutoArray()
@@ -25,14 +26,25 @@ class PackedAutoArrayStructWithExternTest(ArrayTypes.TestCase):
 
     def _createPackedAutoArray(self):
         return self.api.PackedAutoArray(
-            [self.api.TestStructure(uint32, zserio.BitBuffer(extern), uint8)
-             for uint32, extern, uint8 in zip(self.UINT32_FIELD, self.EXTERN_FIELD, self.UINT8_FIELD)]
+            [
+                self.api.TestStructure(uint32, zserio.BitBuffer(extern), uint8)
+                for uint32, extern, uint8 in zip(self.UINT32_FIELD, self.EXTERN_FIELD, self.UINT8_FIELD)
+            ]
         )
 
     UINT32_FIELD = list(range(100000, 200000, 10000))
-    EXTERN_FIELD = [b'\xAB\xCD\xEF', b'\x00', b'\x01', b'\x00', b'\x01',
-                    b'\x00', b'\x01', b'\x00', b'\x01', b'\x00']
+    EXTERN_FIELD = [
+        b"\xAB\xCD\xEF",
+        b"\x00",
+        b"\x01",
+        b"\x00",
+        b"\x01",
+        b"\x00",
+        b"\x01",
+        b"\x00",
+        b"\x01",
+        b"\x00",
+    ]
     UINT8_FIELD = list(range(0, 20, 2))
 
-    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)),
-                             "packed_auto_array_struct_with_extern.blob")
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_auto_array_struct_with_extern.blob")

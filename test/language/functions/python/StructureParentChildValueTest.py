@@ -2,6 +2,7 @@ import zserio
 
 import Functions
 
+
 class StructureParentChildValueTest(Functions.TestCase):
     def testParentValue(self):
         parentValue = self._createParentValue()

@@ -2,13 +2,16 @@ import unittest
 
 from testutils import getZserioApi
 
+
 class WithoutPubsubCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.invalid_in_java = getZserioApi(__file__, "invalid_in_java.zs",
-                                           extraArgs=["-withoutCrossExtensionCheck"])
-        cls.invalid_in_cpp = getZserioApi(__file__, "invalid_in_cpp.zs",
-                                          extraArgs=["-withoutCrossExtensionCheck"])
+        cls.invalid_in_java = getZserioApi(
+            __file__, "invalid_in_java.zs", extraArgs=["-withoutCrossExtensionCheck"]
+        )
+        cls.invalid_in_cpp = getZserioApi(
+            __file__, "invalid_in_cpp.zs", extraArgs=["-withoutCrossExtensionCheck"]
+        )
 
     def testInvalidInJava(self):
         test = self.invalid_in_java.Test()

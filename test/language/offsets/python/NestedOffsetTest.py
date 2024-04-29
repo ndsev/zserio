@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class NestedOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
@@ -80,8 +81,9 @@ class NestedOffsetTest(Offsets.TestCase):
 
         writer.write_bits(self.NUM_ELEMENTS, 8)
         for i in range(self.NUM_ELEMENTS):
-            writer.write_bits(self.WRONG_DATA_OFFSET if writeWrongOffsets else self.FIRST_DATA_OFFSET + i * 8,
-                             32)
+            writer.write_bits(
+                self.WRONG_DATA_OFFSET if writeWrongOffsets else self.FIRST_DATA_OFFSET + i * 8, 32
+            )
             writer.write_bits(0, 7 if (i == 0) else 1)
             writer.write_bits(i, 31)
 
@@ -96,8 +98,9 @@ class NestedOffsetTest(Offsets.TestCase):
         self.assertEqual(self.BOOL_VALUE, nestedOffsetChoice.type)
 
         nestedOffsetUnion = nestedOffsetChoice.nested_offset_union
-        self.assertEqual(self.api.NestedOffsetUnion.CHOICE_NESTED_OFFSET_ARRAY_STRUCTURE,
-                         nestedOffsetUnion.choice_tag)
+        self.assertEqual(
+            self.api.NestedOffsetUnion.CHOICE_NESTED_OFFSET_ARRAY_STRUCTURE, nestedOffsetUnion.choice_tag
+        )
 
         nestedOffsetArrayStructure = nestedOffsetUnion.nested_offset_array_structure
         self.assertEqual(self.NUM_ELEMENTS, nestedOffsetArrayStructure.num_elements)
@@ -117,19 +120,22 @@ class NestedOffsetTest(Offsets.TestCase):
             dataOffset = self.WRONG_DATA_OFFSET if createWrongOffsets else self.FIRST_DATA_OFFSET + i * 8
             nestedOffsetStructureList.append(self.api.NestedOffsetStructure(dataOffset, i))
 
-        nestedOffsetArrayStructure = self.api.NestedOffsetArrayStructure(self.NUM_ELEMENTS,
-                                                                         nestedOffsetStructureList)
+        nestedOffsetArrayStructure = self.api.NestedOffsetArrayStructure(
+            self.NUM_ELEMENTS, nestedOffsetStructureList
+        )
 
         nestedOffsetUnion = self.api.NestedOffsetUnion(
             nested_offset_array_structure_=nestedOffsetArrayStructure
         )
 
-        nestedOffsetChoice = self.api.NestedOffsetChoice(self.BOOL_VALUE,
-                                                         nested_offset_union_=nestedOffsetUnion)
+        nestedOffsetChoice = self.api.NestedOffsetChoice(
+            self.BOOL_VALUE, nested_offset_union_=nestedOffsetUnion
+        )
 
         terminatorOffset = self.WRONG_TERMINATOR_OFFSET if createWrongOffsets else self.TERMINATOR_OFFSET
-        nestedOffset = self.api.NestedOffset(terminatorOffset, self.BOOL_VALUE, nestedOffsetChoice,
-                                             self.TERMINATOR_VALUE)
+        nestedOffset = self.api.NestedOffset(
+            terminatorOffset, self.BOOL_VALUE, nestedOffsetChoice, self.TERMINATOR_VALUE
+        )
 
         return nestedOffset
 

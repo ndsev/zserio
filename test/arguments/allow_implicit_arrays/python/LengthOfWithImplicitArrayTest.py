@@ -1,5 +1,6 @@
 import AllowImplicitArrays
 
+
 class LengthOfWithImplicitArray(AllowImplicitArrays.TestCase):
     def testGetLengthOfImplicitArray(self):
         lengthOfWithImplicitArray = self.api.LengthOfWithImplicitArray()

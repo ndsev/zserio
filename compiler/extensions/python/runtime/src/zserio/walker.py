@@ -1,12 +1,14 @@
 """
 The module implements generic walker through given zserio object tree.
 """
+
 import functools
 import re
 import typing
 
 from zserio.exception import PythonRuntimeException
 from zserio.typeinfo import TypeAttribute, MemberInfo, MemberAttribute
+
 
 class WalkObserver:
     """
@@ -51,8 +53,12 @@ class WalkObserver:
 
         raise NotImplementedError()
 
-    def begin_compound(self, compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> None:
+    def begin_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         """
         Called at the beginning of an compound field object.
 
@@ -64,8 +70,12 @@ class WalkObserver:
         """
         raise NotImplementedError()
 
-    def end_compound(self, compound: typing.Any, member_info: MemberInfo,
-                     element_index: typing.Optional[int] = None) -> None:
+    def end_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         """
         Called at the end of just walked compound object.
 
@@ -75,8 +85,12 @@ class WalkObserver:
         """
         raise NotImplementedError()
 
-    def visit_value(self, value: typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> None:
+    def visit_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         """
         Called when a simple (or an unset compound or array - i.e. None) value is reached.
 
@@ -85,6 +99,7 @@ class WalkObserver:
         :param element_index: Element index in array or None if the value is not in array.
         """
         raise NotImplementedError()
+
 
 class WalkFilter:
     """
@@ -116,8 +131,12 @@ class WalkFilter:
 
         raise NotImplementedError()
 
-    def before_compound(self, compound: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int] = None) -> bool:
+    def before_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         """
         Called before a compound object.
 
@@ -131,8 +150,12 @@ class WalkFilter:
         """
         raise NotImplementedError()
 
-    def after_compound(self, compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> bool:
+    def after_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         """
         Called after a compound object.
 
@@ -144,8 +167,12 @@ class WalkFilter:
         """
         raise NotImplementedError()
 
-    def before_value(self, value: typing.Any, member_info: MemberInfo,
-                     element_index: typing.Optional[int] = None) -> bool:
+    def before_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         """
         Called before a simple (or an unset compound or array - i.e. None) value.
 
@@ -157,8 +184,12 @@ class WalkFilter:
         """
         raise NotImplementedError()
 
-    def after_value(self, value: typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> bool:
+    def after_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         """
         Called after a simple (or an unset compound or array - i.e. None) value.
 
@@ -170,12 +201,17 @@ class WalkFilter:
         """
         raise NotImplementedError()
 
+
 class Walker:
     """
     Walker through zserio objects, based on generated type info (see -withTypeInfoCode).
     """
 
-    def __init__(self, walk_observer: WalkObserver, walk_filter: typing.Optional[WalkFilter] = None) -> None:
+    def __init__(
+        self,
+        walk_observer: WalkObserver,
+        walk_filter: typing.Optional[WalkFilter] = None,
+    ) -> None:
         """
         Constructor.
 
@@ -195,13 +231,15 @@ class Walker:
         """
 
         if not hasattr(zserio_object, "type_info"):
-            raise PythonRuntimeException("Walker: Type info must be enabled"
-                                         " (see zserio option -withTypeInfoCode)!")
+            raise PythonRuntimeException(
+                "Walker: Type info must be enabled (see zserio option -withTypeInfoCode)!"
+            )
 
         type_info = zserio_object.type_info()
         if TypeAttribute.FIELDS not in type_info.attributes:
-            raise PythonRuntimeException("Walker: Root object '" + type_info.schema_name +
-                                         "' is not a compound type!")
+            raise PythonRuntimeException(
+                "Walker: Root object '" + type_info.schema_name + "' is not a compound type!"
+            )
 
         self._walk_observer.begin_root(zserio_object)
         self._walk_fields(zserio_object, type_info)
@@ -214,15 +252,18 @@ class Walker:
             choice_tag = zserio_object.choice_tag
             if choice_tag != zserio_object.UNDEFINED_CHOICE:
                 field = fields[choice_tag]
-                self._walk_field(getattr(zserio_object, field.attributes[MemberAttribute.PROPERTY_NAME]),
-                                    field)
+                self._walk_field(
+                    getattr(zserio_object, field.attributes[MemberAttribute.PROPERTY_NAME]),
+                    field,
+                )
             # else: uninitialized or empty branch
         else:
             # structure
             for field in fields:
-                if not self._walk_field(getattr(zserio_object,
-                                                field.attributes[MemberAttribute.PROPERTY_NAME]),
-                                        field):
+                if not self._walk_field(
+                    getattr(zserio_object, field.attributes[MemberAttribute.PROPERTY_NAME]),
+                    field,
+                ):
                     break
 
     def _walk_field(self, zserio_object: typing.Any, member_info: MemberInfo) -> bool:
@@ -237,8 +278,12 @@ class Walker:
         else:
             return self._walk_field_value(zserio_object, member_info)
 
-    def _walk_field_value(self, zserio_object: typing.Any, member_info: MemberInfo,
-                          element_index: typing.Optional[int] = None) -> bool:
+    def _walk_field_value(
+        self,
+        zserio_object: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         type_info = member_info.type_info
         if zserio_object is not None and TypeAttribute.FIELDS in type_info.attributes:
             if self._walk_filter.before_compound(zserio_object, member_info, element_index):
@@ -250,6 +295,7 @@ class Walker:
             if self._walk_filter.before_value(zserio_object, member_info, element_index):
                 self._walk_observer.visit_value(zserio_object, member_info, element_index)
             return self._walk_filter.after_value(zserio_object, member_info, element_index)
+
 
 class DefaultWalkObserver(WalkObserver):
     """
@@ -268,17 +314,30 @@ class DefaultWalkObserver(WalkObserver):
     def end_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> None:
         pass
 
-    def begin_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> None:
+    def begin_compound(
+        self,
+        _compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         pass
 
-    def end_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                     element_index: typing.Optional[int] = None) -> None:
+    def end_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         pass
 
-    def visit_value(self, _value : typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> None:
+    def visit_value(
+        self,
+        _value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         pass
+
 
 class DefaultWalkFilter(WalkFilter):
     """
@@ -291,21 +350,38 @@ class DefaultWalkFilter(WalkFilter):
     def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
         return True
 
-    def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                        _element_index: typing.Optional[int] = None) -> bool:
+    def before_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return True
 
-    def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                       _element_index: typing.Optional[int] = None) -> bool:
+    def after_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return True
 
-    def before_value(self, _value: typing.Any, _member_info: MemberInfo,
-                     _element_index: typing.Optional[int] = None) -> bool:
+    def before_value(
+        self,
+        _value: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return True
 
-    def after_value(self, _value: typing.Any, _member_info: MemberInfo,
-                    _element_index: typing.Optional[int] = None) -> bool:
+    def after_value(
+        self,
+        _value: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return True
+
 
 class DepthWalkFilter(WalkFilter):
     """
@@ -328,20 +404,36 @@ class DepthWalkFilter(WalkFilter):
     def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
         return self._leave_depth_level()
 
-    def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                        _element_index: typing.Optional[int] = None) -> bool:
+    def before_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._enter_depth_level()
 
-    def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                       _element_index: typing.Optional[int] = None) -> bool:
+    def after_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._leave_depth_level()
 
-    def before_value(self, _value: typing.Any, _member_info: MemberInfo,
-                     _element_index: typing.Optional[int] = None) -> bool:
+    def before_value(
+        self,
+        _value: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._depth <= self._max_depth
 
-    def after_value(self, _value: typing.Any, _member_info: MemberInfo,
-                    _element_index: typing.Optional[int] = None) -> bool:
+    def after_value(
+        self,
+        _value: typing.Any,
+        _member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> bool:
         return True
 
     def _enter_depth_level(self) -> bool:
@@ -352,6 +444,7 @@ class DepthWalkFilter(WalkFilter):
     def _leave_depth_level(self) -> bool:
         self._depth -= 1
         return True
+
 
 class RegexWalkFilter(WalkFilter):
     """
@@ -377,7 +470,7 @@ class RegexWalkFilter(WalkFilter):
     def before_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
         self._current_path.append(member_info.schema_name)
         if self._path_regex.match(self._get_current_path()):
-            return True # the array itself matches
+            return True  # the array itself matches
 
         # try to find match in each element and continue into the array only if some match is found
         # (note that array is never None)
@@ -392,26 +485,42 @@ class RegexWalkFilter(WalkFilter):
         self._current_path.pop()
         return True
 
-    def before_compound(self, compound: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int] = None) -> bool:
+    def before_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         self._append_path(member_info, element_index)
         if self._path_regex.match(self._get_current_path()):
-            return True # the compound itself matches
+            return True  # the compound itself matches
 
         return self._match_subtree(compound, member_info)
 
-    def after_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> bool:
+    def after_compound(
+        self,
+        _compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         self._pop_path(member_info, element_index)
         return True
 
-    def before_value(self, value: typing.Any, member_info: MemberInfo,
-                     element_index: typing.Optional[int] = None) -> bool:
+    def before_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         self._append_path(member_info, element_index)
         return self._match_subtree(value, member_info)
 
-    def after_value(self, _value: typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> bool:
+    def after_value(
+        self,
+        _value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         self._pop_path(member_info, element_index)
         return True
 
@@ -440,20 +549,26 @@ class RegexWalkFilter(WalkFilter):
         return ".".join(current_path)
 
     @staticmethod
-    def _append_path_impl(current_path: typing.List[str], member_info: MemberInfo,
-            element_index: typing.Optional[int]) -> None:
+    def _append_path_impl(
+        current_path: typing.List[str],
+        member_info: MemberInfo,
+        element_index: typing.Optional[int],
+    ) -> None:
         if element_index is None:
             current_path.append(member_info.schema_name)
         else:
-            current_path[-1] = member_info.schema_name + f"[{element_index}]" # add index
+            current_path[-1] = member_info.schema_name + f"[{element_index}]"  # add index
 
     @staticmethod
-    def _pop_path_impl(current_path: typing.List[str], member_info: MemberInfo,
-            element_index: typing.Optional[int]) -> None:
+    def _pop_path_impl(
+        current_path: typing.List[str],
+        member_info: MemberInfo,
+        element_index: typing.Optional[int],
+    ) -> None:
         if element_index is None:
             current_path.pop()
         else:
-            current_path[-1] = member_info.schema_name # just remove the index
+            current_path[-1] = member_info.schema_name  # just remove the index
 
     class _SubtreeRegexFilter(WalkFilter):
         """
@@ -484,32 +599,48 @@ class RegexWalkFilter(WalkFilter):
 
         def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
             self._current_path.pop()
-            return not self._matches # terminate when the match is already found
+            return not self._matches  # terminate when the match is already found
 
-        def before_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                            element_index: typing.Optional[int] = None) -> bool:
+        def before_compound(
+            self,
+            _compound: typing.Any,
+            member_info: MemberInfo,
+            element_index: typing.Optional[int] = None,
+        ) -> bool:
             self._append_path(member_info, element_index)
             self._matches = self._path_regex.match(self._get_current_path()) is not None
 
             #  terminate when the match is already found (note that compound is never None here)
             return not self._matches
 
-        def after_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                           element_index: typing.Optional[int] = None) -> bool:
+        def after_compound(
+            self,
+            _compound: typing.Any,
+            member_info: MemberInfo,
+            element_index: typing.Optional[int] = None,
+        ) -> bool:
             self._pop_path(member_info, element_index)
-            return not self._matches # terminate when the match is already found
+            return not self._matches  # terminate when the match is already found
 
-        def before_value(self, _value: typing.Any, member_info: MemberInfo,
-                         element_index: typing.Optional[int] = None) -> bool:
+        def before_value(
+            self,
+            _value: typing.Any,
+            member_info: MemberInfo,
+            element_index: typing.Optional[int] = None,
+        ) -> bool:
             self._append_path(member_info, element_index)
             self._matches = self._path_regex.match(self._get_current_path()) is not None
 
-            return not self._matches # terminate when the match is already found
+            return not self._matches  # terminate when the match is already found
 
-        def after_value(self, _value: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int] = None) -> bool:
+        def after_value(
+            self,
+            _value: typing.Any,
+            member_info: MemberInfo,
+            element_index: typing.Optional[int] = None,
+        ) -> bool:
             self._pop_path(member_info, element_index)
-            return not self._matches # terminate when the match is already found
+            return not self._matches  # terminate when the match is already found
 
         def _get_current_path(self) -> str:
             return RegexWalkFilter._get_current_path_impl(self._current_path)
@@ -519,6 +650,7 @@ class RegexWalkFilter(WalkFilter):
 
         def _pop_path(self, member_info: MemberInfo, element_index: typing.Optional[int]) -> None:
             RegexWalkFilter._pop_path_impl(self._current_path, member_info, element_index)
+
 
 class ArrayLengthWalkFilter(WalkFilter):
     """
@@ -540,24 +672,41 @@ class ArrayLengthWalkFilter(WalkFilter):
     def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
         return True
 
-    def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                        element_index: typing.Optional[int] = None) -> bool:
+    def before_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._filter_array_element(element_index)
 
-    def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> bool:
+    def after_compound(
+        self,
+        _compound: typing.Any,
+        _member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._filter_array_element(element_index)
 
-    def before_value(self, _value: typing.Any, _member_info: MemberInfo,
-                     element_index: typing.Optional[int] = None) -> bool:
+    def before_value(
+        self,
+        _value: typing.Any,
+        _member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._filter_array_element(element_index)
 
-    def after_value(self, _value: typing.Any, _member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> bool:
+    def after_value(
+        self,
+        _value: typing.Any,
+        _member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._filter_array_element(element_index)
 
     def _filter_array_element(self, element_index: typing.Optional[int]) -> bool:
         return True if element_index is None else element_index < self._max_array_length
+
 
 class AndWalkFilter(WalkFilter):
     """
@@ -582,20 +731,36 @@ class AndWalkFilter(WalkFilter):
     def after_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
         return self._apply_filters(lambda x: x.after_array(array, member_info))
 
-    def before_compound(self, compound: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int] = None) -> bool:
+    def before_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._apply_filters(lambda x: x.before_compound(compound, member_info, element_index))
 
-    def after_compound(self, compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> bool:
+    def after_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._apply_filters(lambda x: x.after_compound(compound, member_info, element_index))
 
-    def before_value(self, value: typing.Any, member_info: MemberInfo,
-                     element_index: typing.Optional[int] = None) -> bool:
+    def before_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._apply_filters(lambda x: x.before_value(value, member_info, element_index))
 
-    def after_value(self, value: typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> bool:
+    def after_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> bool:
         return self._apply_filters(lambda x: x.after_value(value, member_info, element_index))
 
     def _apply_filters(self, method):

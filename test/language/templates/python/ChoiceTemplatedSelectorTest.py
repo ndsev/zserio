@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class ChoiceTemplatedSelectorTest(Templates.TestCase):
     def testReadWrite(self):
         selector16 = 0

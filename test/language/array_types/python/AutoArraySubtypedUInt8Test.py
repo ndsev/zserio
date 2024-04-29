@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class AutoArraySubtypedUInt8Test(ArrayTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)

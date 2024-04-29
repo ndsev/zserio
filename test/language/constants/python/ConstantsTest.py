@@ -3,6 +3,7 @@ import unittest
 import zserio.limits
 from testutils import getZserioApi
 
+
 class ConstantsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

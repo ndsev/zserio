@@ -1,5 +1,6 @@
 import Expressions
 
+
 class ArrayTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         arrayTypeExpression = self.api.ArrayTypeExpression([0, 0], True)

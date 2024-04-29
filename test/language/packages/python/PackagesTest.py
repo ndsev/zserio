@@ -2,6 +2,7 @@ import unittest
 
 from testutils import getZserioApi
 
+
 class PackagesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -3,6 +3,7 @@ import unittest
 from zserio import ServiceData, ServiceInterface, ServiceClientInterface
 from zserio.service import ObjectServiceData, RawServiceData
 
+
 class ServiceTest(unittest.TestCase):
     def test_object_service_data(self):
         class ZserioObject:
@@ -14,7 +15,7 @@ class ServiceTest(unittest.TestCase):
 
             @staticmethod
             def bitsizeof(_bitposition):
-                return 31 # to make an unaligned type
+                return 31  # to make an unaligned type
 
             def write(self, writer):
                 writer.write_bits(self._value, self.bitsizeof(0))

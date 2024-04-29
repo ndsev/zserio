@@ -2,6 +2,7 @@ import os
 
 import Templates
 
+
 class SqlTableTemplatedFieldTest(Templates.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

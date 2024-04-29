@@ -6,12 +6,13 @@ from __future__ import annotations
 import typing
 import zserio
 
+
 class CreatorBitmask:
     def __init__(self) -> None:
         self._value = 0
 
     @classmethod
-    def from_value(cls: typing.Type['CreatorBitmask'], value: int) -> 'CreatorBitmask':
+    def from_value(cls: typing.Type["CreatorBitmask"], value: int) -> "CreatorBitmask":
         if value < 0 or value > 255:
             raise zserio.PythonRuntimeException(f"Value for bitmask 'CreatorBitmask' out of bounds: {value}!")
 
@@ -20,7 +21,7 @@ class CreatorBitmask:
         return instance
 
     @classmethod
-    def from_reader(cls: typing.Type['CreatorBitmask'], reader: zserio.BitStreamReader) -> 'CreatorBitmask':
+    def from_reader(cls: typing.Type["CreatorBitmask"], reader: zserio.BitStreamReader) -> "CreatorBitmask":
         instance = cls()
         instance._value = reader.read_bits(8)
         return instance
@@ -28,14 +29,14 @@ class CreatorBitmask:
     @staticmethod
     def type_info():
         attribute_list = {
-            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('uint8', int),
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE: zserio.typeinfo.TypeInfo("uint8", int),
             zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
-                zserio.typeinfo.ItemInfo('READ', CreatorBitmask.Values.READ, False, False),
-                zserio.typeinfo.ItemInfo('WRITE', CreatorBitmask.Values.WRITE, False, False)
-            ]
+                zserio.typeinfo.ItemInfo("READ", CreatorBitmask.Values.READ, False, False),
+                zserio.typeinfo.ItemInfo("WRITE", CreatorBitmask.Values.WRITE, False, False),
+            ],
         }
 
-        return zserio.typeinfo.TypeInfo('test_object.CreatorBitmask', CreatorBitmask, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo("test_object.CreatorBitmask", CreatorBitmask, attributes=attribute_list)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, CreatorBitmask):
@@ -58,16 +59,16 @@ class CreatorBitmask:
 
         return str(self._value) + "[" + result + "]"
 
-    def __or__(self, other: 'CreatorBitmask') -> 'CreatorBitmask':
+    def __or__(self, other: "CreatorBitmask") -> "CreatorBitmask":
         return CreatorBitmask.from_value(self._value | other._value)
 
-    def __and__(self, other: 'CreatorBitmask') -> 'CreatorBitmask':
+    def __and__(self, other: "CreatorBitmask") -> "CreatorBitmask":
         return CreatorBitmask.from_value(self._value & other._value)
 
-    def __xor__(self, other: 'CreatorBitmask') -> 'CreatorBitmask':
+    def __xor__(self, other: "CreatorBitmask") -> "CreatorBitmask":
         return CreatorBitmask.from_value(self._value ^ other._value)
 
-    def __invert__(self) -> 'CreatorBitmask':
+    def __invert__(self) -> "CreatorBitmask":
         return CreatorBitmask.from_value(~self._value & 255)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
@@ -84,8 +85,9 @@ class CreatorBitmask:
         return self._value
 
     class Values:
-        READ: 'CreatorBitmask' = None
-        WRITE: 'CreatorBitmask' = None
+        READ: "CreatorBitmask" = None
+        WRITE: "CreatorBitmask" = None
+
 
 CreatorBitmask.Values.READ = CreatorBitmask.from_value(1)
 CreatorBitmask.Values.WRITE = CreatorBitmask.from_value(2)

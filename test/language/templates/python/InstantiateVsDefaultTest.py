@@ -2,10 +2,12 @@ import zserio
 
 import Templates
 
+
 class InstantiateVsDefaultTest(Templates.TestCase):
     def testReadWrite(self):
-        instantiateVsDefault = self.api.InstantiateVsDefault(self.api.pkg.Test_uint32(13),
-                                                             self.api.TStr("test"))
+        instantiateVsDefault = self.api.InstantiateVsDefault(
+            self.api.pkg.Test_uint32(13), self.api.TStr("test")
+        )
 
         writer = zserio.BitStreamWriter()
         instantiateVsDefault.write(writer)

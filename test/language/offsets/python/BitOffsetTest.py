@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class BitOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False

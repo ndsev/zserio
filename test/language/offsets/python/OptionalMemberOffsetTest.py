@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class OptionalMemberOffsetTest(Offsets.TestCase):
     def testBitSizeOfWithOptional(self):
         optionalMemberOffset = self.api.OptionalMemberOffset(True, self.OPTIONAL_FIELD_OFFSET, 0x1010, 0x2020)
@@ -15,14 +16,16 @@ class OptionalMemberOffsetTest(Offsets.TestCase):
         hasOptional = True
         optionalField = 0x1010
         field = 0x2020
-        optionalMemberOffset = self.api.OptionalMemberOffset(hasOptional,
-                                                             self.WRONG_OPTIONAL_FIELD_OFFSET,
-                                                             optionalField, field)
+        optionalMemberOffset = self.api.OptionalMemberOffset(
+            hasOptional, self.WRONG_OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
         bitPosition = 2
-        self.assertEqual(self.WITH_OPTIONAL_MEMBER_OFFSET_BIT_SIZE,
-                         optionalMemberOffset.initialize_offsets(bitPosition))
-        self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
-                                        optionalField, field)
+        self.assertEqual(
+            self.WITH_OPTIONAL_MEMBER_OFFSET_BIT_SIZE, optionalMemberOffset.initialize_offsets(bitPosition)
+        )
+        self._checkOptionalMemberOffset(
+            optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
 
     def testInitializeOffsetsWithoutOptional(self):
         hasOptional = False
@@ -30,8 +33,10 @@ class OptionalMemberOffsetTest(Offsets.TestCase):
         field = 0x2020
         optionalMemberOffset = self.api.OptionalMemberOffset(hasOptional, optionalFieldOffset, None, field)
         bitPosition = 2
-        self.assertEqual(self.WITHOUT_OPTIONAL_MEMBER_OFFSET_BIT_SIZE + bitPosition,
-                         optionalMemberOffset.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.WITHOUT_OPTIONAL_MEMBER_OFFSET_BIT_SIZE + bitPosition,
+            optionalMemberOffset.initialize_offsets(bitPosition),
+        )
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, None, field)
 
     def testReadWithOptional(self):
@@ -39,21 +44,23 @@ class OptionalMemberOffsetTest(Offsets.TestCase):
         optionalField = 0x1212
         field = 0x2121
         writer = zserio.BitStreamWriter()
-        OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(writer, hasOptional,
-                                                                    self.OPTIONAL_FIELD_OFFSET, optionalField,
-                                                                    field)
+        OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(
+            writer, hasOptional, self.OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalMemberOffset = self.api.OptionalMemberOffset.from_reader(reader)
-        self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
-                                        optionalField, field)
+        self._checkOptionalMemberOffset(
+            optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
 
     def testReadWithoutOptional(self):
         hasOptional = False
         optionalFieldOffset = 0xABCD
         field = 0x2121
         writer = zserio.BitStreamWriter()
-        OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(writer, hasOptional, optionalFieldOffset,
-                                                                    None, field)
+        OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(
+            writer, hasOptional, optionalFieldOffset, None, field
+        )
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalMemberOffset = self.api.OptionalMemberOffset.from_reader(reader)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, None, field)
@@ -62,18 +69,20 @@ class OptionalMemberOffsetTest(Offsets.TestCase):
         hasOptional = True
         optionalField = 0x1A1A
         field = 0xA1A1
-        optionalMemberOffset = self.api.OptionalMemberOffset(hasOptional,
-                                                             self.WRONG_OPTIONAL_FIELD_OFFSET,
-                                                             optionalField, field)
+        optionalMemberOffset = self.api.OptionalMemberOffset(
+            hasOptional, self.WRONG_OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
         writer = zserio.BitStreamWriter()
         optionalMemberOffset.initialize_offsets(writer.bitposition)
         optionalMemberOffset.write(writer)
-        self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
-                                        optionalField, field)
+        self._checkOptionalMemberOffset(
+            optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readOptionalMemberOffset = self.api.OptionalMemberOffset.from_reader(reader)
-        self._checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
-                                        optionalField, field)
+        self._checkOptionalMemberOffset(
+            readOptionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET, optionalField, field
+        )
         self.assertTrue(optionalMemberOffset == readOptionalMemberOffset)
 
     def testWriteWithoutOptional(self):
@@ -95,8 +104,9 @@ class OptionalMemberOffsetTest(Offsets.TestCase):
             writer.write_signed_bits(optionalField, 32)
         writer.write_signed_bits(field, 32)
 
-    def _checkOptionalMemberOffset(self, optionalMemberOffset, hasOptional, optionalFieldOffset, optionalField,
-                                   field):
+    def _checkOptionalMemberOffset(
+        self, optionalMemberOffset, hasOptional, optionalFieldOffset, optionalField, field
+    ):
         self.assertEqual(hasOptional, optionalMemberOffset.has_optional)
         self.assertEqual(optionalFieldOffset, optionalMemberOffset.optional_field_offset)
         if hasOptional:

@@ -1,5 +1,6 @@
 import Expressions
 
+
 class LengthOfOperatorTest(Expressions.TestCase):
     def testGetLengthOfFixedArray(self):
         lengthOfFunctions = self.api.LengthOfFunctions()

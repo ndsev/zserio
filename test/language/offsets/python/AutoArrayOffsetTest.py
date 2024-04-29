@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class AutoArrayOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffset = False
@@ -82,8 +83,9 @@ class AutoArrayOffsetTest(Offsets.TestCase):
             writer.write_bits(i, 7)
 
     def _checkAutoArrayHolder(self, autoArrayHolder, bitPosition=0):
-        expectedAutoArrayOffset = (self.AUTO_ARRAY_OFFSET if (bitPosition == 0) else
-                                   self.AUTO_ARRAY_OFFSET + (bitPosition // 8))
+        expectedAutoArrayOffset = (
+            self.AUTO_ARRAY_OFFSET if (bitPosition == 0) else self.AUTO_ARRAY_OFFSET + (bitPosition // 8)
+        )
         self.assertEqual(expectedAutoArrayOffset, autoArrayHolder.auto_array_offset)
 
         self.assertEqual(self.FORCED_ALIGNMENT_VALUE, autoArrayHolder.force_alignment)

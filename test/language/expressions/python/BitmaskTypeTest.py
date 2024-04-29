@@ -1,5 +1,6 @@
 import Expressions
 
+
 class BitmaskTypeTest(Expressions.TestCase):
     def testBitSizeOfNoColor(self):
         bitmaskTypeExpression = self.api.BitmaskTypeExpression()
@@ -45,9 +46,9 @@ class BitmaskTypeTest(Expressions.TestCase):
 
     def testBitSizeOfAllColors(self):
         bitmaskTypeExpression = self.api.BitmaskTypeExpression()
-        bitmaskTypeExpression.colors = (self.api.Colors.Values.RED |
-                                        self.api.Colors.Values.BLUE |
-                                        self.api.Colors.Values.GREEN)
+        bitmaskTypeExpression.colors = (
+            self.api.Colors.Values.RED | self.api.Colors.Values.BLUE | self.api.Colors.Values.GREEN
+        )
         bitmaskTypeExpression.has_color_red = True
         bitmaskTypeExpression.has_color_blue = True
         bitmaskTypeExpression.has_color_green = True

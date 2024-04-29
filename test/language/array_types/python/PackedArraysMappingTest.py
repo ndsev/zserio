@@ -1,5 +1,6 @@
 import ArrayTypes
 
+
 class PackedArraysMappingTest(ArrayTypes.TestCase):
     def testUnsignedIntegerArrays(self):
         packedArraysMapping = self.api.PackedArraysMapping()

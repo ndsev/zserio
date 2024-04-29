@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class ParameterizedParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         parameterizedParamHolder = self._createParameterizedParamHolder()
@@ -16,8 +17,9 @@ class ParameterizedParamTest(ParameterizedTypes.TestCase):
 
     def _createParameterizedParamHolder(self):
         param = self.api.Param(self.PARAMETER, self.PARAM_VALUE, self.PARAM_EXTRA_VALUE)
-        parameterizedParam = self.api.ParameterizedParam(param, self.PARAMETERIZED_PARAM_VALUE,
-                self.PARAMETERIZED_PARAM_EXTRA_VALUE)
+        parameterizedParam = self.api.ParameterizedParam(
+            param, self.PARAMETERIZED_PARAM_VALUE, self.PARAMETERIZED_PARAM_EXTRA_VALUE
+        )
 
         return self.api.ParameterizedParamHolder(self.PARAMETER, param, parameterizedParam)
 

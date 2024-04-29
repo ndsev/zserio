@@ -2,12 +2,12 @@ import zserio
 
 import Templates
 
+
 class StructTemplatedTypeArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         paramHolder = self.api.ParamHolder_uint32(42)
         structTemplatedTypeArgument = self.api.StructTemplatedTypeArgument(
-            paramHolder,
-            self.api.Parameterized_uint32(paramHolder, "description", 13)
+            paramHolder, self.api.Parameterized_uint32(paramHolder, "description", 13)
         )
 
         writer = zserio.BitStreamWriter()

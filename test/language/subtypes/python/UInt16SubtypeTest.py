@@ -1,5 +1,6 @@
 import Subtypes
 
+
 class UInt16SubtypeTest(Subtypes.TestCase):
     def testSubtype(self):
         identifier = self.api.Identifier(0xFFFF)

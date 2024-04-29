@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateUnusedTest(Templates.TestCase):
     def testReadWrite(self):
         # check that unused template is instantiated via the instantiate command

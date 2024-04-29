@@ -2,14 +2,13 @@ import zserio
 
 import Functions
 
+
 class StructureArrayTest(Functions.TestCase):
     @classmethod
     def setUpClass(cls):
         super(StructureArrayTest, cls).setUpClass()
 
-        cls.ITEMS = [cls.api.Item(1, 2),
-                     cls.api.Item(3, 4),
-                     cls.api.Item(5, 6)]
+        cls.ITEMS = [cls.api.Item(1, 2), cls.api.Item(3, 4), cls.api.Item(5, 6)]
         cls.NUM_ITEMS = len(cls.ITEMS)
 
     def testStructureArrayElement0(self):

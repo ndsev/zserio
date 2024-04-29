@@ -5,13 +5,19 @@ The module contains classes for type info.
 import typing
 import enum
 
+
 class TypeInfo:
     """
     Type info class which provides information about generated types.
     """
 
-    def __init__(self, schema_name: str, py_type: typing.Type, *,
-                 attributes: typing.Dict['TypeAttribute', typing.Any] = None):
+    def __init__(
+        self,
+        schema_name: str,
+        py_type: typing.Type,
+        *,
+        attributes: typing.Dict["TypeAttribute", typing.Any] = None
+    ):
         """
         Type info constructor.
 
@@ -45,7 +51,7 @@ class TypeInfo:
         return self._py_type
 
     @property
-    def attributes(self) -> typing.Dict['TypeAttribute', typing.Any]:
+    def attributes(self) -> typing.Dict["TypeAttribute", typing.Any]:
         """
         Gets dictionary with type attributes.
 
@@ -136,13 +142,14 @@ class TypeInfo:
 
         return self._attributes
 
+
 class RecursiveTypeInfo:
     """
     Type info for recursive types used as a wrapper around generated static type_info method to prevent
     infinite recursion in type info definition.
     """
 
-    def __init__(self, type_info_func : typing.Callable[[], TypeInfo]):
+    def __init__(self, type_info_func: typing.Callable[[], TypeInfo]):
         """
         Constructor.
 
@@ -169,7 +176,7 @@ class RecursiveTypeInfo:
         return self._get_type_info().py_type
 
     @property
-    def attributes(self) -> typing.Dict['TypeAttribute', typing.Any]:
+    def attributes(self) -> typing.Dict["TypeAttribute", typing.Any]:
         """
         See :py:attr:`TypeInfo.attributes`.
         """
@@ -180,6 +187,7 @@ class RecursiveTypeInfo:
         if self._type_info is None:
             self._type_info = self._type_info_func()
         return self._type_info
+
 
 class TypeAttribute(enum.Enum):
     """
@@ -198,7 +206,7 @@ class TypeAttribute(enum.Enum):
     SELECTOR = enum.auto()
     CASES = enum.auto()
     TEMPLATE_NAME = enum.auto()
-    TEMPLATE_ARGUMENTS= enum.auto()
+    TEMPLATE_ARGUMENTS = enum.auto()
     COLUMNS = enum.auto()
     TABLES = enum.auto()
     SQL_CONSTRAINT = enum.auto()
@@ -207,13 +215,19 @@ class TypeAttribute(enum.Enum):
     MESSAGES = enum.auto()
     METHODS = enum.auto()
 
+
 class MemberInfo:
     """
     Member info class which provides information about members of compound types.
     """
 
-    def __init__(self, schema_name: str, typeinfo: typing.Union[TypeInfo, RecursiveTypeInfo], *,
-                 attributes: typing.Dict['MemberAttribute', typing.Any] = None):
+    def __init__(
+        self,
+        schema_name: str,
+        typeinfo: typing.Union[TypeInfo, RecursiveTypeInfo],
+        *,
+        attributes: typing.Dict["MemberAttribute", typing.Any] = None
+    ):
         """
         Member info constructor.
 
@@ -247,7 +261,7 @@ class MemberInfo:
         return self._type_info
 
     @property
-    def attributes(self) -> typing.Dict['MemberAttribute', typing.Any]:
+    def attributes(self) -> typing.Dict["MemberAttribute", typing.Any]:
         """
         Gets dictionary with member attributes.
 
@@ -366,6 +380,7 @@ class MemberInfo:
 
         return self._attributes
 
+
 class MemberAttribute(enum.Enum):
     """
     Member attribute type to be used in MemberInfo.
@@ -397,12 +412,17 @@ class MemberAttribute(enum.Enum):
     CLIENT_METHOD_NAME = enum.auto()
     REQUEST_TYPE = enum.auto()
 
+
 class CaseInfo:
     """
     Case info class which provides information about choice cases in generated choices.
     """
 
-    def __init__(self, case_expressions: typing.List[typing.Any], field: typing.Optional[MemberInfo]):
+    def __init__(
+        self,
+        case_expressions: typing.List[typing.Any],
+        field: typing.Optional[MemberInfo],
+    ):
         """
         Constructor.
 
@@ -439,7 +459,13 @@ class ItemInfo:
     Item info class which provides information about items of generated enumerable types.
     """
 
-    def __init__(self, schema_name: str, py_item: typing.Any, is_deprecated: bool, is_removed: bool):
+    def __init__(
+        self,
+        schema_name: str,
+        py_item: typing.Any,
+        is_deprecated: bool,
+        is_removed: bool,
+    ):
         """
         Constructor.
 

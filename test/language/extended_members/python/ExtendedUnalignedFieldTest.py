@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class ExtendedUnalignedFieldTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
@@ -111,6 +112,7 @@ class ExtendedUnalignedFieldTest(ExtendedMembers.TestCase):
         readOriginal = self.api.Original.from_reader(reader)
         self.assertEqual(extended.value, readOriginal.value)
         self.assertEqual(ORIGINAL_BIT_SIZE, reader.bitposition)
+
 
 ORIGINAL_BIT_SIZE = 3
 EXTENDED_BIT_SIZE = zserio.bitposition.alignto(8, ORIGINAL_BIT_SIZE) + 8 * 8

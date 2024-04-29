@@ -2,28 +2,32 @@ import zserio
 
 import IndexedOffsets
 
+
 class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOfWithOptional(self):
         length = NUM_ELEMENTS
         createWrongOffsets = False
-        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
-                                                                                        createWrongOffsets)
+        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(
+            length, createWrongOffsets
+        )
         bitSize = OptionalNestedIndexedOffsetArrayTest._getOptionalNestedIndexedOffsetArrayBitSize(length)
         self.assertEqual(bitSize, optionalNestedIndexedOffsetArray.bitsizeof())
 
     def testBbitsizeofWithoutOptional(self):
         length = 0
         createWrongOffsets = False
-        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
-                                                                                        createWrongOffsets)
+        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(
+            length, createWrongOffsets
+        )
         bitSize = OptionalNestedIndexedOffsetArrayTest._getOptionalNestedIndexedOffsetArrayBitSize(length)
         self.assertEqual(bitSize, optionalNestedIndexedOffsetArray.bitsizeof())
 
     def testInitializeOffsetsWithOptional(self):
         length = NUM_ELEMENTS
         createWrongOffsets = True
-        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
-                                                                                        createWrongOffsets)
+        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(
+            length, createWrongOffsets
+        )
         bitPosition = 0
         bitSize = OptionalNestedIndexedOffsetArrayTest._getOptionalNestedIndexedOffsetArrayBitSize(length)
         self.assertEqual(bitSize, optionalNestedIndexedOffsetArray.initialize_offsets(bitPosition))
@@ -32,8 +36,9 @@ class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testInitializeOffsetsWithoutOptional(self):
         length = 0
         createWrongOffsets = False
-        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
-                                                                                        createWrongOffsets)
+        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(
+            length, createWrongOffsets
+        )
         bitPosition = 0
         bitSize = OptionalNestedIndexedOffsetArrayTest._getOptionalNestedIndexedOffsetArrayBitSize(length)
         self.assertEqual(bitSize, optionalNestedIndexedOffsetArray.initialize_offsets(bitPosition))
@@ -42,8 +47,9 @@ class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
         length = NUM_ELEMENTS
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
-        OptionalNestedIndexedOffsetArrayTest._writeOptionalNestedIndexedOffsetArrayToStream(writer, length,
-                                                                                            writeWrongOffsets)
+        OptionalNestedIndexedOffsetArrayTest._writeOptionalNestedIndexedOffsetArrayToStream(
+            writer, length, writeWrongOffsets
+        )
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalNestedIndexedOffsetArray = self.api.OptionalNestedIndexedOffsetArray()
         optionalNestedIndexedOffsetArray.read(reader)
@@ -53,8 +59,9 @@ class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
         length = 0
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
-        OptionalNestedIndexedOffsetArrayTest._writeOptionalNestedIndexedOffsetArrayToStream(writer, length,
-                                                                                            writeWrongOffsets)
+        OptionalNestedIndexedOffsetArrayTest._writeOptionalNestedIndexedOffsetArrayToStream(
+            writer, length, writeWrongOffsets
+        )
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalNestedIndexedOffsetArray = self.api.OptionalNestedIndexedOffsetArray()
         optionalNestedIndexedOffsetArray.read(reader)
@@ -63,8 +70,9 @@ class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testWriteWithOptional(self):
         length = NUM_ELEMENTS
         createWrongOffsets = True
-        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
-                                                                                        createWrongOffsets)
+        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(
+            length, createWrongOffsets
+        )
         writer = zserio.BitStreamWriter()
         optionalNestedIndexedOffsetArray.initialize_offsets(writer.bitposition)
         optionalNestedIndexedOffsetArray.write(writer)
@@ -77,11 +85,13 @@ class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testWriteWithoutOptional(self):
         length = 0
         createWrongOffsets = False
-        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
-                                                                                        createWrongOffsets)
+        optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(
+            length, createWrongOffsets
+        )
         bitBuffer = zserio.serialize(optionalNestedIndexedOffsetArray)
-        readOptionalNestedIndexedOffsetArray = zserio.deserialize(self.api.OptionalNestedIndexedOffsetArray,
-                                                                  bitBuffer)
+        readOptionalNestedIndexedOffsetArray = zserio.deserialize(
+            self.api.OptionalNestedIndexedOffsetArray, bitBuffer
+        )
         self._checkOptionalNestedIndexedOffsetArray(readOptionalNestedIndexedOffsetArray, length)
         self.assertTrue(optionalNestedIndexedOffsetArray == readOptionalNestedIndexedOffsetArray)
 
@@ -158,6 +168,7 @@ class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
         bitSize += 6
 
         return bitSize
+
 
 NUM_ELEMENTS = 5
 

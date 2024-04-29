@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class MultipleExplicitParamsTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(MultipleExplicitParamsTest, cls).setUpClass()
 
         test_api = cls.api.multiple_explicit_params
+
         class MultipleParamsTableParameterProvider(test_api.MultipleParamsTable.IParameterProvider):
             @staticmethod
             def count(_row):
@@ -124,6 +126,7 @@ class MultipleExplicitParamsTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "multipleParamsTable"
 NUM_MULTIPLE_PARAMS_TABLE_ROWS = 5

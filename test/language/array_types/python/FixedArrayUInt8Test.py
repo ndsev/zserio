@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class FixedArrayUInt8Test(ArrayTypes.TestCase):
     def testBitSizeOf(self):
         uint8Array = list(range(self.FIXED_ARRAY_LENGTH))

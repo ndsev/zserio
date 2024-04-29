@@ -2,6 +2,7 @@ import zserio
 
 import BitmaskTypes
 
+
 class UInt64BitmaskTest(BitmaskTypes.TestCase):
     def testEmptyConstructor(self):
         permission = self.api.Permission()
@@ -9,8 +10,10 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
 
     def testFromValue(self):
         permission = self.api.Permission.from_value(WRITE_PERMISSION_VALUE)
-        self.assertTrue((permission & self.api.Permission.Values.WRITE_PERMISSION) ==
-                        self.api.Permission.Values.WRITE_PERMISSION)
+        self.assertTrue(
+            (permission & self.api.Permission.Values.WRITE_PERMISSION)
+            == self.api.Permission.Values.WRITE_PERMISSION
+        )
 
         with self.assertRaises(zserio.PythonRuntimeException):
             self.api.Permission.from_value(-1)
@@ -26,12 +29,15 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(self.api.Permission.Values.WRITE_PERMISSION, permission)
 
     def testEq(self):
-        self.assertTrue(self.api.Permission.Values.READ_PERMISSION ==
-                        self.api.Permission.Values.READ_PERMISSION)
-        self.assertFalse(self.api.Permission.Values.READ_PERMISSION ==
-                         self.api.Permission.Values.WRITE_PERMISSION)
-        self.assertTrue(self.api.Permission.Values.WRITE_PERMISSION ==
-                        self.api.Permission.Values.WRITE_PERMISSION)
+        self.assertTrue(
+            self.api.Permission.Values.READ_PERMISSION == self.api.Permission.Values.READ_PERMISSION
+        )
+        self.assertFalse(
+            self.api.Permission.Values.READ_PERMISSION == self.api.Permission.Values.WRITE_PERMISSION
+        )
+        self.assertTrue(
+            self.api.Permission.Values.WRITE_PERMISSION == self.api.Permission.Values.WRITE_PERMISSION
+        )
 
         read = self.api.Permission.Values.READ_PERMISSION
         self.assertTrue(read == self.api.Permission.Values.READ_PERMISSION)
@@ -45,8 +51,8 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
         self.assertFalse(write == self.api.Permission.Values.READ_PERMISSION)
         self.assertFalse(self.api.Permission.Values.READ_PERMISSION == write)
 
-        self.assertTrue(read == self.api.Permission.from_value(read.value)) # copy
-        self.assertTrue(write == self.api.Permission.from_value(write.value)) # copy
+        self.assertTrue(read == self.api.Permission.from_value(read.value))  # copy
+        self.assertTrue(write == self.api.Permission.from_value(write.value))  # copy
 
         self.assertFalse(read == write)
 
@@ -72,20 +78,28 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual("0[NONE_PERMISSION]", str(self.api.Permission.Values.NONE_PERMISSION))
         self.assertEqual("2[READ_PERMISSION]", str(self.api.Permission.Values.READ_PERMISSION))
         self.assertEqual("4[WRITE_PERMISSION]", str(self.api.Permission.Values.WRITE_PERMISSION))
-        self.assertEqual("6[READ_PERMISSION | WRITE_PERMISSION]", str(
-            self.api.Permission.Values.READ_PERMISSION | self.api.Permission.Values.WRITE_PERMISSION))
+        self.assertEqual(
+            "6[READ_PERMISSION | WRITE_PERMISSION]",
+            str(self.api.Permission.Values.READ_PERMISSION | self.api.Permission.Values.WRITE_PERMISSION),
+        )
         self.assertEqual("7[READ_PERMISSION | WRITE_PERMISSION]", str(self.api.Permission.from_value(7)))
-        self.assertEqual("255[READ_PERMISSION | WRITE_PERMISSION | CREATE_PERMISSION]",
-                         str(self.api.Permission.from_value(255)))
+        self.assertEqual(
+            "255[READ_PERMISSION | WRITE_PERMISSION | CREATE_PERMISSION]",
+            str(self.api.Permission.from_value(255)),
+        )
 
     def testOr(self):
         read = self.api.Permission.Values.READ_PERMISSION
         write = self.api.Permission.Values.WRITE_PERMISSION
 
-        self.assertEqual(read | write, self.api.Permission.Values.READ_PERMISSION |
-                         self.api.Permission.Values.WRITE_PERMISSION)
-        self.assertEqual(read | self.api.Permission.Values.WRITE_PERMISSION,
-                         self.api.Permission.Values.READ_PERMISSION | write)
+        self.assertEqual(
+            read | write,
+            self.api.Permission.Values.READ_PERMISSION | self.api.Permission.Values.WRITE_PERMISSION,
+        )
+        self.assertEqual(
+            read | self.api.Permission.Values.WRITE_PERMISSION,
+            self.api.Permission.Values.READ_PERMISSION | write,
+        )
         self.assertEqual(read, read | self.api.Permission.Values.NONE_PERMISSION)
         self.assertEqual(write, self.api.Permission.Values.NONE_PERMISSION | write)
 
@@ -98,12 +112,15 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
 
         self.assertEqual(read, readwrite & read)
         self.assertEqual(write, readwrite & write)
-        self.assertEqual(self.api.Permission.Values.NONE_PERMISSION, readwrite &
-                         self.api.Permission.Values.NONE_PERMISSION)
-        self.assertEqual(self.api.Permission.Values.NONE_PERMISSION, read &
-                         self.api.Permission.Values.NONE_PERMISSION)
-        self.assertEqual(self.api.Permission.Values.NONE_PERMISSION, write &
-                         self.api.Permission.Values.NONE_PERMISSION)
+        self.assertEqual(
+            self.api.Permission.Values.NONE_PERMISSION, readwrite & self.api.Permission.Values.NONE_PERMISSION
+        )
+        self.assertEqual(
+            self.api.Permission.Values.NONE_PERMISSION, read & self.api.Permission.Values.NONE_PERMISSION
+        )
+        self.assertEqual(
+            self.api.Permission.Values.NONE_PERMISSION, write & self.api.Permission.Values.NONE_PERMISSION
+        )
         self.assertEqual(self.api.Permission.Values.NONE_PERMISSION, read & write)
         self.assertEqual(read, read & read & read & read & read)
 
@@ -111,15 +128,17 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
         read = self.api.Permission.Values.READ_PERMISSION
         write = self.api.Permission.Values.WRITE_PERMISSION
 
-        self.assertEqual(read ^ write, self.api.Permission.Values.READ_PERMISSION ^
-                         self.api.Permission.Values.WRITE_PERMISSION)
+        self.assertEqual(
+            read ^ write,
+            self.api.Permission.Values.READ_PERMISSION ^ self.api.Permission.Values.WRITE_PERMISSION,
+        )
         self.assertEqual(READ_PERMISSION_VALUE ^ WRITE_PERMISSION_VALUE, (read ^ write).value)
         self.assertEqual(read, (read ^ write) & read)
         self.assertEqual(write, (read ^ write) & write)
         self.assertEqual(self.api.Permission.Values.NONE_PERMISSION, read ^ read)
         self.assertEqual(self.api.Permission.Values.NONE_PERMISSION, write ^ write)
 
-    def testInvert(self): # bitwise not operator
+    def testInvert(self):  # bitwise not operator
         none = self.api.Permission.Values.NONE_PERMISSION
         read = self.api.Permission.Values.READ_PERMISSION
         write = self.api.Permission.Values.WRITE_PERMISSION
@@ -136,8 +155,10 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
 
     def testInitializeOffsets(self):
         bitPosition = 1
-        self.assertEqual(bitPosition + PERMISSION_BITSIZEOF,
-                         self.api.Permission.Values.READ_PERMISSION.initialize_offsets(bitPosition))
+        self.assertEqual(
+            bitPosition + PERMISSION_BITSIZEOF,
+            self.api.Permission.Values.READ_PERMISSION.initialize_offsets(bitPosition),
+        )
 
     def testWrite(self):
         permission = self.api.Permission.Values.READ_PERMISSION
@@ -152,6 +173,7 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(NONE_PERMISSION_VALUE, self.api.Permission.Values.NONE_PERMISSION.value)
         self.assertEqual(READ_PERMISSION_VALUE, self.api.Permission.Values.READ_PERMISSION.value)
         self.assertEqual(WRITE_PERMISSION_VALUE, self.api.Permission.Values.WRITE_PERMISSION.value)
+
 
 PERMISSION_BITSIZEOF = 64
 

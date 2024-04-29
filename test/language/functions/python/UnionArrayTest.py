@@ -2,14 +2,17 @@ import zserio
 
 import Functions
 
+
 class UnionArrayTest(Functions.TestCase):
     @classmethod
     def setUpClass(cls):
         super(UnionArrayTest, cls).setUpClass()
 
-        cls.ITEMS = [cls.api.Item(12, 13),
-                     cls.api.Item(42, value_b_=18),
-                     cls.api.Item(value_a_=17, value_b_=14)]
+        cls.ITEMS = [
+            cls.api.Item(12, 13),
+            cls.api.Item(42, value_b_=18),
+            cls.api.Item(value_a_=17, value_b_=14),
+        ]
         cls.NUM_ITEM_ELEMENTS = len(cls.ITEMS)
         cls.EXPLICIT_ITEM = cls.api.Item(27, 29)
 

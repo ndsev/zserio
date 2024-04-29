@@ -2,6 +2,7 @@ import zserio
 
 import Constraints
 
+
 class ArrayLengthofConstraintTest(Constraints.TestCase):
     def testReadCorrectLength(self):
         writer = zserio.BitStreamWriter()
@@ -57,7 +58,7 @@ class ArrayLengthofConstraintTest(Constraints.TestCase):
 
     @staticmethod
     def _write(writer, length):
-        writer.write_bits(length, 8) # all lengths in this test fits in a single byte
+        writer.write_bits(length, 8)  # all lengths in this test fits in a single byte
         for i in range(length):
             writer.write_bits(i, 32)
 

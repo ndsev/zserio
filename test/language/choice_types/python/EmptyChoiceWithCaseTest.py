@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class EmptyChoiceWithCaseTest(ChoiceTypes.TestCase):
     def testSelectorConstructor(self):
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(1)

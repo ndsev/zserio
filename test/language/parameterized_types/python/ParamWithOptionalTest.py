@@ -4,6 +4,7 @@ import zserio
 import ParameterizedTypes
 from testutils import getApiDir
 
+
 class ParamWithOptionalTest(ParameterizedTypes.TestCase):
     def testBitSizeOf(self):
         holder = self._createHolder()

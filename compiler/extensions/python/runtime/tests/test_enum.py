@@ -3,6 +3,7 @@ import warnings
 
 from zserio.enum import Enum, DeprecatedItem
 
+
 class EnumTest(unittest.TestCase):
     class TestEnum(Enum):
         ONE = 1, DeprecatedItem

@@ -2,6 +2,7 @@ import os
 
 import SqlTables
 
+
 class BlobParamTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

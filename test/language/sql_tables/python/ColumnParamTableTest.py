@@ -2,6 +2,7 @@ import os
 
 import SqlTables
 
+
 class ColumnParamTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -70,8 +71,9 @@ class ColumnParamTableTest(SqlTables.TestCaseWithDb):
         return rows
 
     def _createColumnParamTableRow(self, blobId, name):
-        blob = self.api.column_param_table.ParameterizedBlob(param_=blobId // 2,
-                                                             value_=self.PARAMETERIZED_BLOB_VALUE)
+        blob = self.api.column_param_table.ParameterizedBlob(
+            param_=blobId // 2, value_=self.PARAMETERIZED_BLOB_VALUE
+        )
 
         return (blobId, name, blob)
 

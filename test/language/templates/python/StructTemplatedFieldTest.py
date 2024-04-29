@@ -2,12 +2,13 @@ import zserio
 
 import Templates
 
+
 class StructTemplatedFieldTest(Templates.TestCase):
     def testReadWrite(self):
         structTemplatedField = self.api.StructTemplatedField(
             self.api.Field_uint32(13),
             self.api.Field_Compound(self.api.Compound(42)),
-            self.api.Field_string("string")
+            self.api.Field_string("string"),
         )
 
         writer = zserio.BitStreamWriter()

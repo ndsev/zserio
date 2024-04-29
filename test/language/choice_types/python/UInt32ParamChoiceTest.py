@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.VARIANT_A_SELECTOR

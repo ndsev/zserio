@@ -8,6 +8,7 @@ from zserio.bitbuffer import BitBuffer
 from zserio.exception import PythonRuntimeException
 from zserio.limits import INT64_MIN
 
+
 def bitsizeof_varint16(value: int) -> int:
     """
     Gets bit size of variable 16-bit signed integer value.
@@ -18,6 +19,7 @@ def bitsizeof_varint16(value: int) -> int:
     """
 
     return _bitsizeof_varnum(abs(value), VARINT16_MAX_VALUES, "varint16")
+
 
 def bitsizeof_varint32(value: int) -> int:
     """
@@ -30,6 +32,7 @@ def bitsizeof_varint32(value: int) -> int:
 
     return _bitsizeof_varnum(abs(value), VARINT32_MAX_VALUES, "varint32")
 
+
 def bitsizeof_varint64(value: int) -> int:
     """
     Gets bit size of variable 64-bit signed integer value.
@@ -41,6 +44,7 @@ def bitsizeof_varint64(value: int) -> int:
 
     return _bitsizeof_varnum(abs(value), VARINT64_MAX_VALUES, "varint64")
 
+
 def bitsizeof_varint(value: int) -> int:
     """
     Gets bit size of variable signed integer value (up to 9 bytes).
@@ -51,8 +55,9 @@ def bitsizeof_varint(value: int) -> int:
     """
 
     if value == INT64_MIN:
-        return 8 # INT64_MIN is stored as -0
+        return 8  # INT64_MIN is stored as -0
     return _bitsizeof_varnum(abs(value), VARINT_MAX_VALUES, "varint")
+
 
 def bitsizeof_varuint16(value: int) -> int:
     """
@@ -65,6 +70,7 @@ def bitsizeof_varuint16(value: int) -> int:
 
     return _bitsizeof_varnum(value, VARUINT16_MAX_VALUES, "varuint16")
 
+
 def bitsizeof_varuint32(value: int) -> int:
     """
     Gets bit size of variable 32-bit unsigned integer value.
@@ -75,6 +81,7 @@ def bitsizeof_varuint32(value: int) -> int:
     """
 
     return _bitsizeof_varnum(value, VARUINT32_MAX_VALUES, "varuint32")
+
 
 def bitsizeof_varuint64(value: int) -> int:
     """
@@ -87,6 +94,7 @@ def bitsizeof_varuint64(value: int) -> int:
 
     return _bitsizeof_varnum(value, VARUINT64_MAX_VALUES, "varuint64")
 
+
 def bitsizeof_varuint(value: int) -> int:
     """
     Gets bit size of variable unsigned integer value (up to 9 bytes).
@@ -97,6 +105,7 @@ def bitsizeof_varuint(value: int) -> int:
     """
 
     return _bitsizeof_varnum(value, VARUINT_MAX_VALUES, "varuint")
+
 
 def bitsizeof_varsize(value: int) -> int:
     """
@@ -109,6 +118,7 @@ def bitsizeof_varsize(value: int) -> int:
 
     return _bitsizeof_varnum(value, VARSIZE_MAX_VALUES, "varsize")
 
+
 def bitsizeof_bytes(value: bytearray) -> int:
     """
     Gets bit size of bytes.
@@ -118,6 +128,7 @@ def bitsizeof_bytes(value: bytearray) -> int:
     """
 
     return bitsizeof_varsize(len(value)) + len(value) * 8
+
 
 def bitsizeof_string(string: str) -> int:
     """
@@ -129,6 +140,7 @@ def bitsizeof_string(string: str) -> int:
 
     string_bytes = string.encode("utf-8")
     return bitsizeof_varsize(len(string_bytes)) + len(string_bytes) * 8
+
 
 def bitsizeof_bitbuffer(bitbuffer: BitBuffer) -> int:
     """
@@ -143,6 +155,7 @@ def bitsizeof_bitbuffer(bitbuffer: BitBuffer) -> int:
     # bit buffer consists of varsize for bit size followed by the bits
     return bitsizeof_varsize(bitbuffer_size) + bitbuffer_size
 
+
 def _bitsizeof_varnum(value: int, max_values: typing.Sequence[int], varint_name: str) -> int:
     if value >= 0:
         abs_value = abs(value)
@@ -152,10 +165,8 @@ def _bitsizeof_varnum(value: int, max_values: typing.Sequence[int], varint_name:
 
     raise PythonRuntimeException(f"bitsizeof: Value '{value}' is out of range for '{varint_name}'!")
 
-VARINT16_MAX_VALUES = [
-    (1 << (6)) - 1,
-    (1 << (6 + 8)) - 1
-]
+
+VARINT16_MAX_VALUES = [(1 << (6)) - 1, (1 << (6 + 8)) - 1]
 
 VARINT32_MAX_VALUES = [
     (1 << (6)) - 1,
@@ -184,19 +195,16 @@ VARINT_MAX_VALUES = [
     (1 << (6 + 7 + 7 + 7 + 7 + 7)) - 1,
     (1 << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (1 << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
-    (1 << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1
+    (1 << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1,
 ]
 
-VARUINT16_MAX_VALUES = [
-    (1 << (7)) - 1,
-    (1 << (7 + 8)) - 1
-]
+VARUINT16_MAX_VALUES = [(1 << (7)) - 1, (1 << (7 + 8)) - 1]
 
 VARUINT32_MAX_VALUES = [
     (1 << (7)) - 1,
     (1 << (7 + 7)) - 1,
     (1 << (7 + 7 + 7)) - 1,
-    (1 << (7 + 7 + 7 + 8)) - 1
+    (1 << (7 + 7 + 7 + 8)) - 1,
 ]
 
 VARUINT64_MAX_VALUES = [
@@ -207,7 +215,7 @@ VARUINT64_MAX_VALUES = [
     (1 << (7 + 7 + 7 + 7 + 7)) - 1,
     (1 << (7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
-    (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1
+    (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1,
 ]
 
 VARUINT_MAX_VALUES = [

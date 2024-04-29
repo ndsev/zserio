@@ -2,6 +2,7 @@ import zserio
 
 import Expressions
 
+
 class IndexOperatorTest(Expressions.TestCase):
     def testZeroLength(self):
         elementList = self._createElementList(0)
@@ -23,15 +24,18 @@ class IndexOperatorTest(Expressions.TestCase):
     def testThreeElements(self):
         length = 3
         elementList = self._createElementList(length)
-        self.assertEqual(self.LENGTH_SIZE + self.FIELD16_SIZE + self.FIELD8_SIZE + self.FIELD16_SIZE,
-                         elementList.bitsizeof())
+        self.assertEqual(
+            self.LENGTH_SIZE + self.FIELD16_SIZE + self.FIELD8_SIZE + self.FIELD16_SIZE, elementList.bitsizeof()
+        )
         self._checkElements(self._createReadElementList(elementList), length)
 
     def testFourElements(self):
         length = 4
         elementList = self._createElementList(length)
-        self.assertEqual(self.LENGTH_SIZE + self.FIELD16_SIZE + self.FIELD8_SIZE + self.FIELD16_SIZE +
-                         self.FIELD8_SIZE, elementList.bitsizeof())
+        self.assertEqual(
+            self.LENGTH_SIZE + self.FIELD16_SIZE + self.FIELD8_SIZE + self.FIELD16_SIZE + self.FIELD8_SIZE,
+            elementList.bitsizeof(),
+        )
         self._checkElements(self._createReadElementList(elementList), length)
 
     def _createElementList(self, length):

@@ -5,10 +5,11 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedAutoArrayRemovedEnumItemTest(ArrayTypes.TestCase):
     def testWriteReadFile(self):
         packedAutoArrayRemovedEnumItem = self.api.PackedAutoArrayRemovedEnumItem(
-            [ self.api.Traffic.NONE, self.api.Traffic.LIGHT, self.api.Traffic.MID ]
+            [self.api.Traffic.NONE, self.api.Traffic.LIGHT, self.api.Traffic.MID]
         )
 
         zserio.serialize_to_file(packedAutoArrayRemovedEnumItem, self.BLOB_NAME)
@@ -21,8 +22,10 @@ class PackedAutoArrayRemovedEnumItemTest(ArrayTypes.TestCase):
     def testWriteReadRemovedException(self):
         packedAutoArrayRemovedEnumItem = self.api.PackedAutoArrayRemovedEnumItem(
             [
-                self.api.Traffic.NONE, self.api.Traffic.LIGHT,
-                self.api.Traffic.MID, self.api.Traffic.ZSERIO_REMOVED_HEAVY
+                self.api.Traffic.NONE,
+                self.api.Traffic.LIGHT,
+                self.api.Traffic.MID,
+                self.api.Traffic.ZSERIO_REMOVED_HEAVY,
             ]
         )
 

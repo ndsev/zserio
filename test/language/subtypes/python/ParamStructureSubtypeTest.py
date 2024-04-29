@@ -1,5 +1,6 @@
 import Subtypes
 
+
 class ParamStructureSubtypeTest(Subtypes.TestCase):
     def testSubtype(self):
         # just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
@@ -12,7 +13,9 @@ class ParamStructureSubtypeTest(Subtypes.TestCase):
         self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.parameterized_subtype)
 
         parameterizedSubtypeStruct.another_parameterized_subtype_array = [
-            parameterizedSubtype for i in range(length)]
+            parameterizedSubtype for i in range(length)
+        ]
         for i in range(length):
-            self.assertEqual(parameterizedSubtype,
-                             parameterizedSubtypeStruct.another_parameterized_subtype_array[i])
+            self.assertEqual(
+                parameterizedSubtype, parameterizedSubtypeStruct.another_parameterized_subtype_array[i]
+            )

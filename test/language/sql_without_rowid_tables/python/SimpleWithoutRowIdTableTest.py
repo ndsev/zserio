@@ -3,6 +3,7 @@ import apsw
 
 import SqlWithoutRowIdTables
 
+
 class SimpleWithoutRowIdTableTest(SqlWithoutRowIdTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

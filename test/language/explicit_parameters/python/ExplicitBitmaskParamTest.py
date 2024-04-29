@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class ExplicitBitmaskParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(ExplicitBitmaskParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_bitmask_param
+
         class BitmaskParamTableParameterProvider(test_api.BitmaskParamTable.IParameterProvider):
             @staticmethod
             def count1(_row):
@@ -119,6 +121,7 @@ class ExplicitBitmaskParamTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "bitmaskParamTable"
 NUM_BITMASK_PARAM_TABLE_ROWS = 5

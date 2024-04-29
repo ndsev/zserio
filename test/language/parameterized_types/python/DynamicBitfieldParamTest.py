@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class DynamicBitfieldParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         dynamicBitfieldParamHolder = self._createDynamicBitfieldParamHolder()
@@ -15,8 +16,9 @@ class DynamicBitfieldParamTest(ParameterizedTypes.TestCase):
         self.assertEqual(dynamicBitfieldParamHolder, readDynamicBitfieldParamHolder)
 
     def _createDynamicBitfieldParamHolder(self):
-        dynamicBitfieldParam = self.api.DynamicBitfieldParam(self.BITFIELD, self.DYNAMIC_BITFIELD_PARAM_VALUE,
-            self.DYNAMIC_BITFIELD_EXTRA_VALUE)
+        dynamicBitfieldParam = self.api.DynamicBitfieldParam(
+            self.BITFIELD, self.DYNAMIC_BITFIELD_PARAM_VALUE, self.DYNAMIC_BITFIELD_EXTRA_VALUE
+        )
 
         return self.api.DynamicBitfieldParamHolder(self.LENGTH, self.BITFIELD, dynamicBitfieldParam)
 

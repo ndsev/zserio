@@ -4,8 +4,10 @@ import os
 from zserio.cppbind import import_cpp_class
 from zserio.exception import PythonRuntimeException
 
+
 class MissingCppClass:
     pass
+
 
 class CppBindTest(unittest.TestCase):
 

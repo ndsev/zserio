@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class ExtendedIndexedOffsetsTest(ExtendedMembers.TestCase):
     def testDefaultConstructor(self):
         extended = self.api.Extended()
@@ -113,10 +114,13 @@ class ExtendedIndexedOffsetsTest(ExtendedMembers.TestCase):
         self.assertEqual(extended.offsets, readOriginal.offsets)
         self.assertEqual(ORIGINAL_BIT_SIZE, reader.bitposition)
 
-OFFSETS = [ 0, 0, 0, 0, 0 ]
-ARRAY = [ "extended", "indexed", "offsets", "test", "!" ]
+
+OFFSETS = [0, 0, 0, 0, 0]
+ARRAY = ["extended", "indexed", "offsets", "test", "!"]
 
 ORIGINAL_BIT_SIZE = zserio.bitsizeof.bitsizeof_varsize(len(OFFSETS)) + len(OFFSETS) * 4 * 8
-EXTENDED_BIT_SIZE = (ORIGINAL_BIT_SIZE +
-                     zserio.bitsizeof.bitsizeof_varsize(len(ARRAY)) +
-                     sum(zserio.bitsizeof.bitsizeof_string(element) for element in ARRAY))
+EXTENDED_BIT_SIZE = (
+    ORIGINAL_BIT_SIZE
+    + zserio.bitsizeof.bitsizeof_varsize(len(ARRAY))
+    + sum(zserio.bitsizeof.bitsizeof_string(element) for element in ARRAY)
+)

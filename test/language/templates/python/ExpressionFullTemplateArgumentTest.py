@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class ExpressionFullTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         colorInternal = self.api.FullTemplateArgument_Color_7C6F461F(False, 10)

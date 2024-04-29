@@ -2,6 +2,7 @@ import zserio
 
 import IndexedOffsets
 
+
 class CompoundIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
@@ -12,23 +13,28 @@ class CompoundIndexedOffsetArrayTest(IndexedOffsets.TestCase):
         createWrongOffsets = False
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
-        self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         compoundIndexedOffsetArray.bitsizeof(bitPosition))
+        self.assertEqual(
+            COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
+            compoundIndexedOffsetArray.bitsizeof(bitPosition),
+        )
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
-        self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         compoundIndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE, compoundIndexedOffsetArray.initialize_offsets(bitPosition)
+        )
         self._checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
         createWrongOffsets = True
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
-        self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         compoundIndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
+            compoundIndexedOffsetArray.initialize_offsets(bitPosition),
+        )
 
         offsetShift = 1
         self._checkOffsets(compoundIndexedOffsetArray, offsetShift)
@@ -139,6 +145,7 @@ class CompoundIndexedOffsetArrayTest(IndexedOffsets.TestCase):
 
         return self.api.CompoundIndexedOffsetArray(offsets, SPACER_VALUE, data)
 
+
 NUM_ELEMENTS = 5
 
 WRONG_OFFSET = 0
@@ -150,5 +157,6 @@ ALIGNED_ELEMENT_SIZE = ALIGNED_ELEMENT_BYTE_SIZE * 8
 
 SPACER_VALUE = 1
 
-COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE = (NUM_ELEMENTS * 32 + 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE +
-                                          ELEMENT_SIZE)
+COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE = (
+    NUM_ELEMENTS * 32 + 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE
+)

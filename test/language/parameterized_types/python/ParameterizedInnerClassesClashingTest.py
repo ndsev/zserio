@@ -2,11 +2,12 @@ import zserio
 
 import ParameterizedTypes
 
+
 class ParameterizedInnerClassesClashingTest(ParameterizedTypes.TestCase):
     def testWriteReadElementFactory(self):
         param = 100
-        testStructure = self.api.ElementFactory_array(param,
-            [self.api.Compound(param, 13), self.api.Compound(param, 42)]
+        testStructure = self.api.ElementFactory_array(
+            param, [self.api.Compound(param, 13), self.api.Compound(param, 42)]
         )
 
         writer = zserio.BitStreamWriter()
@@ -19,8 +20,8 @@ class ParameterizedInnerClassesClashingTest(ParameterizedTypes.TestCase):
 
     def testWriteReadElementInitializer(self):
         param = 100
-        testStructure = self.api.ElementInitializer_array(param,
-            [self.api.Compound(param, 13), self.api.Compound(param, 42)]
+        testStructure = self.api.ElementInitializer_array(
+            param, [self.api.Compound(param, 13), self.api.Compound(param, 42)]
         )
 
         writer = zserio.BitStreamWriter()
@@ -33,10 +34,12 @@ class ParameterizedInnerClassesClashingTest(ParameterizedTypes.TestCase):
 
     def testWriteReadElementChildrenInitializer(self):
         param = 100
-        testStructure = self.api.ElementChildrenInitializer_array([
-            self.api.Parent(param, self.api.Compound(param, 13)),
-            self.api.Parent(param, self.api.Compound(param, 42))
-        ])
+        testStructure = self.api.ElementChildrenInitializer_array(
+            [
+                self.api.Parent(param, self.api.Compound(param, 13)),
+                self.api.Parent(param, self.api.Compound(param, 42)),
+            ]
+        )
 
         writer = zserio.BitStreamWriter()
         testStructure.write(writer)

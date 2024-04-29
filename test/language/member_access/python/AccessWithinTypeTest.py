@@ -2,6 +2,7 @@ import zserio
 
 import MemberAccess
 
+
 class AccessWithinTypeTest(MemberAccess.TestCase):
     def testRead(self):
         numSentences = 10

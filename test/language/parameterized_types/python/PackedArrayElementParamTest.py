@@ -4,6 +4,7 @@ import zserio
 import ParameterizedTypes
 from testutils import getApiDir
 
+
 class PackedArrayElementParamTest(ParameterizedTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.NUM_BLOCKS1)
@@ -37,9 +38,17 @@ class PackedArrayElementParamTest(ParameterizedTypes.TestCase):
         unpackedBitsizeOf = PackedArrayElementParamTest._calcUnpackedDatabaseBitSize(numBlocks)
         packedBitsizeOf = database.bitsizeof()
         minCompressionRatio = 0.12
-        self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
-                        str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
-                        "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")
+        self.assertTrue(
+            unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
+            "Unpacked array has "
+            + str(unpackedBitsizeOf)
+            + " bits, packed array has "
+            + str(packedBitsizeOf)
+            + " bits, "
+            + "compression ratio is "
+            + str(packedBitsizeOf / unpackedBitsizeOf * 100)
+            + "%!",
+        )
 
     def _checkWriteRead(self, numBlocks):
         database = self._createDatabase(numBlocks)
@@ -79,10 +88,10 @@ class PackedArrayElementParamTest(ParameterizedTypes.TestCase):
     @staticmethod
     def _calcUnpackedDatabaseBitSize(numBlocks):
         bitSize = 16  # numBlocks
-        bitSize += numBlocks * (16 + 32) # headers
+        bitSize += numBlocks * (16 + 32)  # headers
         for i in range(numBlocks):
             numItems = i + 1
-            bitSize += 64 + numItems * 64 # blocks[i]
+            bitSize += 64 + numItems * 64  # blocks[i]
 
         return bitSize
 

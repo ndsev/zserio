@@ -1,5 +1,6 @@
 import DefaultValues
 
+
 class StructureDefaultValuesTest(DefaultValues.TestCase):
     def testDefaultBoolValue(self):
         structureDefaultValues = self.api.StructureDefaultValues()

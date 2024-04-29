@@ -9,27 +9,35 @@ import zserio
 import test_object.walker_nested
 import test_object.walker_union
 
+
 class WalkerObject:
     def __init__(
-            self,
-            identifier_: int = int(),
-            nested_: typing.Optional[test_object.walker_nested.WalkerNested] = None,
-            text_: str = str(),
-            union_array_: typing.List[test_object.walker_union.WalkerUnion] = None,
-            optional_union_array_: typing.Optional[typing.List[test_object.walker_union.WalkerUnion]] = None) -> None:
+        self,
+        identifier_: int = int(),
+        nested_: typing.Optional[test_object.walker_nested.WalkerNested] = None,
+        text_: str = str(),
+        union_array_: typing.List[test_object.walker_union.WalkerUnion] = None,
+        optional_union_array_: typing.Optional[typing.List[test_object.walker_union.WalkerUnion]] = None,
+    ) -> None:
         self._identifier_ = identifier_
         self._nested_ = nested_
         self._text_ = text_
-        self._union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_union_array()), union_array_, is_auto=True)
+        self._union_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_union_array()),
+            union_array_,
+            is_auto=True,
+        )
         if optional_union_array_ is None:
             self._optional_union_array_ = None
         else:
-            self._optional_union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_optional_union_array()), optional_union_array_, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array(
+                zserio.array.ObjectArrayTraits(self._ZserioElementFactory_optional_union_array()),
+                optional_union_array_,
+                is_auto=True,
+            )
 
     @classmethod
-    def from_reader(
-            cls: typing.Type['WalkerObject'],
-            zserio_reader: zserio.BitStreamReader) -> 'WalkerObject':
+    def from_reader(cls: typing.Type["WalkerObject"], zserio_reader: zserio.BitStreamReader) -> "WalkerObject":
         self = object.__new__(cls)
 
         self.read(zserio_reader)
@@ -40,57 +48,66 @@ class WalkerObject:
     def type_info() -> zserio.typeinfo.TypeInfo:
         field_list: typing.List[zserio.typeinfo.MemberInfo] = [
             zserio.typeinfo.MemberInfo(
-                'identifier', zserio.typeinfo.TypeInfo('uint32', int),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'identifier'
-                }
+                "identifier",
+                zserio.typeinfo.TypeInfo("uint32", int),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "identifier"},
             ),
             zserio.typeinfo.MemberInfo(
-                'nested', test_object.walker_nested.WalkerNested.type_info(),
+                "nested",
+                test_object.walker_nested.WalkerNested.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'nested',
-                    zserio.typeinfo.MemberAttribute.OPTIONAL : (lambda self: self._identifier_ != 0),
-                    zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME : 'is_nested_used',
-                    zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME : 'is_nested_set'
-                }
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "nested",
+                    zserio.typeinfo.MemberAttribute.OPTIONAL: (lambda self: self._identifier_ != 0),
+                    zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME: "is_nested_used",
+                    zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME: "is_nested_set",
+                },
             ),
             zserio.typeinfo.MemberInfo(
-                'text', zserio.typeinfo.TypeInfo('string', str),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'text'
-                }
+                "text",
+                zserio.typeinfo.TypeInfo("string", str),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "text"},
             ),
             zserio.typeinfo.MemberInfo(
-                'unionArray', test_object.walker_union.WalkerUnion.type_info(),
+                "unionArray",
+                test_object.walker_union.WalkerUnion.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'union_array',
-                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH : None
-                }
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "union_array",
+                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH: None,
+                },
             ),
             zserio.typeinfo.MemberInfo(
-                'optionalUnionArray', test_object.walker_union.WalkerUnion.type_info(),
+                "optionalUnionArray",
+                test_object.walker_union.WalkerUnion.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'optional_union_array',
-                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH : None,
-                    zserio.typeinfo.MemberAttribute.OPTIONAL : None,
-                    zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME : 'is_optional_union_array_used',
-                    zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME : 'is_optional_union_array_set'
-                }
-            )
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "optional_union_array",
+                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH: None,
+                    zserio.typeinfo.MemberAttribute.OPTIONAL: None,
+                    zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME: "is_optional_union_array_used",
+                    zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME: "is_optional_union_array_set",
+                },
+            ),
         ]
-        attribute_list = {
-            zserio.typeinfo.TypeAttribute.FIELDS : field_list
-        }
+        attribute_list = {zserio.typeinfo.TypeAttribute.FIELDS: field_list}
 
         return zserio.typeinfo.TypeInfo("test_object.WalkerObject", WalkerObject, attributes=attribute_list)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, WalkerObject):
-            return ((self._identifier_ == other._identifier_) and
-                    (not other.is_nested_used() if not self.is_nested_used() else (self._nested_ == other._nested_)) and
-                    (self._text_ == other._text_) and
-                    (self._union_array_ == other._union_array_) and
-                    (not other.is_optional_union_array_used() if not self.is_optional_union_array_used() else (self._optional_union_array_ == other._optional_union_array_)))
+            return (
+                (self._identifier_ == other._identifier_)
+                and (
+                    not other.is_nested_used()
+                    if not self.is_nested_used()
+                    else (self._nested_ == other._nested_)
+                )
+                and (self._text_ == other._text_)
+                and (self._union_array_ == other._union_array_)
+                and (
+                    not other.is_optional_union_array_used()
+                    if not self.is_optional_union_array_used()
+                    else (self._optional_union_array_ == other._optional_union_array_)
+                )
+            )
 
         return False
 
@@ -145,18 +162,31 @@ class WalkerObject:
 
     @union_array.setter
     def union_array(self, union_array_: typing.List[test_object.walker_union.WalkerUnion]) -> None:
-        self._union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_union_array()), union_array_, is_auto=True)
+        self._union_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_union_array()),
+            union_array_,
+            is_auto=True,
+        )
 
     @property
-    def optional_union_array(self) -> typing.Optional[typing.List[test_object.walker_union.WalkerUnion]]:
+    def optional_union_array(
+        self,
+    ) -> typing.Optional[typing.List[test_object.walker_union.WalkerUnion]]:
         return None if self._optional_union_array_ is None else self._optional_union_array_.raw_array
 
     @optional_union_array.setter
-    def optional_union_array(self, optional_union_array_: typing.Optional[typing.List[test_object.walker_union.WalkerUnion]]) -> None:
+    def optional_union_array(
+        self,
+        optional_union_array_: typing.Optional[typing.List[test_object.walker_union.WalkerUnion]],
+    ) -> None:
         if optional_union_array_ is None:
             self._optional_union_array_ = None
         else:
-            self._optional_union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_optional_union_array()), optional_union_array_, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array(
+                zserio.array.ObjectArrayTraits(self._ZserioElementFactory_optional_union_array()),
+                optional_union_array_,
+                is_auto=True,
+            )
 
     def is_optional_union_array_used(self) -> bool:
         return self.is_optional_union_array_set()
@@ -200,9 +230,17 @@ class WalkerObject:
         else:
             self._nested_ = None
         self._text_ = zserio_reader.read_string()
-        self._union_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_union_array()), zserio_reader, is_auto=True)
+        self._union_array_ = zserio.array.Array.from_reader(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_union_array()),
+            zserio_reader,
+            is_auto=True,
+        )
         if zserio_reader.read_bool():
-            self._optional_union_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_optional_union_array()), zserio_reader, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array.from_reader(
+                zserio.array.ObjectArrayTraits(self._ZserioElementFactory_optional_union_array()),
+                zserio_reader,
+                is_auto=True,
+            )
         else:
             self._optional_union_array_ = None
 
@@ -222,7 +260,9 @@ class WalkerObject:
         IS_OBJECT_PACKABLE = False
 
         @staticmethod
-        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
+        def create(
+            zserio_reader: zserio.BitStreamReader, zserio_index: int
+        ) -> test_object.walker_union.WalkerUnion:
             del zserio_index
             return test_object.walker_union.WalkerUnion.from_reader(zserio_reader)
 
@@ -230,6 +270,8 @@ class WalkerObject:
         IS_OBJECT_PACKABLE = False
 
         @staticmethod
-        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
+        def create(
+            zserio_reader: zserio.BitStreamReader, zserio_index: int
+        ) -> test_object.walker_union.WalkerUnion:
             del zserio_index
             return test_object.walker_union.WalkerUnion.from_reader(zserio_reader)

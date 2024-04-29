@@ -5,6 +5,7 @@ import Offsets
 
 from testutils import getApiDir
 
+
 class PackedAutoArrayOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffset = False
@@ -102,8 +103,9 @@ class PackedAutoArrayOffsetTest(Offsets.TestCase):
             writer.write_signed_bits(self.PACKED_ARRAY_DELTA, self.PACKED_ARRAY_MAX_BIT_NUMBER + 1)
 
     def _checkAutoArrayHolder(self, autoArrayHolder, bitPosition=0):
-        expectedAutoArrayOffset = (self.AUTO_ARRAY_OFFSET if (bitPosition == 0) else
-                                   self.AUTO_ARRAY_OFFSET + (bitPosition // 8))
+        expectedAutoArrayOffset = (
+            self.AUTO_ARRAY_OFFSET if (bitPosition == 0) else self.AUTO_ARRAY_OFFSET + (bitPosition // 8)
+        )
         self.assertEqual(expectedAutoArrayOffset, autoArrayHolder.auto_array_offset)
 
         self.assertEqual(self.FORCED_ALIGNMENT_VALUE, autoArrayHolder.force_alignment)
@@ -120,14 +122,14 @@ class PackedAutoArrayOffsetTest(Offsets.TestCase):
         return self.api.AutoArrayHolder(autoArrayOffset, self.FORCED_ALIGNMENT_VALUE, autoArray)
 
     def _calcAutoArrayHolderBitSize(self):
-        bitSize = 32 # field: autoArrayOffset
-        bitSize += 1 # field: forceAlignment
-        bitSize += 7 # padding because of alignment
-        bitSize += 8 # auto varsize
-        bitSize += 1 # packing descriptor: is_packed
-        bitSize += 6 # packing descriptor: max_bit_number
-        bitSize += 7 # first element
-        bitSize += (self.AUTO_ARRAY_LENGTH - 1) * (self.PACKED_ARRAY_MAX_BIT_NUMBER + 1) # all deltas
+        bitSize = 32  # field: autoArrayOffset
+        bitSize += 1  # field: forceAlignment
+        bitSize += 7  # padding because of alignment
+        bitSize += 8  # auto varsize
+        bitSize += 1  # packing descriptor: is_packed
+        bitSize += 6  # packing descriptor: max_bit_number
+        bitSize += 7  # first element
+        bitSize += (self.AUTO_ARRAY_LENGTH - 1) * (self.PACKED_ARRAY_MAX_BIT_NUMBER + 1)  # all deltas
 
         return bitSize
 

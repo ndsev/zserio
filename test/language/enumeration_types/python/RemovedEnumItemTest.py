@@ -4,6 +4,7 @@ from zserio.typeinfo import TypeAttribute
 
 import EnumerationTypes
 
+
 class RemovedEnumItemTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Traffic.NONE.value)
@@ -13,8 +14,9 @@ class RemovedEnumItemTest(EnumerationTypes.TestCase):
 
     def testFromString(self):
         self.assertEqual(self.api.Traffic.from_name("NONE"), self.api.Traffic.NONE)
-        self.assertEqual(self.api.Traffic.from_name("ZSERIO_REMOVED_HEAVY"),
-                         self.api.Traffic.ZSERIO_REMOVED_HEAVY)
+        self.assertEqual(
+            self.api.Traffic.from_name("ZSERIO_REMOVED_HEAVY"), self.api.Traffic.ZSERIO_REMOVED_HEAVY
+        )
         self.assertEqual(self.api.Traffic.from_name("MID"), self.api.Traffic.MID)
         self.assertEqual(self.api.Traffic.from_name("LIGHT"), self.api.Traffic.LIGHT)
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -36,14 +38,21 @@ class RemovedEnumItemTest(EnumerationTypes.TestCase):
 
     def testHashCode(self):
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.NONE))
-        self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.ZSERIO_REMOVED_HEAVY))
-        self.assertEqual(1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.LIGHT))
-        self.assertEqual(1706, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.MID))
+        self.assertEqual(
+            1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.NONE)
+        )
+        self.assertEqual(
+            1704,
+            zserio.hashcode.calc_hashcode_object(
+                zserio.hashcode.HASH_SEED, self.api.Traffic.ZSERIO_REMOVED_HEAVY
+            ),
+        )
+        self.assertEqual(
+            1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.LIGHT)
+        )
+        self.assertEqual(
+            1706, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.MID)
+        )
 
     def testBitSizeOf(self):
         self.assertEqual(TRAFFIC_BIT_SIZE, self.api.Traffic.NONE.bitsizeof())
@@ -71,8 +80,9 @@ class RemovedEnumItemTest(EnumerationTypes.TestCase):
 
         with self.assertRaises(zserio.PythonRuntimeException) as context:
             self.api.Traffic.ZSERIO_REMOVED_HEAVY.write(writer)
-        self.assertEqual("Trying to write removed enumeration item 'Traffic.ZSERIO_REMOVED_HEAVY'!",
-                         str(context.exception))
+        self.assertEqual(
+            "Trying to write removed enumeration item 'Traffic.ZSERIO_REMOVED_HEAVY'!", str(context.exception)
+        )
 
     def testTypeInfo(self):
         type_info = self.api.Traffic.type_info()
@@ -111,6 +121,7 @@ class RemovedEnumItemTest(EnumerationTypes.TestCase):
         self.assertEqual(self.api.Traffic.MID, item_info.py_item)
         self.assertFalse(item_info.is_deprecated)
         self.assertFalse(item_info.is_removed)
+
 
 TRAFFIC_BIT_SIZE = 8
 

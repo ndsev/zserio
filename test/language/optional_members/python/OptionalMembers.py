@@ -2,6 +2,7 @@ import unittest
 
 from testutils import getZserioApi, getTestCaseName
 
+
 class TestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class SubtypedBitfieldParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         subtypedBitfieldParamHolder = self._createSubtypedBitfieldParamHolder()
@@ -16,8 +17,10 @@ class SubtypedBitfieldParamTest(ParameterizedTypes.TestCase):
 
     def _createSubtypedBitfieldParamHolder(self):
         subtypedBitfieldParam = self.api.SubtypedBitfieldParam(
-            self.SUBTYPED_BITFIELD_PARAM, self.SUBTYPED_BITFIELD_PARAM_VALUE,
-            self.SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE)
+            self.SUBTYPED_BITFIELD_PARAM,
+            self.SUBTYPED_BITFIELD_PARAM_VALUE,
+            self.SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE,
+        )
 
         return self.api.SubtypedBitfieldParamHolder(subtypedBitfieldParam)
 

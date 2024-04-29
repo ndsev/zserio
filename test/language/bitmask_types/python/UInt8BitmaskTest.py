@@ -2,6 +2,7 @@ import zserio
 
 import BitmaskTypes
 
+
 class UInt8BitmaskTest(BitmaskTypes.TestCase):
     def testEmptyConstructor(self):
         permission = self.api.Permission()
@@ -41,8 +42,8 @@ class UInt8BitmaskTest(BitmaskTypes.TestCase):
         self.assertFalse(write == self.api.Permission.Values.READ)
         self.assertFalse(self.api.Permission.Values.READ == write)
 
-        self.assertTrue(read == self.api.Permission.from_value(read.value)) # copy
-        self.assertTrue(write == self.api.Permission.from_value(write.value)) # copy
+        self.assertTrue(read == self.api.Permission.from_value(read.value))  # copy
+        self.assertTrue(write == self.api.Permission.from_value(write.value))  # copy
 
         self.assertFalse(read == write)
 
@@ -68,8 +69,9 @@ class UInt8BitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual("0[NONE]", str(self.api.Permission.Values.NONE))
         self.assertEqual("2[READ]", str(self.api.Permission.Values.READ))
         self.assertEqual("4[WRITE]", str(self.api.Permission.Values.WRITE))
-        self.assertEqual("6[READ | WRITE]", (
-            str(self.api.Permission.Values.READ | self.api.Permission.Values.WRITE)))
+        self.assertEqual(
+            "6[READ | WRITE]", (str(self.api.Permission.Values.READ | self.api.Permission.Values.WRITE))
+        )
         self.assertEqual("7[READ | WRITE | CREATE]", str(self.api.Permission.from_value(7)))
         self.assertEqual("255[READ | WRITE | CREATE]", str(self.api.Permission.from_value(255)))
 
@@ -108,7 +110,7 @@ class UInt8BitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(self.api.Permission.Values.NONE, read ^ read)
         self.assertEqual(self.api.Permission.Values.NONE, write ^ write)
 
-    def testInvert(self): # bitwise not operator
+    def testInvert(self):  # bitwise not operator
         none = self.api.Permission.Values.NONE
         read = self.api.Permission.Values.READ
         write = self.api.Permission.Values.WRITE
@@ -125,8 +127,9 @@ class UInt8BitmaskTest(BitmaskTypes.TestCase):
 
     def testInitializeOffsets(self):
         bitPosition = 1
-        self.assertEqual(bitPosition + PERMISSION_BITSIZEOF,
-                         self.api.Permission.Values.READ.initialize_offsets(bitPosition))
+        self.assertEqual(
+            bitPosition + PERMISSION_BITSIZEOF, self.api.Permission.Values.READ.initialize_offsets(bitPosition)
+        )
 
     def testWrite(self):
         permission = self.api.Permission.Values.READ
@@ -141,6 +144,7 @@ class UInt8BitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(NONE_VALUE, self.api.Permission.Values.NONE.value)
         self.assertEqual(READ_VALUE, self.api.Permission.Values.READ.value)
         self.assertEqual(WRITE_VALUE, self.api.Permission.Values.WRITE.value)
+
 
 PERMISSION_BITSIZEOF = 8
 

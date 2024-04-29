@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class ExtendedChoiceFieldTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
@@ -178,8 +179,9 @@ class ExtendedChoiceFieldTest(ExtendedMembers.TestCase):
         self.assertEqual(extended.num_elements, readOriginal.num_elements)
         self.assertEqual(ORIGINAL_BIT_SIZE, reader.bitposition)
 
+
 ORIGINAL_BIT_SIZE = 4 * 8
 EXTENDED_BIT_SIZE_EMPTY = ORIGINAL_BIT_SIZE
 EXTENDED_BIT_SIZE_VALUE = ORIGINAL_BIT_SIZE + 4 * 8
-VALUES = [ 0, 1, 2, 3, 4 ]
+VALUES = [0, 1, 2, 3, 4]
 EXTENDED_BIT_SIZE_VALUES = ORIGINAL_BIT_SIZE + len(VALUES) * 4 * 8

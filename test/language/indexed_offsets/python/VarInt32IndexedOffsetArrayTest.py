@@ -2,34 +2,43 @@ import zserio
 
 import IndexedOffsets
 
+
 class VarInt32IndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
-        self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize(),
-                         varInt32IndexedOffsetArray.bitsizeof())
+        self.assertEqual(
+            VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize(),
+            varInt32IndexedOffsetArray.bitsizeof(),
+        )
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
-        self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize() - bitPosition,
-                         varInt32IndexedOffsetArray.bitsizeof(bitPosition))
+        self.assertEqual(
+            VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize() - bitPosition,
+            varInt32IndexedOffsetArray.bitsizeof(bitPosition),
+        )
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
-        self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize(),
-                         varInt32IndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize(),
+            varInt32IndexedOffsetArray.initialize_offsets(bitPosition),
+        )
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
         createWrongOffsets = True
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
-        self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize() + bitPosition -
-                         1, varInt32IndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize() + bitPosition - 1,
+            varInt32IndexedOffsetArray.initialize_offsets(bitPosition),
+        )
 
         offsetShift = 1
         self._checkOffsets(varInt32IndexedOffsetArray, offsetShift)
@@ -141,6 +150,7 @@ class VarInt32IndexedOffsetArrayTest(IndexedOffsets.TestCase):
             bitSize += zserio.bitsizeof.bitsizeof_varint32(i)
 
         return bitSize
+
 
 NUM_ELEMENTS = 5
 

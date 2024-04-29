@@ -1,5 +1,6 @@
 import Expressions
 
+
 class StringTypeTest(Expressions.TestCase):
     def testReturnValue(self):
         stringTypeExpression = self._createStringTypeExpression(True)
@@ -7,14 +8,21 @@ class StringTypeTest(Expressions.TestCase):
 
     def testReturnDefaultValue(self):
         stringTypeExpression = self._createStringTypeExpression(True)
-        self.assertEqual(self.api.STRING_CONSTANT if self.api.CHOOSER
-                         else self.FALSE + self.SPACE + self.api.STRING_CONSTANT,
-                         stringTypeExpression.return_default_value())
+        self.assertEqual(
+            (
+                self.api.STRING_CONSTANT
+                if self.api.CHOOSER
+                else self.FALSE + self.SPACE + self.api.STRING_CONSTANT
+            ),
+            stringTypeExpression.return_default_value(),
+        )
 
     def testReturnDefaultChosen(self):
         stringTypeExpression = self._createStringTypeExpression(True)
-        self.assertEqual(self.CHOSEN + self.SPACE + self.api.STRING_CONSTANT if self.api.CHOOSER
-                         else "", stringTypeExpression.return_default_chosen())
+        self.assertEqual(
+            self.CHOSEN + self.SPACE + self.api.STRING_CONSTANT if self.api.CHOOSER else "",
+            stringTypeExpression.return_default_chosen(),
+        )
 
     def testAppendix(self):
         stringTypeExpression = self._createStringTypeExpression(False)
@@ -22,8 +30,10 @@ class StringTypeTest(Expressions.TestCase):
 
     def testAppendToConst(self):
         stringTypeExpression = self._createStringTypeExpression(False)
-        self.assertEqual(self.api.STRING_CONSTANT + self.UNDERSCORE + self.APPEND + self.IX_LITERAL,
-                         stringTypeExpression.append_to_const())
+        self.assertEqual(
+            self.api.STRING_CONSTANT + self.UNDERSCORE + self.APPEND + self.IX_LITERAL,
+            stringTypeExpression.append_to_const(),
+        )
 
     def testValueOrLiteral(self):
         stringTypeExpression1 = self._createStringTypeExpression(True)
@@ -35,8 +45,9 @@ class StringTypeTest(Expressions.TestCase):
         stringTypeExpression1 = self._createStringTypeExpression(True)
         self.assertEqual(self.VALUE, stringTypeExpression1.value_or_literal_expression())
         stringTypeExpression2 = self._createStringTypeExpression(False)
-        self.assertEqual(self.LITERAL + self.SPACE + self.EXPRESSION,
-                         stringTypeExpression2.value_or_literal_expression())
+        self.assertEqual(
+            self.LITERAL + self.SPACE + self.EXPRESSION, stringTypeExpression2.value_or_literal_expression()
+        )
 
     def testValueOrConst(self):
         stringTypeExpression1 = self._createStringTypeExpression(True)
@@ -48,8 +59,10 @@ class StringTypeTest(Expressions.TestCase):
         stringTypeExpression1 = self._createStringTypeExpression(True)
         self.assertEqual(self.VALUE, stringTypeExpression1.value_or_const_expression())
         stringTypeExpression2 = self._createStringTypeExpression(False)
-        self.assertEqual(self.api.STRING_CONSTANT + self.SPACE + self.EXPRESSION,
-                         stringTypeExpression2.value_or_const_expression())
+        self.assertEqual(
+            self.api.STRING_CONSTANT + self.SPACE + self.EXPRESSION,
+            stringTypeExpression2.value_or_const_expression(),
+        )
 
     def _createStringTypeExpression(self, hasValue):
         return self.api.StringTypeExpression(hasValue, self.VALUE if hasValue else None)

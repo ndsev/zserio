@@ -13,6 +13,7 @@ from zserio.exception import PythonRuntimeException
 from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo
 from zserio.walker import WalkObserver
 
+
 class JsonEnumerableFormat(enum.Enum):
     """
     Configuration for writing of enumerable types.
@@ -37,16 +38,21 @@ class JsonEnumerableFormat(enum.Enum):
     #:      comment is included - e.g. "13 /\* no match \*/".
     STRING = enum.auto()
 
+
 class JsonWriter(WalkObserver):
     """
     Walker observer which dumps zserio objects to JSON format.
     """
 
-    def __init__(self, *, text_io: typing.Optional[typing.TextIO] = None,
-                 enumerable_format: JsonEnumerableFormat = JsonEnumerableFormat.STRING,
-                 item_separator: typing.Optional[str] = None,
-                 key_separator: typing.Optional[str] = None,
-                 indent: typing.Union[str, int] = None) -> None:
+    def __init__(
+        self,
+        *,
+        text_io: typing.Optional[typing.TextIO] = None,
+        enumerable_format: JsonEnumerableFormat = JsonEnumerableFormat.STRING,
+        item_separator: typing.Optional[str] = None,
+        key_separator: typing.Optional[str] = None,
+        indent: typing.Union[str, int] = None,
+    ) -> None:
         """
         Constructor.
 
@@ -57,12 +63,12 @@ class JsonWriter(WalkObserver):
         :param indent: String or (non-negative) integer defining the indent. If not None, newlines are inserted.
         """
 
-        self._io : typing.TextIO = text_io if text_io else io.StringIO()
-        self._item_separator : str = item_separator if item_separator else ("," if indent is not None else ", ")
-        self._key_separator : str = key_separator if key_separator else ": "
+        self._io: typing.TextIO = text_io if text_io else io.StringIO()
+        self._item_separator: str = item_separator if item_separator else ("," if indent is not None else ", ")
+        self._key_separator: str = key_separator if key_separator else ": "
         self._enumerable_format = enumerable_format
 
-        self._indent : typing.Optional[str] = (
+        self._indent: typing.Optional[str] = (
             (indent if isinstance(indent, str) else " " * indent) if indent is not None else None
         )
 
@@ -97,8 +103,12 @@ class JsonWriter(WalkObserver):
 
         self._end_item()
 
-    def begin_compound(self, compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int] = None) -> None:
+    def begin_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         self._begin_item()
 
         if element_index is None:
@@ -106,14 +116,22 @@ class JsonWriter(WalkObserver):
 
         self._begin_object()
 
-    def end_compound(self, compound: typing.Any, member_info: MemberInfo,
-                     _element_index: typing.Optional[int] = None) -> None:
+    def end_compound(
+        self,
+        compound: typing.Any,
+        member_info: MemberInfo,
+        _element_index: typing.Optional[int] = None,
+    ) -> None:
         self._end_object()
 
         self._end_item()
 
-    def visit_value(self, value: typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int] = None) -> None:
+    def visit_value(
+        self,
+        value: typing.Any,
+        member_info: MemberInfo,
+        element_index: typing.Optional[int] = None,
+    ) -> None:
         self._begin_item()
 
         if element_index is None:
@@ -222,27 +240,30 @@ class JsonWriter(WalkObserver):
         self._end_item()
         self._end_object()
 
-    def _write_stringified_enum(self, value: typing.Any,
-                                type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+    def _write_stringified_enum(
+        self, value: typing.Any, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+    ) -> typing.Any:
         for item in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
             if item.py_item == value:
                 # exact match
                 self._io.write(self._json_encoder.encode_value(item.schema_name))
                 return
 
-        #no match
+        # no match
         self._io.write(self._json_encoder.encode_value(str(value.value) + " /* no match */"))
 
-    def _write_stringified_bitmask(self, value: typing.Any,
-                                  type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+    def _write_stringified_bitmask(
+        self, value: typing.Any, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+    ) -> typing.Any:
         string_value = ""
         bitmask_value = value.value
         value_check = 0
 
         for item_info in type_info.attributes[TypeAttribute.BITMASK_VALUES]:
             is_zero = item_info.py_item.value == 0
-            if ((not is_zero and (bitmask_value & item_info.py_item.value == item_info.py_item.value)) or
-                (is_zero and bitmask_value == 0)):
+            if (not is_zero and (bitmask_value & item_info.py_item.value == item_info.py_item.value)) or (
+                is_zero and bitmask_value == 0
+            ):
                 value_check |= item_info.py_item.value
                 if string_value:
                     string_value += " | "
@@ -282,6 +303,7 @@ class JsonEncoder:
 
         return self._encoder.encode(value)
 
+
 class JsonToken(enum.Enum):
     """
     Tokens used by Json Tokenizer.
@@ -297,10 +319,12 @@ class JsonToken(enum.Enum):
     ITEM_SEPARATOR = enum.auto()
     VALUE = enum.auto()
 
+
 class JsonParserException(PythonRuntimeException):
     """
     Exception used to distinguish exceptions from the JsonParser.
     """
+
 
 class JsonParser:
     """
@@ -453,8 +477,9 @@ class JsonParser:
         self._check_token(JsonToken.VALUE)
         key = self._tokenizer.get_value()
         if not isinstance(key, str):
-            raise JsonParserException(f"JsonParser:{self.get_line()}:{self.get_column()}: "
-                                      f"Key must be a string value!")
+            raise JsonParserException(
+                f"JsonParser:{self.get_line()}:{self.get_column()}: " f"Key must be a string value!"
+            )
 
         self._observer.visit_key(key)
         self._tokenizer.next()
@@ -476,8 +501,10 @@ class JsonParser:
             self._raise_unexpected_token([token])
 
     def _raise_unexpected_token(self, expecting: typing.List[JsonToken]) -> None:
-        msg = (f"JsonParser:{self.get_line()}:{self.get_column()}: "
-               f"Unexpected token: {self._tokenizer.get_token()}")
+        msg = (
+            f"JsonParser:{self.get_line()}:{self.get_column()}: "
+            f"Unexpected token: {self._tokenizer.get_token()}"
+        )
         if self._tokenizer.get_value() is not None:
             msg += f" ('{self._tokenizer.get_value()}')"
         if len(expecting) == 1:
@@ -489,13 +516,14 @@ class JsonParser:
 
     ELEMENT_TOKENS = [JsonToken.BEGIN_OBJECT, JsonToken.BEGIN_ARRAY, JsonToken.VALUE]
 
+
 class JsonDecoder:
     """
     JSON value decoder.
     """
 
     @staticmethod
-    def decode_value(content: str, pos: int) -> 'JsonDecoder.Result':
+    def decode_value(content: str, pos: int) -> "JsonDecoder.Result":
         """
         Decodes the JSON value from the string.
 
@@ -509,30 +537,30 @@ class JsonDecoder:
             return JsonDecoder.Result.from_failure()
 
         first_char = content[pos]
-        if first_char == 'n':
+        if first_char == "n":
             return JsonDecoder._decode_literal(content, pos, "null", None)
 
-        if first_char == 't':
+        if first_char == "t":
             return JsonDecoder._decode_literal(content, pos, "true", True)
 
-        if first_char == 'f':
+        if first_char == "f":
             return JsonDecoder._decode_literal(content, pos, "false", False)
 
-        if first_char == 'N':
+        if first_char == "N":
             return JsonDecoder._decode_literal(content, pos, "NaN", float("nan"))
 
-        if first_char == 'I':
+        if first_char == "I":
             return JsonDecoder._decode_literal(content, pos, "Infinity", float("inf"))
 
         if first_char == '"':
             return JsonDecoder._decode_string(content, pos)
 
-        if first_char == '-':
+        if first_char == "-":
             if pos + 1 >= len(content):
                 return JsonDecoder.Result.from_failure(1)
 
             second_char = content[pos + 1]
-            if second_char == 'I':
+            if second_char == "I":
                 return JsonDecoder._decode_literal(content, pos, "-Infinity", float("-inf"))
 
             return JsonDecoder._decode_number(content, pos)
@@ -554,7 +582,7 @@ class JsonDecoder:
             self._num_read_chars = num_read_chars
 
         @classmethod
-        def from_failure(cls: typing.Type['JsonDecoder.Result'], num_read_chars:int = 0):
+        def from_failure(cls: typing.Type["JsonDecoder.Result"], num_read_chars: int = 0):
             """
             Creates decoder result value in case of failure.
 
@@ -565,7 +593,11 @@ class JsonDecoder:
             return instance
 
         @classmethod
-        def from_success(cls: typing.Type['JsonDecoder.Result'], value: typing.Any, num_read_chars:int = 0):
+        def from_success(
+            cls: typing.Type["JsonDecoder.Result"],
+            value: typing.Any,
+            num_read_chars: int = 0,
+        ):
             """
             Creates decoder result value in case of success.
 
@@ -609,7 +641,7 @@ class JsonDecoder:
             return self._num_read_chars
 
     @staticmethod
-    def _decode_literal(content: str, pos: int, text: str, decoded_object) -> 'JsonDecoder.Result':
+    def _decode_literal(content: str, pos: int, text: str, decoded_object) -> "JsonDecoder.Result":
         text_length = len(text)
         if pos + text_length > len(content):
             return JsonDecoder.Result.from_failure(len(content) - pos)
@@ -621,34 +653,34 @@ class JsonDecoder:
         return JsonDecoder.Result.from_failure(text_length)
 
     @staticmethod
-    def _decode_string(content: str, pos: int) -> 'JsonDecoder.Result':
+    def _decode_string(content: str, pos: int) -> "JsonDecoder.Result":
         decoded_string = ""
-        end_of_string_pos = pos + 1 # we know that at the beginning is '"'
+        end_of_string_pos = pos + 1  # we know that at the beginning is '"'
         while True:
             if end_of_string_pos >= len(content):
                 return JsonDecoder.Result.from_failure(end_of_string_pos - pos)
 
             next_char = content[end_of_string_pos]
             end_of_string_pos += 1
-            if next_char == '\\':
+            if next_char == "\\":
                 if end_of_string_pos >= len(content):
                     return JsonDecoder.Result.from_failure(end_of_string_pos - pos)
 
                 next_next_char = content[end_of_string_pos]
                 end_of_string_pos += 1
-                if next_next_char in ('\\', '"'):
+                if next_next_char in ("\\", '"'):
                     decoded_string += next_next_char
-                elif next_next_char == 'b':
-                    decoded_string += '\b'
-                elif next_next_char == 'f':
-                    decoded_string += '\f'
-                elif next_next_char == 'n':
-                    decoded_string += '\n'
-                elif next_next_char == 'r':
-                    decoded_string += '\r'
-                elif next_next_char == 't':
-                    decoded_string += '\t'
-                elif next_next_char == 'u': # unicode escape
+                elif next_next_char == "b":
+                    decoded_string += "\b"
+                elif next_next_char == "f":
+                    decoded_string += "\f"
+                elif next_next_char == "n":
+                    decoded_string += "\n"
+                elif next_next_char == "r":
+                    decoded_string += "\r"
+                elif next_next_char == "t":
+                    decoded_string += "\t"
+                elif next_next_char == "u":  # unicode escape
                     unicode_escape_len = 4
                     end_of_string_pos += unicode_escape_len
                     if end_of_string_pos >= len(content):
@@ -677,7 +709,7 @@ class JsonDecoder:
             return None
 
     @staticmethod
-    def _decode_number(content: str, pos: int) -> 'JsonDecoder.Result':
+    def _decode_number(content: str, pos: int) -> "JsonDecoder.Result":
         number_content, is_float = JsonDecoder._extract_number(content, pos)
         number_length = len(number_content)
         if number_length == 0:
@@ -696,7 +728,7 @@ class JsonDecoder:
     @staticmethod
     def _extract_number(content: str, pos: int) -> typing.Tuple[str, bool]:
         end_of_number_pos = pos
-        if content[end_of_number_pos] == '-': # we already know that there is something after '-'
+        if content[end_of_number_pos] == "-":  # we already know that there is something after '-'
             end_of_number_pos += 1
         accept_exp_sign = False
         is_scientific_float = False
@@ -706,7 +738,7 @@ class JsonDecoder:
 
             if accept_exp_sign:
                 accept_exp_sign = False
-                if next_char in ('+', '-'):
+                if next_char in ("+", "-"):
                     end_of_number_pos += 1
                     continue
 
@@ -714,21 +746,22 @@ class JsonDecoder:
                 end_of_number_pos += 1
                 continue
 
-            if (next_char in ('e', 'E')) and not is_scientific_float:
+            if (next_char in ("e", "E")) and not is_scientific_float:
                 end_of_number_pos += 1
                 is_float = True
                 is_scientific_float = True
                 accept_exp_sign = True
                 continue
 
-            if next_char == '.' and not is_float:
+            if next_char == "." and not is_float:
                 end_of_number_pos += 1
                 is_float = True
                 continue
 
-            break # pragma: no cover (to satisfy test coverage)
+            break  # pragma: no cover (to satisfy test coverage)
 
         return content[pos:end_of_number_pos], is_float
+
 
 class JsonTokenizer:
     """
@@ -770,7 +803,7 @@ class JsonTokenizer:
 
                 return self._token
 
-            self._content = self._content[self._pos:]
+            self._content = self._content[self._pos :]
             self._content += new_content
             self._pos = 0
 
@@ -836,7 +869,7 @@ class JsonTokenizer:
         else:
             self._decoder_result = JsonDecoder.decode_value(self._content, self._pos)
             if self._pos + self._decoder_result.num_read_chars >= len(self._content):
-                return False # we are at the end of chunk => try to read more
+                return False  # we are at the end of chunk => try to read more
 
             self._set_token_value()
 
@@ -849,19 +882,19 @@ class JsonTokenizer:
                 return False
 
             next_char = self._content[self._pos]
-            if next_char in (' ', '\t'):
+            if next_char in (" ", "\t"):
                 self._set_position(self._pos + 1, self._column_number + 1)
-            elif next_char == '\n':
+            elif next_char == "\n":
                 self._line_number += 1
                 self._set_position(self._pos + 1, 1)
-            elif next_char == '\r':
+            elif next_char == "\r":
                 if self._pos + 1 >= len(self._content):
                     self._set_token(JsonToken.END_OF_FILE, None)
                     return False
 
                 next_next_char = self._content[self._pos + 1]
                 self._line_number += 1
-                self._set_position(self._pos + (2 if (next_next_char == '\n') else 1), 1)
+                self._set_position(self._pos + (2 if (next_next_char == "\n") else 1), 1)
             else:
                 return True
 
@@ -875,14 +908,16 @@ class JsonTokenizer:
 
     def _set_token_value(self) -> None:
         if not self._decoder_result.success:
-            raise JsonParserException(f"JsonTokenizer:{self._line_number}:{self._token_column_number}: "
-                                      f"Unknown token!")
+            raise JsonParserException(
+                f"JsonTokenizer:{self._line_number}:{self._token_column_number}: " f"Unknown token!"
+            )
 
         self._set_token(JsonToken.VALUE, self._decoder_result.value)
         num_read_chars = self._decoder_result.num_read_chars
         self._set_position(self._pos + num_read_chars, self._column_number + num_read_chars)
 
     MAX_LINE_LEN = 64 * 1024
+
 
 class JsonReader:
     """
@@ -916,8 +951,9 @@ class JsonReader:
         except JsonParserException:
             raise
         except PythonRuntimeException as err:
-            raise PythonRuntimeException(f"{err} (JsonParser:"
-                                         f"{self._parser.get_line()}:{self._parser.get_column()})") from err
+            raise PythonRuntimeException(
+                f"{err} (JsonParser:" f"{self._parser.get_line()}:{self._parser.get_column()})"
+            ) from err
 
         return self._creator_adapter.get()
 
@@ -990,11 +1026,15 @@ class JsonReader:
                 raise PythonRuntimeException(f"JsonReader: Unexpected key '{key}' in Bit Buffer!")
 
         def visit_value(self, value: typing.Any) -> None:
-            if (self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER and
-                               self._buffer is not None and isinstance(value, int)):
+            if (
+                self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER
+                and self._buffer is not None
+                and isinstance(value, int)
+            ):
                 self._buffer.append(value)
-            elif (self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BITSIZE and
-                                 isinstance(value, int)):
+            elif self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BITSIZE and isinstance(
+                value, int
+            ):
                 self._bit_size = value
                 self._state = JsonReader._BitBufferAdapter._State.VISIT_KEY
             else:
@@ -1060,8 +1100,11 @@ class JsonReader:
                 raise PythonRuntimeException(f"JsonReader: Unexpected key '{key}' in bytes!")
 
         def visit_value(self, value: typing.Any) -> None:
-            if (self._state == JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER and self._buffer is not None
-                               and isinstance(value, int)):
+            if (
+                self._state == JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER
+                and self._buffer is not None
+                and isinstance(value, int)
+            ):
                 self._buffer.append(value)
             else:
                 raise PythonRuntimeException(f"JsonReader: Unexpected value '{value}' in bytes!")
@@ -1152,7 +1195,7 @@ class JsonReader:
                 else:
                     if self._key_stack[-1]:
                         self._creator.end_compound()
-                        self._key_stack.pop() # finish member
+                        self._key_stack.pop()  # finish member
                     else:
                         self._creator.end_compound_element()
 
@@ -1179,8 +1222,8 @@ class JsonReader:
 
                 self._creator.end_array()
 
-                self._key_stack.pop() # finish array
-                self._key_stack.pop() # finish member
+                self._key_stack.pop()  # finish array
+                self._key_stack.pop()  # finish member
 
         def visit_key(self, key: str) -> None:
             if self._object_value_adapter:
@@ -1203,15 +1246,19 @@ class JsonReader:
 
                 if self._key_stack[-1]:
                     expected_type_info = self._creator.get_field_type(self._key_stack[-1])
-                    self._creator.set_value(self._key_stack[-1], self._convert_value(value, expected_type_info))
-                    self._key_stack.pop() # finish member
+                    self._creator.set_value(
+                        self._key_stack[-1],
+                        self._convert_value(value, expected_type_info),
+                    )
+                    self._key_stack.pop()  # finish member
                 else:
                     expected_type_info = self._creator.get_element_type()
                     self._creator.add_value_element(self._convert_value(value, expected_type_info))
 
         @staticmethod
-        def _convert_value(value: typing.Any,
-                           type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        def _convert_value(
+            value: typing.Any, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+        ) -> typing.Any:
             if value is None:
                 return None
 
@@ -1229,39 +1276,46 @@ class JsonReader:
                 return value
 
         @staticmethod
-        def _enum_from_string(string_value: str,
-                              type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        def _enum_from_string(
+            string_value: str, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+        ) -> typing.Any:
             if string_value:
                 first_char = string_value[0]
-                if ('A' <= first_char <= 'Z') or ('a' <= first_char <= 'z') or first_char == '_':
+                if ("A" <= first_char <= "Z") or ("a" <= first_char <= "z") or first_char == "_":
                     py_item = JsonReader._CreatorAdapter._parse_enum_string_value(string_value, type_info)
                     if py_item is not None:
                         return py_item
                 # else it's a no match
 
-            raise PythonRuntimeException(f"JsonReader: Cannot create enum '{type_info.schema_name}' "
-                                         f"from string value '{string_value}'!")
+            raise PythonRuntimeException(
+                f"JsonReader: Cannot create enum '{type_info.schema_name}' "
+                f"from string value '{string_value}'!"
+            )
 
         @staticmethod
-        def _bitmask_from_string(string_value: str,
-                                 type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        def _bitmask_from_string(
+            string_value: str, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+        ) -> typing.Any:
             if string_value:
                 first_char = string_value[0]
-                if ('A' <= first_char <= 'Z') or ('a' <= first_char <= 'z') or first_char == '_':
+                if ("A" <= first_char <= "Z") or ("a" <= first_char <= "z") or first_char == "_":
                     value = JsonReader._CreatorAdapter._parse_bitmask_string_value(string_value, type_info)
                     if value is not None:
                         return type_info.py_type.from_value(value)
-                elif '0' <= first_char <= '9': # bitmask can be only unsigned
+                elif "0" <= first_char <= "9":  # bitmask can be only unsigned
                     value = JsonReader._CreatorAdapter._parse_bitmask_numeric_string_value(string_value)
                     if value is not None:
                         return type_info.py_type.from_value(value)
 
-            raise PythonRuntimeException(f"JsonReader: Cannot create bitmask '{type_info.schema_name}' "
-                                         f"from string value '{string_value}'!")
+            raise PythonRuntimeException(
+                f"JsonReader: Cannot create bitmask '{type_info.schema_name}' "
+                f"from string value '{string_value}'!"
+            )
 
         @staticmethod
-        def _parse_enum_string_value(string_value: str,
-                                     type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        def _parse_enum_string_value(
+            string_value: str, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+        ) -> typing.Any:
             for item_info in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
                 if string_value == item_info.schema_name:
                     return item_info.py_item
@@ -1269,10 +1323,11 @@ class JsonReader:
             return None
 
         @staticmethod
-        def _parse_bitmask_string_value(string_value: str,
-                                        type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        def _parse_bitmask_string_value(
+            string_value: str, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]
+        ) -> typing.Any:
             value = 0
-            identifiers = string_value.split('|')
+            identifiers = string_value.split("|")
             for identifier_with_spaces in identifiers:
                 identifier = identifier_with_spaces.strip()
                 match = False
@@ -1290,7 +1345,7 @@ class JsonReader:
         @staticmethod
         def _parse_bitmask_numeric_string_value(string_value: str):
             number_len = 1
-            while string_value[number_len] >= '0'and string_value[number_len] <= '9':
+            while string_value[number_len] >= "0" and string_value[number_len] <= "9":
                 number_len += 1
 
             return int(string_value[0:number_len])

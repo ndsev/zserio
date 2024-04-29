@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateTypeAsParameterTest(Templates.TestCase):
     def testReadWrite(self):
         param = self.api.P32(2)

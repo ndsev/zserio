@@ -1,8 +1,13 @@
 import unittest
 
-from zserio.bitfield import (bitfield_lowerbound, bitfield_upperbound,
-                             signed_bitfield_lowerbound, signed_bitfield_upperbound)
+from zserio.bitfield import (
+    bitfield_lowerbound,
+    bitfield_upperbound,
+    signed_bitfield_lowerbound,
+    signed_bitfield_upperbound,
+)
 from zserio.exception import PythonRuntimeException
+
 
 class BitFieldTest(unittest.TestCase):
 

@@ -1,5 +1,6 @@
 import Functions
 
+
 class StructureStringTest(Functions.TestCase):
     def testGetPoolConst(self):
         testStructure = self.api.TestStructure(self.api.StringPool())

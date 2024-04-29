@@ -4,6 +4,7 @@ import zserio
 import IndexedOffsets
 from testutils import getApiDir
 
+
 class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.NUM_ELEMENTS1)
@@ -37,9 +38,17 @@ class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
         unpackedBitsizeOf = PackedIndexedOffsetArrayHolderTest._calcAutoIndexedOffsetArrayBitSize(numElements)
         packedBitsizeOf = autoIndexedOffsetArray.bitsizeof()
         minCompressionRatio = 0.82
-        self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
-                        str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
-                        "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")
+        self.assertTrue(
+            unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
+            "Unpacked array has "
+            + str(unpackedBitsizeOf)
+            + " bits, packed array has "
+            + str(packedBitsizeOf)
+            + " bits, "
+            + "compression ratio is "
+            + str(packedBitsizeOf / unpackedBitsizeOf * 100)
+            + "%!",
+        )
 
     def _checkWriteRead(self, numElements):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(numElements)
@@ -80,13 +89,13 @@ class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
     def _calcAutoIndexedOffsetArrayBitSize(numElements):
         bitSize = 0
         for _ in range(numElements + 1):
-            bitSize += 32 # offset[i]
-            bitSize += 32 # offsets[1]
-            bitSize += 32 # value[i]
+            bitSize += 32  # offset[i]
+            bitSize += 32  # offsets[1]
+            bitSize += 32  # value[i]
         for _ in range(numElements):
-            bitSize += 32 # data1[i]
+            bitSize += 32  # data1[i]
         for _ in range(numElements):
-            bitSize += 32 # data2[i]
+            bitSize += 32  # data2[i]
 
         return bitSize
 

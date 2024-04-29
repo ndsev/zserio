@@ -1,5 +1,6 @@
 import Expressions
 
+
 class FloatTypeTest(Expressions.TestCase):
     def testResult(self):
         floatTypeExpression = self.api.FloatTypeExpression(self.FLOAT_VALUE)

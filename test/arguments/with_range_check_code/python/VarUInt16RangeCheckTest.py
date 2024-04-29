@@ -2,6 +2,7 @@ import zserio
 
 import WithRangeCheckCode
 
+
 class VarUInt16RangeCheckTest(WithRangeCheckCode.TestCase):
     def testVarUInt16LowerBound(self):
         self._checkVarUInt16Value(VARUINT16_LOWER_BOUND)
@@ -22,6 +23,7 @@ class VarUInt16RangeCheckTest(WithRangeCheckCode.TestCase):
         bitBuffer = zserio.serialize(varUInt16RangeCheckCompound)
         readVarUInt16RangeCheckCompound = zserio.deserialize(self.api.VarUInt16RangeCheckCompound, bitBuffer)
         self.assertEqual(varUInt16RangeCheckCompound, readVarUInt16RangeCheckCompound)
+
 
 VARUINT16_LOWER_BOUND = zserio.limits.VARUINT16_MIN
 VARUINT16_UPPER_BOUND = zserio.limits.VARUINT16_MAX

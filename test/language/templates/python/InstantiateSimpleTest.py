@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateSimpleTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateSimple = self.api.InstantiateSimple(self.api.U32(13))

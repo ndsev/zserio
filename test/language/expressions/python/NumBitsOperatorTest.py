@@ -1,5 +1,6 @@
 import Expressions
 
+
 class NumBitsOperatorTest(Expressions.TestCase):
     def testGetNumBits8(self):
         numBitsFunctions = self.api.NumBitsFunctions()
@@ -16,14 +17,14 @@ class NumBitsOperatorTest(Expressions.TestCase):
     def testGetNumBits32(self):
         numBitsFunctions = self.api.NumBitsFunctions()
         for power in range(1, 33):
-            value32 = 2 ** power - 1
+            value32 = 2**power - 1
             numBitsFunctions.value32 = value32
             self.assertEqual(NumBitsOperatorTest._calcNumBits(value32), numBitsFunctions.get_num_bits32())
 
     def testGetNumBits64(self):
         numBitsFunctions = self.api.NumBitsFunctions()
         for power in range(1, 49):
-            value64 = 2 ** power - 1
+            value64 = 2**power - 1
             numBitsFunctions.value64 = value64
             self.assertEqual(NumBitsOperatorTest._calcNumBits(value64), numBitsFunctions.get_num_bits64())
 

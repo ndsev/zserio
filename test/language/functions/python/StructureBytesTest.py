@@ -1,5 +1,6 @@
 import Functions
 
+
 class StructureBytesTest(Functions.TestCase):
     def testGetField(self):
         testStructure = self.api.TestStructure(self.FIELD, self.api.Child(self.CHILD_FIELD))

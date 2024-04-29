@@ -2,10 +2,12 @@ import zserio
 
 import Templates
 
+
 class InstantiateClashOtherTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateClashOtherTemplate = self.api.InstantiateClashOtherTemplate(
-            self.api.Test_uint32_99604043(13))
+            self.api.Test_uint32_99604043(13)
+        )
 
         writer = zserio.BitStreamWriter()
         instantiateClashOtherTemplate.write(writer)

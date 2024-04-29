@@ -5,6 +5,7 @@ import ChoiceTypes
 
 from testutils import getApiDir
 
+
 class UInt64ParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
@@ -140,8 +141,9 @@ class UInt64ParamChoiceTest(ChoiceTypes.TestCase):
         filenameA = self.BLOB_NAME_BASE + "a.blob"
         zserio.serialize_to_file(uint64ParamChoice, filenameA)
 
-        readUInt64ParamChoice = zserio.deserialize_from_file(self.api.UInt64ParamChoice, filenameA,
-                                                             self.VARIANT_A_SELECTOR)
+        readUInt64ParamChoice = zserio.deserialize_from_file(
+            self.api.UInt64ParamChoice, filenameA, self.VARIANT_A_SELECTOR
+        )
         self.assertEqual(byteValue, readUInt64ParamChoice.value_a)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
 
@@ -150,8 +152,9 @@ class UInt64ParamChoiceTest(ChoiceTypes.TestCase):
         filenameB = self.BLOB_NAME_BASE + "b.blob"
         zserio.serialize_to_file(uint64ParamChoice, filenameB)
 
-        readUInt64ParamChoice = zserio.deserialize_from_file(self.api.UInt64ParamChoice, filenameB,
-                                                             self.VARIANT_B_SELECTOR)
+        readUInt64ParamChoice = zserio.deserialize_from_file(
+            self.api.UInt64ParamChoice, filenameB, self.VARIANT_B_SELECTOR
+        )
         self.assertEqual(shortValue, readUInt64ParamChoice.value_b)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
 

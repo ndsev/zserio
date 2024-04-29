@@ -5,6 +5,7 @@ import ChoiceTypes
 
 from testutils import getApiDir
 
+
 class EmptyChoiceTest(ChoiceTypes.TestCase):
     def testSelectorConstructor(self):
         emptyChoice = self.api.EmptyChoice(1)

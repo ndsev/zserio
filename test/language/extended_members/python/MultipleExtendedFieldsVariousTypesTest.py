@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended2 = self.api.Extended2()
@@ -25,8 +26,18 @@ class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
         self.assertFalse(extended2.is_extended_value9_used())
 
         extendedValue7 = self.api.Union(EXTENDED_VALUE5)
-        extended2 = self.api.Extended2(VALUE, EXTENDED_VALUE1, EXTENDED_VALUE2, EXTENDED_VALUE3, None,
-                                       EXTENDED_VALUE5, EXTENDED_VALUE6, extendedValue7, None, EXTENDED_VALUE9)
+        extended2 = self.api.Extended2(
+            VALUE,
+            EXTENDED_VALUE1,
+            EXTENDED_VALUE2,
+            EXTENDED_VALUE3,
+            None,
+            EXTENDED_VALUE5,
+            EXTENDED_VALUE6,
+            extendedValue7,
+            None,
+            EXTENDED_VALUE9,
+        )
         self._checkAllExtendedFieldsPresent(extended2, True)
         self.assertTrue(extended2.is_extended_value1_set())
         self.assertTrue(extended2.is_extended_value1_used())
@@ -176,20 +187,20 @@ class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
         # resetter of actually present optional field will not make all fields present
         readExtended2Setter1 = zserio.deserialize(self.api.Extended2, bitBuffer)
         self.assertTrue(readExtended2Setter1.is_extended_value1_set())
-        readExtended2Setter1.reset_extended_value1() # reset value from Extended1
+        readExtended2Setter1.reset_extended_value1()  # reset value from Extended1
         self.assertFalse(readExtended2Setter1.is_extended_value1_set())
         self._checkExtended1FieldsPresent(readExtended2Setter1, True)
         self._checkExtended2FieldsPresent(readExtended2Setter1, False)
 
         # setter of actually present field will not make all fields present
         readExtended2Setter2 = zserio.deserialize(self.api.Extended2, bitBuffer)
-        readExtended2Setter2.extended_value2 = EXTENDED_VALUE2 # set value from Extended1
+        readExtended2Setter2.extended_value2 = EXTENDED_VALUE2  # set value from Extended1
         self._checkExtended1FieldsPresent(readExtended2Setter2, True)
         self._checkExtended2FieldsPresent(readExtended2Setter2, False)
 
         # setter of non-present field will make all fields present
         readExtended2Setter5 = zserio.deserialize(self.api.Extended2, bitBuffer)
-        readExtended2Setter5.extended_value5 = EXTENDED_VALUE5 # set value from Extended2
+        readExtended2Setter5.extended_value5 = EXTENDED_VALUE5  # set value from Extended2
         self._checkAllExtendedFieldsPresent(readExtended2Setter5, True)
 
     def _checkExtended1FieldsPresent(self, extended2, expectedExtended1FieldsPresent):
@@ -213,16 +224,24 @@ class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
         return self.api.Extended1(VALUE, EXTENDED_VALUE1, EXTENDED_VALUE2, EXTENDED_VALUE3)
 
     def _createExtended2(self):
-        return self.api.Extended2(VALUE, EXTENDED_VALUE1, EXTENDED_VALUE2, EXTENDED_VALUE3,
-                                  None, EXTENDED_VALUE5, EXTENDED_VALUE6,
-                                  self.api.Union(EXTENDED_VALUE5, value_u32_ = zserio.limits.UINT32_MAX),
-                                  None, EXTENDED_VALUE9)
+        return self.api.Extended2(
+            VALUE,
+            EXTENDED_VALUE1,
+            EXTENDED_VALUE2,
+            EXTENDED_VALUE3,
+            None,
+            EXTENDED_VALUE5,
+            EXTENDED_VALUE6,
+            self.api.Union(EXTENDED_VALUE5, value_u32_=zserio.limits.UINT32_MAX),
+            None,
+            EXTENDED_VALUE9,
+        )
 
     @staticmethod
     def _calcExtended1BitSize():
         bitSize = ORIGINAL_BIT_SIZE
         bitSize = zserio.bitposition.alignto(8, bitSize)
-        bitSize += 1 + 4 * 8 # optional extendedValue1
+        bitSize += 1 + 4 * 8  # optional extendedValue1
         bitSize = zserio.bitposition.alignto(8, bitSize)
         bitSize += zserio.bitsizeof.bitsizeof_bitbuffer(EXTENDED_VALUE2)
         bitSize = zserio.bitposition.alignto(8, bitSize)
@@ -233,26 +252,27 @@ class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
     def _calcExtended2BitSize():
         bitSize = MultipleExtendedFieldsVariousTypesTest._calcExtended1BitSize()
         bitSize = zserio.bitposition.alignto(8, bitSize)
-        bitSize += 1 # unset optional extendedValue4
+        bitSize += 1  # unset optional extendedValue4
         bitSize = zserio.bitposition.alignto(8, bitSize)
         bitSize += zserio.bitsizeof.bitsizeof_varsize(EXTENDED_VALUE5)
         bitSize = zserio.bitposition.alignto(8, bitSize)
         bitSize += sum(zserio.bitsizeof.bitsizeof_string(element) for element in EXTENDED_VALUE6)
         bitSize = zserio.bitposition.alignto(8, bitSize)
-        bitSize += 8 + 4 * 8 # extendedValue7 (choiceTag + valueU32)
+        bitSize += 8 + 4 * 8  # extendedValue7 (choiceTag + valueU32)
         bitSize = zserio.bitposition.alignto(8, bitSize)
-        bitSize += 1 # unset optional extendedValue8
+        bitSize += 1  # unset optional extendedValue8
         bitSize = zserio.bitposition.alignto(8, bitSize)
-        bitSize += EXTENDED_VALUE5 # used non-optional dynamic bit field extendedValue9
+        bitSize += EXTENDED_VALUE5  # used non-optional dynamic bit field extendedValue9
         return bitSize
+
 
 VALUE = -13
 EXTENDED_VALUE1 = 42
 EXTENDED_VALUE2 = zserio.BitBuffer(bytes([0xCA, 0xFE]), 16)
 EXTENDED_VALUE3 = bytearray([0xDE, 0xAD])
 EXTENDED_VALUE5 = 3
-EXTENDED_VALUE6 = [ "this", "is", "test" ]
-EXTENDED_VALUE9 = 7 # bit<EXTENDED_VALUE5> == bit<3>
+EXTENDED_VALUE6 = ["this", "is", "test"]
+EXTENDED_VALUE9 = 7  # bit<EXTENDED_VALUE5> == bit<3>
 
 ORIGINAL_BIT_SIZE = 7
 EXTENDED1_BIT_SIZE = MultipleExtendedFieldsVariousTypesTest._calcExtended1BitSize()

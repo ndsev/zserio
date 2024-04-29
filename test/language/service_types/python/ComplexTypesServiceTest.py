@@ -2,42 +2,47 @@ import zserio
 
 import ServiceTypes
 
+
 def _convertRgbToCmyk(rgb):
     # see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
-    rr = rgb[0] / 255. * 100
-    gg = rgb[1] / 255. * 100
-    bb = rgb[2] / 255. * 100
+    rr = rgb[0] / 255.0 * 100
+    gg = rgb[1] / 255.0 * 100
+    bb = rgb[2] / 255.0 * 100
 
-    k = 100. - max(rr, gg, bb)
+    k = 100.0 - max(rr, gg, bb)
 
-    c = round((100. - rr - k) / (100. - k) * 100)
-    m = round((100. - gg - k) / (100. - k) * 100)
-    y = round((100. - bb - k) / (100. - k) * 100)
+    c = round((100.0 - rr - k) / (100.0 - k) * 100)
+    m = round((100.0 - gg - k) / (100.0 - k) * 100)
+    y = round((100.0 - bb - k) / (100.0 - k) * 100)
     k = round(k)
     return (c, m, y, k)
 
+
 def _convertCmykToRgb(cmyk):
     # see https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
-    r = round(255 * (1 - cmyk[0] / 100.) * (1 - cmyk[3] / 100.))
-    g = round(255 * (1 - cmyk[1] / 100.) * (1 - cmyk[3] / 100.))
-    b = round(255 * (1 - cmyk[2] / 100.) * (1 - cmyk[3] / 100.))
+    r = round(255 * (1 - cmyk[0] / 100.0) * (1 - cmyk[3] / 100.0))
+    g = round(255 * (1 - cmyk[1] / 100.0) * (1 - cmyk[3] / 100.0))
+    b = round(255 * (1 - cmyk[2] / 100.0) * (1 - cmyk[3] / 100.0))
     return (r, g, b)
+
 
 RGB_VALUES = [(0, 128, 255), (222, 222, 0), (65, 196, 31)]
 CMYK_VALUES = [
     _convertRgbToCmyk(RGB_VALUES[0]),
     _convertRgbToCmyk(RGB_VALUES[1]),
-    _convertRgbToCmyk(RGB_VALUES[2])
+    _convertRgbToCmyk(RGB_VALUES[2]),
 ]
+
 
 class LocalServiceClient(zserio.ServiceClientInterface):
     def __init__(self, service):
         self._service = service
 
-    def call_method(self, method_name, request, context = None):
+    def call_method(self, method_name, request, context=None):
         response = self._service.call_method(method_name, request.byte_array, context)
 
         return response.byte_array
+
 
 class ComplexTypesServiceTest(ServiceTypes.TestCase):
     @classmethod
@@ -95,8 +100,9 @@ class ComplexTypesServiceTest(ServiceTypes.TestCase):
         self.client = self.api.ComplexTypesService.Client(LocalServiceClient(self.service))
 
     def testServiceFullName(self):
-        self.assertEqual("service_types.complex_types_service.ComplexTypesService",
-                         self.service.service_full_name)
+        self.assertEqual(
+            "service_types.complex_types_service.ComplexTypesService", self.service.service_full_name
+        )
 
     def testMethodNames(self):
         self.assertEqual("swapModels", self.service.method_names[0])
@@ -133,10 +139,9 @@ class ComplexTypesServiceTest(ServiceTypes.TestCase):
         data = []
         for i in range(length):
             choice = self.api.ColorModelChoice(self.api.ColorModel.CMYK)
-            choice.cmyk = self.api.CMYKModel(CMYK_VALUES[i % 3][0],
-                                             CMYK_VALUES[i % 3][1],
-                                             CMYK_VALUES[i % 3][2],
-                                             CMYK_VALUES[i % 3][3])
+            choice.cmyk = self.api.CMYKModel(
+                CMYK_VALUES[i % 3][0], CMYK_VALUES[i % 3][1], CMYK_VALUES[i % 3][2], CMYK_VALUES[i % 3][3]
+            )
             data.append(choice)
 
         requestData = self.api.RequestData(self.api.ColorModel.CMYK, offsets, data)

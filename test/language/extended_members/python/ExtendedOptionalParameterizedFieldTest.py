@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class ExtendedOptionalParameterizedFieldTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
@@ -165,9 +166,13 @@ class ExtendedOptionalParameterizedFieldTest(ExtendedMembers.TestCase):
         self.assertEqual(extended.value, readOriginal.value)
         self.assertEqual(ORIGINAL_BIT_SIZE, reader.bitposition)
 
-ARRAY = [ "this", "is", "test" ]
+
+ARRAY = ["this", "is", "test"]
 
 ORIGINAL_BIT_SIZE = 11
 EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL = zserio.bitposition.alignto(8, ORIGINAL_BIT_SIZE) + 1
-EXTENDED_BIT_SIZE_WITH_OPTIONAL = (zserio.bitposition.alignto(8, ORIGINAL_BIT_SIZE) + 1 +
-                                   sum(zserio.bitsizeof.bitsizeof_string(element) for element in ARRAY))
+EXTENDED_BIT_SIZE_WITH_OPTIONAL = (
+    zserio.bitposition.alignto(8, ORIGINAL_BIT_SIZE)
+    + 1
+    + sum(zserio.bitsizeof.bitsizeof_string(element) for element in ARRAY)
+)

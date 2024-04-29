@@ -2,6 +2,7 @@ import os
 
 import Templates
 
+
 class InstantiateTypeAsSqlDatabaseFieldTest(Templates.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -9,7 +10,8 @@ class InstantiateTypeAsSqlDatabaseFieldTest(Templates.TestCaseWithDb):
 
     def testReadWrite(self):
         instantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.from_file(
-            self.dbFileName)
+            self.dbFileName
+        )
         instantiateTypeAsSqlDatabaseFieldDb.create_schema()
 
         stringTable = instantiateTypeAsSqlDatabaseFieldDb.string_table
@@ -23,7 +25,8 @@ class InstantiateTypeAsSqlDatabaseFieldTest(Templates.TestCaseWithDb):
         instantiateTypeAsSqlDatabaseFieldDb.close()
 
         readInstantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.from_file(
-            self.dbFileName)
+            self.dbFileName
+        )
         readStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.string_table.read()
         readStringTableRows = []
         for row in readStringTableIterator:

@@ -3,6 +3,7 @@ import zserio
 
 from testutils import getZserioApi
 
+
 class IndexTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -10,10 +11,10 @@ class IndexTest(unittest.TestCase):
 
     def testReadWrite(self):
         test = self.api.Test()
-        test.indexes = [ 0 ] * self.ARRAY_SIZE
-        test.indexes_for_parameterized = [ 0 ] * self.ARRAY_SIZE
-        test.array = [ self.api.Element(i) for i in range(self.ARRAY_SIZE) ]
-        test.parameterized_array = [ self.api.ParameterizedElement(i, i) for i in range(self.ARRAY_SIZE) ]
+        test.indexes = [0] * self.ARRAY_SIZE
+        test.indexes_for_parameterized = [0] * self.ARRAY_SIZE
+        test.array = [self.api.Element(i) for i in range(self.ARRAY_SIZE)]
+        test.parameterized_array = [self.api.ParameterizedElement(i, i) for i in range(self.ARRAY_SIZE)]
 
         writer = zserio.BitStreamWriter()
         test.initialize_offsets(writer.bitposition)

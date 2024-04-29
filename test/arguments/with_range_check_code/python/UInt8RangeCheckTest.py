@@ -2,6 +2,7 @@ import zserio
 
 import WithRangeCheckCode
 
+
 class UInt8RangeCheckTest(WithRangeCheckCode.TestCase):
     def testUInt8LowerBound(self):
         self._checkUInt8Value(UINT8_LOWER_BOUND)
@@ -22,6 +23,7 @@ class UInt8RangeCheckTest(WithRangeCheckCode.TestCase):
         bitBuffer = zserio.serialize(uint8RangeCheckCompound)
         readUInt8RangeCheckCompound = zserio.deserialize(self.api.UInt8RangeCheckCompound, bitBuffer)
         self.assertEqual(uint8RangeCheckCompound, readUInt8RangeCheckCompound)
+
 
 UINT8_LOWER_BOUND = 0
 UINT8_UPPER_BOUND = 255

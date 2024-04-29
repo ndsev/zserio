@@ -5,11 +5,11 @@ import ArrayTypesWarning
 
 from testutils import getApiDir
 
+
 class PackedArrayUnpackableBytesElementTest(ArrayTypesWarning.TestCase):
     def testWriteRead(self):
         packedArrayUnpackableBytesElement = self.api.PackedArrayUnpackableBytesElement(
-            [10, 11, 12],
-            [bytes([0, 1, 2]), bytes([11, 12, 13]), bytes([100, 101, 102])]
+            [10, 11, 12], [bytes([0, 1, 2]), bytes([11, 12, 13]), bytes([100, 101, 102])]
         )
 
         zserio.serialize_to_file(packedArrayUnpackableBytesElement, self.BLOB_NAME)
@@ -18,5 +18,4 @@ class PackedArrayUnpackableBytesElementTest(ArrayTypesWarning.TestCase):
         )
         self.assertEqual(packedArrayUnpackableBytesElement, readPackedArrayUnpackableBytesElement)
 
-    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)),
-                             "packed_array_unpackable_bytes_element.blob")
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_array_unpackable_bytes_element.blob")

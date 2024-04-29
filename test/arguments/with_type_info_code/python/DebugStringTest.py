@@ -8,6 +8,7 @@ from WithTypeInfoCodeCreator import createWithTypeInfoCode
 
 from testutils import getApiDir
 
+
 class DebugStringTest(WithTypeInfoCode.TestCase):
     def testJsonWriterWithOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=True)
@@ -26,8 +27,9 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
 
-        readWithTypeInfoCode = zserio.from_json_file(self.api.WithTypeInfoCode,
-                                                     self.JSON_NAME_WITHOUT_OPTIONALS)
+        readWithTypeInfoCode = zserio.from_json_file(
+            self.api.WithTypeInfoCode, self.JSON_NAME_WITHOUT_OPTIONALS
+        )
         self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
 
     def testJsonWriterWithArrayLengthFilter(self):
@@ -54,7 +56,7 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
 
-        with open(self.JSON_NAME_WITH_DEPTH0_FILTER, 'r', encoding="utf-8") as jsonFile:
+        with open(self.JSON_NAME_WITH_DEPTH0_FILTER, "r", encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
         self.assertEqual({}, jsonData)
 
@@ -163,15 +165,13 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
         self.assertNotEqual(0, withTypeInfoCode.complex_struct.simple_struct.field_offset)
         self.assertNotEqual(0, withTypeInfoCode.complex_struct.another_simple_struct.field_offset)
 
-    def _checkWithTypeInfoCodeJson(self, jsonFileName, *, createdOptionals = True, maxArrayLength = None):
-        with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
+    def _checkWithTypeInfoCodeJson(self, jsonFileName, *, createdOptionals=True, maxArrayLength=None):
+        with open(jsonFileName, "r", encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
 
         testEnum = self.api.TestEnum._TWO
         testEnumStringified = "_TWO"
-        ts32 = self.api.TS32(
-            0xDEAD
-            )
+        ts32 = self.api.TS32(0xDEAD)
         self._checkSimpleStructJson(jsonData["simpleStruct"], 8)
         self._checkComplexStructJson(jsonData["complexStruct"], createdOptionals, maxArrayLength)
         self._checkParameterizedStructJson(jsonData["parameterizedStruct"], 10, maxArrayLength)
@@ -181,8 +181,9 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
         self.assertEqual(testEnumStringified, jsonData["selector"])
         self._checkSimpleChoiceJson(jsonData["simpleChoice"], testEnum)
         self._checkTS32Json(jsonData["templatedStruct"])
-        self._checkTemplatedParameterizedStruct_TS32Json(jsonData["templatedParameterizedStruct"], ts32,
-                                                         maxArrayLength)
+        self._checkTemplatedParameterizedStruct_TS32Json(
+            jsonData["templatedParameterizedStruct"], ts32, maxArrayLength
+        )
         self._checkExternDataJson(jsonData["externData"])
         self._checkExternArrayJson(jsonData["externArray"], maxArrayLength)
         self._checkBytesDataJson(jsonData["bytesData"])
@@ -192,7 +193,7 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
         self.assertEqual(15, len(jsonData.keys()))
 
     def _checkWithTypeInfoCodeDepth1ArrayLength0Json(self, jsonFileName):
-        with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
+        with open(jsonFileName, "r", encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
 
         self.assertEqual({}, jsonData["simpleStruct"])
@@ -213,7 +214,7 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
         self.assertEqual(15, len(jsonData.keys()))
 
     def _checkWithTypeInfoCodeRegexJson(self, jsonFileName):
-        with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
+        with open(jsonFileName, "r", encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
 
         self.assertEqual(8, jsonData["simpleStruct"]["fieldOffset"])
@@ -264,8 +265,9 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
         self.assertEqual(8, complexStruct["dynamicBitField"])
 
-        dynamicBitFieldArrayLength = 65536 if (maxArrayLength is None or
-                                               maxArrayLength > 65536 // 2) else maxArrayLength * 2
+        dynamicBitFieldArrayLength = (
+            65536 if (maxArrayLength is None or maxArrayLength > 65536 // 2) else maxArrayLength * 2
+        )
         self.assertEqual(list(range(1, dynamicBitFieldArrayLength, 2)), complexStruct["dynamicBitFieldArray"])
 
         if createdOptionals:
@@ -279,9 +281,10 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
             self.assertEqual(None, complexStruct["optionalExtern"])
             self.assertEqual(None, complexStruct["optionalBytes"])
 
-        enumArray = ["_TWO", "ItemThree"] # stringified
-        enumArrayLength = len(enumArray) if (maxArrayLength is None or
-                                             len(enumArray) <= maxArrayLength) else maxArrayLength
+        enumArray = ["_TWO", "ItemThree"]  # stringified
+        enumArrayLength = (
+            len(enumArray) if (maxArrayLength is None or len(enumArray) <= maxArrayLength) else maxArrayLength
+        )
         self.assertEqual(enumArrayLength, len(complexStruct["enumArray"]))
         for i, jsonArrayElement in enumerate(complexStruct["enumArray"]):
             self.assertEqual(enumArray[i], jsonArrayElement)
@@ -320,8 +323,11 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
     def _checkRecursiveChoiceJson(self, recursiveChoice, param1, param2, maxArrayLength):
         if param1:
-            recursiveLength = (len(recursiveChoice["recursive"]) if maxArrayLength is None or
-                               maxArrayLength > len(recursiveChoice["recursive"]) else maxArrayLength)
+            recursiveLength = (
+                len(recursiveChoice["recursive"])
+                if maxArrayLength is None or maxArrayLength > len(recursiveChoice["recursive"])
+                else maxArrayLength
+            )
             for i in range(recursiveLength):
                 self._checkRecursiveChoiceJson(recursiveChoice["recursive"][i], param2, False, maxArrayLength)
         else:
@@ -343,8 +349,9 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
         self.assertEqual(0xDEAD, ts32["field"])
         self.assertEqual(1, len(ts32.keys()))
 
-    def _checkTemplatedParameterizedStruct_TS32Json(self, templatedParameterizedStruct_TS32, ts32,
-                                                    maxArrayLength):
+    def _checkTemplatedParameterizedStruct_TS32Json(
+        self, templatedParameterizedStruct_TS32, ts32, maxArrayLength
+    ):
         arrayLength = ts32.field if maxArrayLength is None or maxArrayLength > ts32.field else maxArrayLength
         for i in range(ts32.field, ts32.field - arrayLength, -1):
             self.assertEqual(i, templatedParameterizedStruct_TS32["array"][ts32.field - i])
@@ -357,9 +364,9 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
     def _checkExternArrayJson(self, externArray, maxArrayLength):
         externArrayLen = 2
-        filteredExternArrayLength = (externArrayLen
-                                     if (maxArrayLength is None or externArrayLen <= maxArrayLength)
-                                     else maxArrayLength)
+        filteredExternArrayLength = (
+            externArrayLen if (maxArrayLength is None or externArrayLen <= maxArrayLength) else maxArrayLength
+        )
         self.assertEqual(filteredExternArrayLength, len(externArray))
         for jsonArrayElement in externArray:
             self._checkExternDataJson(jsonArrayElement)
@@ -370,19 +377,20 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
     def _checkBytesArrayJson(self, bytesArray, maxArrayLength):
         bytesArrayLen = 2
-        filteredBytesArrayLength = (bytesArrayLen
-                                    if (maxArrayLength is None or bytesArrayLen <= maxArrayLength)
-                                    else maxArrayLength)
+        filteredBytesArrayLength = (
+            bytesArrayLen if (maxArrayLength is None or bytesArrayLen <= maxArrayLength) else maxArrayLength
+        )
         self.assertEqual(filteredBytesArrayLength, len(bytesArray))
         for jsonArrayElement in bytesArray:
             self._checkBytesDataJson(jsonArrayElement)
 
     def _checkImplicitArrayJson(self, implicitArray, maxArrayLength):
         expectedImplicitArray = [1, 4, 6, 4, 6, 1]
-        filteredImplicitArrayLength = (len(expectedImplicitArray)
-                                       if (maxArrayLength is None or
-                                           len(expectedImplicitArray) <= maxArrayLength)
-                                       else maxArrayLength)
+        filteredImplicitArrayLength = (
+            len(expectedImplicitArray)
+            if (maxArrayLength is None or len(expectedImplicitArray) <= maxArrayLength)
+            else maxArrayLength
+        )
         self.assertEqual(filteredImplicitArrayLength, len(implicitArray))
         for i, jsonArrayElement in enumerate(implicitArray):
             self.assertEqual(expectedImplicitArray[i], jsonArrayElement)
@@ -398,18 +406,24 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
     @staticmethod
     def _getJsonNameWithArrayLengthFilter(arrayLength):
-        return os.path.join(getApiDir(os.path.dirname(__file__)),
-                            "with_type_info_code_array_length_" + str(arrayLength) + ".json")
+        return os.path.join(
+            getApiDir(os.path.dirname(__file__)),
+            "with_type_info_code_array_length_" + str(arrayLength) + ".json",
+        )
 
-    JSON_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                            "with_type_info_code_optionals.json")
-    JSON_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                               "with_type_info_code.json")
-    JSON_NAME_WITH_DEPTH0_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                                "with_type_info_code_depth0.json")
-    JSON_NAME_WITH_DEPTH5_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                                "with_type_info_code_depth5.json")
-    JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                                              "with_type_info_code_depth1_array_length0.json")
-    JSON_NAME_WITH_REGEX_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                               "with_type_info_code_regex.json")
+    JSON_NAME_WITH_OPTIONALS = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "with_type_info_code_optionals.json"
+    )
+    JSON_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)), "with_type_info_code.json")
+    JSON_NAME_WITH_DEPTH0_FILTER = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "with_type_info_code_depth0.json"
+    )
+    JSON_NAME_WITH_DEPTH5_FILTER = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "with_type_info_code_depth5.json"
+    )
+    JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "with_type_info_code_depth1_array_length0.json"
+    )
+    JSON_NAME_WITH_REGEX_FILTER = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "with_type_info_code_regex.json"
+    )

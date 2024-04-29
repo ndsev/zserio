@@ -1,5 +1,6 @@
 import ChoiceTypes
 
+
 class ExpressionSelectorChoiceTest(ChoiceTypes.TestCase):
     def testField8(self):
         expressionSelectorChoice = self.api.ExpressionSelectorChoice(0)

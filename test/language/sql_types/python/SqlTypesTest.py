@@ -3,12 +3,14 @@ import unittest
 
 from testutils import getApiDir, getZserioApi, getTestCaseName
 
+
 class SqlTypesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "sql_types.zs")
-        cls.dbFileName = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                      getTestCaseName(cls.__name__) + "_test.sqlite")
+        cls.dbFileName = os.path.join(
+            getApiDir(os.path.dirname(__file__)), getTestCaseName(cls.__name__) + "_test.sqlite"
+        )
 
     def setUp(self):
         if os.path.exists(self.dbFileName):

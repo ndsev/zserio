@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedAutoArrayBitfieldParamTest(ArrayTypes.TestCase):
     def testWriteRead(self):
         parameterizedBitfieldLength = self._createParameterizedBitfieldLength()
@@ -12,16 +13,18 @@ class PackedAutoArrayBitfieldParamTest(ArrayTypes.TestCase):
         parameterizedBitfieldLength.write(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readParameterizedBitfieldLength = self.api.ParameterizedBitfieldLength.from_reader(reader,
-                                                                                           self.NUM_BITS_PARAM)
+        readParameterizedBitfieldLength = self.api.ParameterizedBitfieldLength.from_reader(
+            reader, self.NUM_BITS_PARAM
+        )
         self.assertEqual(parameterizedBitfieldLength, readParameterizedBitfieldLength)
 
     def testWriteReadFile(self):
         parameterizedBitfieldLength = self._createParameterizedBitfieldLength()
         zserio.serialize_to_file(parameterizedBitfieldLength, self.BLOB_NAME)
 
-        readParameterizedBitfieldLength = zserio.deserialize_from_file(self.api.ParameterizedBitfieldLength,
-                                                                       self.BLOB_NAME, self.NUM_BITS_PARAM)
+        readParameterizedBitfieldLength = zserio.deserialize_from_file(
+            self.api.ParameterizedBitfieldLength, self.BLOB_NAME, self.NUM_BITS_PARAM
+        )
         self.assertEqual(parameterizedBitfieldLength, readParameterizedBitfieldLength)
 
     def _createParameterizedBitfieldLength(self):

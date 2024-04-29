@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class FullBitmaskParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.Values.BLACK
@@ -9,9 +10,9 @@ class FullBitmaskParamChoiceTest(ChoiceTypes.TestCase):
         self.assertEqual(selector, fullBitmaskParamChoice.selector)
 
         selector = self.api.Selector.Values.WHITE
-        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector, white_=0xff)
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector, white_=0xFF)
         self.assertEqual(selector, fullBitmaskParamChoice.selector)
-        self.assertEqual(0xff, fullBitmaskParamChoice.white)
+        self.assertEqual(0xFF, fullBitmaskParamChoice.white)
 
     def testFromReader(self):
         selector = self.api.Selector.Values.WHITE

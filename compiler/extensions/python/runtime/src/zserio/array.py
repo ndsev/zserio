@@ -5,30 +5,51 @@ The module implements abstraction for arrays used by Zserio python extension.
 import typing
 
 from zserio.bitposition import alignto
-from zserio.bitsizeof import (bitsizeof_varuint16, bitsizeof_varuint32, bitsizeof_varuint64, bitsizeof_varuint,
-                              bitsizeof_varint16, bitsizeof_varint32, bitsizeof_varint64, bitsizeof_varint,
-                              bitsizeof_varsize, bitsizeof_bytes, bitsizeof_string, bitsizeof_bitbuffer)
+from zserio.bitsizeof import (
+    bitsizeof_varuint16,
+    bitsizeof_varuint32,
+    bitsizeof_varuint64,
+    bitsizeof_varuint,
+    bitsizeof_varint16,
+    bitsizeof_varint32,
+    bitsizeof_varint64,
+    bitsizeof_varint,
+    bitsizeof_varsize,
+    bitsizeof_bytes,
+    bitsizeof_string,
+    bitsizeof_bitbuffer,
+)
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.bitbuffer import BitBuffer
-from zserio.hashcode import (HASH_SEED, calc_hashcode_bool_array, calc_hashcode_int_array,
-                             calc_hashcode_float32_array, calc_hashcode_float64_array,
-                             calc_hashcode_bytes_array, calc_hashcode_string_array, calc_hashcode_object_array)
+from zserio.hashcode import (
+    HASH_SEED,
+    calc_hashcode_bool_array,
+    calc_hashcode_int_array,
+    calc_hashcode_float32_array,
+    calc_hashcode_float64_array,
+    calc_hashcode_bytes_array,
+    calc_hashcode_string_array,
+    calc_hashcode_object_array,
+)
 from zserio.exception import PythonRuntimeException
+
 
 class Array:
     """
     Abstraction for arrays to which Zserio arrays are mapped in python.
     """
 
-    def __init__(self,
-                 array_traits: typing.Any,
-                 raw_array: typing.Optional[typing.List] = None,
-                 *,
-                 is_auto: bool = False,
-                 is_implicit: bool = False,
-                 set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
-                 check_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None) -> None:
+    def __init__(
+        self,
+        array_traits: typing.Any,
+        raw_array: typing.Optional[typing.List] = None,
+        *,
+        is_auto: bool = False,
+        is_implicit: bool = False,
+        set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
+        check_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None
+    ) -> None:
         """
         Constructor.
 
@@ -42,22 +63,24 @@ class Array:
 
         self._raw_array: typing.List = [] if raw_array is None else raw_array
         self._array_traits: typing.Any = array_traits
-        self._packed_array_traits : typing.Any = array_traits.packed_traits
+        self._packed_array_traits: typing.Any = array_traits.packed_traits
         self._is_auto: bool = is_auto
         self._is_implicit: bool = is_implicit
         self._set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = set_offset_method
         self._check_offset_method: typing.Optional[typing.Callable[[int, int], None]] = check_offset_method
 
     @classmethod
-    def from_reader(cls: typing.Type['Array'],
-                    array_traits: typing.Any,
-                    reader: BitStreamReader,
-                    size: int = 0,
-                    *,
-                    is_auto: bool = False,
-                    is_implicit: bool = False,
-                    set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
-                    check_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None) -> 'Array':
+    def from_reader(
+        cls: typing.Type["Array"],
+        array_traits: typing.Any,
+        reader: BitStreamReader,
+        size: int = 0,
+        *,
+        is_auto: bool = False,
+        is_implicit: bool = False,
+        set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
+        check_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None
+    ) -> "Array":
         """
         Constructs array and reads elements from the given bit stream reader.
 
@@ -72,23 +95,28 @@ class Array:
         :returns: Array instance filled using given bit stream reader.
         """
 
-        instance = cls(array_traits, is_auto=is_auto, is_implicit=is_implicit,
-                       set_offset_method=set_offset_method, check_offset_method=check_offset_method)
+        instance = cls(
+            array_traits,
+            is_auto=is_auto,
+            is_implicit=is_implicit,
+            set_offset_method=set_offset_method,
+            check_offset_method=check_offset_method,
+        )
         instance.read(reader, size)
 
         return instance
 
     @classmethod
     def from_reader_packed(
-            cls: typing.Type['Array'],
-            array_traits: typing.Any,
-            reader: BitStreamReader,
-            size: int = 0,
-            *,
-            is_auto: bool = False,
-            set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
-            check_offset_method:
-            typing.Optional[typing.Callable[[int, int], None]] = None) -> 'Array':
+        cls: typing.Type["Array"],
+        array_traits: typing.Any,
+        reader: BitStreamReader,
+        size: int = 0,
+        *,
+        is_auto: bool = False,
+        set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
+        check_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None
+    ) -> "Array":
         """
         Constructs packed array and reads elements from the given bit stream reader.
 
@@ -102,8 +130,13 @@ class Array:
         :returns: Array instance filled using given bit stream reader.
         """
 
-        instance = cls(array_traits, is_auto=is_auto, is_implicit=False, set_offset_method=set_offset_method,
-                       check_offset_method=check_offset_method)
+        instance = cls(
+            array_traits,
+            is_auto=is_auto,
+            is_implicit=False,
+            set_offset_method=set_offset_method,
+            check_offset_method=check_offset_method,
+        )
         instance.read_packed(reader, size)
 
         return instance
@@ -207,7 +240,6 @@ class Array:
                 for element in self._raw_array:
                     end_bitposition += packed_array_traits_bitsizeof(context, end_bitposition, element)
 
-
         return end_bitposition - bitposition
 
     def initialize_offsets(self, bitposition: int) -> int:
@@ -262,12 +294,12 @@ class Array:
                 for index in range(size):
                     end_bitposition = alignto(8, end_bitposition)
                     set_offset(index, end_bitposition)
-                    end_bitposition = packed_array_traits_initialize_offsets(context, end_bitposition,
-                                                                             self._raw_array[index])
+                    end_bitposition = packed_array_traits_initialize_offsets(
+                        context, end_bitposition, self._raw_array[index]
+                    )
             else:
                 for element in self._raw_array:
-                    end_bitposition = packed_array_traits_initialize_offsets(context, end_bitposition,
-                                                                             element)
+                    end_bitposition = packed_array_traits_initialize_offsets(context, end_bitposition, element)
 
         return end_bitposition
 
@@ -411,6 +443,7 @@ class Array:
                 for element in self._raw_array:
                     packed_array_traits_write(context, writer, element)
 
+
 class DeltaContext:
     """
     Context for delta packing created for each packable field.
@@ -431,7 +464,7 @@ class DeltaContext:
     """
 
     def __init__(self) -> None:
-        """ Constructor. """
+        """Constructor."""
 
         self._is_packed = False
         self._max_bit_number = 0
@@ -530,7 +563,7 @@ class DeltaContext:
             self._write_unpacked(array_traits, writer, element)
         elif not self._is_packed:
             self._write_unpacked(array_traits, writer, element)
-        else: # packed and not first
+        else:  # packed and not first
             assert self._previous_element is not None
             if self._max_bit_number > 0:
                 delta = element - self._previous_element
@@ -541,8 +574,10 @@ class DeltaContext:
         if self._is_packed:
             delta_bitsize = self._max_bit_number + 1 if self._max_bit_number > 0 else 0
             packed_bitsize_with_descriptor = (
-                1 + self._MAX_BIT_NUMBER_BITS + # descriptor
-                self._first_element_bitsize + (self._num_elements - 1) * delta_bitsize
+                1
+                + self._MAX_BIT_NUMBER_BITS  # descriptor
+                + self._first_element_bitsize
+                + (self._num_elements - 1) * delta_bitsize
             )
             unpacked_bitsize_with_descriptor = 1 + self._unpacked_bitsize
             if packed_bitsize_with_descriptor >= unpacked_bitsize_with_descriptor:
@@ -555,10 +590,10 @@ class DeltaContext:
             return 1
 
     @staticmethod
-    def _bitsizeof_unpacked(array_traits : typing.Any, element : int) -> int:
+    def _bitsizeof_unpacked(array_traits: typing.Any, element: int) -> int:
         if array_traits.HAS_BITSIZEOF_CONSTANT:
             return array_traits.bitsizeof()
-        else: # we know that NEEDS_BITSIZEOF_POSITION is False here
+        else:  # we know that NEEDS_BITSIZEOF_POSITION is False here
             return array_traits.bitsizeof(element)
 
     def _read_descriptor(self, reader: BitStreamReader) -> None:
@@ -582,6 +617,7 @@ class DeltaContext:
 
     _MAX_BIT_NUMBER_BITS = 6
     _MAX_BIT_NUMBER_LIMIT = 62
+
 
 class PackedArrayTraits:
     """
@@ -666,6 +702,7 @@ class PackedArrayTraits:
 
         return delta_context.read(self._array_traits, reader)
 
+
 class ObjectPackedArrayTraits:
     """
     Packed array traits for Zserio objects.
@@ -717,8 +754,7 @@ class ObjectPackedArrayTraits:
         return element.bitsizeof_packed(context, bitposition)
 
     @staticmethod
-    def initialize_offsets(context: typing.Any,
-                           bitposition: int, element: typing.Any) -> int:
+    def initialize_offsets(context: typing.Any, bitposition: int, element: typing.Any) -> int:
         """
         Calls indexed offsets initialization for the current element.
 
@@ -753,6 +789,7 @@ class ObjectPackedArrayTraits:
         """
 
         return self._element_factory.create_packed(context, reader, index)
+
 
 class BitFieldArrayTraits:
     """
@@ -823,6 +860,7 @@ class BitFieldArrayTraits:
 
         writer.write_bits(value, self._numbits)
 
+
 class SignedBitFieldArrayTraits:
     """
     Array traits for signed fixed integer Zserio types (int16, int32, int64, int:5, etc...).
@@ -892,6 +930,7 @@ class SignedBitFieldArrayTraits:
 
         writer.write_signed_bits(value, self._numbits)
 
+
 class VarUInt16ArrayTraits:
     """
     Array traits for Zserio varuint16 type.
@@ -956,6 +995,7 @@ class VarUInt16ArrayTraits:
         """
 
         writer.write_varuint16(value)
+
 
 class VarUInt32ArrayTraits:
     """
@@ -1022,6 +1062,7 @@ class VarUInt32ArrayTraits:
 
         writer.write_varuint32(value)
 
+
 class VarUInt64ArrayTraits:
     """
     Array traits for Zserio varuint64 type.
@@ -1085,6 +1126,7 @@ class VarUInt64ArrayTraits:
         """
 
         writer.write_varuint64(value)
+
 
 class VarUIntArrayTraits:
     """
@@ -1151,6 +1193,7 @@ class VarUIntArrayTraits:
 
         writer.write_varuint(value)
 
+
 class VarSizeArrayTraits:
     """
     Array traits for Zserio varsize type.
@@ -1215,6 +1258,7 @@ class VarSizeArrayTraits:
         """
 
         writer.write_varsize(value)
+
 
 class VarInt16ArrayTraits:
     """
@@ -1281,6 +1325,7 @@ class VarInt16ArrayTraits:
 
         writer.write_varint16(value)
 
+
 class VarInt32ArrayTraits:
     """
     Array traits for Zserio varint32 type.
@@ -1345,6 +1390,7 @@ class VarInt32ArrayTraits:
         """
 
         writer.write_varint32(value)
+
 
 class VarInt64ArrayTraits:
     """
@@ -1411,6 +1457,7 @@ class VarInt64ArrayTraits:
 
         writer.write_varint64(value)
 
+
 class VarIntArrayTraits:
     """
     Array traits for Zserio varint type.
@@ -1476,6 +1523,7 @@ class VarIntArrayTraits:
 
         writer.write_varint(value)
 
+
 class Float16ArrayTraits:
     """
     Array traits for Zserio float16 type.
@@ -1539,6 +1587,7 @@ class Float16ArrayTraits:
         """
 
         writer.write_float16(value)
+
 
 class Float32ArrayTraits:
     """
@@ -1604,6 +1653,7 @@ class Float32ArrayTraits:
 
         writer.write_float32(value)
 
+
 class Float64ArrayTraits:
     """
     Array traits for Zserio float64 type.
@@ -1667,6 +1717,7 @@ class Float64ArrayTraits:
         """
 
         writer.write_float64(value)
+
 
 class BytesArrayTraits:
     """
@@ -1733,6 +1784,7 @@ class BytesArrayTraits:
 
         writer.write_bytes(value)
 
+
 class StringArrayTraits:
     """
     Array traits for Zserio string type.
@@ -1798,6 +1850,7 @@ class StringArrayTraits:
 
         writer.write_string(value)
 
+
 class BoolArrayTraits:
     """
     Array traits for Zserio bool type.
@@ -1861,6 +1914,7 @@ class BoolArrayTraits:
         """
 
         writer.write_bool(value)
+
 
 class BitBufferArrayTraits:
     """
@@ -1927,6 +1981,7 @@ class BitBufferArrayTraits:
 
         writer.write_bitbuffer(value)
 
+
 class ObjectArrayTraits:
     """
     Array traits for Zserio structure, choice, union and enum types.
@@ -1945,8 +2000,9 @@ class ObjectArrayTraits:
         """
 
         self._element_factory = element_factory
-        self._packed_traits = (ObjectPackedArrayTraits(element_factory)
-                               if element_factory.IS_OBJECT_PACKABLE else None)
+        self._packed_traits = (
+            ObjectPackedArrayTraits(element_factory) if element_factory.IS_OBJECT_PACKABLE else None
+        )
 
     @property
     def packed_traits(self) -> typing.Optional[ObjectPackedArrayTraits]:

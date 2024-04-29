@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateTypeOnParameterizedTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTypeOnParameterizedTemplate = self.api.InstantiateTypeOnParameterizedTemplate(

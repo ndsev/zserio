@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class ArrayElementParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         database = self._createDatabase()

@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateNestedTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateNestedTemplate = self.api.InstantiateNestedTemplate(self.api.TStr(self.api.NStr("test")))

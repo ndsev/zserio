@@ -2,6 +2,7 @@ import zserio
 
 import Constraints
 
+
 class ChoiceConstraintsTest(Constraints.TestCase):
     def testReadCorrectConstraints(self):
         selector = True

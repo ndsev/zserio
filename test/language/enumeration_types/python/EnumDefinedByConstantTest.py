@@ -1,5 +1,6 @@
 import EnumerationTypes
 
+
 class EnumDefinedByConstantTest(EnumerationTypes.TestCase):
     def testLightColor(self):
         self.assertEqual(1, self.api.WHITE_COLOR)

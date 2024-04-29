@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class ExtendedSimpleFieldTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
@@ -111,6 +112,7 @@ class ExtendedSimpleFieldTest(ExtendedMembers.TestCase):
         original = self.api.Original.from_reader(reader)
         self.assertEqual(extended.value, original.value)
         self.assertEqual(ORIGINAL_BIT_SIZE, reader.bitposition)
+
 
 ORIGINAL_BIT_SIZE = 4 * 8
 EXTENDED_BIT_SIZE = ORIGINAL_BIT_SIZE + 8 * 8

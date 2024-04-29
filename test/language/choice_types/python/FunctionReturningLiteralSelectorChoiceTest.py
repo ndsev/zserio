@@ -1,5 +1,6 @@
 import ChoiceTypes
 
+
 class FunctionReturningLiteralSelectorChoiceTest(ChoiceTypes.TestCase):
     def testField8(self):
         selector = self.api.Selector(False)

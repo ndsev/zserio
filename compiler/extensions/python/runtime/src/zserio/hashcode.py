@@ -9,6 +9,7 @@ from zserio.float import float_to_uint32, float_to_uint64
 HASH_SEED = 23
 HASH_PRIME_NUMBER = 37
 
+
 def calc_hashcode_bool(seed_value: int, value: bool) -> int:
     """
     Calculates hash code for a boolean value.
@@ -19,6 +20,7 @@ def calc_hashcode_bool(seed_value: int, value: bool) -> int:
     """
 
     return calc_hashcode_int32(seed_value, 1 if value else 0)
+
 
 def calc_hashcode_int32(seed_value: int, value: int) -> int:
     """
@@ -33,6 +35,7 @@ def calc_hashcode_int32(seed_value: int, value: int) -> int:
         return calc_hashcode_int32(seed_value, 0)
 
     return (HASH_PRIME_NUMBER * seed_value + value) & 0xFFFFFFFF
+
 
 def calc_hashcode_int64(seed_value: int, value: int) -> int:
     """
@@ -49,6 +52,7 @@ def calc_hashcode_int64(seed_value: int, value: int) -> int:
     int_value_for_hash = (value & 0xFFFFFFFF) ^ ((value & 0xFFFFFFFFFFFFFFFF) >> 32)
     return (HASH_PRIME_NUMBER * seed_value + int_value_for_hash) & 0xFFFFFFFF
 
+
 def calc_hashcode_float32(seed_value: int, value: float) -> int:
     """
     Calculates hash code for a 32-bit float value.
@@ -64,6 +68,7 @@ def calc_hashcode_float32(seed_value: int, value: float) -> int:
     int_value = float_to_uint32(value)
     return calc_hashcode_int32(seed_value, int_value)
 
+
 def calc_hashcode_float64(seed_value: int, value: float) -> int:
     """
     Calculates hash code for a 64-bit float value.
@@ -78,6 +83,7 @@ def calc_hashcode_float64(seed_value: int, value: float) -> int:
 
     int_value = float_to_uint64(value)
     return calc_hashcode_int64(seed_value, int_value)
+
 
 def calc_hashcode_bytes(seed_value: int, value: bytearray) -> int:
     """
@@ -97,6 +103,7 @@ def calc_hashcode_bytes(seed_value: int, value: bytearray) -> int:
 
     return result
 
+
 def calc_hashcode_string(seed_value: int, value: str) -> int:
     """
     Calculates hash code for a string value.
@@ -115,6 +122,7 @@ def calc_hashcode_string(seed_value: int, value: str) -> int:
 
     return result
 
+
 def calc_hashcode_object(seed_value: int, value: typing.Any) -> int:
     """
     Calculates hash code for an object value.
@@ -129,6 +137,7 @@ def calc_hashcode_object(seed_value: int, value: typing.Any) -> int:
     # using __hash__ to prevent 32-bit Python hash() truncation
     # pylint: disable=unnecessary-dunder-call
     return calc_hashcode_int32(seed_value, value.__hash__() if value else 0)
+
 
 def calc_hashcode_bool_array(seed_value: int, value: typing.List[bool]) -> int:
     """
@@ -147,6 +156,7 @@ def calc_hashcode_bool_array(seed_value: int, value: typing.List[bool]) -> int:
         result = calc_hashcode_bool(result, element)
     return result
 
+
 def calc_hashcode_int_array(seed_value: int, value: typing.List[int]) -> int:
     """
     Calculates hash code for an integral array value.
@@ -163,6 +173,7 @@ def calc_hashcode_int_array(seed_value: int, value: typing.List[int]) -> int:
     for element in value:
         result = calc_hashcode_int32(result, element)
     return result
+
 
 def calc_hashcode_float32_array(seed_value: int, value: typing.List[int]) -> int:
     """
@@ -181,6 +192,7 @@ def calc_hashcode_float32_array(seed_value: int, value: typing.List[int]) -> int
         result = calc_hashcode_float32(result, element)
     return result
 
+
 def calc_hashcode_float64_array(seed_value: int, value: typing.List[int]) -> int:
     """
     Calculates hash code for a 64-bit float array value.
@@ -197,6 +209,7 @@ def calc_hashcode_float64_array(seed_value: int, value: typing.List[int]) -> int
     for element in value:
         result = calc_hashcode_float64(result, element)
     return result
+
 
 def calc_hashcode_bytes_array(seed_value: int, value: typing.List[bytearray]) -> int:
     """
@@ -215,6 +228,7 @@ def calc_hashcode_bytes_array(seed_value: int, value: typing.List[bytearray]) ->
         result = calc_hashcode_bytes(result, element)
     return result
 
+
 def calc_hashcode_string_array(seed_value: int, value: typing.List[str]) -> int:
     """
     Calculates hash code for a string array value.
@@ -231,6 +245,7 @@ def calc_hashcode_string_array(seed_value: int, value: typing.List[str]) -> int:
     for element in value:
         result = calc_hashcode_string(result, element)
     return result
+
 
 def calc_hashcode_object_array(seed_value: int, value: typing.List[typing.Any]) -> int:
     """

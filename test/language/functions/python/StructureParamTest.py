@@ -2,6 +2,7 @@ import zserio
 
 import Functions
 
+
 class StructureParamTest(Functions.TestCase):
     def testMetresConverterCaller(self):
         metresConverterCaller = self._createMetresConverterCaller()
@@ -27,6 +28,7 @@ class StructureParamTest(Functions.TestCase):
         metresConverter = self.api.MetresConverter(metres_=M_VALUE_TO_CONVERT, value_a_=VALUE_A)
 
         return self.api.MetresConverterCaller(metresConverter, CONVERTED_CM_VALUE)
+
 
 VALUE_A = 0xABCD
 M_VALUE_TO_CONVERT = 2

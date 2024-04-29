@@ -4,6 +4,7 @@ The module provides help methods for bit position calculation.
 
 from zserio.exception import PythonRuntimeException
 
+
 def alignto(alignment_value: int, bitposition: int) -> int:
     """
     Aligns the bit size to the given alignment value.
@@ -17,6 +18,7 @@ def alignto(alignment_value: int, bitposition: int) -> int:
         return bitposition
 
     return (((bitposition - 1) // alignment_value) + 1) * alignment_value
+
 
 def bits_to_bytes(numbits: int) -> int:
     """
@@ -32,6 +34,7 @@ def bits_to_bytes(numbits: int) -> int:
 
     return numbits // 8
 
+
 def bytes_to_bits(num_bytes: int) -> int:
     """
     Converts number of bytes to bits.
@@ -41,6 +44,7 @@ def bytes_to_bits(num_bytes: int) -> int:
     """
 
     return num_bytes * 8
+
 
 def bitsize_to_bytesize(bitsize: int) -> int:
     """

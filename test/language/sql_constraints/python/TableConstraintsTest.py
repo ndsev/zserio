@@ -3,6 +3,7 @@ import apsw
 
 import SqlConstraints
 
+
 class TableConstraintsTest(SqlConstraints.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -26,7 +27,8 @@ class TableConstraintsTest(SqlConstraints.TestCaseWithDb):
         self.assertTrue(
             "UNIQUE constraint failed: tableConstraintsTable.primaryKey1, "
             "tableConstraintsTable.primaryKey2" in str(context.exception),
-            str(context.exception))
+            str(context.exception),
+        )
 
     def testUnique(self):
         row = (1, 1, 1, 1)
@@ -40,4 +42,5 @@ class TableConstraintsTest(SqlConstraints.TestCaseWithDb):
         self.assertTrue(
             "UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, "
             "tableConstraintsTable.uniqueValue2" in str(context.exception),
-            str(context.exception))
+            str(context.exception),
+        )

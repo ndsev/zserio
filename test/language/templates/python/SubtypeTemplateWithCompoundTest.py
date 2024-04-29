@@ -2,11 +2,11 @@ import zserio
 
 import Templates
 
+
 class SubtypeTemplateWithCompoundTest(Templates.TestCase):
     def testReadWrite(self):
         subtypeTemplateWithCompound = self.api.SubtypeTemplateWithCompound(
-            self.api.Compound(13),
-            self.api.TemplateCompound_Compound(self.api.Compound(42))
+            self.api.Compound(13), self.api.TemplateCompound_Compound(self.api.Compound(42))
         )
 
         writer = zserio.BitStreamWriter()

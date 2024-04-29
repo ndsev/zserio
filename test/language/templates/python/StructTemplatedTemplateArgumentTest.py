@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class StructTemplatedTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         structTemplatedTemplateArgument = self.api.StructTemplatedTemplateArgument(

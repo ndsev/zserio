@@ -2,6 +2,7 @@ import os
 
 import SqlTables
 
+
 class ConstParamTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -70,8 +71,9 @@ class ConstParamTableTest(SqlTables.TestCaseWithDb):
         return rows
 
     def _createConstParamTableRow(self, blobId, name):
-        blob = self.api.const_param_table.ParameterizedBlob(self.PARAMETERIZED_BLOB_PARAM,
-                                                            self.PARAMETERIZED_BLOB_VALUE)
+        blob = self.api.const_param_table.ParameterizedBlob(
+            self.PARAMETERIZED_BLOB_PARAM, self.PARAMETERIZED_BLOB_VALUE
+        )
 
         return (blobId, name, blob)
 

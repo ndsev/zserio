@@ -1,5 +1,6 @@
 import Expressions
 
+
 class CastUInt8ToUInt64Test(Expressions.TestCase):
     def testUInt64ValueUsingUInt8Value(self):
         uint8Value = 0xBA

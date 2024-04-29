@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedAutoArrayEmptyCompoundsTest(ArrayTypes.TestCase):
     def testWriteReadFile(self):
         packedAutoArray = self.api.PackedAutoArray(
@@ -14,8 +15,8 @@ class PackedAutoArrayEmptyCompoundsTest(ArrayTypes.TestCase):
             [
                 self.api.Main(self.api.EmptyStruct(), self.api.EmptyUnion(), 0, self.api.EmptyChoice(0)),
                 self.api.Main(self.api.EmptyStruct(), self.api.EmptyUnion(), 1, self.api.EmptyChoice(1)),
-                self.api.Main(self.api.EmptyStruct(), self.api.EmptyUnion(), 2, self.api.EmptyChoice(2))
-            ]
+                self.api.Main(self.api.EmptyStruct(), self.api.EmptyUnion(), 2, self.api.EmptyChoice(2)),
+            ],
         )
 
         zserio.serialize_to_file(packedAutoArray, self.BLOB_NAME)

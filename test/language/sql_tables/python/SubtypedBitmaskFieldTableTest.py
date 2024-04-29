@@ -2,6 +2,7 @@ import os
 
 import SqlTables
 
+
 class SubtypedBitmaskFieldTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -34,7 +35,13 @@ class SubtypedBitmaskFieldTableTest(SqlTables.TestCaseWithDb):
 
     def _createRow(self, i):
         TestBitmask = self.api.subtyped_bitmask_field_table.TestBitmask
-        return (i, TestBitmask.Values.ONE if i % 3 == 0 else
-                (TestBitmask.Values.TWO if i % 3 == 1 else TestBitmask.Values.THREE))
+        return (
+            i,
+            (
+                TestBitmask.Values.ONE
+                if i % 3 == 0
+                else (TestBitmask.Values.TWO if i % 3 == 1 else TestBitmask.Values.THREE)
+            ),
+        )
 
     NUM_ROWS = 5

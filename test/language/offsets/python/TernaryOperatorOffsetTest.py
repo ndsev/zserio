@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class TernaryOperatorOffsetTest(Offsets.TestCase):
     def testFirstOffset(self):
         isFirstOffsetUsed = True
@@ -49,9 +50,9 @@ class TernaryOperatorOffsetTest(Offsets.TestCase):
         self.assertEqual(self.FIELD_VALUE, ternaryOffset.value)
 
     def _createTernaryOffset(self, isFirstOffsetUsed, createWrongOffset):
-        ternaryOffset = self.api.TernaryOffset(isFirstOffsetUsed,
-                                               [self.WRONG_FIELD_OFFSET, self.WRONG_FIELD_OFFSET],
-                                               self.FIELD_VALUE)
+        ternaryOffset = self.api.TernaryOffset(
+            isFirstOffsetUsed, [self.WRONG_FIELD_OFFSET, self.WRONG_FIELD_OFFSET], self.FIELD_VALUE
+        )
         if not createWrongOffset:
             ternaryOffset.initialize_offsets()
 

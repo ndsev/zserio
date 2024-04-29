@@ -4,6 +4,7 @@ import zserio
 import ParameterizedTypes
 from testutils import getApiDir
 
+
 class GrandChildParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         grandChildParam = self._createGrandChildParam()
@@ -24,8 +25,7 @@ class GrandChildParamTest(ParameterizedTypes.TestCase):
         self.assertEqual(grandChildParam, readGrandChildParam)
 
     def _createItemChoiceHolder(self):
-        item = self.api.Item(self.ITEM_CHOICE_HOLDER_HAS_ITEM, self.ITEM_PARAM,
-                             self.ITEM_EXTRA_PARAM)
+        item = self.api.Item(self.ITEM_CHOICE_HOLDER_HAS_ITEM, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         itemChoice = self.api.ItemChoice(self.ITEM_CHOICE_HOLDER_HAS_ITEM)
         itemChoice.item = item
 

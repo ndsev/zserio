@@ -2,6 +2,7 @@ import zserio
 
 import UnionTypes
 
+
 class EmptyUnionWithParameterTest(UnionTypes.TestCase):
     def testParamConstructor(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)

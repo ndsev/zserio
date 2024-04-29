@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class ExplicitBlobParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(ExplicitBlobParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_blob_param
+
         class BlobParamTableParameterProvider(test_api.BlobParamTable.IParameterProvider):
             def __init__(self):
                 self._headerParam = test_api.Header(BLOB_PARAM_TABLE_HEADER_COUNT)
@@ -121,6 +123,7 @@ class ExplicitBlobParamTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "blobParamTable"
 NUM_BLOB_PARAM_TABLE_ROWS = 5

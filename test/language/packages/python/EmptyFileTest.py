@@ -2,6 +2,7 @@ import unittest
 
 from testutils import getZserioApi
 
+
 class EmptyFileTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

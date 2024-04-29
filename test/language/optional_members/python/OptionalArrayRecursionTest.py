@@ -4,6 +4,7 @@ import zserio
 import OptionalMembers
 from testutils import getApiDir
 
+
 class OptionalArrayRecursionTest(OptionalMembers.TestCase):
     def testConstructor(self):
         emptyEmployee = self.api.Employee()
@@ -12,17 +13,19 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertEqual(None, emptyEmployee.title)
         self.assertEqual(None, emptyEmployee.team_members)
 
-        teamMember = self.api.Employee(self.EMPLOYEE_DEVELOPER1_NAME,
-                                       self.EMPLOYEE_DEVELOPER1_SALARY,
-                                       self.api.Title.DEVELOPER)
+        teamMember = self.api.Employee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.name)
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.salary)
         self.assertEqual(self.api.Title.DEVELOPER, teamMember.title)
         self.assertEqual(None, teamMember.team_members)
 
-        teamMember = self.api.Employee(name_=self.EMPLOYEE_DEVELOPER1_NAME,
-                                       salary_=self.EMPLOYEE_DEVELOPER1_SALARY,
-                                       title_=self.api.Title.DEVELOPER)
+        teamMember = self.api.Employee(
+            name_=self.EMPLOYEE_DEVELOPER1_NAME,
+            salary_=self.EMPLOYEE_DEVELOPER1_SALARY,
+            title_=self.api.Title.DEVELOPER,
+        )
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.name)
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.salary)
         self.assertEqual(self.api.Title.DEVELOPER, teamMember.title)
@@ -57,13 +60,14 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertEqual(3595797558, teamLead2.__hash__())
 
     def testIsTeamMembersSetAndUsed(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
+        employee = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
         self.assertFalse(employee.is_team_members_set())
         self.assertFalse(employee.is_team_members_used())
 
         employee.title = self.api.Title.TEAM_LEAD
-        employee.reset_team_members() # used but not set
+        employee.reset_team_members()  # used but not set
         self.assertFalse(employee.is_team_members_set())
         self.assertTrue(employee.is_team_members_used())
 
@@ -71,7 +75,7 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertTrue(teamLead.is_team_members_set())
         self.assertTrue(teamLead.is_team_members_used())
 
-        teamLead.title = self.api.Title.DEVELOPER # set but not used
+        teamLead.title = self.api.Title.DEVELOPER  # set but not used
         self.assertTrue(teamLead.is_team_members_set())
         self.assertFalse(teamLead.is_team_members_used())
 
@@ -80,22 +84,24 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertTrue(employee.is_team_members_set())
         self.assertTrue(employee.is_team_members_used())
 
-        employee.reset_team_members() # used but not set
+        employee.reset_team_members()  # used but not set
         self.assertFalse(employee.is_team_members_set())
         self.assertTrue(employee.is_team_members_used())
         self.assertEqual(None, employee.team_members)
 
     def testBitSizeOf(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
+        employee = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
         self.assertEqual(self.DEVELOPER1_BIT_SIZE, employee.bitsizeof())
 
         teamLead = self._createTeamLead()
         self.assertEqual(self.TEAM_LEAD_BIT_SIZE, teamLead.bitsizeof())
 
     def testInitializeOffsets(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
+        employee = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
         bitPosition = 1
         self.assertEqual(bitPosition + self.DEVELOPER1_BIT_SIZE, employee.initialize_offsets(bitPosition))
 
@@ -103,14 +109,16 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertEqual(bitPosition + self.TEAM_LEAD_BIT_SIZE, teamLead.initialize_offsets(bitPosition))
 
     def testWriteReadEmployee(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
+        employee = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
 
         writer = zserio.BitStreamWriter()
         employee.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                    self.api.Title.DEVELOPER)
+        self._checkEmployeeInStream(
+            reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
 
         reader.bitposition = 0
         readEmployee = self.api.Employee.from_reader(reader)
@@ -133,8 +141,9 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertEqual(self.NUM_DEVELOPERS, len(readTeamLead.team_members))
 
     def testWriteReadFileEmployee(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
+        employee = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
         filename = self.BLOB_NAME_BASE + "employee.blob"
         zserio.serialize_to_file(employee, filename)
 
@@ -158,13 +167,16 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         return employee
 
     def _createTeamLead(self):
-        teamLead = self._createEmployee(self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY,
-                                        self.api.Title.TEAM_LEAD)
+        teamLead = self._createEmployee(
+            self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY, self.api.Title.TEAM_LEAD
+        )
 
-        teamMember1 = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                           self.api.Title.DEVELOPER)
-        teamMember2 = self._createEmployee(self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,
-                                           self.api.Title.DEVELOPER)
+        teamMember1 = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
+        teamMember2 = self._createEmployee(
+            self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY, self.api.Title.DEVELOPER
+        )
         teamLead.team_members = [teamMember1, teamMember2]
 
         return teamLead
@@ -175,13 +187,16 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         self.assertEqual(title.value, reader.read_bits(8))
 
     def _checkTeamLeadInStream(self, reader):
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY,
-                                    self.api.Title.TEAM_LEAD)
+        self._checkEmployeeInStream(
+            reader, self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY, self.api.Title.TEAM_LEAD
+        )
         self.assertEqual(self.NUM_DEVELOPERS, reader.read_varuint64())
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                    self.api.Title.DEVELOPER)
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,
-                                    self.api.Title.DEVELOPER)
+        self._checkEmployeeInStream(
+            reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY, self.api.Title.DEVELOPER
+        )
+        self._checkEmployeeInStream(
+            reader, self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY, self.api.Title.DEVELOPER
+        )
 
     BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "optional_array_recursion_")
 

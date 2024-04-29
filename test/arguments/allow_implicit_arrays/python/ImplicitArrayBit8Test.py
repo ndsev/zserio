@@ -5,6 +5,7 @@ import AllowImplicitArrays
 
 from testutils import getApiDir
 
+
 class ImplicitArrayBit8Test(AllowImplicitArrays.TestCase):
     def testBitSizeOf(self):
         numElements = 44

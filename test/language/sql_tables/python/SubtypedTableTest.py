@@ -2,6 +2,7 @@ import os
 
 import SqlTables
 
+
 class SubtypedTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

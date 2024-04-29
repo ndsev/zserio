@@ -2,6 +2,7 @@ import zserio
 
 import StructureTypes
 
+
 class StructureInnerClassesClashingTest(StructureTypes.TestCase):
     def testWriteReadArrayType(self):
         testStructure = self.api.ArrayType_array([1, 2, 3, 4])

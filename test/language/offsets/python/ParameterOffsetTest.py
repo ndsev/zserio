@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class ParameterOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffset = False
@@ -81,8 +82,9 @@ class ParameterOffsetTest(Offsets.TestCase):
     def _checkSchool(self, school, bitPosition=0):
         self.assertEqual(self.SCHOOL_ID, school.school_id)
 
-        expectedRoomOffset = (self.ROOM_OFFSET if (bitPosition == 0) else
-                              self.ROOM_OFFSET + (bitPosition // 8) + 1)
+        expectedRoomOffset = (
+            self.ROOM_OFFSET if (bitPosition == 0) else self.ROOM_OFFSET + (bitPosition // 8) + 1
+        )
         self.assertEqual(expectedRoomOffset, school.offset_holder.room_offset)
 
         self.assertEqual(self.ROOM_ID, school.room.room_id)

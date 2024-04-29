@@ -2,6 +2,7 @@ import zserio
 
 import Offsets
 
+
 class UInt64OffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         uint64Offset = self.api.UInt64Offset.from_reader(self._createReader(False))

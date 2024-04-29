@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class BitmaskParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.Values.BLACK

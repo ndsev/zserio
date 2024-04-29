@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class MultipleExtendedFieldsTest(ExtendedMembers.TestCase):
     def testDefaultConstructor(self):
         extended2 = self.api.Extended2()
@@ -213,9 +214,11 @@ class MultipleExtendedFieldsTest(ExtendedMembers.TestCase):
         self.assertEqual(extended2.value, readExtended1.value)
         self.assertEqual(EXTENDED1_BIT_SIZE, reader.bitposition)
 
+
 DEFAULT_EXTENDED_VALUE2 = "test"
 
 ORIGINAL_BIT_SIZE = 4 * 8
 EXTENDED1_BIT_SIZE = ORIGINAL_BIT_SIZE + 4
-EXTENDED2_BIT_SIZE = (zserio.bitposition.alignto(8, EXTENDED1_BIT_SIZE) +
-                      zserio.bitsizeof.bitsizeof_string(DEFAULT_EXTENDED_VALUE2))
+EXTENDED2_BIT_SIZE = zserio.bitposition.alignto(8, EXTENDED1_BIT_SIZE) + zserio.bitsizeof.bitsizeof_string(
+    DEFAULT_EXTENDED_VALUE2
+)

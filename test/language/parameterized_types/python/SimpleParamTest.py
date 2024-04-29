@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class SimpleParamTest(ParameterizedTypes.TestCase):
     def testParameterConstructor(self):
         item = self.api.Item(self.LOWER_VERSION)
@@ -47,8 +48,9 @@ class SimpleParamTest(ParameterizedTypes.TestCase):
     def testInitializeOffsets(self):
         item1 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         bitPosition = 1
-        self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL,
-                         item1.initialize_offsets(bitPosition))
+        self.assertEqual(
+            bitPosition + self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL, item1.initialize_offsets(bitPosition)
+        )
 
         item2 = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.initialize_offsets(bitPosition))

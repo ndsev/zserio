@@ -5,6 +5,7 @@ import ChoiceTypes
 
 from testutils import getApiDir
 
+
 class ChoiceWithArrayTest(ChoiceTypes.TestCase):
     def testArray8(self):
         testChoice = self.api.TestChoice(8)

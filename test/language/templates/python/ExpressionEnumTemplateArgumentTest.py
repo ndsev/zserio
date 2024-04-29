@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class ExpressionEnumTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         enumTemplateArgument_Color = self.api.EnumTemplateArgument_Color(False, 10)

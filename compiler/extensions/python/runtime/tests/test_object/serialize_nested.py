@@ -6,21 +6,24 @@ from __future__ import annotations
 import typing
 import zserio
 
+
 class SerializeNested:
     def __init__(
-            self,
-            param_: int,
-            offset_: int = int(),
-            optional_value_: typing.Optional[int] = None) -> None:
+        self,
+        param_: int,
+        offset_: int = int(),
+        optional_value_: typing.Optional[int] = None,
+    ) -> None:
         self._param_ = param_
         self._offset_ = offset_
         self._optional_value_ = optional_value_
 
     @classmethod
     def from_reader(
-            cls: typing.Type['SerializeNested'],
-            zserio_reader: zserio.BitStreamReader,
-            param_: int) -> 'SerializeNested':
+        cls: typing.Type["SerializeNested"],
+        zserio_reader: zserio.BitStreamReader,
+        param_: int,
+    ) -> "SerializeNested":
         self = object.__new__(cls)
         self._param_ = param_
 
@@ -32,42 +35,49 @@ class SerializeNested:
     def type_info() -> zserio.typeinfo.TypeInfo:
         field_list: typing.List[zserio.typeinfo.MemberInfo] = [
             zserio.typeinfo.MemberInfo(
-                'offset', zserio.typeinfo.TypeInfo('uint8', int),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'offset'
-                }
+                "offset",
+                zserio.typeinfo.TypeInfo("uint8", int),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "offset"},
             ),
             zserio.typeinfo.MemberInfo(
-                'optionalValue', zserio.typeinfo.TypeInfo('uint32', int),
+                "optionalValue",
+                zserio.typeinfo.TypeInfo("uint32", int),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'optional_value',
-                    zserio.typeinfo.MemberAttribute.OFFSET : (lambda self, zserio_index: self._offset_),
-                    zserio.typeinfo.MemberAttribute.OPTIONAL : (lambda self: self._param_ >= 0),
-                    zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME : 'is_optional_value_used',
-                    zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME : 'is_optional_value_set'
-                }
-            )
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "optional_value",
+                    zserio.typeinfo.MemberAttribute.OFFSET: (lambda self, zserio_index: self._offset_),
+                    zserio.typeinfo.MemberAttribute.OPTIONAL: (lambda self: self._param_ >= 0),
+                    zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME: "is_optional_value_used",
+                    zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME: "is_optional_value_set",
+                },
+            ),
         ]
         parameter_list: typing.List[zserio.typeinfo.MemberInfo] = [
             zserio.typeinfo.MemberInfo(
-                'param', zserio.typeinfo.TypeInfo('int8', int),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'param'
-                }
+                "param",
+                zserio.typeinfo.TypeInfo("int8", int),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "param"},
             )
         ]
         attribute_list = {
-            zserio.typeinfo.TypeAttribute.FIELDS : field_list,
-            zserio.typeinfo.TypeAttribute.PARAMETERS : parameter_list
+            zserio.typeinfo.TypeAttribute.FIELDS: field_list,
+            zserio.typeinfo.TypeAttribute.PARAMETERS: parameter_list,
         }
 
-        return zserio.typeinfo.TypeInfo("test_object.SerializeNested", SerializeNested, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo(
+            "test_object.SerializeNested", SerializeNested, attributes=attribute_list
+        )
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SerializeNested):
-            return (self._param_ == other._param_ and
-                    (self._offset_ == other._offset_) and
-                    (not other.is_optional_value_used() if not self.is_optional_value_used() else (self._optional_value_ == other._optional_value_)))
+            return (
+                self._param_ == other._param_
+                and (self._offset_ == other._offset_)
+                and (
+                    not other.is_optional_value_used()
+                    if not self.is_optional_value_used()
+                    else (self._optional_value_ == other._optional_value_)
+                )
+            )
 
         return False
 
@@ -137,8 +147,10 @@ class SerializeNested:
             zserio_reader.alignto(8)
             # check offset
             if zserio_reader.bitposition != zserio.bitposition.bytes_to_bits(self._offset_):
-                raise zserio.PythonRuntimeException("Wrong offset for field SerializeNested.optionalValue: "
-                                                    f"{zserio_reader.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!")
+                raise zserio.PythonRuntimeException(
+                    "Wrong offset for field SerializeNested.optionalValue: "
+                    f"{zserio_reader.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!"
+                )
             self._optional_value_ = zserio_reader.read_bits(32)
         else:
             self._optional_value_ = None
@@ -150,6 +162,8 @@ class SerializeNested:
             zserio_writer.alignto(8)
             # check offset
             if zserio_writer.bitposition != zserio.bitposition.bytes_to_bits(self._offset_):
-                raise zserio.PythonRuntimeException("Wrong offset for field SerializeNested.optionalValue: "
-                                                    f"{zserio_writer.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!")
+                raise zserio.PythonRuntimeException(
+                    "Wrong offset for field SerializeNested.optionalValue: "
+                    f"{zserio_writer.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!"
+                )
             zserio_writer.write_bits(self._optional_value_, 32)

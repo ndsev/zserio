@@ -2,6 +2,7 @@ import zserio
 
 import ArrayTypes
 
+
 class ArraysMappingTest(ArrayTypes.TestCase):
     def testUnsignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
@@ -94,8 +95,7 @@ class ArraysMappingTest(ArrayTypes.TestCase):
 
     def testExternArray(self):
         arraysMapping = self.api.ArraysMapping()
-        externArray = [zserio.BitBuffer(bytes([0xCD, 0xC0]), 10)
-                       for i in range(self.FIXED_ARRAY_LENGTH)]
+        externArray = [zserio.BitBuffer(bytes([0xCD, 0xC0]), 10) for i in range(self.FIXED_ARRAY_LENGTH)]
         arraysMapping.extern_array = externArray
 
     def testBytesArray(self):

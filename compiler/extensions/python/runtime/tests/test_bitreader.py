@@ -5,6 +5,7 @@ from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import INT64_MIN
 from zserio.exception import PythonRuntimeException
 
+
 class BitStreamReaderTest(unittest.TestCase):
 
     def test_constructor(self):
@@ -13,7 +14,7 @@ class BitStreamReaderTest(unittest.TestCase):
         self.assertEqual(0xEA, reader.read_bits(8))
         self.assertEqual(0x01, reader.read_bits(1))
         with self.assertRaises(PythonRuntimeException):
-            reader.read_bits(1) # no more bits available
+            reader.read_bits(1)  # no more bits available
 
     def test_constructor_wrong_bitsize(self):
         with self.assertRaises(PythonRuntimeException):
@@ -45,8 +46,8 @@ class BitStreamReaderTest(unittest.TestCase):
 
             # write test value at offset to data buffer
             buffer[offset // 8] = test_value >> (offset % 8)
-            if offset % 8 != 0: # don't write behind the buffer
-                buffer[offset // 8 + 1] = 0xff & test_value << (8 - offset % 8)
+            if offset % 8 != 0:  # don't write behind the buffer
+                buffer[offset // 8 + 1] = 0xFF & test_value << (8 - offset % 8)
 
             bitbuffer = BitBuffer(buffer, 8 + offset)
             reader = BitStreamReader.from_bitbuffer(bitbuffer)
@@ -70,24 +71,24 @@ class BitStreamReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             reader.read_bits(-1)
 
-        self.assertEqual(0, reader.read_bits(0)) # read 0 bits
+        self.assertEqual(0, reader.read_bits(0))  # read 0 bits
 
         with self.assertRaises(PythonRuntimeException):
-            reader.read_bits(1) # no more bits available
+            reader.read_bits(1)  # no more bits available
 
     def test_read_signed_bits(self):
-        data = [0, 0xff, 1, 127, 0x80]
+        data = [0, 0xFF, 1, 127, 0x80]
         reader = BitStreamReader(bytes(data))
         self.assertEqual(0, reader.read_signed_bits(8))
-        self.assertEqual(-1, reader.read_signed_bits(8)) # 0xff == -1
+        self.assertEqual(-1, reader.read_signed_bits(8))  # 0xff == -1
         self.assertEqual(1, reader.read_signed_bits(8))
         self.assertEqual(127, reader.read_signed_bits(8))
-        self.assertEqual(-128, reader.read_signed_bits(8)) # 0x80 == -128
+        self.assertEqual(-128, reader.read_signed_bits(8))  # 0x80 == -128
 
-        self.assertEqual(0, reader.read_signed_bits(0)) # read 0 bits
+        self.assertEqual(0, reader.read_signed_bits(0))  # read 0 bits
 
         with self.assertRaises(PythonRuntimeException):
-            reader.read_signed_bits(1) # no more bits available
+            reader.read_signed_bits(1)  # no more bits available
 
         with self.assertRaises(PythonRuntimeException):
             reader.read_signed_bits(-1)
@@ -114,7 +115,7 @@ class BitStreamReaderTest(unittest.TestCase):
             reader.read_varint64()
 
     def test_read_varint(self):
-        reader = BitStreamReader(b'\x00\x80')
+        reader = BitStreamReader(b"\x00\x80")
         self.assertEqual(0, reader.read_varint())
         self.assertEqual(8, reader.bitposition)
         self.assertEqual(INT64_MIN, reader.read_varint())
@@ -152,12 +153,12 @@ class BitStreamReaderTest(unittest.TestCase):
 
     def test_read_varsize(self):
         # overflow, 2^32 - 1 is too much (b'\x83\xFF\xFF\xFF\xFF') is the maximum)
-        reader = BitStreamReader(b'\x87\xFF\xFF\xFF\xFF')
+        reader = BitStreamReader(b"\x87\xFF\xFF\xFF\xFF")
         with self.assertRaises(PythonRuntimeException):
             reader.read_varsize()
 
         # overflow, 2^36 - 1 is too much (b'\x83\xFF\xFF\xFF\xFF') is the maximum)
-        reader = BitStreamReader(b'\xFF\xFF\xFF\xFF\xFF')
+        reader = BitStreamReader(b"\xFF\xFF\xFF\xFF\xFF")
         with self.assertRaises(PythonRuntimeException):
             reader.read_varsize()
 
@@ -183,14 +184,14 @@ class BitStreamReaderTest(unittest.TestCase):
             reader.read_float64()
 
     def test_read_string(self):
-        reader = BitStreamReader(bytes(b'\x01\x41'))
+        reader = BitStreamReader(bytes(b"\x01\x41"))
         self.assertEqual("A", reader.read_string())
         self.assertEqual(16, reader.bitposition)
         with self.assertRaises(PythonRuntimeException):
             reader.read_string()
 
     def test_read_bool(self):
-        reader = BitStreamReader(bytes(b'\xA8'))
+        reader = BitStreamReader(bytes(b"\xA8"))
         self.assertEqual(True, reader.read_bool())
         self.assertEqual(False, reader.read_bool())
         self.assertEqual(True, reader.read_bool())
@@ -203,7 +204,7 @@ class BitStreamReaderTest(unittest.TestCase):
             reader.read_bool()
 
     def test_read_bitbuffer(self):
-        reader = BitStreamReader(bytes(b'\x0B\xAB\xE1\xE0\x1F\xC0'))
+        reader = BitStreamReader(bytes(b"\x0B\xAB\xE1\xE0\x1F\xC0"))
         self.assertEqual(BitBuffer(bytes([0xAB, 0xE0]), 11), reader.read_bitbuffer())
         self.assertEqual(BitBuffer(bytes([0x00, 0xFE]), 15), reader.read_bitbuffer())
         with self.assertRaises(PythonRuntimeException):

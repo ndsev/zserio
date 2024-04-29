@@ -2,6 +2,7 @@ import zserio
 
 import Functions
 
+
 class StructureOptionalTest(Functions.TestCase):
     def testDefaultValueConsumerCreator(self):
         self._checkValueConsumerCreator(self.DEFAULT_VALUE, self.EXTERNAL_VALUE)
@@ -31,8 +32,9 @@ class StructureOptionalTest(Functions.TestCase):
 
     def _checkValueConsumerCreator(self, defaultValue, externalValue):
         valueConsumerCreator = self._createValueConsumerCreator(defaultValue, externalValue)
-        self.assertEqual(self._calculateValue(defaultValue, externalValue),
-                         valueConsumerCreator.value_calculator.value())
+        self.assertEqual(
+            self._calculateValue(defaultValue, externalValue), valueConsumerCreator.value_calculator.value()
+        )
 
         writer = zserio.BitStreamWriter()
         valueConsumerCreator.write(writer)

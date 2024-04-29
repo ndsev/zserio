@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class BoolParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = True

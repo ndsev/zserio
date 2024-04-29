@@ -1,5 +1,6 @@
 import Expressions
 
+
 class ParenthesisTest(Expressions.TestCase):
     def testResult(self):
         parenthesisExpression = self.api.ParenthesisExpression(self.FIRST_VALUE, self.SECOND_VALUE)

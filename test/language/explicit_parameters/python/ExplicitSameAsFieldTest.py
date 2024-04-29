@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class ExplicitSameAsFieldTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(ExplicitSameAsFieldTest, cls).setUpClass()
 
         test_api = cls.api.explicit_same_as_field
+
         class SameAsFieldTableParameterProvider(test_api.SameAsFieldTable.IParameterProvider):
             @staticmethod
             def count(_row):
@@ -104,6 +106,7 @@ class ExplicitSameAsFieldTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "sameAsFieldTable"
 NUM_SIMPLE_PARAM_TABLE_ROWS = 5

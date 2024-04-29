@@ -1,7 +1,13 @@
 import unittest
 
-from zserio.bitposition import (alignto, bits_to_bytes, bytes_to_bits, bitsize_to_bytesize)
+from zserio.bitposition import (
+    alignto,
+    bits_to_bytes,
+    bytes_to_bits,
+    bitsize_to_bytesize,
+)
 from zserio.exception import PythonRuntimeException
+
 
 class BitPositionTest(unittest.TestCase):
 

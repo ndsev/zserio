@@ -7,6 +7,7 @@ import BuiltInTypes
 
 from testutils import getApiDir
 
+
 class AllBuiltInTypesTest(BuiltInTypes.TestCase):
     def testUint8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
@@ -267,7 +268,7 @@ class AllBuiltInTypesTest(BuiltInTypes.TestCase):
         allBuiltInTypes.varint64_type = zserio.limits.VARINT64_MAX
         allBuiltInTypes.varint_type = zserio.limits.VARINT_MAX
         allBuiltInTypes.string_type = "TEST"
-        allBuiltInTypes.extern_type =  self._getExternalBitBuffer()
+        allBuiltInTypes.extern_type = self._getExternalBitBuffer()
         allBuiltInTypes.bytes_type = bytearray([1, 255])
         expectedBitSizeOf = 1166
         self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitsizeof())
@@ -328,4 +329,4 @@ class AllBuiltInTypesTest(BuiltInTypes.TestCase):
         return zserio.BitBuffer(writer.byte_array, writer.bitposition)
 
     BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "all_builtin_types.blob")
-    FLOAT32_MAX = struct.unpack('>f', bytes(b'\x7f\x7f\xff\xff'))[0]
+    FLOAT32_MAX = struct.unpack(">f", bytes(b"\x7f\x7f\xff\xff"))[0]

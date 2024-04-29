@@ -9,6 +9,7 @@ import importlib
 import subprocess
 import inspect
 
+
 class TestConfig:
     """
     Test config as a special singleton, init must be called before any access to the configuration
@@ -20,24 +21,35 @@ class TestConfig:
 
     @classmethod
     def init(cls, configDict):
-        if not hasattr(cls, 'instance'):
+        if not hasattr(cls, "instance"):
             cls.instance = object.__new__(cls)
-        cls.instance.configDict = configDict # pylint: disable=attribute-defined-outside-init
+        cls.instance.configDict = configDict  # pylint: disable=attribute-defined-outside-init
 
     def __class_getitem__(cls, key):
         return cls._get().configDict[key]
 
     @staticmethod
     def _get():
-        if not hasattr(TestConfig, 'instance'):
+        if not hasattr(TestConfig, "instance"):
             raise RuntimeError("TestConfig was not initialized!")
         return TestConfig.instance
 
-# set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
-COMPILED_ZS = {} # keys are zs definition tuples: (zsDir, mainZsFile), value is zserio tool error log
 
-def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevelPackage=None, extraArgs=None,
-                 expectedWarnings=0, errorOutputDict=None):
+# set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
+COMPILED_ZS = {}  # keys are zs definition tuples: (zsDir, mainZsFile), value is zserio tool error log
+
+
+def getZserioApi(
+    testFile,
+    mainZsFile,
+    *,
+    hasPackage=True,
+    hasApi=True,
+    topLevelPackage=None,
+    extraArgs=None,
+    expectedWarnings=0,
+    errorOutputDict=None,
+):
     """
     Compiles given zserio source and gets Zserio API.
 
@@ -51,8 +63,8 @@ def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevel
     :param errorOutputDict: Dictionary where to store error output from zserio compiler (key is the mainZsFile).
     :returns: Generated python API if available, None otherwise.
     """
-    testDir = os.path.dirname(testFile) # current test directory
-    zsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
+    testDir = os.path.dirname(testFile)  # current test directory
+    zsDir = os.path.join(testDir, "..", "zs")  # directory where test zs files are located
     apiDir = getApiDir(testDir)
 
     zsDef = (zsDir, mainZsFile)
@@ -81,6 +93,7 @@ def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevel
     else:
         return None
 
+
 def getApiDir(testDir):
     """
     Gets directory where the API for current test suite will be generated.
@@ -89,9 +102,10 @@ def getApiDir(testDir):
     :returns: Directory where the API for current test suite will be generated.
     """
 
-    buildDir = TestConfig["build_dir"] # python test root build directory
+    buildDir = TestConfig["build_dir"]  # python test root build directory
     testSuiteName = getTestSuiteName(testDir)
     return os.path.join(buildDir, testSuiteName)
+
 
 def getTestSuiteName(testDir):
     """
@@ -106,10 +120,11 @@ def getTestSuiteName(testDir):
     :returns: Test suite name.
     """
 
-    testDir = os.path.dirname(testDir) # python dir
+    testDir = os.path.dirname(testDir)  # python dir
     testDir, secondDir = os.path.split(testDir)
     firstDir = os.path.split(testDir)[1]
     return os.path.join(firstDir, secondDir)
+
 
 def getTestCaseName(testName):
     """
@@ -137,7 +152,7 @@ def getTestCaseName(testName):
         ("LengthOf", "Lengthof"),
         ("^IsSetOperator", "IssetOperator"),
         ("^NumBitsOperator", "NumbitsOperator"),
-        ("^ValueOfOperator", "ValueofOperator")
+        ("^ValueOfOperator", "ValueofOperator"),
     ]
 
     testCaseName = testName
@@ -146,6 +161,7 @@ def getTestCaseName(testName):
         testCaseName = re.sub(pattern, replacement, testCaseName)
 
     return _camelCaseToSnakeCase(testCaseName)
+
 
 def compileErroneousZserio(testFile, mainZsFile, errorOutputDict, extraArgs=None):
     """
@@ -157,14 +173,15 @@ def compileErroneousZserio(testFile, mainZsFile, errorOutputDict, extraArgs=None
     :param extraArgs: Extra arguments to zserio compiler.
     """
 
-    testDir = os.path.dirname(testFile) # current test directory
-    zsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
+    testDir = os.path.dirname(testFile)  # current test directory
+    zsDir = os.path.join(testDir, "..", "zs")  # directory where test zs files are located
     zsDef = (zsDir, mainZsFile)
     apiDir = getApiDir(testDir)
     try:
         _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
     except ZserioCompilerError as zserioCompilerError:
         errorOutputDict[mainZsFile] = zserioCompilerError.stderr
+
 
 def assertErrorsPresent(test, mainZsFile, expectedErrors):
     """
@@ -177,6 +194,7 @@ def assertErrorsPresent(test, mainZsFile, expectedErrors):
 
     _assertMessagesPresent(test, mainZsFile, test.errors, expectedErrors, "error")
 
+
 def assertWarningsPresent(test, mainZsFile, expectedWarnings):
     """
     Checks warning output from zserio compiler for the test.
@@ -188,6 +206,7 @@ def assertWarningsPresent(test, mainZsFile, expectedWarnings):
 
     _assertMessagesPresent(test, mainZsFile, test.warnings, expectedWarnings, "warning")
 
+
 def assertMethodPresent(test, userType, method):
     """
     Checks that the method name is present in the given user defined type.
@@ -197,8 +216,11 @@ def assertMethodPresent(test, userType, method):
     :param method: The method to check.
     """
 
-    test.assertTrue(hasattr(userType, method),
-                    msg=f"Method '{method}' is not present in '{userType.__name__}'! {_assertLocation()}")
+    test.assertTrue(
+        hasattr(userType, method),
+        msg=f"Method '{method}' is not present in '{userType.__name__}'! {_assertLocation()}",
+    )
+
 
 def assertMethodNotPresent(test, userType, method):
     """
@@ -209,8 +231,11 @@ def assertMethodNotPresent(test, userType, method):
     :param method: The method to check.
     """
 
-    test.assertFalse(hasattr(userType, method),
-                     msg=f"Method '{method}' is present in '{userType.__name__}'! {_assertLocation()}")
+    test.assertFalse(
+        hasattr(userType, method),
+        msg=f"Method '{method}' is present in '{userType.__name__}'! {_assertLocation()}",
+    )
+
 
 def assertPropertyPresent(test, userType, prop, *, readOnly):
     """
@@ -224,27 +249,27 @@ def assertPropertyPresent(test, userType, prop, *, readOnly):
 
     test.assertTrue(
         hasattr(userType, prop),
-        msg=f"Property '{prop}' is not present in '{userType.__name__}'! {_assertLocation()}"
+        msg=f"Property '{prop}' is not present in '{userType.__name__}'! {_assertLocation()}",
     )
     propAttr = getattr(userType, prop)
     test.assertTrue(
         isinstance(propAttr, property),
-        msg=f"Attribute '{prop}' is not a property in '{userType.__name__}'! {_assertLocation()}"
+        msg=f"Attribute '{prop}' is not a property in '{userType.__name__}'! {_assertLocation()}",
     )
     test.assertIsNotNone(
-        propAttr.fget,
-        msg=f"Property '{prop}' getter is not set in '{userType.__name__}'! {_assertLocation()}"
+        propAttr.fget, msg=f"Property '{prop}' getter is not set in '{userType.__name__}'! {_assertLocation()}"
     )
     if readOnly:
         test.assertIsNone(
             propAttr.fset,
-            msg=f"Read-only property '{prop}' setter is set in '{userType.__name__}'! {_assertLocation()}"
+            msg=f"Read-only property '{prop}' setter is set in '{userType.__name__}'! {_assertLocation()}",
         )
     else:
         test.assertIsNotNone(
             propAttr.fset,
-            msg=f"Property '{prop}' setter is not set in '{userType.__name__}'! {_assertLocation()}"
+            msg=f"Property '{prop}' setter is not set in '{userType.__name__}'! {_assertLocation()}",
         )
+
 
 class ZserioCompilerError(Exception):
     """
@@ -269,6 +294,7 @@ class ZserioCompilerError(Exception):
 
         return self._stderr
 
+
 def _processExtraArgs(extraArgs):
     """
     Processes given zserio extra arguments.
@@ -283,6 +309,7 @@ def _processExtraArgs(extraArgs):
         extraArgs += os.environ["ZSERIO_EXTRA_ARGS"].split(" ")
 
     return extraArgs
+
 
 def _compileZserio(zsDef, apiDir, extraArgs):
     """
@@ -306,10 +333,10 @@ def _compileZserio(zsDef, apiDir, extraArgs):
         os.pathsep.join([zserioCore, zserioPython]),
         "zserio.tools.ZserioTool",
         "-python",
-        f"{apiDir}", # pythonDir
+        f"{apiDir}",  # pythonDir
         "-src",
-        f"{zsDef[0]}", # apiDir
-        zsDef[1]
+        f"{zsDef[0]}",  # apiDir
+        zsDef[1],
     ]
     zserioCmd += extraArgs
     zserioResult = subprocess.run(zserioCmd, capture_output=True, text=True, check=False)
@@ -320,6 +347,7 @@ def _compileZserio(zsDef, apiDir, extraArgs):
     if zserioResult.returncode != 0:
         raise ZserioCompilerError(zserioResult.stderr)
     return zserioResult
+
 
 def _checkExpectedWarnings(zserioLog, expectedWarnings):
     """
@@ -335,6 +363,7 @@ def _checkExpectedWarnings(zserioLog, expectedWarnings):
     if numWarnings != expectedWarnings:
         raise RuntimeError(f"Zserio tool produced {numWarnings} warnings (expected {expectedWarnings})!")
 
+
 def _importModule(path, modulePath):
     """
     Imports a module specified by the given path and modulePath.
@@ -349,11 +378,13 @@ def _importModule(path, modulePath):
     sys.path.remove(path)
     return api
 
+
 def _assertLocation(depth=2):
     frame = inspect.currentframe()
     for _ in range(depth):
         frame = frame.f_back
     return f"{frame.f_code.co_filename}:{frame.f_lineno}"
+
 
 def _assertMessagesPresent(test, mainZsFile, errorOutputDict, expectedMessages, messageType):
     """
@@ -377,6 +408,7 @@ def _assertMessagesPresent(test, mainZsFile, errorOutputDict, expectedMessages, 
                 test.fail(f"Expected {messageType} not found! ('{expectedMessage}')")
             else:
                 test.fail(f"Expected {messageType} found in wrong order! ('{expectedMessage}')")
+
 
 def _camelCaseToSnakeCase(camelCase):
     camelCase = re.sub("([a-z])([A-Z])", "\\1_\\2", camelCase)

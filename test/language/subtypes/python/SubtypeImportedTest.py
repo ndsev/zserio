@@ -2,11 +2,10 @@ import zserio
 
 import Subtypes
 
+
 class SubtypeImportedTest(Subtypes.TestCase):
     def testReadWrite(self):
-        subtypeImported = self.api.SubtypeImported(
-            self.api.pkg.SubTest(13)
-        )
+        subtypeImported = self.api.SubtypeImported(self.api.pkg.SubTest(13))
 
         writer = zserio.BitStreamWriter()
         subtypeImported.write(writer)

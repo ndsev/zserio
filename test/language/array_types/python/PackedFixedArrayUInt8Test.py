@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedFixedArrayUInt8Test(ArrayTypes.TestCase):
     def testBitSizeOf(self):
         uint8Array = self._createAutoArray()
@@ -73,8 +74,8 @@ class PackedFixedArrayUInt8Test(ArrayTypes.TestCase):
     @staticmethod
     def _calcPackedFixedArrayBitSize():
         bitSize = 1  # packing descriptor: is_packed
-        bitSize += 6 # packing descriptor: max_bit_number
-        bitSize += 8 # first element
+        bitSize += 6  # packing descriptor: max_bit_number
+        bitSize += 8  # first element
 
         return bitSize
 

@@ -2,6 +2,7 @@ import zserio
 
 import WithRangeCheckCode
 
+
 class DynamicBitRangeCheckTest(WithRangeCheckCode.TestCase):
     def testDynamicBitLowerBound(self):
         self._checkDynamicBitValue(NUM_BITS, DYNAMIC_BIT_LOWER_BOUND)
@@ -29,6 +30,7 @@ class DynamicBitRangeCheckTest(WithRangeCheckCode.TestCase):
         bitBuffer = zserio.serialize(dynamicBitRangeCheckCompound)
         readDynamicBitRangeCheckCompound = zserio.deserialize(self.api.DynamicBitRangeCheckCompound, bitBuffer)
         self.assertEqual(dynamicBitRangeCheckCompound, readDynamicBitRangeCheckCompound)
+
 
 NUM_BITS = 10
 DYNAMIC_BIT_LOWER_BOUND = zserio.bitfield.bitfield_lowerbound(NUM_BITS)

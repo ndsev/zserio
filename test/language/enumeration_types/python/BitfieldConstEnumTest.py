@@ -2,6 +2,7 @@ import zserio
 
 import EnumerationTypes
 
+
 class BitfieldConstEnumTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Color.NONE.value)
@@ -26,14 +27,18 @@ class BitfieldConstEnumTest(EnumerationTypes.TestCase):
 
     def testCalcHashCode(self):
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.NONE))
-        self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.RED))
-        self.assertEqual(1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.BLUE))
-        self.assertEqual(1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.GREEN))
+        self.assertEqual(
+            1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.NONE)
+        )
+        self.assertEqual(
+            1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.RED)
+        )
+        self.assertEqual(
+            1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.BLUE)
+        )
+        self.assertEqual(
+            1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.GREEN)
+        )
 
     def testBitSizeOf(self):
         self.assertEqual(COLOR_BITSIZEOF, self.api.Color.NONE.bitsizeof())
@@ -52,6 +57,7 @@ class BitfieldConstEnumTest(EnumerationTypes.TestCase):
         self.api.Color.RED.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self.assertEqual(RED_VALUE, reader.read_bits(COLOR_BITSIZEOF))
+
 
 COLOR_BITSIZEOF = 5
 

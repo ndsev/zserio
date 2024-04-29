@@ -4,6 +4,7 @@ import zserio
 
 from testutils import getZserioApi
 
+
 class PackageNameConflictTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -27,5 +28,4 @@ class PackageNameConflictTest(unittest.TestCase):
         readPackageNameConflictImported = zserio.deserialize(self.api.PackageNameConflictImported, bitBuffer)
 
         self.assertEqual("test", packageNameConflictImported.blob.value)
-        self.assertEqual(packageNameConflictImported.blob.value,
-                         readPackageNameConflictImported.blob.value)
+        self.assertEqual(packageNameConflictImported.blob.value, readPackageNameConflictImported.blob.value)

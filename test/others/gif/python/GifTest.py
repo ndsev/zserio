@@ -4,6 +4,7 @@ import zserio
 
 from testutils import getZserioApi
 
+
 class GifTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -28,8 +29,9 @@ class GifTest(unittest.TestCase):
         self.assertEqual(self.GIF_SCREEN_BITS_OF_COLOR_RESOLUTION, screenDescriptor.bits_of_color_resolution)
         self.assertEqual(self.GIF_SCREEN_BITS_PER_PIXEL, screenDescriptor.bits_per_pixel)
 
-    ONE_PIX_GIF_FILE_NAME = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                         "..", "..", "..", "data", "others", "gif", "1pix.gif")
+    ONE_PIX_GIF_FILE_NAME = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "..", "..", "data", "others", "gif", "1pix.gif"
+    )
 
     GIF_FILE_FORMAT = "GIF"
     GIF_FILE_VERSION = "89a"

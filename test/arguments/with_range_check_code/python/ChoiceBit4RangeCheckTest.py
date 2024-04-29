@@ -2,6 +2,7 @@ import zserio
 
 import WithRangeCheckCode
 
+
 class ChoiceBit4RangeCheckTest(WithRangeCheckCode.TestCase):
     def testChoiceBit4LowerBound(self):
         self._checkChoiceBit4Value(BIT4_LOWER_BOUND)
@@ -22,9 +23,11 @@ class ChoiceBit4RangeCheckTest(WithRangeCheckCode.TestCase):
         choiceBit4RangeCheckCompound = self.api.ChoiceBit4RangeCheckCompound(selector)
         choiceBit4RangeCheckCompound.value = value
         bitBuffer = zserio.serialize(choiceBit4RangeCheckCompound)
-        readChoiceBit4RangeCheckCompound = zserio.deserialize(self.api.ChoiceBit4RangeCheckCompound, bitBuffer,
-                                                              selector)
+        readChoiceBit4RangeCheckCompound = zserio.deserialize(
+            self.api.ChoiceBit4RangeCheckCompound, bitBuffer, selector
+        )
         self.assertEqual(choiceBit4RangeCheckCompound, readChoiceBit4RangeCheckCompound)
+
 
 BIT4_LOWER_BOUND = 0
 BIT4_UPPER_BOUND = 15

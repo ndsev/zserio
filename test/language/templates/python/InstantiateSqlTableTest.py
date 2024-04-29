@@ -2,11 +2,11 @@ import apsw
 
 import Templates
 
+
 class InstantiateSqlTableTest(Templates.TestCase):
     def testReadWrite(self):
         connection = apsw.Connection(
-            self.SQLITE3_MEM_DB,
-            apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE
+            self.SQLITE3_MEM_DB, apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE
         )
 
         u32Table = self.api.U32Table(connection, "u32Table")
@@ -21,6 +21,5 @@ class InstantiateSqlTableTest(Templates.TestCase):
             readRows.append(row)
 
         self.assertEqual(rows, readRows)
-
 
     SQLITE3_MEM_DB = ":memory:"

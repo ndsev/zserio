@@ -2,11 +2,12 @@ import zserio
 
 import Templates
 
+
 class InstantiateTypeAsStructArrayFieldTest(Templates.TestCase):
     def testReadWrite(self):
-        instantiateTypeAsStructArrayField = self.api.InstantiateTypeAsStructArrayField([self.api.Test32(13),
-                                                                                        self.api.Test32(17),
-                                                                                        self.api.Test32(23)])
+        instantiateTypeAsStructArrayField = self.api.InstantiateTypeAsStructArrayField(
+            [self.api.Test32(13), self.api.Test32(17), self.api.Test32(23)]
+        )
 
         writer = zserio.BitStreamWriter()
         instantiateTypeAsStructArrayField.write(writer)

@@ -5,6 +5,7 @@ import BuiltInTypes
 
 from testutils import getApiDir
 
+
 class BitFieldUInt64LengthTest(BuiltInTypes.TestCase):
     def testBitSizeOf(self):
         container = self.api.Container()

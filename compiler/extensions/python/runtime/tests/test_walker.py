@@ -2,9 +2,19 @@ import unittest
 
 from test_object.api import WalkerBitmask, WalkerNested, WalkerObject, WalkerUnion
 
-from zserio import (WalkObserver, WalkFilter, Walker, DefaultWalkObserver, PythonRuntimeException,
-                    ArrayLengthWalkFilter, DepthWalkFilter, RegexWalkFilter, AndWalkFilter)
+from zserio import (
+    WalkObserver,
+    WalkFilter,
+    Walker,
+    DefaultWalkObserver,
+    PythonRuntimeException,
+    ArrayLengthWalkFilter,
+    DepthWalkFilter,
+    RegexWalkFilter,
+    AndWalkFilter,
+)
 from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute
+
 
 class TestWalkObserver(WalkObserver):
 
@@ -16,7 +26,7 @@ class TestWalkObserver(WalkObserver):
             "end_array": [],
             "begin_compound": [],
             "end_compound": [],
-            "visit_value": []
+            "visit_value": [],
         }
 
     @property
@@ -35,20 +45,29 @@ class TestWalkObserver(WalkObserver):
     def end_array(self, array, member_info):
         self._captures["end_array"].append(array)
 
-    def begin_compound(self, compound, member_info, element_index = None):
+    def begin_compound(self, compound, member_info, element_index=None):
         self._captures["begin_compound"].append(compound)
 
-    def end_compound(self, compound, member_info, element_index = None):
+    def end_compound(self, compound, member_info, element_index=None):
         self._captures["end_compound"].append(compound)
 
-    def visit_value(self, value, member_info, element_index = None):
+    def visit_value(self, value, member_info, element_index=None):
         self._captures["visit_value"].append(value)
 
 
 class TestWalkFilter(WalkFilter):
 
-    def __init__(self, *, before_array=True, after_array=True, only_first_element=False,
-                 before_compound=True, after_compound=True, before_value=True, after_value=True):
+    def __init__(
+        self,
+        *,
+        before_array=True,
+        after_array=True,
+        only_first_element=False,
+        before_compound=True,
+        after_compound=True,
+        before_value=True,
+        after_value=True
+    ):
         self._config = {
             "before_array": before_array,
             "after_array": after_array,
@@ -56,7 +75,7 @@ class TestWalkFilter(WalkFilter):
             "before_compound": before_compound,
             "after_compound": after_compound,
             "before_value": before_value,
-            "after_value": after_value
+            "after_value": after_value,
         }
         self._is_first_element = False
 
@@ -68,18 +87,18 @@ class TestWalkFilter(WalkFilter):
         self._is_first_element = False
         return self._config["after_array"]
 
-    def before_compound(self, compound, member_info, element_index = None):
+    def before_compound(self, compound, member_info, element_index=None):
         return self._config["before_compound"]
 
-    def after_compound(self, compound, member_info, element_index = None):
+    def after_compound(self, compound, member_info, element_index=None):
         go_to_next = not (self._config["only_first_element"] and self._is_first_element)
         self._is_first_element = False
         return go_to_next and self._config["after_compound"]
 
-    def before_value(self, value, member_info, element_index = None):
+    def before_value(self, value, member_info, element_index=None):
         return self._config["before_value"]
 
-    def after_value(self, value, member_info, element_index = None):
+    def after_value(self, value, member_info, element_index=None):
         return self._config["after_value"]
 
 
@@ -143,29 +162,49 @@ class WalkerTest(unittest.TestCase):
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
-        self.assertEqual([obj.union_array, obj.union_array[2].nested_array], observer.captures["begin_array"])
-        self.assertEqual([obj.union_array[2].nested_array, obj.union_array], observer.captures["end_array"])
         self.assertEqual(
-            [
-                obj.nested, obj.union_array[0], obj.union_array[1],
-                obj.union_array[2], obj.union_array[2].nested_array[0]
-            ],
-            observer.captures["begin_compound"]
+            [obj.union_array, obj.union_array[2].nested_array],
+            observer.captures["begin_array"],
+        )
+        self.assertEqual(
+            [obj.union_array[2].nested_array, obj.union_array],
+            observer.captures["end_array"],
         )
         self.assertEqual(
             [
-                obj.nested, obj.union_array[0], obj.union_array[1],
-                obj.union_array[2].nested_array[0], obj.union_array[2]
+                obj.nested,
+                obj.union_array[0],
+                obj.union_array[1],
+                obj.union_array[2],
+                obj.union_array[2].nested_array[0],
             ],
-            observer.captures["end_compound"]
+            observer.captures["begin_compound"],
         )
-        self.assertEqual([13, "nested", "test", '1', 2, "nestedArray", None], observer.captures["visit_value"])
+        self.assertEqual(
+            [
+                obj.nested,
+                obj.union_array[0],
+                obj.union_array[1],
+                obj.union_array[2].nested_array[0],
+                obj.union_array[2],
+            ],
+            observer.captures["end_compound"],
+        )
+        self.assertEqual(
+            [13, "nested", "test", "1", 2, "nestedArray", None],
+            observer.captures["visit_value"],
+        )
 
     def test_walk_skip_compound(self):
         observer = TestWalkObserver()
-        test_filter = TestWalkFilter(before_array=True, after_array=True,
-                                     before_compound=False, after_compound=True,
-                                     before_value=True, after_value=True)
+        test_filter = TestWalkFilter(
+            before_array=True,
+            after_array=True,
+            before_compound=False,
+            after_compound=True,
+            before_value=True,
+            after_value=True,
+        )
         walker = Walker(observer, AndWalkFilter([test_filter]))
         obj = _create_walker_object()
         walker.walk(obj)
@@ -179,9 +218,14 @@ class WalkerTest(unittest.TestCase):
 
     def test_walk_skip_siblings(self):
         observer = TestWalkObserver()
-        test_filter = TestWalkFilter(before_array=True, after_array=True,
-                                     before_compound=True, after_compound=True,
-                                     before_value=True, after_value=False)
+        test_filter = TestWalkFilter(
+            before_array=True,
+            after_array=True,
+            before_compound=True,
+            after_compound=True,
+            before_value=True,
+            after_value=False,
+        )
         walker = Walker(observer, AndWalkFilter([test_filter]))
         obj = _create_walker_object()
         walker.walk(obj)
@@ -195,9 +239,14 @@ class WalkerTest(unittest.TestCase):
 
     def test_walk_skip_after_nested(self):
         observer = TestWalkObserver()
-        test_filter = TestWalkFilter(before_array=True, after_array=True,
-                                     before_compound=True, after_compound=False,
-                                     before_value=True, after_value=True)
+        test_filter = TestWalkFilter(
+            before_array=True,
+            after_array=True,
+            before_compound=True,
+            after_compound=False,
+            before_value=True,
+            after_value=True,
+        )
         walker = Walker(observer, AndWalkFilter([test_filter]))
         obj = _create_walker_object()
         walker.walk(obj)
@@ -211,9 +260,15 @@ class WalkerTest(unittest.TestCase):
 
     def test_walk_only_first_element(self):
         observer = TestWalkObserver()
-        test_filter = TestWalkFilter(before_array=True, after_array=True, only_first_element=True,
-                                     before_compound=True, after_compound=True,
-                                     before_value=True, after_value=True)
+        test_filter = TestWalkFilter(
+            before_array=True,
+            after_array=True,
+            only_first_element=True,
+            before_compound=True,
+            after_compound=True,
+            before_value=True,
+            after_value=True,
+        )
         walker = Walker(observer, AndWalkFilter([test_filter]))
         obj = _create_walker_object()
         walker.walk(obj)
@@ -223,7 +278,7 @@ class WalkerTest(unittest.TestCase):
         self.assertEqual([obj.union_array], observer.captures["end_array"])
         self.assertEqual([obj.nested, obj.union_array[0]], observer.captures["begin_compound"])
         self.assertEqual([obj.nested, obj.union_array[0]], observer.captures["end_compound"])
-        self.assertEqual([13, "nested", "test", '1', None], observer.captures["visit_value"])
+        self.assertEqual([13, "nested", "test", "1", None], observer.captures["visit_value"])
 
 
 class DefaultObserverTest(unittest.TestCase):
@@ -240,6 +295,7 @@ class DefaultObserverTest(unittest.TestCase):
         default_observer.begin_compound(object(), walker_member_info)
         default_observer.end_compound(object(), walker_member_info)
         default_observer.visit_value(None, walker_member_info)
+
 
 class DepthWalkFilterTest(unittest.TestCase):
 
@@ -286,9 +342,11 @@ class RegexWalkFilterTest(unittest.TestCase):
 
     def test_regex_all_match(self):
         walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
-        walker_array_member_info = MemberInfo("walker", TypeInfo("Walker", None), attributes={
-            MemberAttribute.ARRAY_LENGTH: None
-        })
+        walker_array_member_info = MemberInfo(
+            "walker",
+            TypeInfo("Walker", None),
+            attributes={MemberAttribute.ARRAY_LENGTH: None},
+        )
         regex_filter = RegexWalkFilter(".*")
 
         self.assertTrue(regex_filter.before_array([], walker_array_member_info))
@@ -338,8 +396,12 @@ class RegexWalkFilterTest(unittest.TestCase):
         self.assertTrue(regex_filter.after_array(walker_object.union_array, union_array_member_info))
 
     def test_regex_array_no_match(self):
-        walker_object = WalkerObject(13, WalkerNested("nested"), "test",
-                                   [WalkerUnion(nested_array_=[WalkerNested("nestedArray")])])
+        walker_object = WalkerObject(
+            13,
+            WalkerNested("nested"),
+            "test",
+            [WalkerUnion(nested_array_=[WalkerNested("nestedArray")])],
+        )
 
         regex_filter = RegexWalkFilter("^unionArray\\[\\d*\\]\\.te.*")
 
@@ -388,9 +450,11 @@ class ArrayLengthWalkFilterTest(unittest.TestCase):
 
     def test_array_length_0(self):
         walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
-        walker_array_member_info = MemberInfo("walker_array", TypeInfo("Walker", None), attributes={
-            MemberAttribute.ARRAY_LENGTH : None
-        })
+        walker_array_member_info = MemberInfo(
+            "walker_array",
+            TypeInfo("Walker", None),
+            attributes={MemberAttribute.ARRAY_LENGTH: None},
+        )
         array_length_filter = ArrayLengthWalkFilter(0)
 
         self.assertTrue(array_length_filter.before_array([], walker_array_member_info))
@@ -438,14 +502,26 @@ class AndWalkFilterTest(unittest.TestCase):
     def test_false_false(self):
         walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         # two filters returning False
-        walk_filter = AndWalkFilter([
-            TestWalkFilter(before_array=False, after_array=False,
-                           before_compound=False, after_compound=False,
-                           before_value=False, after_value=False),
-            TestWalkFilter(before_array=False, after_array=False,
-                           before_compound=False, after_compound=False,
-                           before_value=False, after_value=False)
-            ])
+        walk_filter = AndWalkFilter(
+            [
+                TestWalkFilter(
+                    before_array=False,
+                    after_array=False,
+                    before_compound=False,
+                    after_compound=False,
+                    before_value=False,
+                    after_value=False,
+                ),
+                TestWalkFilter(
+                    before_array=False,
+                    after_array=False,
+                    before_compound=False,
+                    after_compound=False,
+                    before_value=False,
+                    after_value=False,
+                ),
+            ]
+        )
 
         self.assertFalse(walk_filter.before_array([], walker_member_info))
         self.assertFalse(walk_filter.after_array([], walker_member_info))
@@ -456,12 +532,19 @@ class AndWalkFilterTest(unittest.TestCase):
 
     def test_true_false(self):
         walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
-        walk_filter = AndWalkFilter([
-            TestWalkFilter(), # returning true
-            TestWalkFilter(before_array=False, after_array=False,
-                           before_compound=False, after_compound=False,
-                           before_value=False, after_value=False) # returning false
-        ])
+        walk_filter = AndWalkFilter(
+            [
+                TestWalkFilter(),  # returning true
+                TestWalkFilter(
+                    before_array=False,
+                    after_array=False,
+                    before_compound=False,
+                    after_compound=False,
+                    before_value=False,
+                    after_value=False,
+                ),  # returning false
+            ]
+        )
 
         self.assertFalse(walk_filter.before_array([], walker_member_info))
         self.assertFalse(walk_filter.after_array([], walker_member_info))
@@ -472,8 +555,13 @@ class AndWalkFilterTest(unittest.TestCase):
 
 
 def _create_walker_object():
-    return WalkerObject(13, WalkerNested("nested"), "test", [
-        WalkerUnion(text_="1"),
-        WalkerUnion(value_=2),
-        WalkerUnion(nested_array_=[WalkerNested("nestedArray")])
-    ])
+    return WalkerObject(
+        13,
+        WalkerNested("nested"),
+        "test",
+        [
+            WalkerUnion(text_="1"),
+            WalkerUnion(value_=2),
+            WalkerUnion(nested_array_=[WalkerNested("nestedArray")]),
+        ],
+    )

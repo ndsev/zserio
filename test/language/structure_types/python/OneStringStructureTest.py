@@ -4,6 +4,7 @@ import zserio
 import StructureTypes
 from testutils import getApiDir
 
+
 class OneStringStructureTest(StructureTypes.TestCase):
     def testConstructor(self):
         oneStringStructure = self.api.OneStringStructure()
@@ -62,8 +63,9 @@ class OneStringStructureTest(StructureTypes.TestCase):
     def testInitializeOffsets(self):
         oneStringStructure = self.api.OneStringStructure(one_string_=self.ONE_STRING)
         bitPosition = 1
-        self.assertEqual(self.ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition,
-                         oneStringStructure.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition, oneStringStructure.initialize_offsets(bitPosition)
+        )
 
     def testWriteRead(self):
         oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)

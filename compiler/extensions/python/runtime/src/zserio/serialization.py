@@ -8,6 +8,7 @@ from zserio.bitwriter import BitStreamWriter
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
 
+
 def serialize(obj: typing.Any) -> BitBuffer:
     """
     Serializes generated object to the bit buffer.
@@ -36,6 +37,7 @@ def serialize(obj: typing.Any) -> BitBuffer:
 
     return BitBuffer(writer.byte_array, writer.bitposition)
 
+
 def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args) -> typing.Any:
     """
     Deserializes bit buffer to the generated object.
@@ -59,6 +61,7 @@ def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args)
     reader = BitStreamReader.from_bitbuffer(bitbuffer)
 
     return obj_class.from_reader(reader, *args)
+
 
 def serialize_to_bytes(obj: typing.Any) -> bytes:
     """
@@ -90,6 +93,7 @@ def serialize_to_bytes(obj: typing.Any) -> bytes:
 
     return writer.byte_array
 
+
 def deserialize_from_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) -> typing.Any:
     """
     Deserializes byte buffer to the generated object.
@@ -118,6 +122,7 @@ def deserialize_from_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *a
 
     return deserialize(obj_class, bitbuffer, *args)
 
+
 def serialize_to_file(obj: typing.Any, filename: str) -> None:
     """
     Serializes generated object to the file.
@@ -143,6 +148,7 @@ def serialize_to_file(obj: typing.Any, filename: str) -> None:
     writer = _serialize(obj)
     writer.to_file(filename)
 
+
 def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *args) -> typing.Any:
     """
     Deserializes file to the generated object.
@@ -167,6 +173,7 @@ def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *ar
     reader = BitStreamReader.from_file(filename)
 
     return obj_class.from_reader(reader, *args)
+
 
 def _serialize(obj: typing.Any) -> BitStreamWriter:
     writer = BitStreamWriter()

@@ -2,6 +2,7 @@ import zserio
 
 import ExtendedMembers
 
+
 class ExtendedEmptyStructureTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
@@ -35,7 +36,6 @@ class ExtendedEmptyStructureTest(ExtendedMembers.TestCase):
         self.assertNotEqual(hash(extended1), hash(extended2))
         extended1.extended_value = 42
         self.assertEqual(hash(extended1), hash(extended2))
-
 
     def testBitSizeOf(self):
         extended = self.api.Extended()
@@ -99,6 +99,7 @@ class ExtendedEmptyStructureTest(ExtendedMembers.TestCase):
         reader = zserio.BitStreamReader.from_bitbuffer(bitBuffer)
         self.api.Original.from_reader(reader)
         self.assertEqual(ORIGINAL_BIT_SIZE, reader.bitposition)
+
 
 ORIGINAL_BIT_SIZE = 0
 EXTENDED_BIT_SIZE = ORIGINAL_BIT_SIZE + 4 * 8

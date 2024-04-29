@@ -2,13 +2,14 @@ import zserio
 
 import Constraints
 
+
 class StructureBitmaskConstraintsTest(Constraints.TestCase):
     def testReadCorrectConstraints(self):
         writer = zserio.BitStreamWriter()
         availability = (
-            self.api.Availability.Values.COORD_X |
-            self.api.Availability.Values.COORD_Y |
-            self.api.Availability.Values.COORD_Z
+            self.api.Availability.Values.COORD_X
+            | self.api.Availability.Values.COORD_Y
+            | self.api.Availability.Values.COORD_Z
         )
         self.__class__._write(writer, availability, 1, 1, 1)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)

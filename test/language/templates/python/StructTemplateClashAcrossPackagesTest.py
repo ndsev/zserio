@@ -2,10 +2,12 @@ import zserio
 
 import Templates
 
+
 class StructTemplateClashAcrossPackagesTest(Templates.TestCase):
     def testReadWriteInPkg1(self):
         instantiationInPkg1 = self.api.pkg1.InstantiationInPkg1(
-            self.api.test_struct.TestStruct_Test_639610D0(self.api.pkg1.Test(42)))
+            self.api.test_struct.TestStruct_Test_639610D0(self.api.pkg1.Test(42))
+        )
 
         writer = zserio.BitStreamWriter()
         instantiationInPkg1.write(writer)
@@ -16,7 +18,8 @@ class StructTemplateClashAcrossPackagesTest(Templates.TestCase):
 
     def testReadWriteInPkg2(self):
         instantiationInPkg2 = self.api.pkg2.InstantiationInPkg2(
-            self.api.test_struct.TestStruct_Test_67B82BA5(self.api.pkg2.Test("string")))
+            self.api.test_struct.TestStruct_Test_67B82BA5(self.api.pkg2.Test("string"))
+        )
 
         writer = zserio.BitStreamWriter()
         instantiationInPkg2.write(writer)

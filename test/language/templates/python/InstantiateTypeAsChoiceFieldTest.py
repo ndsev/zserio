@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateTypeAsChoiceFieldTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTypeAsChoiceField = self.api.InstantiateTypeAsChoiceField(True)

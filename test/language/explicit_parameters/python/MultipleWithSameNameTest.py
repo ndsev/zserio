@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class MultipleWithSameNameWithSameNameTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(MultipleWithSameNameWithSameNameTest, cls).setUpClass()
 
         test_api = cls.api.multiple_with_same_name
+
         class MultipleWithSameNameTableParameterProvider(test_api.MultipleWithSameNameTable.IParameterProvider):
             def __init__(self):
                 self._param1 = PARAM1
@@ -107,6 +109,7 @@ class MultipleWithSameNameWithSameNameTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "multipleWithSameNameTable"
 NUM_ROWS = 5

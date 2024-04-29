@@ -2,6 +2,7 @@ import zserio
 
 import WithRangeCheckCode
 
+
 class Int7ArrayRangeCheckTest(WithRangeCheckCode.TestCase):
     def testInt7ArrayLowerBound(self):
         self._checkInt7ArrayValue(INT7_LOWER_BOUND)
@@ -22,6 +23,7 @@ class Int7ArrayRangeCheckTest(WithRangeCheckCode.TestCase):
         bitBuffer = zserio.serialize(int7ArrayRangeCheckCompound)
         readInt7ArrayRangeCheckCompound = zserio.deserialize(self.api.Int7ArrayRangeCheckCompound, bitBuffer)
         self.assertEqual(int7ArrayRangeCheckCompound, readInt7ArrayRangeCheckCompound)
+
 
 INT7_LOWER_BOUND = -64
 INT7_UPPER_BOUND = 63

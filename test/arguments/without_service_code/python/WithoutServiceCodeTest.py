@@ -5,6 +5,7 @@ import unittest
 
 from testutils import getZserioApi
 
+
 class WithoutServiceCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

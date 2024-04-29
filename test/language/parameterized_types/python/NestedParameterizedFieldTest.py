@@ -4,6 +4,7 @@ import zserio
 import ParameterizedTypes
 from testutils import getApiDir
 
+
 class NestedParameterizedFieldTest(ParameterizedTypes.TestCase):
     def testBitSizeOf(self):
         topLevel = self._createTopLevel()

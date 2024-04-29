@@ -2,6 +2,7 @@ import zserio
 
 import StructureTypes
 
+
 class SimpleStructureTest(StructureTypes.TestCase):
     def testConstructor(self):
         simpleStructure = self.api.SimpleStructure()
@@ -108,8 +109,9 @@ class SimpleStructureTest(StructureTypes.TestCase):
         numberC = 0x44
         simpleStructure = self.api.SimpleStructure(number_a_=numberA, number_b_=numberB, number_c_=numberC)
         bitPosition = 1
-        self.assertEqual(self.SIMPLE_STRUCTURE_BIT_SIZE + bitPosition,
-                         simpleStructure.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.SIMPLE_STRUCTURE_BIT_SIZE + bitPosition, simpleStructure.initialize_offsets(bitPosition)
+        )
 
     def testReadWrite(self):
         numberA = 0x07

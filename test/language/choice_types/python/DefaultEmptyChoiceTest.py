@@ -2,6 +2,7 @@ import zserio
 
 import ChoiceTypes
 
+
 class DefaultEmptyChoiceTest(ChoiceTypes.TestCase):
     def testFromReader(self):
         tag = self.VARIANT_B_SELECTOR

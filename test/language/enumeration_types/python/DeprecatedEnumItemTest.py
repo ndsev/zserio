@@ -4,6 +4,7 @@ from zserio.typeinfo import TypeAttribute
 
 import EnumerationTypes
 
+
 class DeprecatedEnumItemTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Traffic.NONE.value)
@@ -36,15 +37,19 @@ class DeprecatedEnumItemTest(EnumerationTypes.TestCase):
 
     def testHashCode(self):
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.NONE))
+        self.assertEqual(
+            1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.NONE)
+        )
         with self.assertWarns(DeprecationWarning):
-            self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                        self.api.Traffic.HEAVY))
-        self.assertEqual(1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.LIGHT))
-        self.assertEqual(1706, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Traffic.MID))
+            self.assertEqual(
+                1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.HEAVY)
+            )
+        self.assertEqual(
+            1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.LIGHT)
+        )
+        self.assertEqual(
+            1706, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Traffic.MID)
+        )
 
     def testBitSizeOf(self):
         self.assertEqual(TRAFFIC_BIT_SIZE, self.api.Traffic.NONE.bitsizeof())
@@ -112,6 +117,7 @@ class DeprecatedEnumItemTest(EnumerationTypes.TestCase):
         self.assertEqual(self.api.Traffic.MID, item_info.py_item)
         self.assertFalse(item_info.is_deprecated)
         self.assertFalse(item_info.is_removed)
+
 
 TRAFFIC_BIT_SIZE = 8
 

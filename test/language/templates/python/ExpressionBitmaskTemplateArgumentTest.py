@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class ExpressionBitmaskTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         bitmaskTemplateArgument_Permission = self.api.BitmaskTemplateArgument_Permission(False, 10)

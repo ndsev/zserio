@@ -2,6 +2,7 @@ import zserio
 
 import EnumerationTypes
 
+
 class UInt8EnumTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.DarkColor.NONE.value)
@@ -26,14 +27,18 @@ class UInt8EnumTest(EnumerationTypes.TestCase):
 
     def testCalcHashCode(self):
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.NONE))
-        self.assertEqual(1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.DARK_RED))
-        self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.DARK_BLUE))
-        self.assertEqual(1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.DarkColor.DARK_GREEN))
+        self.assertEqual(
+            1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.NONE)
+        )
+        self.assertEqual(
+            1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.DARK_RED)
+        )
+        self.assertEqual(
+            1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.DARK_BLUE)
+        )
+        self.assertEqual(
+            1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.DarkColor.DARK_GREEN)
+        )
 
     def testBitSizeOf(self):
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.bitsizeof())
@@ -52,6 +57,7 @@ class UInt8EnumTest(EnumerationTypes.TestCase):
         self.api.DarkColor.DARK_RED.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self.assertEqual(DARK_RED_VALUE, reader.read_bits(DARK_COLOR_BITSIZEOF))
+
 
 DARK_COLOR_BITSIZEOF = 8
 

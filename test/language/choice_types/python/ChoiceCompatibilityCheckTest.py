@@ -5,6 +5,7 @@ import ChoiceTypes
 
 from testutils import getApiDir
 
+
 class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
     def testWriteVersion1ReadVersion1(self):
         choiceCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
@@ -36,15 +37,17 @@ class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
 
     def testWriteVersion1ReadVersion1File(self):
         choiceCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
-        readChoiceCompatibilityCheckVersion1 = self._writeReadVersion1File(choiceCompatibilityCheckVersion1,
-                                                                           "version1_version1")
+        readChoiceCompatibilityCheckVersion1 = self._writeReadVersion1File(
+            choiceCompatibilityCheckVersion1, "version1_version1"
+        )
 
         self.assertEqual(choiceCompatibilityCheckVersion1, readChoiceCompatibilityCheckVersion1)
 
     def testWriteVersion1ReadVersion2File(self):
         choiceCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
-        readChoiceCompatibilityCheckVersion2 = self._writeReadVersion2File(choiceCompatibilityCheckVersion1,
-                                                                           "version1_version2")
+        readChoiceCompatibilityCheckVersion2 = self._writeReadVersion2File(
+            choiceCompatibilityCheckVersion1, "version1_version2"
+        )
 
         expectedArrayVersion2 = self._createArrayVersion2WithVersion1Fields()
         self.assertEqual(expectedArrayVersion2, readChoiceCompatibilityCheckVersion2.array)
@@ -52,8 +55,9 @@ class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
 
     def testWriteVersion2ReadVersion1File(self):
         choiceCompatibilityCheckVersion2 = self._createVersion2(self._createArrayVersion2WithVersion1Fields())
-        readChoiceCompatibilityCheckVersion1 = self._writeReadVersion1File(choiceCompatibilityCheckVersion2,
-                                                                           "version2_version1")
+        readChoiceCompatibilityCheckVersion1 = self._writeReadVersion1File(
+            choiceCompatibilityCheckVersion2, "version2_version1"
+        )
 
         expectedArrayVersion1 = self._createArrayVersion1()
         self.assertEqual(expectedArrayVersion1, readChoiceCompatibilityCheckVersion1.array)
@@ -61,8 +65,9 @@ class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
 
     def testWriteVersion2ReadVersion2File(self):
         choiceCompatibilityCheckVersion2 = self._createVersion2(self._createArrayVersion2())
-        readChoiceCompatibilityCheckVersion2 = self._writeReadVersion2File(choiceCompatibilityCheckVersion2,
-                                                                           "version2_version2")
+        readChoiceCompatibilityCheckVersion2 = self._writeReadVersion2File(
+            choiceCompatibilityCheckVersion2, "version2_version2"
+        )
 
         self.assertEqual(choiceCompatibilityCheckVersion2, readChoiceCompatibilityCheckVersion2)
 
@@ -77,7 +82,7 @@ class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
             self._createHolderVersion1(self.api.EnumVersion1.COORD_XY, 0),
             self._createHolderVersion1(self.api.EnumVersion1.TEXT, 1),
             self._createHolderVersion1(self.api.EnumVersion1.COORD_XY, 2),
-            self._createHolderVersion1(self.api.EnumVersion1.TEXT, 3)
+            self._createHolderVersion1(self.api.EnumVersion1.TEXT, 3),
         ]
 
     def _createArrayVersion2WithVersion1Fields(self):
@@ -85,14 +90,14 @@ class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
             self._createHolderVersion2(self.api.EnumVersion2.COORD_XY, 0),
             self._createHolderVersion2(self.api.EnumVersion2.TEXT, 1),
             self._createHolderVersion2(self.api.EnumVersion2.COORD_XY, 2),
-            self._createHolderVersion2(self.api.EnumVersion2.TEXT, 3)
+            self._createHolderVersion2(self.api.EnumVersion2.TEXT, 3),
         ]
 
     def _createArrayVersion2(self):
         return self._createArrayVersion2WithVersion1Fields() + [
             self._createHolderVersion2(self.api.EnumVersion2.COORD_XYZ, 4),
             self._createHolderVersion2(self.api.EnumVersion2.COORD_XYZ, 5),
-            self._createHolderVersion2(self.api.EnumVersion2.COORD_XYZ, 6)
+            self._createHolderVersion2(self.api.EnumVersion2.COORD_XYZ, 6),
         ]
 
     def _createHolderVersion1(self, selector, index):

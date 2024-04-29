@@ -4,6 +4,7 @@ import zserio
 import UnionTypes
 from testutils import getApiDir
 
+
 class UnionCompatibilityCheckTest(UnionTypes.TestCase):
     def testWriteVersion1ReadVersion1(self):
         unionCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
@@ -35,15 +36,17 @@ class UnionCompatibilityCheckTest(UnionTypes.TestCase):
 
     def testWriteVersion1ReadVersion1File(self):
         unionCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
-        readUnionCompatibilityCheckVersion1 = self._writeReadVersion1File(unionCompatibilityCheckVersion1,
-                                                                           "version1_version1")
+        readUnionCompatibilityCheckVersion1 = self._writeReadVersion1File(
+            unionCompatibilityCheckVersion1, "version1_version1"
+        )
 
         self.assertEqual(unionCompatibilityCheckVersion1, readUnionCompatibilityCheckVersion1)
 
     def testWriteVersion1ReadVersion2File(self):
         unionCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
-        readUnionCompatibilityCheckVersion2 = self._writeReadVersion2File(unionCompatibilityCheckVersion1,
-                                                                           "version1_version2")
+        readUnionCompatibilityCheckVersion2 = self._writeReadVersion2File(
+            unionCompatibilityCheckVersion1, "version1_version2"
+        )
 
         expectedArrayVersion2 = self._createArrayVersion2WithVersion1Fields()
         self.assertEqual(expectedArrayVersion2, readUnionCompatibilityCheckVersion2.array)
@@ -51,8 +54,9 @@ class UnionCompatibilityCheckTest(UnionTypes.TestCase):
 
     def testWriteVersion2ReadVersion1File(self):
         unionCompatibilityCheckVersion2 = self._createVersion2(self._createArrayVersion2WithVersion1Fields())
-        readUnionCompatibilityCheckVersion1 = self._writeReadVersion1File(unionCompatibilityCheckVersion2,
-                                                                           "version2_version1")
+        readUnionCompatibilityCheckVersion1 = self._writeReadVersion1File(
+            unionCompatibilityCheckVersion2, "version2_version1"
+        )
 
         expectedArrayVersion1 = self._createArrayVersion1()
         self.assertEqual(expectedArrayVersion1, readUnionCompatibilityCheckVersion1.array)
@@ -60,8 +64,9 @@ class UnionCompatibilityCheckTest(UnionTypes.TestCase):
 
     def testWriteVersion2ReadVersion2File(self):
         unionCompatibilityCheckVersion2 = self._createVersion2(self._createArrayVersion2())
-        readUnionCompatibilityCheckVersion2 = self._writeReadVersion2File(unionCompatibilityCheckVersion2,
-                                                                           "version2_version2")
+        readUnionCompatibilityCheckVersion2 = self._writeReadVersion2File(
+            unionCompatibilityCheckVersion2, "version2_version2"
+        )
 
         self.assertEqual(unionCompatibilityCheckVersion2, readUnionCompatibilityCheckVersion2)
 
@@ -76,7 +81,7 @@ class UnionCompatibilityCheckTest(UnionTypes.TestCase):
             self._createUnionVersion1(0),
             self._createUnionVersion1(1),
             self._createUnionVersion1(2),
-            self._createUnionVersion1(3)
+            self._createUnionVersion1(3),
         ]
 
     def _createArrayVersion2WithVersion1Fields(self):
@@ -84,14 +89,14 @@ class UnionCompatibilityCheckTest(UnionTypes.TestCase):
             self._createUnionVersion2(0),
             self._createUnionVersion2(1),
             self._createUnionVersion2(2),
-            self._createUnionVersion2(3)
+            self._createUnionVersion2(3),
         ]
 
     def _createArrayVersion2(self):
         return self._createArrayVersion2WithVersion1Fields() + [
             self._createUnionCoordXYZ(4),
             self._createUnionCoordXYZ(5),
-            self._createUnionCoordXYZ(6)
+            self._createUnionCoordXYZ(6),
         ]
 
     def _createUnionVersion1(self, index):

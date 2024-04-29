@@ -2,6 +2,7 @@ import zserio
 
 import Functions
 
+
 class StructureValueTest(Functions.TestCase):
     def testCustomVarIntValue42(self):
         self._checkCustomVarInt(42)

@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateTypeImportedAsStructFieldTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTypeImportedAsStructField = self.api.InstantiateTypeImportedAsStructField(

@@ -2,6 +2,7 @@ import zserio
 
 import ParameterizedTypes
 
+
 class BytesParamTest(ParameterizedTypes.TestCase):
     def testWriteRead(self):
         bytesData = bytearray([0xCA, 0xFE])

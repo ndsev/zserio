@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class VariableArrayTernaryOperatorTest(ArrayTypes.TestCase):
     def testFirstWriteReadFile(self):
         isFirstOffsetUsed = True
@@ -48,7 +49,9 @@ class VariableArrayTernaryOperatorTest(ArrayTypes.TestCase):
     FIRST_SIZE = 10
     SECOND_SIZE = 20
 
-    BLOB_NAME_FIRST = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                   "variable_array_ternary_operator1.blob")
-    BLOB_NAME_SECOND = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                    "variable_array_ternary_operator2.blob")
+    BLOB_NAME_FIRST = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "variable_array_ternary_operator1.blob"
+    )
+    BLOB_NAME_SECOND = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "variable_array_ternary_operator2.blob"
+    )

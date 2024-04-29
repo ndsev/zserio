@@ -1,5 +1,6 @@
 import Expressions
 
+
 class ConstTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         constTypeExpression = self.api.ConstTypeExpression(self.VALID_VALUE, self.ADDITIONAL_VALUE)

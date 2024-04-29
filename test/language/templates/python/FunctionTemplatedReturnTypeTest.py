@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class FunctionTemplatedReturnTypeTest(Templates.TestCase):
     def testReadWrite(self):
         hasHolder = True
@@ -9,7 +10,7 @@ class FunctionTemplatedReturnTypeTest(Templates.TestCase):
             hasHolder,
             self.api.TestStructure_uint32(hasHolder, holder_=self.api.Holder_uint32(42)),
             self.api.TestStructure_string(hasHolder, holder_=self.api.Holder_string("string")),
-            self.api.TestStructure_float32(False, value_=4.2)
+            self.api.TestStructure_float32(False, value_=4.2),
         )
 
         writer = zserio.BitStreamWriter()

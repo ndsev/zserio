@@ -1,5 +1,6 @@
 import Expressions
 
+
 class ModuloOperatorTest(Expressions.TestCase):
     def testIsValueDivBy4(self):
         moduleFunction = self.api.ModuloFunction()

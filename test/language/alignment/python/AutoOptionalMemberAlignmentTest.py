@@ -2,38 +2,48 @@ import zserio
 
 import Alignment
 
+
 class AutoOptionalMemberAlignmentTest(Alignment.TestCase):
     def testBitSizeOfWithOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(0x4433, 0x1122)
-        self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
-                         autoOptionalMemberAlignment.bitsizeof())
+        self.assertEqual(
+            self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, autoOptionalMemberAlignment.bitsizeof()
+        )
 
     def testBitSizeOfWithoutOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(None, 0x7624)
-        self.assertEqual(self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
-                         autoOptionalMemberAlignment.bitsizeof())
+        self.assertEqual(
+            self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, autoOptionalMemberAlignment.bitsizeof()
+        )
 
     def testInitializeOffsetsWithOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(0x1111, 0x3333)
         for bitPosition in range(32):
-            self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
-                             autoOptionalMemberAlignment.initialize_offsets(bitPosition))
+            self.assertEqual(
+                self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
+                autoOptionalMemberAlignment.initialize_offsets(bitPosition),
+            )
         bitPosition = 32
-        self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
-                         autoOptionalMemberAlignment.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
+            autoOptionalMemberAlignment.initialize_offsets(bitPosition),
+        )
 
     def testInitializeOffsetsWithoutOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(field_=0x3334)
         bitPosition = 1
-        self.assertEqual(self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
-                         autoOptionalMemberAlignment.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
+            autoOptionalMemberAlignment.initialize_offsets(bitPosition),
+        )
 
     def testReadWithOptional(self):
         autoOptionalField = 0x1234
         field = 0x7654
         writer = zserio.BitStreamWriter()
-        AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, autoOptionalField,
-                                                                                  field)
+        AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(
+            writer, autoOptionalField, field
+        )
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.from_reader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, autoOptionalField, field)

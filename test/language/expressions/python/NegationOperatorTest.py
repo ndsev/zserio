@@ -1,5 +1,6 @@
 import Expressions
 
+
 class NegationOperatorTest(Expressions.TestCase):
     def testNegatedValue(self):
         negationOperatorExpression = self.api.NegationOperatorExpression(True)

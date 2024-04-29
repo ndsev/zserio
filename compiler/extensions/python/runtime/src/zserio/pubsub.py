@@ -6,8 +6,9 @@ import typing
 
 from zserio.exception import PythonRuntimeException
 
+
 class PubsubInterface:
-    """ Interface for Pub/Sub client backends. """
+    """Interface for Pub/Sub client backends."""
 
     def publish(self, topic: str, data: bytes, context: typing.Any = None) -> None:
         """
@@ -20,8 +21,12 @@ class PubsubInterface:
         """
         raise NotImplementedError()
 
-    def subscribe(self, topic: str, callback: typing.Callable[[str, bytes], None],
-                  context: typing.Any = None) -> int:
+    def subscribe(
+        self,
+        topic: str,
+        callback: typing.Callable[[str, bytes], None],
+        context: typing.Any = None,
+    ) -> int:
         """
         Subscribes a topic.
 
@@ -43,6 +48,7 @@ class PubsubInterface:
         :raises PubsubException: If unsubscribing fails.
         """
         raise NotImplementedError()
+
 
 class PubsubException(PythonRuntimeException):
     """

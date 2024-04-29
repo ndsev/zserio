@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir
 
+
 class PackedVariableArrayStructRecursionTest(ArrayTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.VARIABLE_ARRAY_LENGTH1)
@@ -36,12 +37,21 @@ class PackedVariableArrayStructRecursionTest(ArrayTypes.TestCase):
     def _checkBitSizeOf(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
         unpackedBitsizeOf = PackedVariableArrayStructRecursionTest._calcUnpackedVariableArrayBitSize(
-            numElements)
+            numElements
+        )
         packedBitsizeOf = packedVariableArray.bitsizeof()
         minCompressionRatio = 0.9
-        self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
-                        str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
-                        "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")
+        self.assertTrue(
+            unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
+            "Unpacked array has "
+            + str(unpackedBitsizeOf)
+            + " bits, packed array has "
+            + str(packedBitsizeOf)
+            + " bits, "
+            + "compression ratio is "
+            + str(packedBitsizeOf / unpackedBitsizeOf * 100)
+            + "%!",
+        )
 
     def _checkWriteRead(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
@@ -82,7 +92,7 @@ class PackedVariableArrayStructRecursionTest(ArrayTypes.TestCase):
     @staticmethod
     def _calcUnpackedVariableArrayBitSize(numElements):
         bitSize = 8  # byteCount
-        bitSize += 8 # numElements
+        bitSize += 8  # numElements
         byteCount = 1
         for _ in range(numElements):
             bitSize += PackedVariableArrayStructRecursionTest._calcUnpackedBlockBitSize(byteCount, False)
@@ -91,17 +101,19 @@ class PackedVariableArrayStructRecursionTest(ArrayTypes.TestCase):
 
     @staticmethod
     def _calcUnpackedBlockBitSize(byteCount, isLast):
-        bitSize = 8 * byteCount # dataBytes[byteCount]
-        bitSize += 8 # blockTerminator
+        bitSize = 8 * byteCount  # dataBytes[byteCount]
+        bitSize += 8  # blockTerminator
         if not isLast:
             blockTerminator = byteCount + 1
-            bitSize += PackedVariableArrayStructRecursionTest._calcUnpackedBlockBitSize(blockTerminator,
-                                                                                        blockTerminator > 5)
+            bitSize += PackedVariableArrayStructRecursionTest._calcUnpackedBlockBitSize(
+                blockTerminator, blockTerminator > 5
+            )
 
         return bitSize
 
-    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                  "packed_variable_array_struct_recursion_")
+    BLOB_NAME_BASE = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "packed_variable_array_struct_recursion_"
+    )
 
     VARIABLE_ARRAY_LENGTH1 = 100
     VARIABLE_ARRAY_LENGTH2 = 500

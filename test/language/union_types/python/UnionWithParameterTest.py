@@ -2,6 +2,7 @@ import zserio
 
 import UnionTypes
 
+
 class UnionWithParameterTest(UnionTypes.TestCase):
     def testParamConstructor(self):
         testUnion = self.api.TestUnion(True)
@@ -20,7 +21,7 @@ class UnionWithParameterTest(UnionTypes.TestCase):
         testUnion.case1_field = 11
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            testUnion.write(writer) # raises exception
+            testUnion.write(writer)  # raises exception
 
     def testFromReader(self):
         testUnion = self.api.TestUnion(True, case3_field_=-1)

@@ -10,8 +10,14 @@ import typing
 from zserio.walker import Walker, WalkFilter
 from zserio.json import JsonWriter, JsonReader
 
-def to_json_stream(obj: typing.Any, text_io: typing.TextIO, *, indent: typing.Union[None, int, str] = 4,
-                   walk_filter: typing.Optional[WalkFilter] = None) -> None:
+
+def to_json_stream(
+    obj: typing.Any,
+    text_io: typing.TextIO,
+    *,
+    indent: typing.Union[None, int, str] = 4,
+    walk_filter: typing.Optional[WalkFilter] = None
+) -> None:
     """
     Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
 
@@ -49,8 +55,13 @@ def to_json_stream(obj: typing.Any, text_io: typing.TextIO, *, indent: typing.Un
     walker = Walker(json_writer, walk_filter)
     walker.walk(obj)
 
-def to_json_string(obj: typing.Any, *, indent: typing.Union[None, int, str] = 4,
-                   walk_filter: typing.Optional[WalkFilter] = None) -> str:
+
+def to_json_string(
+    obj: typing.Any,
+    *,
+    indent: typing.Union[None, int, str] = 4,
+    walk_filter: typing.Optional[WalkFilter] = None
+) -> str:
     """
     Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
 
@@ -85,8 +96,14 @@ def to_json_string(obj: typing.Any, *, indent: typing.Union[None, int, str] = 4,
     to_json_stream(obj, text_io, indent=indent, walk_filter=walk_filter)
     return text_io.getvalue()
 
-def to_json_file(obj: typing.Any, filename: str, *, indent: typing.Union[None, int, str] = 4,
-                 walk_filter: typing.Optional[WalkFilter] = None) -> None:
+
+def to_json_file(
+    obj: typing.Any,
+    filename: str,
+    *,
+    indent: typing.Union[None, int, str] = 4,
+    walk_filter: typing.Optional[WalkFilter] = None
+) -> None:
     """
     Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
 
@@ -119,8 +136,10 @@ def to_json_file(obj: typing.Any, filename: str, *, indent: typing.Union[None, i
     with open(filename, "w", encoding="utf-8") as text_io:
         to_json_stream(obj, text_io, indent=indent, walk_filter=walk_filter)
 
-def from_json_stream(obj_class: typing.Type[typing.Any], text_io: typing.TextIO,
-                     *arguments: typing.List[typing.Any]) -> typing.Any:
+
+def from_json_stream(
+    obj_class: typing.Type[typing.Any], text_io: typing.TextIO, *arguments: typing.List[typing.Any]
+) -> typing.Any:
     """
     Parses JSON debug string from given text stream and creates instance of the requested zserio object
     according to the data contained in the debug string.
@@ -146,8 +165,10 @@ def from_json_stream(obj_class: typing.Type[typing.Any], text_io: typing.TextIO,
     json_reader = JsonReader(text_io)
     return json_reader.read(obj_class.type_info(), *arguments)
 
-def from_json_string(obj_class: typing.Type[typing.Any], json_string: str,
-                     *arguments: typing.List[typing.Any]) -> typing.Any:
+
+def from_json_string(
+    obj_class: typing.Type[typing.Any], json_string: str, *arguments: typing.List[typing.Any]
+) -> typing.Any:
     """
     Parses JSON debug string and creates instance of the requested zserio object
     according to the data contained in the debug string.
@@ -171,8 +192,10 @@ def from_json_string(obj_class: typing.Type[typing.Any], json_string: str,
 
     return from_json_stream(obj_class, io.StringIO(json_string), *arguments)
 
-def from_json_file(obj_class: typing.Type[typing.Any], filename: str,
-                   *arguments: typing.List[typing.Any]) -> typing.Any:
+
+def from_json_file(
+    obj_class: typing.Type[typing.Any], filename: str, *arguments: typing.List[typing.Any]
+) -> typing.Any:
     """
     Parses JSON debug string from given file and creates instance of the requested zserio object
     according to the data contained in the debug string.

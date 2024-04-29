@@ -2,6 +2,7 @@ import zserio
 
 import StructureTypes
 
+
 class EmptyStructureTest(StructureTypes.TestCase):
     def testFromReader(self):
         reader = zserio.BitStreamReader(bytes())

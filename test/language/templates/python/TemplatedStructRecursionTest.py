@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class TemplatedStructRecursionTest(Templates.TestCase):
     def testWriteRead(self):
         templatedStructRecursion = self.api.TemplatedStructRecursion(
@@ -9,11 +10,8 @@ class TemplatedStructRecursionTest(Templates.TestCase):
                 [1, 2, 3],
                 self.api.RecursiveTemplate_uint32(
                     [2, 3, 4],
-                    self.api.RecursiveTemplate_uint32(
-                        [], # lengthof(data) == 0 -> end of recursion
-                        None
-                    )
-                )
+                    self.api.RecursiveTemplate_uint32([], None),  # lengthof(data) == 0 -> end of recursion
+                ),
             )
         )
 

@@ -5,6 +5,7 @@ import BitmaskTypes
 
 from testutils import getApiDir
 
+
 class VarUIntBitmaskTest(BitmaskTypes.TestCase):
     def testEmptyConstructor(self):
         permission = self.api.Permission()
@@ -18,7 +19,7 @@ class VarUIntBitmaskTest(BitmaskTypes.TestCase):
             self.api.Permission.from_value(-1)
 
         with self.assertRaises(zserio.PythonRuntimeException):
-            self.api.Permission.from_value(1 << 64) # more that UINT64_MAX
+            self.api.Permission.from_value(1 << 64)  # more that UINT64_MAX
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
@@ -44,8 +45,8 @@ class VarUIntBitmaskTest(BitmaskTypes.TestCase):
         self.assertFalse(write == self.api.Permission.Values.READ)
         self.assertFalse(self.api.Permission.Values.READ == write)
 
-        self.assertTrue(read == self.api.Permission.from_value(read.value)) # copy
-        self.assertTrue(write == self.api.Permission.from_value(write.value)) # copy
+        self.assertTrue(read == self.api.Permission.from_value(read.value))  # copy
+        self.assertTrue(write == self.api.Permission.from_value(write.value))  # copy
 
         self.assertFalse(read == write)
 
@@ -70,8 +71,9 @@ class VarUIntBitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual("0[NONE]", str(self.api.Permission.Values.NONE))
         self.assertEqual("2[READ]", str(self.api.Permission.Values.READ))
         self.assertEqual("4[WRITE]", str(self.api.Permission.Values.WRITE))
-        self.assertEqual("6[READ | WRITE]", (
-            str(self.api.Permission.Values.READ | self.api.Permission.Values.WRITE)))
+        self.assertEqual(
+            "6[READ | WRITE]", (str(self.api.Permission.Values.READ | self.api.Permission.Values.WRITE))
+        )
         self.assertEqual("7[READ | WRITE]", str(self.api.Permission.from_value(7)))
         self.assertEqual("255[READ | WRITE]", str(self.api.Permission.from_value(255)))
 
@@ -110,7 +112,7 @@ class VarUIntBitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(self.api.Permission.Values.NONE, read ^ read)
         self.assertEqual(self.api.Permission.Values.NONE, write ^ write)
 
-    def testInvert(self): # bitwise not operator
+    def testInvert(self):  # bitwise not operator
         none = self.api.Permission.Values.NONE
         read = self.api.Permission.Values.READ
         write = self.api.Permission.Values.WRITE
@@ -122,15 +124,19 @@ class VarUIntBitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(read | write, ~none & (read | write))
 
     def testBitSizeOf(self):
-        self.assertEqual(zserio.bitsizeof.bitsizeof_varuint(NONE_VALUE),
-                         self.api.Permission.Values.NONE.bitsizeof())
-        self.assertEqual(zserio.bitsizeof.bitsizeof_varuint(NONE_VALUE),
-                         self.api.Permission.Values.NONE.bitsizeof(1))
+        self.assertEqual(
+            zserio.bitsizeof.bitsizeof_varuint(NONE_VALUE), self.api.Permission.Values.NONE.bitsizeof()
+        )
+        self.assertEqual(
+            zserio.bitsizeof.bitsizeof_varuint(NONE_VALUE), self.api.Permission.Values.NONE.bitsizeof(1)
+        )
 
     def testInitializeOffsets(self):
         bitPosition = 1
-        self.assertEqual(bitPosition + zserio.bitsizeof.bitsizeof_varuint(READ_VALUE),
-                         self.api.Permission.Values.READ.initialize_offsets(bitPosition))
+        self.assertEqual(
+            bitPosition + zserio.bitsizeof.bitsizeof_varuint(READ_VALUE),
+            self.api.Permission.Values.READ.initialize_offsets(bitPosition),
+        )
 
     def testWriteRead(self):
         permission = self.api.Permission.Values.READ
@@ -152,6 +158,7 @@ class VarUIntBitmaskTest(BitmaskTypes.TestCase):
         self.assertEqual(NONE_VALUE, self.api.Permission.Values.NONE.value)
         self.assertEqual(READ_VALUE, self.api.Permission.Values.READ.value)
         self.assertEqual(WRITE_VALUE, self.api.Permission.Values.WRITE.value)
+
 
 BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "varuint_bitmask.blob")
 

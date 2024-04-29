@@ -1,5 +1,6 @@
 import Expressions
 
+
 class IsSetOperatorTest(Expressions.TestCase):
     def testHasNone(self):
         testBitmask = self.api.TestBitmask()

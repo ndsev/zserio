@@ -1,5 +1,6 @@
 import zserio
 
+
 class TestPubsub(zserio.PubsubInterface):
     def __init__(self):
         self._subscriptions = {}
@@ -27,6 +28,7 @@ class TestPubsub(zserio.PubsubInterface):
             raise zserio.PubsubException(f"TestPubsub: Invalid subscription ID '{subscription_id}'!")
 
         self._subscriptions.pop(subscription_id)
+
 
 class TestPubsubContext:
     def __init__(self):

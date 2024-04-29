@@ -2,6 +2,7 @@ import zserio
 
 import StructureTypes
 
+
 class EmptyStructureWithParameterTest(StructureTypes.TestCase):
     def testParamConstructor(self):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)

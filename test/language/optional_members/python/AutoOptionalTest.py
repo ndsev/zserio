@@ -2,6 +2,7 @@ import zserio
 
 import OptionalMembers
 
+
 class AutoOptionalTest(OptionalMembers.TestCase):
     def testConstructor(self):
         container = self.api.Container()
@@ -85,12 +86,14 @@ class AutoOptionalTest(OptionalMembers.TestCase):
         container = self.api.Container()
         container.non_optional_int = self.NON_OPTIONAL_INT_VALUE
         bitPosition = 1
-        self.assertEqual(bitPosition + self.CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL,
-                         container.initialize_offsets(bitPosition))
+        self.assertEqual(
+            bitPosition + self.CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, container.initialize_offsets(bitPosition)
+        )
 
         container.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
-        self.assertEqual(bitPosition + self.CONTAINER_BIT_SIZE_WITH_OPTIONAL,
-                         container.initialize_offsets(bitPosition))
+        self.assertEqual(
+            bitPosition + self.CONTAINER_BIT_SIZE_WITH_OPTIONAL, container.initialize_offsets(bitPosition)
+        )
 
     def testWrite(self):
         container = self.api.Container()
@@ -126,8 +129,8 @@ class AutoOptionalTest(OptionalMembers.TestCase):
             self.assertEqual(True, reader.read_bool())
             self.assertEqual(autoOptionalIntValue, reader.read_signed_bits(32))
 
-    NON_OPTIONAL_INT_VALUE = 0xDEADDEAD - (1 << 32) # it's negative number in 32-bit signed integer
-    AUTO_OPTIONAL_INT_VALUE = 0xBEEFBEEF - (1 << 32) # it's negative number in 32-bit signed integer
+    NON_OPTIONAL_INT_VALUE = 0xDEADDEAD - (1 << 32)  # it's negative number in 32-bit signed integer
+    AUTO_OPTIONAL_INT_VALUE = 0xBEEFBEEF - (1 << 32)  # it's negative number in 32-bit signed integer
 
     CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL = 32 + 1
     CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32

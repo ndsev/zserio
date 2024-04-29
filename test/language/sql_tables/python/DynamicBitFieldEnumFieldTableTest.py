@@ -2,6 +2,7 @@ import os
 
 import SqlTables
 
+
 class DynamicBitFieldEnumFieldTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):

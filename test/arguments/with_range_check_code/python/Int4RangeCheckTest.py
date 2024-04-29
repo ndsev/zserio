@@ -2,6 +2,7 @@ import zserio
 
 import WithRangeCheckCode
 
+
 class Int4RangeCheckTest(WithRangeCheckCode.TestCase):
     def testInt4LowerBound(self):
         self._checkInt4Value(INT4_LOWER_BOUND)
@@ -22,6 +23,7 @@ class Int4RangeCheckTest(WithRangeCheckCode.TestCase):
         bitBuffer = zserio.serialize(int4RangeCheckCompound)
         readInt4RangeCheckCompound = zserio.deserialize(self.api.Int4RangeCheckCompound, bitBuffer)
         self.assertEqual(int4RangeCheckCompound, readInt4RangeCheckCompound)
+
 
 INT4_LOWER_BOUND = -8
 INT4_UPPER_BOUND = 7

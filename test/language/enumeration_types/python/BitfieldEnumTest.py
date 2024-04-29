@@ -5,6 +5,7 @@ import EnumerationTypes
 
 from testutils import getApiDir
 
+
 class BitfieldEnumTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Color.NONE.value)
@@ -29,14 +30,18 @@ class BitfieldEnumTest(EnumerationTypes.TestCase):
 
     def testCalcHashCode(self):
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.NONE))
-        self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.RED))
-        self.assertEqual(1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.BLUE))
-        self.assertEqual(1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
-                                                                    self.api.Color.GREEN))
+        self.assertEqual(
+            1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.NONE)
+        )
+        self.assertEqual(
+            1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.RED)
+        )
+        self.assertEqual(
+            1705, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.BLUE)
+        )
+        self.assertEqual(
+            1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED, self.api.Color.GREEN)
+        )
 
     def testBitSizeOf(self):
         self.assertEqual(COLOR_BITSIZEOF, self.api.Color.NONE.bitsizeof())

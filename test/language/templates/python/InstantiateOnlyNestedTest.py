@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class InstantiateOnlyNestedTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateOnlyNested = self.api.InstantiateOnlyNested(self.api.pkg.Test_uint32(self.api.N32(13)))

@@ -2,12 +2,14 @@ import os
 
 import ExplicitParameters
 
+
 class ExplicitSimpleParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
         super(ExplicitSimpleParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_simple_param
+
         class SimpleParamTableParameterProvider(test_api.SimpleParamTable.IParameterProvider):
             @staticmethod
             def count1(_row):
@@ -116,6 +118,7 @@ class ExplicitSimpleParamTest(ExplicitParameters.TestCaseWithDb):
                 return True
 
         return False
+
 
 TABLE_NAME = "simpleParamTable"
 NUM_SIMPLE_PARAM_TABLE_ROWS = 5

@@ -2,6 +2,7 @@ import zserio
 
 import Constraints
 
+
 class UnionConstraintsTest(Constraints.TestCase):
     def testReadCorrectConstraints(self):
         value8 = self.VALUE8_CORRECT_CONSTRAINT

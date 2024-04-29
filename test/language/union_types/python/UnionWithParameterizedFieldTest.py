@@ -2,6 +2,7 @@ import zserio
 
 import UnionTypes
 
+
 class UnionWithParameterizedFieldTest(UnionTypes.TestCase):
     def testConstructor(self):
         testUnion = self.api.TestUnion()

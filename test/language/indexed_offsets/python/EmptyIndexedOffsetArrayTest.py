@@ -2,6 +2,7 @@ import zserio
 
 import IndexedOffsets
 
+
 class EmptyIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
@@ -10,21 +11,25 @@ class EmptyIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOfWithPosition(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         bitPosition = 1
-        self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         emptyIndexedOffsetArray.bitsizeof(bitPosition))
+        self.assertEqual(
+            self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.bitsizeof(bitPosition)
+        )
 
     def testInitializeOffsets(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         bitPosition = 0
-        self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         emptyIndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.initialize_offsets(bitPosition)
+        )
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         bitPosition = 9
-        self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition,
-                         emptyIndexedOffsetArray.initialize_offsets(bitPosition))
+        self.assertEqual(
+            self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition,
+            emptyIndexedOffsetArray.initialize_offsets(bitPosition),
+        )
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
 
     def testRead(self):

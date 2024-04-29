@@ -1,5 +1,6 @@
 import Expressions
 
+
 class QuestionMarkTest(Expressions.TestCase):
     def testFirstValue(self):
         questionMarkExpression = self.api.QuestionMarkExpression(self.FIRST_VALUE, self.SECOND_VALUE, True)

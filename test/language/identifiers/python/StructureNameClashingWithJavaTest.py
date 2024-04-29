@@ -1,5 +1,6 @@
 import Identifiers
 
+
 class StructureNameClashingWithJavaTest(Identifiers.TestCase):
     def testEmptyConstructor(self):
         structureNameClashingWithJava = self.api.StructureNameClashingWithJava()
@@ -11,7 +12,6 @@ class StructureNameClashingWithJavaTest(Identifiers.TestCase):
         self.assertEqual(None, structureNameClashingWithJava.float_field)
         self.assertEqual(None, structureNameClashingWithJava.double_field)
         self.assertEqual(None, structureNameClashingWithJava.string_field)
-
 
     def testBitSizeOf(self):
         structureNameClashingWithJava = self.api.StructureNameClashingWithJava(

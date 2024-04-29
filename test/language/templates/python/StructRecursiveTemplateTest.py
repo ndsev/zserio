@@ -2,13 +2,14 @@ import zserio
 
 import Templates
 
+
 class StructRecursiveTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         structRecursiveTemplate = self.api.StructRecursiveTemplate(
             self.api.Compound_Compound_uint32(self.api.Compound_uint32(42)),
             self.api.Compound_Compound_Compound_string(
                 self.api.Compound_Compound_string(self.api.Compound_string("string"))
-            )
+            ),
         )
 
         writer = zserio.BitStreamWriter()

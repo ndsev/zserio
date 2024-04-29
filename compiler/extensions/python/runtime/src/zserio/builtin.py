@@ -4,6 +4,7 @@ The module provides implementation of zserio built-in operators.
 
 import typing
 
+
 def isset(bitmask_value: typing.Any, required_mask: typing.Any) -> bool:
     """
     Checks whether the required_mask is set within the bitmask_value.
@@ -16,6 +17,7 @@ def isset(bitmask_value: typing.Any, required_mask: typing.Any) -> bool:
     """
 
     return (bitmask_value & required_mask) == required_mask
+
 
 def numbits(num_values: int) -> int:
     """

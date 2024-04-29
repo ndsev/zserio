@@ -3,6 +3,7 @@ import zserio
 
 import SqlTables
 
+
 class ComplexTableTest(SqlTables.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -98,8 +99,17 @@ class ComplexTableTest(SqlTables.TestCaseWithDb):
         blob = self.api.complex_table.TestBlob(len(values), 0, values, True)
         blob.initialize_offsets()
 
-        return (blobId, zserio.limits.INT64_MAX, name, True, 9.9, 5.5, 0x34,
-                self.api.complex_table.TestEnum.RED, blob)
+        return (
+            blobId,
+            zserio.limits.INT64_MAX,
+            name,
+            True,
+            9.9,
+            5.5,
+            0x34,
+            self.api.complex_table.TestEnum.RED,
+            blob,
+        )
 
     def _createComplexTableRowsWithNullValues(self):
         rows = []
@@ -110,8 +120,7 @@ class ComplexTableTest(SqlTables.TestCaseWithDb):
 
     @staticmethod
     def _createComplexTableRowWithNullValues(blobId):
-        return (blobId, None, None, None, None, None, None,
-                None, None)
+        return (blobId, None, None, None, None, None, None, None, None)
 
     def _isTableInDb(self):
         # check if database does contain table

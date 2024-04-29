@@ -5,6 +5,7 @@ import unittest
 
 from testutils import getZserioApi
 
+
 class WithoutSqlCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -9,6 +9,7 @@ from WithTypeInfoCodeCreator import createWithTypeInfoCode
 
 from testutils import getApiDir
 
+
 class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
     def testSqlDatabase(self):
         self._checkSqlDatabase(self.api.SqlDatabase.type_info())
@@ -23,16 +24,18 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=True)
         zserio.serialize_to_file(withTypeInfoCode, self.BLOB_NAME_WITH_OPTIONALS)
 
-        readWithTypeInfoCode = zserio.deserialize_from_file(self.api.WithTypeInfoCode,
-                                                            self.BLOB_NAME_WITH_OPTIONALS)
+        readWithTypeInfoCode = zserio.deserialize_from_file(
+            self.api.WithTypeInfoCode, self.BLOB_NAME_WITH_OPTIONALS
+        )
         self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
 
     def testWriteReadFileWithoutOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=False)
         zserio.serialize_to_file(withTypeInfoCode, self.BLOB_NAME_WITHOUT_OPTIONALS)
 
-        readWithTypeInfoCode = zserio.deserialize_from_file(self.api.WithTypeInfoCode,
-                                                            self.BLOB_NAME_WITHOUT_OPTIONALS)
+        readWithTypeInfoCode = zserio.deserialize_from_file(
+            self.api.WithTypeInfoCode, self.BLOB_NAME_WITHOUT_OPTIONALS
+        )
         self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
 
     def _checkSimpleStruct(self, type_info):
@@ -166,11 +169,13 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_simple_struct_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_optional_simple_struct_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_simple_struct_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual(
+            "is_optional_simple_struct_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME]
+        )
 
         # array
         memberInfo = fields[3]
@@ -203,11 +208,11 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         optional_lambda = memberInfo.attributes[MemberAttribute.OPTIONAL]
         self.assertEqual(False, optional_lambda(self.api.ComplexStruct(array_=[0])))
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_array_with_len_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_array_with_len_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_array_with_len_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual("is_array_with_len_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # paramStructArray
         memberInfo = fields[5]
@@ -219,18 +224,22 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertEqual(None, memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_param_struct_array_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_param_struct_array_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_param_struct_array_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual(
+            "is_param_struct_array_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes)
         self.assertEqual(1, len(memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS]))
         type_argument_lambda = memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS][0]
-        self.assertEqual(self.api.ComplexStruct().simple_struct,
-                         type_argument_lambda(self.api.ComplexStruct(), 0))
-        self.assertEqual(self.api.ComplexStruct().another_simple_struct,
-                         type_argument_lambda(self.api.ComplexStruct(), 1))
+        self.assertEqual(
+            self.api.ComplexStruct().simple_struct, type_argument_lambda(self.api.ComplexStruct(), 0)
+        )
+        self.assertEqual(
+            self.api.ComplexStruct().another_simple_struct, type_argument_lambda(self.api.ComplexStruct(), 1)
+        )
         self.assertIn(MemberAttribute.ARRAY_LENGTH, memberInfo.attributes)
         self.assertEqual(None, memberInfo.attributes[MemberAttribute.ARRAY_LENGTH])
 
@@ -246,9 +255,12 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes)
         self.assertEqual(1, len(memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS]))
         type_argument_lambda = memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS][0]
-        self.assertEqual(13, type_argument_lambda(
-            self.api.ComplexStruct(simple_struct_=self.api.SimpleStruct(field_u32_=13)), None
-        ))
+        self.assertEqual(
+            13,
+            type_argument_lambda(
+                self.api.ComplexStruct(simple_struct_=self.api.SimpleStruct(field_u32_=13)), None
+            ),
+        )
 
         # dynamicBitFieldArray
         memberInfo = fields[7]
@@ -279,11 +291,9 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_enum_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual("is_optional_enum_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_enum_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual("is_optional_enum_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # optionalBitmask
         memberInfo = fields[9]
@@ -295,11 +305,13 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_bitmask_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_optional_bitmask_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_bitmask_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual(
+            "is_optional_bitmask_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME]
+        )
 
         # optionalExtern
         memberInfo = fields[10]
@@ -312,11 +324,11 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_extern_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_optional_extern_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_extern_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual("is_optional_extern_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # optionalBytes
         memberInfo = fields[11]
@@ -329,11 +341,11 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_bytes_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_optional_bytes_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_optional_bytes_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual("is_optional_bytes_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # enumArray
         memberInfo = fields[12]
@@ -400,9 +412,9 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("array", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.ARRAY_LENGTH, memberInfo.attributes)
         array_length_lambda = memberInfo.attributes[MemberAttribute.ARRAY_LENGTH]
-        self.assertEqual(13, array_length_lambda(
-            self.api.ParameterizedStruct(self.api.SimpleStruct(field_u32_=13))
-        ))
+        self.assertEqual(
+            13, array_length_lambda(self.api.ParameterizedStruct(self.api.SimpleStruct(field_u32_=13)))
+        )
 
     def _checkRecursiveStruct(self, type_info):
         self.assertEqual("with_type_info_code.RecursiveStruct", type_info.schema_name)
@@ -427,27 +439,31 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("fieldRecursion", memberInfo.schema_name)
         self.assertEqual(type_info.schema_name, memberInfo.type_info.schema_name)
         self.assertEqual(type_info.py_type, memberInfo.type_info.py_type)
-        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
-                         len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(
+            len(type_info.attributes[TypeAttribute.FIELDS]),
+            len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]),
+        )
         self.assertEqual(4, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("field_recursion", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_field_recursion_used",
-                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertEqual(
+            "is_field_recursion_used", memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME]
+        )
         self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
-        self.assertEqual("is_field_recursion_set",
-                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+        self.assertEqual("is_field_recursion_set", memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # arrayRecursion
         memberInfo = fields[2]
         self.assertEqual("arrayRecursion", memberInfo.schema_name)
         self.assertEqual(type_info.schema_name, memberInfo.type_info.schema_name)
         self.assertEqual(type_info.py_type, memberInfo.type_info.py_type)
-        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
-                         len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(
+            len(type_info.attributes[TypeAttribute.FIELDS]),
+            len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]),
+        )
         self.assertEqual(2, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("array_recursion", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
@@ -478,8 +494,10 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("recursive", memberInfo.schema_name)
         self.assertEqual(type_info.schema_name, memberInfo.type_info.schema_name)
         self.assertEqual(type_info.py_type, memberInfo.type_info.py_type)
-        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
-                         len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(
+            len(type_info.attributes[TypeAttribute.FIELDS]),
+            len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]),
+        )
         self.assertEqual(2, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("recursive", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
@@ -540,8 +558,10 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("recursive", memberInfo.schema_name)
         self.assertEqual(type_info.schema_name, memberInfo.type_info.schema_name)
         self.assertEqual(type_info.py_type, memberInfo.type_info.py_type)
-        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
-                         len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(
+            len(type_info.attributes[TypeAttribute.FIELDS]),
+            len(memberInfo.type_info.attributes[TypeAttribute.FIELDS]),
+        )
         self.assertEqual(3, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("recursive", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
@@ -669,9 +689,10 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("simple_struct_field_u32", memberInfo.attributes[MemberAttribute.FUNCTION_NAME])
         self.assertIn(MemberAttribute.FUNCTION_RESULT, memberInfo.attributes)
         function_result_lambda = memberInfo.attributes[MemberAttribute.FUNCTION_RESULT]
-        self.assertEqual(13, function_result_lambda(
-            self.api.SimpleUnion(simple_struct_=self.api.SimpleStruct(field_u32_=13))
-        ))
+        self.assertEqual(
+            13,
+            function_result_lambda(self.api.SimpleUnion(simple_struct_=self.api.SimpleStruct(field_u32_=13))),
+        )
 
     def _checkSimpleChoice(self, type_info):
         self.assertEqual("with_type_info_code.SimpleChoice", type_info.schema_name)
@@ -759,19 +780,24 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("field_two_func_call", memberInfo.attributes[MemberAttribute.FUNCTION_NAME])
         self.assertIn(MemberAttribute.FUNCTION_RESULT, memberInfo.attributes)
         function_result_lambda = memberInfo.attributes[MemberAttribute.FUNCTION_RESULT]
-        self.assertEqual(42, function_result_lambda(
-            self.api.SimpleChoice(self.api.TestEnum._TWO, field_two_=self.api.SimpleUnion(
-                simple_struct_=self.api.SimpleStruct(field_u32_=42)
-            ))
-        ))
+        self.assertEqual(
+            42,
+            function_result_lambda(
+                self.api.SimpleChoice(
+                    self.api.TestEnum._TWO,
+                    field_two_=self.api.SimpleUnion(simple_struct_=self.api.SimpleStruct(field_u32_=42)),
+                )
+            ),
+        )
 
     def _checkTS32(self, type_info):
         self.assertEqual("with_type_info_code.TS32", type_info.schema_name)
         self.assertEqual(self.api.TS32, type_info.py_type)
         self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.TemplatedStruct",
-                         type_info.attributes[TypeAttribute.TEMPLATE_NAME])
+        self.assertEqual(
+            "with_type_info_code.TemplatedStruct", type_info.attributes[TypeAttribute.TEMPLATE_NAME]
+        )
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
         self.assertEqual(1, len(template_args))
@@ -795,13 +821,14 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual("field", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkTemplatedParameterizedStruct_TS32(self, type_info):
-        self.assertEqual("with_type_info_code.TemplatedParameterizedStruct_TS32",
-                         type_info.schema_name)
+        self.assertEqual("with_type_info_code.TemplatedParameterizedStruct_TS32", type_info.schema_name)
         self.assertEqual(self.api.TemplatedParameterizedStruct_TS32, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.TemplatedParameterizedStruct",
-                         type_info.attributes[TypeAttribute.TEMPLATE_NAME])
+        self.assertEqual(
+            "with_type_info_code.TemplatedParameterizedStruct",
+            type_info.attributes[TypeAttribute.TEMPLATE_NAME],
+        )
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
         self.assertEqual(1, len(template_args))
@@ -832,11 +859,11 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual(2, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("array", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
-        self.assertIn(MemberAttribute.ARRAY_LENGTH, memberInfo.attributes) # self.param.field
+        self.assertIn(MemberAttribute.ARRAY_LENGTH, memberInfo.attributes)  # self.param.field
         array_length_lambda = memberInfo.attributes[MemberAttribute.ARRAY_LENGTH]
-        self.assertEqual(2, array_length_lambda(
-            self.api.TemplatedParameterizedStruct_TS32(self.api.TS32(field_=2))
-        ))
+        self.assertEqual(
+            2, array_length_lambda(self.api.TemplatedParameterizedStruct_TS32(self.api.TS32(field_=2)))
+        )
 
     def _checkWithTypeInfoCode(self, type_info):
         self.assertEqual("with_type_info_code.WithTypeInfoCode", type_info.schema_name)
@@ -869,7 +896,7 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual(2, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("parameterized_struct", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
-        self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes) # self.simple_struct
+        self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes)  # self.simple_struct
         self.assertEqual(1, len(memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS]))
         type_argument_lambda = memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS][0]
         self.assertEqual(None, type_argument_lambda(self.api.WithTypeInfoCode(), None))
@@ -917,12 +944,13 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual(2, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
         self.assertEqual("simple_choice", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
-        self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes) # self.selector
+        self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes)  # self.selector
         self.assertEqual(1, len(memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS]))
         type_argument_lambda = memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS][0]
-        self.assertEqual(self.api.TestEnum.ONE, type_argument_lambda(
-            self.api.WithTypeInfoCode(selector_=self.api.TestEnum.ONE), None
-        ))
+        self.assertEqual(
+            self.api.TestEnum.ONE,
+            type_argument_lambda(self.api.WithTypeInfoCode(selector_=self.api.TestEnum.ONE), None),
+        )
 
         # templatedStruct
         memberInfo = fields[8]
@@ -938,8 +966,7 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self._checkTemplatedParameterizedStruct_TS32(memberInfo.type_info)
         self.assertEqual(2, len(memberInfo.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
-        self.assertEqual("templated_parameterized_struct",
-                         memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertEqual("templated_parameterized_struct", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.TYPE_ARGUMENTS, memberInfo.attributes)
         self.assertEqual(1, len(memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS]))
         type_argument_lambda = memberInfo.attributes[MemberAttribute.TYPE_ARGUMENTS][0]
@@ -1040,8 +1067,9 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual(self.api.TemplatedSqlTable_uint32, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.TemplatedSqlTable",
-                         type_info.attributes[TypeAttribute.TEMPLATE_NAME])
+        self.assertEqual(
+            "with_type_info_code.TemplatedSqlTable", type_info.attributes[TypeAttribute.TEMPLATE_NAME]
+        )
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
         self.assertEqual(1, len(template_args))
@@ -1081,8 +1109,9 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertEqual(self.api.TemplatedSqlTableU8, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.TemplatedSqlTable",
-                         type_info.attributes[TypeAttribute.TEMPLATE_NAME])
+        self.assertEqual(
+            "with_type_info_code.TemplatedSqlTable", type_info.attributes[TypeAttribute.TEMPLATE_NAME]
+        )
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
         self.assertEqual(1, len(template_args))
@@ -1279,7 +1308,7 @@ class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
         self.assertIn(MemberAttribute.REQUEST_TYPE, memberInfo.attributes)
         self._checkSimpleUnion(memberInfo.attributes[MemberAttribute.REQUEST_TYPE])
 
-    BLOB_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                            "with_type_info_code_optionals.blob")
-    BLOB_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                               "with_type_info_code.blob")
+    BLOB_NAME_WITH_OPTIONALS = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "with_type_info_code_optionals.blob"
+    )
+    BLOB_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)), "with_type_info_code.blob")

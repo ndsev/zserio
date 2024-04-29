@@ -6,12 +6,13 @@ from __future__ import annotations
 import typing
 import zserio
 
+
 class WalkerBitmask:
     def __init__(self) -> None:
         self._value = 0
 
     @classmethod
-    def from_value(cls: typing.Type['WalkerBitmask'], value: int) -> 'WalkerBitmask':
+    def from_value(cls: typing.Type["WalkerBitmask"], value: int) -> "WalkerBitmask":
         if value < 0 or value > 4294967295:
             raise zserio.PythonRuntimeException(f"Value for bitmask 'WalkerBitmask' out of bounds: {value}!")
 
@@ -20,7 +21,7 @@ class WalkerBitmask:
         return instance
 
     @classmethod
-    def from_reader(cls: typing.Type['WalkerBitmask'], reader: zserio.BitStreamReader) -> 'WalkerBitmask':
+    def from_reader(cls: typing.Type["WalkerBitmask"], reader: zserio.BitStreamReader) -> "WalkerBitmask":
         instance = cls()
         instance._value = reader.read_bits(32)
         return instance
@@ -28,13 +29,13 @@ class WalkerBitmask:
     @staticmethod
     def type_info():
         attribute_list = {
-            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('uint32', int),
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE: zserio.typeinfo.TypeInfo("uint32", int),
             zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
-                zserio.typeinfo.ItemInfo('ZERO', WalkerBitmask.Values.ZERO, False, False)
-            ]
+                zserio.typeinfo.ItemInfo("ZERO", WalkerBitmask.Values.ZERO, False, False)
+            ],
         }
 
-        return zserio.typeinfo.TypeInfo('test_object.WalkerBitmask', WalkerBitmask, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo("test_object.WalkerBitmask", WalkerBitmask, attributes=attribute_list)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, WalkerBitmask):
@@ -55,16 +56,16 @@ class WalkerBitmask:
 
         return str(self._value) + "[" + result + "]"
 
-    def __or__(self, other: 'WalkerBitmask') -> 'WalkerBitmask':
+    def __or__(self, other: "WalkerBitmask") -> "WalkerBitmask":
         return WalkerBitmask.from_value(self._value | other._value)
 
-    def __and__(self, other: 'WalkerBitmask') -> 'WalkerBitmask':
+    def __and__(self, other: "WalkerBitmask") -> "WalkerBitmask":
         return WalkerBitmask.from_value(self._value & other._value)
 
-    def __xor__(self, other: 'WalkerBitmask') -> 'WalkerBitmask':
+    def __xor__(self, other: "WalkerBitmask") -> "WalkerBitmask":
         return WalkerBitmask.from_value(self._value ^ other._value)
 
-    def __invert__(self) -> 'WalkerBitmask':
+    def __invert__(self) -> "WalkerBitmask":
         return WalkerBitmask.from_value(~self._value & 4294967295)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
@@ -81,6 +82,7 @@ class WalkerBitmask:
         return self._value
 
     class Values:
-        ZERO: 'WalkerBitmask' = None
+        ZERO: "WalkerBitmask" = None
+
 
 WalkerBitmask.Values.ZERO = WalkerBitmask.from_value(1)

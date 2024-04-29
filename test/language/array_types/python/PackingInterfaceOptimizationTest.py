@@ -5,6 +5,7 @@ import ArrayTypes
 
 from testutils import getApiDir, assertMethodPresent, assertMethodNotPresent
 
+
 class PackingInterfaceOptimizationTest(ArrayTypes.TestCase):
     def testPackingInterfaceOptimizationMethods(self):
         self._assertPackingInterfaceMethodsNotPresent(self.api.PackingInterfaceOptimization)
@@ -14,37 +15,41 @@ class PackingInterfaceOptimizationTest(ArrayTypes.TestCase):
         self._assertPackingInterfaceMethodsNotPresent(self.api.UnpackedColorsHolder)
         self.assertFalse(hasattr(self.api.UnpackedColorsHolder, "ZserioPackingContext"))
 
-        assertMethodPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_unpacked_colors,
-                            "create")
-        assertMethodNotPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_unpacked_colors,
-                               "create_packing_context")
-        assertMethodNotPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_unpacked_colors,
-                               "create_packed")
+        assertMethodPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_unpacked_colors, "create")
+        assertMethodNotPresent(
+            self, self.api.UnpackedColorsHolder._ZserioElementFactory_unpacked_colors, "create_packing_context"
+        )
+        assertMethodNotPresent(
+            self, self.api.UnpackedColorsHolder._ZserioElementFactory_unpacked_colors, "create_packed"
+        )
 
-        assertMethodPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_mixed_colors,
-                            "create")
-        assertMethodPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_mixed_colors,
-                            "create_packing_context")
-        assertMethodPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_mixed_colors,
-                            "create_packed")
+        assertMethodPresent(self, self.api.UnpackedColorsHolder._ZserioElementFactory_mixed_colors, "create")
+        assertMethodPresent(
+            self, self.api.UnpackedColorsHolder._ZserioElementFactory_mixed_colors, "create_packing_context"
+        )
+        assertMethodPresent(
+            self, self.api.UnpackedColorsHolder._ZserioElementFactory_mixed_colors, "create_packed"
+        )
 
     def testPackedColorsHolderMethods(self):
         self._assertPackingInterfaceMethodsNotPresent(self.api.PackedColorsHolder)
         self.assertFalse(hasattr(self.api.PackedColorsHolder, "ZserioPackingContext"))
 
-        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_mixed_colors,
-                            "create")
-        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_mixed_colors,
-                            "create_packing_context")
-        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_mixed_colors,
-                            "create_packed")
+        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_mixed_colors, "create")
+        assertMethodPresent(
+            self, self.api.PackedColorsHolder._ZserioElementFactory_mixed_colors, "create_packing_context"
+        )
+        assertMethodPresent(
+            self, self.api.PackedColorsHolder._ZserioElementFactory_mixed_colors, "create_packed"
+        )
 
-        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_packed_colors,
-                            "create")
-        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_packed_colors,
-                            "create_packing_context")
-        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_packed_colors,
-                            "create_packed")
+        assertMethodPresent(self, self.api.PackedColorsHolder._ZserioElementFactory_packed_colors, "create")
+        assertMethodPresent(
+            self, self.api.PackedColorsHolder._ZserioElementFactory_packed_colors, "create_packing_context"
+        )
+        assertMethodPresent(
+            self, self.api.PackedColorsHolder._ZserioElementFactory_packed_colors, "create_packed"
+        )
 
     def testUnpackedColorStructMethods(self):
         self._assertPackingInterfaceMethodsNotPresent(self.api.UnpackedColorStruct)
@@ -132,87 +137,85 @@ class PackingInterfaceOptimizationTest(ArrayTypes.TestCase):
 
     def testWriteReadFile(self):
         packingInterfaceOptimization = self.api.PackingInterfaceOptimization(
-            self._createUnpackedColorsHolder(),
-            self._createPackedColorsHolder()
+            self._createUnpackedColorsHolder(), self._createPackedColorsHolder()
         )
 
         zserio.serialize_to_file(packingInterfaceOptimization, self.BLOB_NAME)
-        readPackingInterfaceOptimization = zserio.deserialize_from_file(self.api.PackingInterfaceOptimization,
-                                                                        self.BLOB_NAME)
+        readPackingInterfaceOptimization = zserio.deserialize_from_file(
+            self.api.PackingInterfaceOptimization, self.BLOB_NAME
+        )
         self.assertEqual(packingInterfaceOptimization, readPackingInterfaceOptimization)
 
     def _createUnpackedColorsHolder(self):
-        return self.api.UnpackedColorsHolder(
-            self._createUnpackedColors(),
-            self._createMixedColors()
-        )
+        return self.api.UnpackedColorsHolder(self._createUnpackedColors(), self._createMixedColors())
 
     def _createPackedColorsHolder(self):
-        return self.api.PackedColorsHolder(
-            self._createMixedColors(),
-            self._createPackedColors()
-        )
+        return self.api.PackedColorsHolder(self._createMixedColors(), self._createPackedColors())
 
     def _createUnpackedColors(self):
         return [
+            self.api.UnpackedColorStruct(True, self.api.UnpackedColorChoice(True, color_name_="yellow")),
             self.api.UnpackedColorStruct(
-                True,
-                self.api.UnpackedColorChoice(True, color_name_="yellow")
+                False,
+                self.api.UnpackedColorChoice(
+                    False,
+                    color_union_=self.api.UnpackedColorUnion(
+                        color_bitmask_=(
+                            self.api.UnpackedColorBitmask.Values.GREEN
+                            | self.api.UnpackedColorBitmask.Values.RED
+                        )
+                    ),
+                ),
             ),
             self.api.UnpackedColorStruct(
                 False,
-                self.api.UnpackedColorChoice(False, color_union_=self.api.UnpackedColorUnion(
-                    color_bitmask_=(self.api.UnpackedColorBitmask.Values.GREEN |
-                                    self.api.UnpackedColorBitmask.Values.RED)
-                ))
-            ),
-            self.api.UnpackedColorStruct(
-                False,
-                self.api.UnpackedColorChoice(False, color_union_=self.api.UnpackedColorUnion(
-                    color_enum_=self.api.UnpackedColorEnum.BLUE
-                ))
+                self.api.UnpackedColorChoice(
+                    False, color_union_=self.api.UnpackedColorUnion(color_enum_=self.api.UnpackedColorEnum.BLUE)
+                ),
             ),
         ]
 
     def _createMixedColors(self):
         return [
+            self.api.MixedColorStruct(True, self.api.MixedColorChoice(True, color_name_="purple")),
             self.api.MixedColorStruct(
-                True,
-                self.api.MixedColorChoice(True, color_name_="purple")
+                False,
+                self.api.MixedColorChoice(
+                    False,
+                    color_union_=self.api.MixedColorUnion(
+                        color_bitmask_=(
+                            self.api.MixedColorBitmask.Values.BLUE | self.api.MixedColorBitmask.Values.GREEN
+                        )
+                    ),
+                ),
             ),
             self.api.MixedColorStruct(
                 False,
-                self.api.MixedColorChoice(False, color_union_=self.api.MixedColorUnion(
-                    color_bitmask_=(self.api.MixedColorBitmask.Values.BLUE |
-                                    self.api.MixedColorBitmask.Values.GREEN)
-                ))
-            ),
-            self.api.MixedColorStruct(
-                False,
-                self.api.MixedColorChoice(False, color_union_=self.api.MixedColorUnion(
-                    color_enum_=self.api.MixedColorEnum.RED
-                ))
+                self.api.MixedColorChoice(
+                    False, color_union_=self.api.MixedColorUnion(color_enum_=self.api.MixedColorEnum.RED)
+                ),
             ),
         ]
 
     def _createPackedColors(self):
         return [
+            self.api.PackedColorStruct(True, self.api.PackedColorChoice(True, color_name_="grey")),
             self.api.PackedColorStruct(
-                True,
-                self.api.PackedColorChoice(True, color_name_="grey")
+                False,
+                self.api.PackedColorChoice(
+                    False,
+                    color_union_=self.api.PackedColorUnion(
+                        color_bitmask_=(
+                            self.api.PackedColorBitmask.Values.BLUE | self.api.PackedColorBitmask.Values.RED
+                        )
+                    ),
+                ),
             ),
             self.api.PackedColorStruct(
                 False,
-                self.api.PackedColorChoice(False, color_union_=self.api.PackedColorUnion(
-                    color_bitmask_=(self.api.PackedColorBitmask.Values.BLUE |
-                                    self.api.PackedColorBitmask.Values.RED)
-                ))
-            ),
-            self.api.PackedColorStruct(
-                False,
-                self.api.PackedColorChoice(False, color_union_=self.api.PackedColorUnion(
-                    color_enum_=self.api.PackedColorEnum.GREEN
-                ))
+                self.api.PackedColorChoice(
+                    False, color_union_=self.api.PackedColorUnion(color_enum_=self.api.PackedColorEnum.GREEN)
+                ),
             ),
         ]
 

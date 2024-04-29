@@ -3,15 +3,22 @@ The module implements abstraction for writing data to the bit stream.
 """
 
 from zserio.bitbuffer import BitBuffer
-from zserio.bitsizeof import (bitsizeof_varint16, bitsizeof_varint32,
-                              bitsizeof_varint64, bitsizeof_varint,
-                              bitsizeof_varuint16, bitsizeof_varuint32,
-                              bitsizeof_varuint64, bitsizeof_varuint,
-                              bitsizeof_varsize)
+from zserio.bitsizeof import (
+    bitsizeof_varint16,
+    bitsizeof_varint32,
+    bitsizeof_varint64,
+    bitsizeof_varint,
+    bitsizeof_varuint16,
+    bitsizeof_varuint32,
+    bitsizeof_varuint64,
+    bitsizeof_varuint,
+    bitsizeof_varsize,
+)
 from zserio.exception import PythonRuntimeException
 from zserio.float import float_to_uint16, float_to_uint32, float_to_uint64
 from zserio.limits import INT64_MIN
 from zserio.cppbind import import_cpp_class
+
 
 class BitStreamWriter:
     """
@@ -69,8 +76,9 @@ class BitStreamWriter:
         min_value = 0
         max_value = (1 << numbits) - 1
         if value < min_value or value > max_value:
-            raise PythonRuntimeException(f"BitStreamWriter: Value '{value}' is out of the range "
-                                         f"<{min_value},{max_value}>!")
+            raise PythonRuntimeException(
+                f"BitStreamWriter: Value '{value}' is out of the range " f"<{min_value},{max_value}>!"
+            )
 
         self._write_bits(value, numbits, signed=False)
 
@@ -89,8 +97,9 @@ class BitStreamWriter:
         min_value = -(1 << (numbits - 1))
         max_value = (1 << (numbits - 1)) - 1
         if value < min_value or value > max_value:
-            raise PythonRuntimeException(f"BitStreamWriter: Value '{value}' is out of the range "
-                                         f"<{min_value},{max_value}>!")
+            raise PythonRuntimeException(
+                f"BitStreamWriter: Value '{value}' is out of the range " f"<{min_value},{max_value}>!"
+            )
 
         self._write_bits(value, numbits, signed=True)
 
@@ -133,7 +142,7 @@ class BitStreamWriter:
         """
 
         if value == INT64_MIN:
-            self._write_bits(0x80, 8) # INT64_MIN is stored as -0
+            self._write_bits(0x80, 8)  # INT64_MIN is stored as -0
         else:
             self._write_varnum(value, 9, bitsizeof_varint(value) // 8, is_signed=True)
 
@@ -344,7 +353,7 @@ class BitStreamWriter:
             left_shift = buffer_free_bits + 8 - value_first_byte_bits
         value <<= left_shift
         num_bytes = (numbits + left_shift + 7) // 8
-        value_bytes = value.to_bytes(num_bytes, byteorder='big', signed=signed)
+        value_bytes = value.to_bytes(num_bytes, byteorder="big", signed=signed)
         if buffer_free_bits == 0:
             self._byte_array.extend(value_bytes)
         else:
@@ -361,22 +370,23 @@ class BitStreamWriter:
             byte = 0x00
             numbits = 8
             has_next_byte = i < num_var_bytes - 1
-            has_sign_bit = (is_signed and i == 0)
+            has_sign_bit = is_signed and i == 0
             if has_sign_bit:
                 if value < 0:
                     byte |= 0x80
                 numbits -= 1
             if has_next_byte:
                 numbits -= 1
-                byte |= (1 << numbits) # use bit 6 if signed bit is present, use bit 7 otherwise
-            else: # this is the last byte
-                if not has_max_byte_range: # next byte flag isn't used in last byte in case of max byte range
+                byte |= 1 << numbits  # use bit 6 if signed bit is present, use bit 7 otherwise
+            else:  # this is the last byte
+                if not has_max_byte_range:  # next byte flag isn't used in last byte in case of max byte range
                     numbits -= 1
 
             shift_bits = (num_var_bytes - (i + 1)) * 7 + (1 if has_max_byte_range and has_next_byte else 0)
             byte |= (abs_value >> shift_bits) & VAR_NUM_BIT_MASKS[numbits - 1]
             self.write_bits_unchecked(byte, 8)
 
-VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff]
 
-BitStreamWriter = import_cpp_class("BitStreamWriter") or BitStreamWriter # type: ignore
+VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF]
+
+BitStreamWriter = import_cpp_class("BitStreamWriter") or BitStreamWriter  # type: ignore

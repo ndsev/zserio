@@ -10,20 +10,32 @@ import test_object.array_bitmask
 import test_object.array_enum
 import test_object.array_object
 
+
 class ArrayHolder:
     def __init__(
-            self,
-            enum_array_: typing.List[test_object.array_enum.ArrayEnum] = None,
-            bitmask_array_: typing.List[test_object.array_bitmask.ArrayBitmask] = None,
-            packed_array_: typing.List[test_object.array_object.ArrayObject] = None) -> None:
-        self._enum_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_enum_array()), enum_array_, is_auto=True)
-        self._bitmask_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_bitmask_array()), bitmask_array_, is_auto=True)
-        self._packed_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_packed_array()), packed_array_, is_auto=True)
+        self,
+        enum_array_: typing.List[test_object.array_enum.ArrayEnum] = None,
+        bitmask_array_: typing.List[test_object.array_bitmask.ArrayBitmask] = None,
+        packed_array_: typing.List[test_object.array_object.ArrayObject] = None,
+    ) -> None:
+        self._enum_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_enum_array()),
+            enum_array_,
+            is_auto=True,
+        )
+        self._bitmask_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_bitmask_array()),
+            bitmask_array_,
+            is_auto=True,
+        )
+        self._packed_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_packed_array()),
+            packed_array_,
+            is_auto=True,
+        )
 
     @classmethod
-    def from_reader(
-            cls: typing.Type['ArrayHolder'],
-            zserio_reader: zserio.BitStreamReader) -> 'ArrayHolder':
+    def from_reader(cls: typing.Type["ArrayHolder"], zserio_reader: zserio.BitStreamReader) -> "ArrayHolder":
         self = object.__new__(cls)
 
         self.read(zserio_reader)
@@ -34,41 +46,44 @@ class ArrayHolder:
     def type_info() -> zserio.typeinfo.TypeInfo:
         field_list: typing.List[zserio.typeinfo.MemberInfo] = [
             zserio.typeinfo.MemberInfo(
-                'enumArray', test_object.array_enum.ArrayEnum.type_info(),
+                "enumArray",
+                test_object.array_enum.ArrayEnum.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'enum_array',
-                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH : None,
-                    zserio.typeinfo.MemberAttribute.PACKED : None
-                }
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "enum_array",
+                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH: None,
+                    zserio.typeinfo.MemberAttribute.PACKED: None,
+                },
             ),
             zserio.typeinfo.MemberInfo(
-                'bitmaskArray', test_object.array_bitmask.ArrayBitmask.type_info(),
+                "bitmaskArray",
+                test_object.array_bitmask.ArrayBitmask.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'bitmask_array',
-                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH : None,
-                    zserio.typeinfo.MemberAttribute.PACKED : None
-                }
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "bitmask_array",
+                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH: None,
+                    zserio.typeinfo.MemberAttribute.PACKED: None,
+                },
             ),
             zserio.typeinfo.MemberInfo(
-                'packedArray', test_object.array_object.ArrayObject.type_info(),
+                "packedArray",
+                test_object.array_object.ArrayObject.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'packed_array',
-                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH : None,
-                    zserio.typeinfo.MemberAttribute.PACKED : None
-                }
-            )
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "packed_array",
+                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH: None,
+                    zserio.typeinfo.MemberAttribute.PACKED: None,
+                },
+            ),
         ]
-        attribute_list = {
-            zserio.typeinfo.TypeAttribute.FIELDS : field_list
-        }
+        attribute_list = {zserio.typeinfo.TypeAttribute.FIELDS: field_list}
 
         return zserio.typeinfo.TypeInfo("test_object.ArrayHolder", ArrayHolder, attributes=attribute_list)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, ArrayHolder):
-            return ((self._enum_array_ == other._enum_array_) and
-                    (self._bitmask_array_ == other._bitmask_array_) and
-                    (self._packed_array_ == other._packed_array_))
+            return (
+                (self._enum_array_ == other._enum_array_)
+                and (self._bitmask_array_ == other._bitmask_array_)
+                and (self._packed_array_ == other._packed_array_)
+            )
 
         return False
 
@@ -86,7 +101,11 @@ class ArrayHolder:
 
     @enum_array.setter
     def enum_array(self, enum_array_: typing.List[test_object.array_enum.ArrayEnum]) -> None:
-        self._enum_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_enum_array()), enum_array_, is_auto=True)
+        self._enum_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_enum_array()),
+            enum_array_,
+            is_auto=True,
+        )
 
     @property
     def bitmask_array(self) -> typing.List[test_object.array_bitmask.ArrayBitmask]:
@@ -94,7 +113,11 @@ class ArrayHolder:
 
     @bitmask_array.setter
     def bitmask_array(self, bitmask_array_: typing.List[test_object.array_bitmask.ArrayBitmask]) -> None:
-        self._bitmask_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_bitmask_array()), bitmask_array_, is_auto=True)
+        self._bitmask_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_bitmask_array()),
+            bitmask_array_,
+            is_auto=True,
+        )
 
     @property
     def packed_array(self) -> typing.List[test_object.array_object.ArrayObject]:
@@ -102,7 +125,11 @@ class ArrayHolder:
 
     @packed_array.setter
     def packed_array(self, packed_array_: typing.List[test_object.array_object.ArrayObject]) -> None:
-        self._packed_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_packed_array()), packed_array_, is_auto=True)
+        self._packed_array_ = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_packed_array()),
+            packed_array_,
+            is_auto=True,
+        )
 
     def bitsizeof(self, bitposition: int = 0) -> int:
         end_bitposition = bitposition
@@ -121,9 +148,21 @@ class ArrayHolder:
         return end_bitposition
 
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
-        self._enum_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_enum_array()), zserio_reader, is_auto=True)
-        self._bitmask_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_bitmask_array()), zserio_reader, is_auto=True)
-        self._packed_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_packed_array()), zserio_reader, is_auto=True)
+        self._enum_array_ = zserio.array.Array.from_reader_packed(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_enum_array()),
+            zserio_reader,
+            is_auto=True,
+        )
+        self._bitmask_array_ = zserio.array.Array.from_reader_packed(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_bitmask_array()),
+            zserio_reader,
+            is_auto=True,
+        )
+        self._packed_array_ = zserio.array.Array.from_reader_packed(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_packed_array()),
+            zserio_reader,
+            is_auto=True,
+        )
 
     def write(self, zserio_writer: zserio.BitStreamWriter) -> None:
         self._enum_array_.write_packed(zserio_writer)
@@ -134,7 +173,9 @@ class ArrayHolder:
         IS_OBJECT_PACKABLE = True
 
         @staticmethod
-        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.array_enum.ArrayEnum:
+        def create(
+            zserio_reader: zserio.BitStreamReader, zserio_index: int
+        ) -> test_object.array_enum.ArrayEnum:
             del zserio_index
             return test_object.array_enum.ArrayEnum.from_reader(zserio_reader)
 
@@ -143,8 +184,11 @@ class ArrayHolder:
             return zserio.array.DeltaContext()
 
         @staticmethod
-        def create_packed(zserio_context: zserio.array.DeltaContext,
-                          zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.array_enum.ArrayEnum:
+        def create_packed(
+            zserio_context: zserio.array.DeltaContext,
+            zserio_reader: zserio.BitStreamReader,
+            zserio_index: int,
+        ) -> test_object.array_enum.ArrayEnum:
             del zserio_index
             return test_object.array_enum.ArrayEnum.from_reader_packed(zserio_context, zserio_reader)
 
@@ -152,7 +196,9 @@ class ArrayHolder:
         IS_OBJECT_PACKABLE = True
 
         @staticmethod
-        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.array_bitmask.ArrayBitmask:
+        def create(
+            zserio_reader: zserio.BitStreamReader, zserio_index: int
+        ) -> test_object.array_bitmask.ArrayBitmask:
             del zserio_index
             return test_object.array_bitmask.ArrayBitmask.from_reader(zserio_reader)
 
@@ -161,8 +207,11 @@ class ArrayHolder:
             return zserio.array.DeltaContext()
 
         @staticmethod
-        def create_packed(zserio_context: zserio.array.DeltaContext,
-                          zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.array_bitmask.ArrayBitmask:
+        def create_packed(
+            zserio_context: zserio.array.DeltaContext,
+            zserio_reader: zserio.BitStreamReader,
+            zserio_index: int,
+        ) -> test_object.array_bitmask.ArrayBitmask:
             del zserio_index
             return test_object.array_bitmask.ArrayBitmask.from_reader_packed(zserio_context, zserio_reader)
 
@@ -170,7 +219,9 @@ class ArrayHolder:
         IS_OBJECT_PACKABLE = True
 
         @staticmethod
-        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.array_object.ArrayObject:
+        def create(
+            zserio_reader: zserio.BitStreamReader, zserio_index: int
+        ) -> test_object.array_object.ArrayObject:
             del zserio_index
             return test_object.array_object.ArrayObject.from_reader(zserio_reader)
 
@@ -179,7 +230,10 @@ class ArrayHolder:
             return test_object.array_object.ArrayObject.ZserioPackingContext()
 
         @staticmethod
-        def create_packed(zserio_context: test_object.array_object.ArrayObject.ZserioPackingContext,
-                          zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.array_object.ArrayObject:
+        def create_packed(
+            zserio_context: test_object.array_object.ArrayObject.ZserioPackingContext,
+            zserio_reader: zserio.BitStreamReader,
+            zserio_index: int,
+        ) -> test_object.array_object.ArrayObject:
             del zserio_index
             return test_object.array_object.ArrayObject.from_reader_packed(zserio_context, zserio_reader)

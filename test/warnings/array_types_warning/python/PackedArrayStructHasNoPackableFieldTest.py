@@ -5,40 +5,37 @@ import ArrayTypesWarning
 
 from testutils import getApiDir
 
+
 class PackedArrayStructHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
     def testWriteRead(self):
         packedArrayStructHasNoPackableField = self.api.PackedArrayStructHasNoPackableField(
             [
                 self.api.StructWithPackable("A", 65),
                 self.api.StructWithPackable("B", 66),
-                self.api.StructWithPackable("C", 67)
+                self.api.StructWithPackable("C", 67),
             ],
             [
                 self.api.UnionWithPackableField(),
                 self.api.UnionWithPackableField(),
-                self.api.UnionWithPackableField()
+                self.api.UnionWithPackableField(),
             ],
             [
                 self.api.StructWithPackableArray("ABC", [65, 66, 67]),
                 self.api.StructWithPackableArray("DEF", [68, 69, 70]),
-                self.api.StructWithPackableArray("GHI", [71, 72, 73])
+                self.api.StructWithPackableArray("GHI", [71, 72, 73]),
             ],
             [
                 self.api.StructWithoutPackable(
-                    4.0, zserio.BitBuffer(bytes([0xf0]), 5), 0, "A", [0, 0, 0], [True, False, True]
+                    4.0, zserio.BitBuffer(bytes([0xF0]), 5), 0, "A", [0, 0, 0], [True, False, True]
                 ),
                 self.api.StructWithoutPackable(
-                    1.0, zserio.BitBuffer(bytes([0xe0]), 5), 0, "B", [0, 0, 0], [True, False, True]
+                    1.0, zserio.BitBuffer(bytes([0xE0]), 5), 0, "B", [0, 0, 0], [True, False, True]
                 ),
                 self.api.StructWithoutPackable(
-                    0.0, zserio.BitBuffer(bytes([0xd0]), 5), 0, "C", [0, 0, 0], [True, False, True]
-                )
+                    0.0, zserio.BitBuffer(bytes([0xD0]), 5), 0, "C", [0, 0, 0], [True, False, True]
+                ),
             ],
-            [
-                self.api.EmptyStruct(),
-                self.api.EmptyStruct(),
-                self.api.EmptyStruct()
-            ]
+            [self.api.EmptyStruct(), self.api.EmptyStruct(), self.api.EmptyStruct()],
         )
 
         packedArrayStructHasNoPackableField.array2[0].field2 = self.api.TestEnum.ONE
@@ -51,5 +48,6 @@ class PackedArrayStructHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
         )
         self.assertEqual(packedArrayStructHasNoPackableField, readPackedArrayStructHasNoPackableField)
 
-    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)),
-                             "packed_array_struct_has_no_packable_field.blob")
+    BLOB_NAME = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "packed_array_struct_has_no_packable_field.blob"
+    )

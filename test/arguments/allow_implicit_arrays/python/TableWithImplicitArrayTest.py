@@ -2,6 +2,7 @@ import os
 
 import AllowImplicitArrays
 
+
 class TableWithImplicitArrayTest(AllowImplicitArrays.TestCaseWithDb):
     def setUp(self):
         if os.path.exists(self.dbFileName):
@@ -34,6 +35,6 @@ class TableWithImplicitArrayTest(AllowImplicitArrays.TestCaseWithDb):
 
     def _createRow(self, i):
         StructWithImplicit = self.api.StructWithImplicit
-        return (i, StructWithImplicit([1,2,3,4,5]), "test" + str(i))
+        return (i, StructWithImplicit([1, 2, 3, 4, 5]), "test" + str(i))
 
     NUM_ROWS = 5

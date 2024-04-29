@@ -10,6 +10,7 @@ The following float formats defined by IEEE 754 standard are supported:
 
 import struct
 
+
 def uint16_to_float(float16_value: int) -> float:
     """
     Converts 16-bit float stored as an integer value to python native float.
@@ -30,8 +31,7 @@ def uint16_to_float(float16_value: int) -> float:
     if exponent16 == 0:
         if significand32 != 0:
             # subnormal (denormal) number will be normalized
-            exponent32 = (1 + FLOAT32_EXPONENT_BIAS -
-                          FLOAT16_EXPONENT_BIAS) # exp is initialized by -14
+            exponent32 = 1 + FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS  # exp is initialized by -14
             # shift significand until leading bit overflows into exponent bit
             while (significand32 & (FLOAT32_SIGNIFICAND_MASK + 1)) == 0:
                 exponent32 = exponent32 - 1
@@ -56,6 +56,7 @@ def uint16_to_float(float16_value: int) -> float:
 
     # convert it to float
     return uint32_to_float(float32_value)
+
 
 def float_to_uint16(float64: float) -> int:
     """
@@ -102,17 +103,23 @@ def float_to_uint16(float64: float) -> int:
                 exponent16 = 0
                 full_significand32 = significand32 | (FLOAT32_SIGNIFICAND_MASK + 1)
                 significand_shift = 1 - signed_exponent16
-                significand16 = full_significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS -
-                                                       FLOAT16_SIGNIFICAND_NUM_BITS + significand_shift)
+                significand16 = full_significand32 >> (
+                    FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS + significand_shift
+                )
 
-                needs_rounding = ((full_significand32 >>
-                                  (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS +
-                                   significand_shift - 1)) & 1) != 0
+                needs_rounding = (
+                    (
+                        full_significand32
+                        >> (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS + significand_shift - 1)
+                    )
+                    & 1
+                ) != 0
         else:
             # exponent ok
             exponent16 = signed_exponent16
-            needs_rounding = ((significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS -
-                                                 FLOAT16_SIGNIFICAND_NUM_BITS - 1)) & 1) != 0
+            needs_rounding = (
+                (significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS - 1)) & 1
+            ) != 0
 
     # compose half precision float (float16)
     sign16_shifted = sign32_shifted >> (FLOAT32_SIGN_BIT_POSITION - FLOAT16_SIGN_BIT_POSITION)
@@ -121,9 +128,10 @@ def float_to_uint16(float64: float) -> int:
 
     # check rounding
     if needs_rounding:
-        float16_value += 1   # might overflow to infinity
+        float16_value += 1  # might overflow to infinity
 
     return float16_value
+
 
 def uint32_to_float(float32_value: int) -> float:
     """
@@ -135,7 +143,8 @@ def uint32_to_float(float32_value: int) -> float:
 
     float32_value_in_bytes = float32_value.to_bytes(4, byteorder="big")
 
-    return struct.unpack('>f', float32_value_in_bytes)[0]
+    return struct.unpack(">f", float32_value_in_bytes)[0]
+
 
 def float_to_uint32(float64: float) -> int:
     """
@@ -145,9 +154,10 @@ def float_to_uint32(float64: float) -> int:
     :returns: Converted single precision float value stored as an integer value.
     """
 
-    float32_value_in_bytes = struct.pack('>f', float64)
+    float32_value_in_bytes = struct.pack(">f", float64)
 
     return int.from_bytes(float32_value_in_bytes, byteorder="big")
+
 
 def uint64_to_float(float64_value: int) -> float:
     """
@@ -159,7 +169,8 @@ def uint64_to_float(float64_value: int) -> float:
 
     float64_value_in_bytes = float64_value.to_bytes(8, byteorder="big")
 
-    return struct.unpack('>d', float64_value_in_bytes)[0]
+    return struct.unpack(">d", float64_value_in_bytes)[0]
+
 
 def float_to_uint64(float64: float) -> int:
     """
@@ -169,9 +180,10 @@ def float_to_uint64(float64: float) -> int:
     :returns: Converted double precision float value stored as an integer value.
     """
 
-    float64_value_in_bytes = struct.pack('>d', float64)
+    float64_value_in_bytes = struct.pack(">d", float64)
 
     return int.from_bytes(float64_value_in_bytes, byteorder="big")
+
 
 FLOAT16_SIGN_MASK = 0x8000
 FLOAT16_EXPONENT_MASK = 0x7C00

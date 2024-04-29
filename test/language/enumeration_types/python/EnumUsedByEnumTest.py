@@ -1,5 +1,6 @@
 import EnumerationTypes
 
+
 class EnumUsedByEnumTest(EnumerationTypes.TestCase):
     def testLightColor(self):
         self.assertEqual(VALUE_LIGHT_RED, self.api.LightColor.LIGHT_RED.value)
@@ -21,6 +22,7 @@ class EnumUsedByEnumTest(EnumerationTypes.TestCase):
         self.assertEqual(VALUE_DARK_GREEN, self.api.Color.DARK_GREEN.value)
         self.assertEqual(VALUE_DARK_BLUE, self.api.Color.DARK_BLUE.value)
         self.assertEqual(VALUE_DARK_PINK, self.api.Color.DARK_PINK.value)
+
 
 VALUE_NONE = 0x00
 VALUE_LIGHT_RED = 0x01

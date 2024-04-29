@@ -5,6 +5,7 @@ import ArrayTypesWarning
 
 from testutils import getApiDir
 
+
 class PackedArrayTemplateHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
     def testWriteReadU32(self):
         u32 = self.api.T_u32([0, 1, 2, 3, 4, 5])
@@ -23,11 +24,9 @@ class PackedArrayTemplateHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
         self.assertEqual(tStr, readTStr)
 
     def testWriteReadPackable(self):
-        packable = self.api.T_packable([
-            self.api.Packable(0, 4.0, "A"),
-            self.api.Packable(1, 1.0, "B"),
-            self.api.Packable(2, 0.0, "C")
-        ])
+        packable = self.api.T_packable(
+            [self.api.Packable(0, 4.0, "A"), self.api.Packable(1, 1.0, "B"), self.api.Packable(2, 0.0, "C")]
+        )
 
         blobName = self.BLOB_NAME_BASE + "_packable.blob"
         zserio.serialize_to_file(packable, blobName)
@@ -35,16 +34,15 @@ class PackedArrayTemplateHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
         self.assertEqual(packable, readPackable)
 
     def testWriteReadUnpackable(self):
-        unpackable = self.api.T_unpackable([
-            self.api.Unpackable(4.0, "A"),
-            self.api.Unpackable(1.0, "B"),
-            self.api.Unpackable(0.0, "C")
-        ])
+        unpackable = self.api.T_unpackable(
+            [self.api.Unpackable(4.0, "A"), self.api.Unpackable(1.0, "B"), self.api.Unpackable(0.0, "C")]
+        )
 
         blobName = self.BLOB_NAME_BASE + "_unpackable.blob"
         zserio.serialize_to_file(unpackable, blobName)
         readUnpackable = zserio.deserialize_from_file(self.api.T_unpackable, blobName)
         self.assertEqual(unpackable, readUnpackable)
 
-    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                  "packed_array_template_has_no_packable_field")
+    BLOB_NAME_BASE = os.path.join(
+        getApiDir(os.path.dirname(__file__)), "packed_array_template_has_no_packable_field"
+    )

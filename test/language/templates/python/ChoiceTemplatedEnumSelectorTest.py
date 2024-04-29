@@ -2,6 +2,7 @@ import zserio
 
 import Templates
 
+
 class ChoiceTemplatedEnumSelectorTest(Templates.TestCase):
     def testReadWrite(self):
         selectorFromZero = self.api.EnumFromZero.ONE

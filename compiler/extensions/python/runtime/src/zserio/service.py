@@ -7,6 +7,7 @@ import typing
 from zserio.exception import PythonRuntimeException
 from zserio.bitwriter import BitStreamWriter
 
+
 class ServiceData:
     """
     Data abstraction to be sent or to be received in all Zserio services.
@@ -31,6 +32,7 @@ class ServiceData:
         """
 
         raise NotImplementedError()
+
 
 class ObjectServiceData(ServiceData):
     """
@@ -74,6 +76,7 @@ class ObjectServiceData(ServiceData):
 
         return self._byte_array
 
+
 class RawServiceData(ServiceData):
     """
     Service data implementation based on raw data.
@@ -95,6 +98,7 @@ class RawServiceData(ServiceData):
     @property
     def byte_array(self) -> bytes:
         return self._raw_data
+
 
 class ServiceInterface:
     """
@@ -131,6 +135,7 @@ class ServiceInterface:
         """
         raise NotImplementedError()
 
+
 class ServiceClientInterface:
     """
     Generic interface for all Zserio services on client side.
@@ -147,6 +152,7 @@ class ServiceClientInterface:
         :raises ServiceException: If the call fails.
         """
         raise NotImplementedError()
+
 
 class ServiceException(PythonRuntimeException):
     """
