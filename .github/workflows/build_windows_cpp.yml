@@ -49,6 +49,8 @@ jobs:
         CMAKE_EXTRA_ARGS=("-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
                           "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}"
                           "-DZSERIO_ENABLE_WERROR=1")
+
+        echo "CLANG_FORMAT_BIN=clang-format" >> ${GITHUB_ENV}
         echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
     - name: Install dependencies
@@ -70,6 +72,11 @@ jobs:
       if: ${{ matrix.mingw-version != '' }}
       run: |
         choco install mingw --version ${{matrix.mingw-version}}
+
+    - name: Install clang format
+      shell: bash
+      run: |
+        choco install llvm --version=14.0.0 --allow-downgrade
 
     - name: "Convert environment variables to POSIX paths"
       shell: bash

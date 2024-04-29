@@ -20,6 +20,7 @@ jobs:
     - name: "Set up environment"
       shell: bash
       run: |
+        echo "CLANG_FORMAT_BIN=clang-format" >> ${GITHUB_ENV}
         echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
 
     - name: Install dependencies
@@ -33,6 +34,11 @@ jobs:
       with:
         distribution: temurin
         java-version: ${{matrix.java-version}}
+
+    - name: Install clang format
+      shell: bash
+      run: | 
+        choco install llvm --version=14.0.0 --allow-downgrade
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
       shell: bash
