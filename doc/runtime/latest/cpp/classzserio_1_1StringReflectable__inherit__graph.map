@@ -1,5 +1,6 @@
 <map id="zserio::StringReflectable&lt; ALLOC &gt;" name="zserio::StringReflectable&lt; ALLOC &gt;">
-<area shape="rect" id="node2" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, StringView \&gt;" alt="" coords="5,184,207,225"/>
-<area shape="rect" id="node3" href="$classzserio_1_1ReflectableBase.html" title="zserio::ReflectableBase\l\&lt; ALLOC \&gt;" alt="" coords="21,95,191,136"/>
-<area shape="rect" id="node4" href="$classzserio_1_1IBasicReflectable.html" title="zserio::IBasicReflectable\l\&lt; ALLOC \&gt;" alt="" coords="19,5,193,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="17,273,197,315"/>
+<area shape="rect" id="node2" href="$classzserio_1_1BuiltinReflectableBase.html" title=" " alt="" coords="5,184,209,225"/>
+<area shape="rect" id="node3" href="$classzserio_1_1ReflectableBase.html" title=" " alt="" coords="20,95,195,136"/>
+<area shape="rect" id="node4" href="$classzserio_1_1IBasicReflectable.html" title=" " alt="" coords="17,5,198,47"/>
 </map>
