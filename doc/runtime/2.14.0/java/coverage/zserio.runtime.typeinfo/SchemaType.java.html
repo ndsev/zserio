@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SchemaType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">SchemaType.java</span></div><h1>SchemaType.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+/**
+ * Enumeration which specifies zserio type used in type information.
+ */
+<span class="fc" id="L6">public enum SchemaType</span>
+{
+    /** Zserio bool type */
+<span class="fc" id="L9">    BOOL,</span>
+    /** Zserio int8 type. */
+<span class="fc" id="L11">    INT8,</span>
+    /** Zserio int16 type. */
+<span class="fc" id="L13">    INT16,</span>
+    /** Zserio int32 type. */
+<span class="fc" id="L15">    INT32,</span>
+    /** Zserio int64 type. */
+<span class="fc" id="L17">    INT64,</span>
+    /** Zserio uint8 type. */
+<span class="fc" id="L19">    UINT8,</span>
+    /** Zserio uint16 type. */
+<span class="fc" id="L21">    UINT16,</span>
+    /** Zserio uint32 type. */
+<span class="fc" id="L23">    UINT32,</span>
+    /** Zserio uint64 type. */
+<span class="fc" id="L25">    UINT64,</span>
+    /** Zserio varint16 type. */
+<span class="fc" id="L27">    VARINT16,</span>
+    /** Zserio varint32 type. */
+<span class="fc" id="L29">    VARINT32,</span>
+    /** Zserio varint64 type. */
+<span class="fc" id="L31">    VARINT64,</span>
+    /** Zserio varint type. */
+<span class="fc" id="L33">    VARINT,</span>
+    /** Zserio varuint16 type. */
+<span class="fc" id="L35">    VARUINT16,</span>
+    /** Zserio varuint32 type. */
+<span class="fc" id="L37">    VARUINT32,</span>
+    /** Zserio varuint64 type. */
+<span class="fc" id="L39">    VARUINT64,</span>
+    /** Zserio varuint type. */
+<span class="fc" id="L41">    VARUINT,</span>
+    /** Zserio varsize type. */
+<span class="fc" id="L43">    VARSIZE,</span>
+    /** Zserio fixed signed bitfield type. */
+<span class="fc" id="L45">    FIXED_SIGNED_BITFIELD,</span>
+    /** Zserio fixed unsigned bitfield type. */
+<span class="fc" id="L47">    FIXED_UNSIGNED_BITFIELD,</span>
+    /** Zserio dynamic signed bitfield type. */
+<span class="fc" id="L49">    DYNAMIC_SIGNED_BITFIELD,</span>
+    /** Zserio dynamic unsigned bitfield type. */
+<span class="fc" id="L51">    DYNAMIC_UNSIGNED_BITFIELD,</span>
+    /** Zserio float16 type. */
+<span class="fc" id="L53">    FLOAT16,</span>
+    /** Zserio float32 type. */
+<span class="fc" id="L55">    FLOAT32,</span>
+    /** Zserio float64 type. */
+<span class="fc" id="L57">    FLOAT64,</span>
+    /** Zserio bytes type. */
+<span class="fc" id="L59">    BYTES,</span>
+    /** Zserio string type. */
+<span class="fc" id="L61">    STRING,</span>
+    /** Zserio extern type. */
+<span class="fc" id="L63">    EXTERN,</span>
+    /** Zserio enumeration type. */
+<span class="fc" id="L65">    ENUM,</span>
+    /** Zserio bitmask type. */
+<span class="fc" id="L67">    BITMASK,</span>
+    /** Zserio structure type. */
+<span class="fc" id="L69">    STRUCT,</span>
+    /** Zserio choice type. */
+<span class="fc" id="L71">    CHOICE,</span>
+    /** Zserio union type. */
+<span class="fc" id="L73">    UNION,</span>
+    /** Zserio SQL table type. */
+<span class="fc" id="L75">    SQL_TABLE,</span>
+    /** Zserio SQL database type. */
+<span class="fc" id="L77">    SQL_DATABASE,</span>
+    /** Zserio service type. */
+<span class="fc" id="L79">    SERVICE,</span>
+    /** Zserio pubsub type. */
+<span class="fc" id="L81">    PUBSUB</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
