@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColumnInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">ColumnInfo.java</span></div><h1>ColumnInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
+/**
+ * Type information for SQL table column.
+ */
+public final class ColumnInfo
+{
+    /**
+     * Constructor.
+     *
+     * @param schemaName Column schema name.
+     * @param typeInfo Column type info.
+     * @param typeArguments Column type arguments.
+     * @param sqlTypeName Column SQL type name.
+     * @param sqlConstraint Column SQL constraint.
+     * @param isVirtual Flag whether the column is virtual.
+     */
+    public ColumnInfo(String schemaName, TypeInfo typeInfo, List&lt;Function&lt;Object, Object&gt;&gt; typeArguments,
+            String sqlTypeName, String sqlConstraint, boolean isVirtual)
+<span class="nc" id="L24">    {</span>
+<span class="nc" id="L25">        this.schemaName = schemaName;</span>
+<span class="nc" id="L26">        this.typeInfo = typeInfo;</span>
+<span class="nc" id="L27">        this.typeArguments = typeArguments;</span>
+<span class="nc" id="L28">        this.sqlTypeName = sqlTypeName;</span>
+<span class="nc" id="L29">        this.sqlConstraint = sqlConstraint;</span>
+<span class="nc" id="L30">        this.isVirtual = isVirtual;</span>
+<span class="nc" id="L31">    }</span>
+
+    /**
+     * Name of the column as is defined in zserio schema.
+     *
+     * @return Column schema name.
+     */
+    public String getSchemaName()
+    {
+<span class="nc" id="L40">        return schemaName;</span>
+    }
+
+    /**
+     * Gets type information for the column type.
+     *
+     * @return Column type info.
+     */
+    public TypeInfo getTypeInfo()
+    {
+<span class="nc" id="L50">        return typeInfo;</span>
+    }
+
+    /**
+     * Gets sequence of column type arguments.
+     *
+     * @return Unmodifiable list of type arguments.
+     */
+    public List&lt;Function&lt;Object, Object&gt;&gt; getTypeArguments()
+    {
+<span class="nc" id="L60">        return Collections.unmodifiableList(typeArguments);</span>
+    }
+
+    /**
+     * Gets SQL type name of the column.
+     *
+     * @return Column SQL type name.
+     */
+    public String getSqlTypeName()
+    {
+<span class="nc" id="L70">        return sqlTypeName;</span>
+    }
+
+    /**
+     * Gets column SQL constraint expression.
+     *
+     * @return Column SQL constraint or empty if column does not have any constraint.
+     */
+    public String getSqlConstraint()
+    {
+<span class="nc" id="L80">        return sqlConstraint;</span>
+    }
+
+    /**
+     * Gets whether the column is a virtual column.
+     *
+     * @return True if SQL table is virtual, false otherwise.
+     */
+    public boolean isVirtual()
+    {
+<span class="nc" id="L90">        return isVirtual;</span>
+    }
+
+    private final String schemaName;
+    private final TypeInfo typeInfo;
+    private final List&lt;Function&lt;Object, Object&gt;&gt; typeArguments;
+    private final String sqlTypeName;
+    private final String sqlConstraint;
+    private final boolean isVirtual;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
