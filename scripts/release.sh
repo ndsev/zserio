@@ -338,6 +338,15 @@ update_conan()
         return 1
     fi
 
+    local CONFIG_YML=${ZSERIO_CONAN_DIR}/recipes/zserio/config.yml
+    local OLD_VERSIONS=$(tail "${CONFIG_YML}" -n +2)
+    cat > ${CONFIG_YML} << EOF
+versions:
+  "${ZSERIO_VERSION}":
+    folder: all
+${OLD_VERSIONS}
+EOF
+
     local CONANDATA_YML=${ZSERIO_CONAN_DIR}/recipes/zserio/all/conandata.yml
     local OLD_SOURCES=$(tail "${CONANDATA_YML}" -n +2)
     local ZSERIO_RUNTIME_LIBS_URL
