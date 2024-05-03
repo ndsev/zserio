@@ -47,11 +47,8 @@ jobs:
         fi
 
         CMAKE_EXTRA_ARGS=("-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
-                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
-        if [[ "${{matrix.msvc-toolset}}" == "" ]] ; then
-          # msvc produces some warnings, https://github.com/ndsev/zserio/issues/587
-          CMAKE_EXTRA_ARGS+=("-DZSERIO_ENABLE_WERROR=1")
-        fi
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}"
+                          "-DZSERIO_ENABLE_WERROR=1")
         echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
     - name: Install dependencies

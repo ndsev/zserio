@@ -17,12 +17,12 @@ class StructureArrayParamTest : public ::testing::Test
 protected:
     void writeParentStructureToByteArray(zserio::BitStreamWriter& writer)
     {
-        writer.writeBits(VALUES.size(), 8);
+        writer.writeBits(static_cast<uint32_t>(VALUES.size()), 8);
 
         for (uint64_t value : VALUES)
             writer.writeBits(static_cast<uint32_t>(value), CHILD_BIT_SIZE);
 
-        writer.writeBits(ANOTHER_VALUES.size(), 8);
+        writer.writeBits(static_cast<uint32_t>(ANOTHER_VALUES.size()), 8);
 
         for (uint64_t anotherValue : ANOTHER_VALUES)
             writer.writeBits(static_cast<uint32_t>(anotherValue), ANOTHER_CHILD_BIT_SIZE);
@@ -30,7 +30,7 @@ protected:
 
     void createParentStructure(ParentStructure& parentStructure)
     {
-        parentStructure.setNumChildren(VALUES.size());
+        parentStructure.setNumChildren(static_cast<uint8_t>(VALUES.size()));
 
         auto& children = parentStructure.getChildren();
         for (uint64_t value : VALUES)
@@ -40,7 +40,7 @@ protected:
             children.push_back(child);
         }
 
-        parentStructure.setNumAnotherChildren(ANOTHER_VALUES.size());
+        parentStructure.setNumAnotherChildren(static_cast<uint8_t>(ANOTHER_VALUES.size()));
 
         auto& anotherChildren = parentStructure.getAnotherChildren();
         for (uint64_t anotherValue : ANOTHER_VALUES)

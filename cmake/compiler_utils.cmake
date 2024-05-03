@@ -51,6 +51,7 @@ function(compiler_get_test_warnings_setup VARNAME)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         set(WARNINGS_SETUP_LIST
                 "/wd4996" # used by zserio @deprecated feature (DeprecatedAttribute.h)
+                "/wd4334" # disabled for generated code: result of 32-bit shift implicitly converted to 64 bits
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
     endif ()
