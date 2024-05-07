@@ -19,7 +19,7 @@ class UnionArrayTest : public ::testing::Test
 protected:
     void writeInnerToByteArray(zserio::BitStreamWriter& writer, uint16_t pos)
     {
-        writer.writeBits(ITEMS.size(), 16);
+        writer.writeBits(static_cast<uint32_t>(ITEMS.size()), 16);
 
         for (Item item : ITEMS)
         {
@@ -43,7 +43,7 @@ protected:
     void fillInner(Inner& inner, uint16_t pos)
     {
         OuterArray outerArray;
-        outerArray.setNumElements(ITEMS.size());
+        outerArray.setNumElements(static_cast<uint16_t>(ITEMS.size()));
         auto& values = outerArray.getValues();
         values.assign(ITEMS.begin(), ITEMS.end());
         inner.setOuterArray(outerArray);
@@ -120,7 +120,7 @@ TEST_F(UnionArrayTest, checkUnionArrayFunctionElement2)
 
 TEST_F(UnionArrayTest, checkUnionArrayFunctionExplicitElement)
 {
-    checkUnionArrayFunction(ITEMS.size());
+    checkUnionArrayFunction(static_cast<uint16_t>(ITEMS.size()));
 }
 
 } // namespace union_array

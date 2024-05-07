@@ -21,7 +21,7 @@ protected:
     static void writeArray8ToByteArray(zserio::BitStreamWriter& writer)
     {
         writer.writeVarSize(static_cast<uint32_t>(TestUnion::CHOICE_array8));
-        writer.writeVarSize(ARRAY8.size());
+        writer.writeVarSize(static_cast<uint32_t>(ARRAY8.size()));
         for (int8_t element : ARRAY8)
             writer.writeSignedBits(element, 8);
     }
@@ -29,7 +29,7 @@ protected:
     static void writeArray16ToByteArray(zserio::BitStreamWriter& writer)
     {
         writer.writeVarSize(static_cast<uint32_t>(TestUnion::CHOICE_array16));
-        writer.writeVarSize(ARRAY16.size());
+        writer.writeVarSize(static_cast<uint32_t>(ARRAY16.size()));
         for (int16_t element : ARRAY16)
             writer.writeSignedBits(element, 16);
     }

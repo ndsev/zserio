@@ -243,7 +243,7 @@ TEST_F(OptionalRecursionTest, writeBlock1)
     checkBlockInBitStream(reader, BLOCK1_DATA);
     reader.setBitPosition(0);
 
-    Block readBlock1(reader, BLOCK1_DATA.size());
+    Block readBlock1(reader, static_cast<uint8_t>(BLOCK1_DATA.size()));
     ASSERT_EQ(block1, readBlock1);
 }
 
@@ -258,7 +258,7 @@ TEST_F(OptionalRecursionTest, writeBlock12)
     checkBlockInBitStream(reader, BLOCK1_DATA, BLOCK2_DATA);
     reader.setBitPosition(0);
 
-    Block readBlock12(reader, BLOCK1_DATA.size());
+    Block readBlock12(reader, static_cast<uint8_t>(BLOCK1_DATA.size()));
     ASSERT_EQ(block12, readBlock12);
 
     block12.setBlockTerminator(0); // set but not used
@@ -268,7 +268,7 @@ TEST_F(OptionalRecursionTest, writeBlock12)
     checkBlockInBitStream(reader2, BLOCK1_DATA);
     reader2.setBitPosition(0);
 
-    Block readBlock12_2(reader2, BLOCK1_DATA.size());
+    Block readBlock12_2(reader2, static_cast<uint8_t>(BLOCK1_DATA.size()));
     ASSERT_EQ(block12, readBlock12_2);
 }
 
