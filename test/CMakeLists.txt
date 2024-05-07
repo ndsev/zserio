@@ -36,6 +36,7 @@ include(clang_format_utils)
 include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
+compiler_reset_debug_iterators() # fixes arguments/set_cpp_allocator tests for MSVC
 
 if (SANITIZERS_ENABLED)
     compiler_set_address_sanitizer()

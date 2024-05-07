@@ -100,12 +100,7 @@ jobs:
     - name: Run Zserio tests
       shell: bash
       run: |
-        if [[ "${{matrix.msvc-toolset}}" != "" && "${{matrix.build-type}}" == "Debug" ]] ; then
-          # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
-          EXCLUDE_SET_CPP_ALLOCATOR="-x arguments/set_cpp_allocator"
-        fi
-
-        scripts/test.sh ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
+        scripts/test.sh cpp-${PACKAGE}
 
     - name: Run Zserio tests with extra arguments
       # MinGW 7.5.0 Debug does not work, https://github.com/ndsev/zserio/issues/599
