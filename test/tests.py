@@ -143,7 +143,7 @@ def _runBlackOnAllSources(testDirs):
     if runBlackResult != 0:
         return runBlackResult
 
-    print("Black done.\n")
+    print("Black done.")
 
     return 0
 

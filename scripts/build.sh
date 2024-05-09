@@ -89,6 +89,7 @@ test_python_runtime()
         stderr_echo "Running black failed with return code ${BLACK_RESULT}!"
         return 1
     fi
+    echo
 
     echo "Running pylint on python runtime sources."
 

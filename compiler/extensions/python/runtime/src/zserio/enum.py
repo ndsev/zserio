@@ -24,8 +24,12 @@ class _EnumType(enum.EnumMeta):
             warnings.warn(DeprecationWarning(f"Enum item '{member}' is deprecated!"), stacklevel=2)
         return member
 
-    def __call__(cls, value, names=None, *, module=None, qualname=None, type_=None, start=1):
-        obj = super().__call__(value, names, module=module, qualname=qualname, type=type_, start=start)
+    def __call__(cls, value, names=None):
+        # Python 3.12.3 has changed default value for 'names' from 'None' to '_not_given'
+        if names is None:
+            obj = super().__call__(value)
+        else:
+            obj = super().__call__(value, names=names)
         if isinstance(obj, enum.Enum) and obj._is_deprecated:
             warnings.warn(DeprecationWarning(f"Enum item '{obj}' is deprecated!"), stacklevel=2)
         return obj

@@ -33,6 +33,13 @@ class EnumTest(unittest.TestCase):
         with self.assertWarns(DeprecationWarning):
             self.assertEqual(EnumTest.TestEnum.ONE, EnumTest.TestEnum(1))
 
+    def test_functional_syntax(self):
+        # pylint: disable=invalid-name
+        TestEnumColor = Enum("TestEnumColor", ["BLUE", "RED", "GREEN"])
+        self.assertEqual(TestEnumColor.BLUE, TestEnumColor(1))
+        self.assertEqual(TestEnumColor.RED, TestEnumColor(2))
+        self.assertEqual(TestEnumColor.GREEN, TestEnumColor(3))
+
     def test_invalid_argument(self):
         with self.assertRaises(ValueError):
             # pylint: disable=unused-variable
