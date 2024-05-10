@@ -26,6 +26,7 @@ bit:16          | `int`                         | `uint16_t`             | `int`
 bit:17...bit:31 | `int`                         | `uint32_t`             | `int`              |
 bit:32          | `long`                        | `uint32_t`             | `int`              |
 bit:33...bit:63 | `long`                        | `uint64_t`             | `int`              |
+bit:64          | `java.math.BigInteger`        | `uint64_t`             | `int`              |
 int:1...int:8   | `byte`                        | `int8_t`               | `int`              |
 int:9...int:16  | `short`                       | `int16_t`              | `int`              |
 int:17...int:32 | `int`                         | `int32_t`              | `int`              |

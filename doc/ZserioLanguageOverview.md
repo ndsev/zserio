@@ -114,7 +114,7 @@ respectively.
 An unsigned bit field type is denoted by `bit:1`, `bit:2`, ...
 
 The colon must be followed by a positive integer literal, which indicates the length of the type in bits.
-The length should not exceed 63 bits. An unsigned bit field type corresponds to an unsigned integer of the
+The length should not exceed 64 bits. An unsigned bit field type corresponds to an unsigned integer of the
 given length. Thus, `bit:16` and `uint16` are equivalent. The value range of `bit:n` is 0..2<sup>n</sup>-1.
 
 Unsigned bitfield types of variable length (dynamic unsigned bitfield types) can be specified as `bit<expr>`,
