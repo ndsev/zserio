@@ -110,8 +110,6 @@ jobs:
         scripts/test.sh cpp-${PACKAGE}
 
     - name: Run Zserio tests with extra arguments
-      # MinGW 7.5.0 Debug does not work, https://github.com/ndsev/zserio/issues/599
-      if: ${{ matrix.mingw-version != '7.5.0' || matrix.build-type != 'Debug' }}
       shell: bash
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic"
@@ -148,8 +146,6 @@ jobs:
             --num-iterations 1000 --test-config READ_WRITE
 
     - name: Run Zserio benchmarks
-      # MinGW Debug build does not work, https://github.com/ndsev/zserio/issues/588
-      if: ${{ matrix.mingw-version == '' || matrix.build-type == 'Release' }}
       shell: bash
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1

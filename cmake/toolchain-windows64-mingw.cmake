@@ -51,9 +51,16 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 set(COMPILER_BIG_OBJ_FLAG "-Wa,-mbig-obj")
 
 # set C flags
-set(CMAKE_C_FLAGS
-    "${CMAKE_C_FLAGS} ${COMPILER_BIG_OBJ_FLAG}" CACHE STRING "C flags")
+set(CMAKE_C_FLAGS_INIT "${COMPILER_BIG_OBJ_FLAG}")
 
 # set CXX flags
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} ${COMPILER_BIG_OBJ_FLAG}" CACHE STRING "C++ flags")
+set(CMAKE_CXX_FLAGS_INIT "${COMPILER_BIG_OBJ_FLAG}")
+
+# set size optimization in debug to fix "file is too big" problem for old MinGW 7.5.0 (newer versions work)
+set(COMPILER_SIZE_OPTIMIZATION_FLAG "-Os")
+
+# set C flags for debug
+set(CMAKE_C_FLAGS_DEBUG_INIT "${COMPILER_SIZE_OPTIMIZATION_FLAG}")
+
+# set CXX flags for debug
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "${COMPILER_SIZE_OPTIMIZATION_FLAG}")
