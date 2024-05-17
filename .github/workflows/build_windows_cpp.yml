@@ -9,8 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "windows-2022", msvc-toolset: "v141", cxx-standard: "11", build-type: "Release" }
-        - { os: "windows-2022", msvc-toolset: "v141", cxx-standard: "11", build-type: "Debug" }
+        - { os: "windows-2019", msvc-toolset: "v141", cxx-standard: "11", build-type: "Release" }
+        - { os: "windows-2019", msvc-toolset: "v141", cxx-standard: "11", build-type: "Debug" }
 
         - { os: "windows-2022", mingw-version: "7.5.0", cxx-standard: "11", build-type: "Release" }
         - { os: "windows-2022", mingw-version: "7.5.0", cxx-standard: "11", build-type: "Debug" }
@@ -41,7 +41,15 @@ jobs:
         if [[ "${{matrix.msvc-toolset}}" != "" ]] ; then
           echo "MSVC_CMAKE_TOOLSET=${{matrix.msvc-toolset}}" >> ${GITHUB_ENV}
           echo "PACKAGE=windows64-msvc" >> ${GITHUB_ENV}
-        elif [[ "${{matrix.mingw-version}}" != "" ]] ; then
+          # v141 toolset is not installed in windows-2022/VS2022 image by default
+          if [[ "${{matrix.msvc-toolset}}" == "v141" ]] ; then
+            echo "MSVC_CMAKE_GENERATOR=Visual Studio 16 2019" >> ${GITHUB_ENV}
+          else
+            echo "MSVC_CMAKE_GENERATOR=Visual Studio 17 2022" >> ${GITHUB_ENV}
+          fi
+        fi
+
+        if [[ "${{matrix.mingw-version}}" != "" ]] ; then
           echo "MINGW64_TOOLCHAIN_ROOT=/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64" >> ${GITHUB_ENV}
           echo "PACKAGE=windows64-mingw" >> ${GITHUB_ENV}
         fi
