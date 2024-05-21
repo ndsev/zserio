@@ -59,12 +59,16 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
 {
     std::ofstream stream = std::ofstream(fileName.c_str(), std::ios::out | std::ios::trunc);
     if (!stream)
+    {
         throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to open '") << fileName << "'!";
+    }
 
     detail::toJsonStream(object, stream, indent, walkFilter, allocator);
 
     if (!stream)
+    {
         throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to write '") << fileName << "'!";
+    }
 }
 
 // needed due to GCC compilation problems, GCC tries to instantiate return type even though the
@@ -577,7 +581,10 @@ typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonFile(
 {
     std::ifstream is = std::ifstream(fileName.c_str());
     if (!is)
+    {
         throw CppRuntimeException("DebugStringUtil.fromJsonFile: Failed to open '") << fileName + "'!";
+    }
+
     return fromJsonStream(typeInfo, is, allocator);
 }
 

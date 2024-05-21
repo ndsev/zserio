@@ -359,14 +359,22 @@ public:
         const int cmp = Traits::compare(data(), other.data(), rlen);
 
         if (cmp != 0)
+        {
             return cmp;
+        }
 
         if (size() < other.size())
+        {
             return -1;
+        }
         else if (size() > other.size())
+        {
             return 1;
+        }
         else
+        {
             return 0;
+        }
     }
 
     /**
@@ -450,10 +458,14 @@ public:
     size_type find(BasicStringView str, size_type pos = 0) const noexcept
     {
         if (pos >= size() || str.size() > size() - pos)
+        {
             return npos; // the string cannot be there
+        }
 
         if (str.size() == 0)
+        {
             return pos; // zero-sized search, this defaults to the match at the beginning
+        }
 
         const const_pointer startPtr = data() + pos; // where the searching will start
         const const_pointer endPtr = data() + (size() - str.size()) + 1; // where the searching will end
@@ -522,12 +534,16 @@ public:
     size_type rfind(BasicStringView str, size_type pos = npos) const noexcept
     {
         if (str.size() > size())
+        {
             return npos;
+        }
 
         for (size_t p = std::min(static_cast<size_type>(size() - str.size()), pos) + 1; p > 0; --p)
         {
             if (Traits::compare(data() + p - 1, str.data(), str.size()) == 0)
+            {
                 return p - 1;
+            }
         }
 
         return npos;
@@ -579,12 +595,16 @@ public:
     size_type find_first_of(BasicStringView str, size_type pos = 0) const noexcept
     {
         if (str.size() == 0 || pos >= size())
+        {
             return npos;
+        }
 
         for (size_type idx = pos; idx < size(); ++idx)
         {
             if (Traits::find(str.data(), str.size(), data()[idx]) != nullptr)
+            {
                 return idx;
+            }
         }
 
         return npos;
@@ -637,12 +657,16 @@ public:
     size_type find_last_of(BasicStringView str, size_type pos = npos) const noexcept
     {
         if (str.empty() || empty())
+        {
             return npos;
+        }
 
         for (size_type idx = std::min(pos + 1, size()); idx > 0; --idx)
         {
             if (Traits::find(str.data(), str.size(), data()[idx - 1]) != nullptr)
+            {
                 return idx - 1;
+            }
         }
 
         return npos;
@@ -695,12 +719,16 @@ public:
     size_type find_first_not_of(BasicStringView str, size_type pos = 0) const noexcept
     {
         if (str.size() == 0 || pos >= size())
+        {
             return npos;
+        }
 
         for (size_type idx = pos; idx < size(); ++idx)
         {
             if (Traits::find(str.data(), str.size(), data()[idx]) == nullptr)
+            {
                 return idx;
+            }
         }
 
         return npos;
@@ -753,12 +781,16 @@ public:
     size_type find_last_not_of(BasicStringView str, size_type pos = npos) const noexcept
     {
         if (str.empty() || empty())
+        {
             return npos;
+        }
 
         for (size_type idx = std::min(pos + 1, size()); idx > 0; --idx)
         {
             if (Traits::find(str.data(), str.size(), data()[idx - 1]) == nullptr)
+            {
                 return idx - 1;
+            }
         }
 
         return npos;

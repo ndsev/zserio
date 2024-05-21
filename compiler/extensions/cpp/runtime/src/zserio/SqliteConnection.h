@@ -140,7 +140,9 @@ inline void SqliteConnection::reset(sqlite3* connection, ConnectionType connecti
 {
     // close connection only if it is internal
     if (m_connectionType == INTERNAL_CONNECTION)
+    {
         sqlite3_close_v2(m_connection); // sqlite3_close_v2(NULL) is a harmless no-op
+    }
 
     m_connection = connection;
     m_connectionType = connectionType;
@@ -196,7 +198,9 @@ inline bool SqliteConnection::startTransaction()
 inline void SqliteConnection::endTransaction(bool wasTransactionStarted)
 {
     if (wasTransactionStarted)
+    {
         executeUpdate("COMMIT;");
+    }
 }
 
 } // namespace zserio

@@ -247,7 +247,9 @@ public:
         {
             // we are not aligned to byte
             for (Span<const uint8_t>::iterator it = buffer.begin(); it != itEnd; ++it)
+            {
                 writeUnsignedBits(*it, 8);
+            }
         }
         else
         {
@@ -261,7 +263,9 @@ public:
         }
 
         if (numRestBits > 0)
+        {
             writeUnsignedBits(*itEnd >> (8U - numRestBits), numRestBits);
+        }
     }
 
     /**

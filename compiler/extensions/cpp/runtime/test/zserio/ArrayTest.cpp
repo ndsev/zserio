@@ -479,7 +479,9 @@ private:
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT, ARRAY_EXPRESSIONS>;
 
         if (detail::arrayTraitsConstBitSizeOf<ARRAY_TRAITS>(owner) % 8 != 0)
+        {
             return; // implicit array allowed for types with constant bitsize rounded to bytes
+        }
 
         for (uint8_t i = 0; i < 8; ++i)
         {

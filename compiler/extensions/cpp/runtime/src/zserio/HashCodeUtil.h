@@ -102,7 +102,9 @@ inline uint32_t calcHashCode(
 {
     uint32_t result = seedValue;
     for (auto element : stringValue)
+    {
         result = calcHashCode(result, element);
+    }
 
     return result;
 }
@@ -150,7 +152,9 @@ inline uint32_t calcHashCode(uint32_t seedValue, const std::vector<ARRAY_ELEMENT
 {
     uint32_t result = seedValue;
     for (const ARRAY_ELEMENT& element : array)
+    {
         result = calcHashCode(result, element);
+    }
 
     return result;
 }
@@ -169,7 +173,9 @@ template <typename FIELD>
 inline uint32_t calcHashCode(uint32_t seedValue, const InplaceOptionalHolder<FIELD>& optionalHolder)
 {
     if (!optionalHolder)
+    {
         return calcHashCode(seedValue, 0);
+    }
 
     return calcHashCode(seedValue, *optionalHolder);
 }
@@ -186,7 +192,9 @@ template <typename FIELD, typename ALLOC>
 inline uint32_t calcHashCode(uint32_t seedValue, const HeapOptionalHolder<FIELD, ALLOC>& optionalHolder)
 {
     if (!optionalHolder)
+    {
         return calcHashCode(seedValue, 0);
+    }
 
     return calcHashCode(seedValue, *optionalHolder);
 }

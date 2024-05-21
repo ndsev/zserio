@@ -417,7 +417,9 @@ public:
     {
         m_rawArray.reserve(other.m_rawArray.size());
         for (const auto& value : other.m_rawArray)
+        {
             m_rawArray.emplace_back(NoInit, value);
+        }
     }
 
     /**
@@ -435,7 +437,9 @@ public:
         m_rawArray = rawArray; // copy assign to get correct allocator propagation behaviour
         m_rawArray.reserve(other.m_rawArray.size());
         for (const auto& value : other.m_rawArray)
+        {
             m_rawArray.emplace_back(NoInit, value);
+        }
 
         return *this;
     }

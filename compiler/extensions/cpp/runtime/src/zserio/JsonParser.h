@@ -120,10 +120,14 @@ public:
     bool parse()
     {
         if (m_tokenizer.getToken() == JsonToken::BEGIN_OF_FILE)
+        {
             m_tokenizer.next();
+        }
 
         if (m_tokenizer.getToken() == JsonToken::END_OF_FILE)
+        {
             return true;
+        }
 
         parseElement();
 
@@ -181,13 +185,21 @@ void BasicJsonParser<ALLOC>::parseElement()
     JsonToken token = m_tokenizer.getToken();
 
     if (token == JsonToken::BEGIN_ARRAY)
+    {
         parseArray();
+    }
     else if (token == JsonToken::BEGIN_OBJECT)
+    {
         parseObject();
+    }
     else if (token == JsonToken::VALUE)
+    {
         parseValue();
+    }
     else
+    {
         throw createUnexpectedTokenException(ELEMENT_TOKENS);
+    }
 }
 
 template <typename ALLOC>
@@ -197,7 +209,9 @@ void BasicJsonParser<ALLOC>::parseObject()
     m_observer.beginObject();
 
     if (m_tokenizer.getToken() == JsonToken::VALUE)
+    {
         parseMembers();
+    }
 
     consumeToken(JsonToken::END_OBJECT);
     m_observer.endObject();
@@ -239,7 +253,9 @@ void BasicJsonParser<ALLOC>::parseArray()
     m_observer.beginArray();
 
     if (std::find(ELEMENT_TOKENS.begin(), ELEMENT_TOKENS.end(), m_tokenizer.getToken()) != ELEMENT_TOKENS.end())
+    {
         parseElements();
+    }
 
     consumeToken(JsonToken::END_ARRAY);
     m_observer.endArray();
@@ -298,7 +314,9 @@ template <typename ALLOC>
 void BasicJsonParser<ALLOC>::checkToken(JsonToken token)
 {
     if (m_tokenizer.getToken() != token)
+    {
         throw createUnexpectedTokenException({{token}});
+    }
 }
 
 template <typename ALLOC>
@@ -324,7 +342,9 @@ JsonParserException BasicJsonParser<ALLOC>::createUnexpectedTokenException(
         for (size_t i = 0; i < expecting.size(); ++i)
         {
             if (i > 0)
+            {
                 error << ", ";
+            }
             error << expecting[i];
         }
         error << "]!";

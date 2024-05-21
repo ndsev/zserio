@@ -55,7 +55,9 @@ const char* convertIntToString(std::array<char, 24>& buffer, T value, bool isNeg
     }
 
     if (isNegative)
+    {
         *--bufferEnd = '-';
+    }
 
     return &(*bufferEnd);
 }
@@ -95,7 +97,9 @@ const char* convertIntToString(std::array<char, 24>& buffer, T value)
     unsigned_type absValue = static_cast<unsigned_type>(value);
     const bool isNegative = value < 0;
     if (isNegative)
+    {
         absValue = static_cast<unsigned_type>(0 - absValue);
+    }
 
     return detail::convertIntToString(buffer, absValue, isNegative);
 }

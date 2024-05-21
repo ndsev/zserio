@@ -248,7 +248,9 @@ public:
             vector<uint8_t, ALLOC> value{alloc};
             value.reserve(len);
             for (size_t i = 0; i < len; ++i)
+            {
                 value.push_back(readByte());
+            }
             return value;
         }
         else
@@ -278,7 +280,9 @@ public:
             string<ALLOC> value{alloc};
             value.reserve(len);
             for (size_t i = 0; i < len; ++i)
+            {
                 value.push_back(static_cast<char>(readByte()));
+            }
             return value;
         }
         else
@@ -318,7 +322,9 @@ public:
         {
             // we are not aligned to byte
             for (Span<uint8_t>::iterator it = buffer.begin(); it != itEnd; ++it)
+            {
                 *it = static_cast<uint8_t>(readBits(8));
+            }
         }
         else
         {
@@ -329,7 +335,9 @@ public:
         }
 
         if (numRestBits > 0)
+        {
             *itEnd = static_cast<uint8_t>(readBits(numRestBits) << (8U - numRestBits));
+        }
 
         return bitBuffer;
     }

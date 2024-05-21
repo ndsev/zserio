@@ -269,7 +269,9 @@ void BasicJsonWriter<ALLOC>::beginCompound(
     beginItem();
 
     if (elementIndex == WALKER_NOT_ELEMENT)
+    {
         writeKey(fieldInfo.schemaName);
+    }
 
     beginObject();
 }
@@ -290,7 +292,9 @@ void BasicJsonWriter<ALLOC>::visitValue(const IBasicReflectableConstPtr<ALLOC>& 
     beginItem();
 
     if (elementIndex == WALKER_NOT_ELEMENT)
+    {
         writeKey(fieldInfo.schemaName);
+    }
 
     writeValue(value);
 
@@ -301,10 +305,14 @@ template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::beginItem()
 {
     if (!m_isFirst)
+    {
         m_out.write(m_itemSeparator.data(), static_cast<std::streamsize>(m_itemSeparator.size()));
+    }
 
     if (m_indent.hasValue())
+    {
         m_out.put('\n');
+    }
 
     writeIndent();
 }
@@ -328,7 +336,9 @@ template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::endObject()
 {
     if (m_indent.hasValue())
+    {
         m_out.put('\n');
+    }
 
     m_level -= 1;
 
@@ -350,7 +360,9 @@ template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::endArray()
 {
     if (m_indent.hasValue())
+    {
         m_out.put('\n');
+    }
 
     m_level -= 1;
 
@@ -368,7 +380,9 @@ void BasicJsonWriter<ALLOC>::writeIndent()
         if (!indent.empty())
         {
             for (size_t i = 0; i < m_level; ++i)
+            {
                 m_out.write(indent.data(), static_cast<std::streamsize>(indent.size()));
+            }
         }
     }
 }
@@ -425,17 +439,27 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
         break;
     case CppType::ENUM:
         if (m_enumerableFormat == EnumerableFormat::STRING)
+        {
             writeStringifiedEnum(reflectable);
+        }
         else if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
+        {
             JsonEncoder::encodeIntegral(m_out, reflectable->toInt());
+        }
         else
+        {
             JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
+        }
         break;
     case CppType::BITMASK:
         if (m_enumerableFormat == EnumerableFormat::STRING)
+        {
             writeStringifiedBitmask(reflectable);
+        }
         else
+        {
             JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
+        }
         break;
     default:
         throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '")
@@ -525,7 +549,9 @@ void BasicJsonWriter<ALLOC>::writeStringifiedBitmask(const IBasicReflectableCons
         {
             valueCheck |= itemInfo.value;
             if (!stringValue.empty())
+            {
                 stringValue += " | ";
+            }
             stringValue += toString(itemInfo.schemaName, get_allocator());
         }
     }

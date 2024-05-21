@@ -153,9 +153,13 @@ HeapOptionalHolder<T, ALLOC> allocatorPropagatingCopyImpl(
         const HeapOptionalHolder<T, ALLOC>& source, const ALLOC2& allocator)
 {
     if (source.hasValue())
+    {
         return HeapOptionalHolder<T, ALLOC>(allocatorPropagatingCopy(*source, allocator), allocator);
+    }
     else
+    {
         return HeapOptionalHolder<T, ALLOC>(allocator);
+    }
 }
 
 template <typename T, typename ALLOC, typename ALLOC2>
@@ -170,7 +174,9 @@ HeapOptionalHolder<T, ALLOC> allocatorPropagatingCopyImpl(
                 NoInit, allocatorPropagatingCopy(NoInit, *source, allocator), allocator);
     }
     else
+    {
         return HeapOptionalHolder<T, ALLOC>(allocator);
+    }
 }
 
 template <typename T, typename ALLOC>
@@ -178,9 +184,13 @@ InplaceOptionalHolder<T> allocatorPropagatingCopyImpl(
         const InplaceOptionalHolder<T>& source, const ALLOC& allocator)
 {
     if (source.hasValue())
+    {
         return InplaceOptionalHolder<T>(allocatorPropagatingCopy(*source, allocator));
+    }
     else
+    {
         return InplaceOptionalHolder<T>();
+    }
 }
 
 template <typename T, typename ALLOC>
@@ -190,9 +200,13 @@ InplaceOptionalHolder<T> allocatorPropagatingCopyImpl(
     static_assert(std::is_constructible<T, NoInitT, T>::value, "Can be used only for parameterized compounds!");
 
     if (source.hasValue())
+    {
         return InplaceOptionalHolder<T>(NoInit, allocatorPropagatingCopy(NoInit, *source, allocator));
+    }
     else
+    {
         return InplaceOptionalHolder<T>();
+    }
 }
 
 template <typename T, typename ALLOC, typename ALLOC2>

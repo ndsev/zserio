@@ -294,7 +294,9 @@ bool BasicBitBuffer<ALLOC>::operator==(const BasicBitBuffer<ALLOC>& other) const
     if (this != &other)
     {
         if (m_bitSize != other.m_bitSize)
+        {
             return false;
+        }
 
         const size_t byteSize = getByteSize();
         if (byteSize > 0)
@@ -302,11 +304,15 @@ bool BasicBitBuffer<ALLOC>::operator==(const BasicBitBuffer<ALLOC>& other) const
             if (byteSize > 1)
             {
                 if (memcmp(getBuffer(), other.getBuffer(), byteSize - 1) != 0)
+                {
                     return false;
+                }
             }
 
             if (getMaskedLastByte() != other.getMaskedLastByte())
+            {
                 return false;
+            }
         }
     }
 
@@ -320,9 +326,13 @@ bool BasicBitBuffer<ALLOC>::operator<(const BasicBitBuffer<ALLOC>& other) const
     const size_t byteSize2 = other.getByteSize();
 
     if (byteSize1 == 0)
+    {
         return byteSize2 != 0;
+    }
     if (byteSize2 == 0)
+    {
         return false;
+    }
 
     using difference_type = typename vector<uint8_t, ALLOC>::iterator::difference_type;
 
@@ -333,17 +343,25 @@ bool BasicBitBuffer<ALLOC>::operator<(const BasicBitBuffer<ALLOC>& other) const
     for (; (first1 != last1) && (first2 != last2); ++first1, ++first2)
     {
         if (*first1 < *first2)
+        {
             return true;
+        }
         if (*first2 < *first1)
+        {
             return false;
+        }
     }
 
     const auto lastValue1 = first1 != last1 ? *first1 : getMaskedLastByte();
     const auto lastValue2 = first2 != last2 ? *first2 : other.getMaskedLastByte();
     if (lastValue1 < lastValue2)
+    {
         return true;
+    }
     if (lastValue2 < lastValue1)
+    {
         return false;
+    }
 
     return (first1 == last1) && (first2 != last2);
 }
@@ -359,7 +377,9 @@ uint32_t BasicBitBuffer<ALLOC>::hashCode() const
         {
             auto lastIt = m_buffer.begin() + static_cast<int>(byteSize) - 1;
             for (auto it = m_buffer.begin(); it != lastIt; ++it)
+            {
                 result = calcHashCode(result, *it);
+            }
         }
         result = ::zserio::calcHashCode(result, getMaskedLastByte());
     }

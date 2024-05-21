@@ -147,19 +147,25 @@ bool ReflectableUtil::equal(
         const IBasicReflectableConstPtr<ALLOC>& lhs, const IBasicReflectableConstPtr<ALLOC>& rhs)
 {
     if (lhs == nullptr || rhs == nullptr)
+    {
         return lhs == rhs;
+    }
 
     const auto& lhsTypeInfo = lhs->getTypeInfo();
     const auto& rhsTypeInfo = rhs->getTypeInfo();
 
     if (lhsTypeInfo.getSchemaType() != rhsTypeInfo.getSchemaType() ||
             lhsTypeInfo.getSchemaName() != rhsTypeInfo.getSchemaName())
+    {
         return false;
+    }
 
     if (lhs->isArray() || rhs->isArray())
     {
         if (!lhs->isArray() || !rhs->isArray())
+        {
             return false;
+        }
         return arraysEqual<ALLOC>(lhs, rhs);
     }
     else if (TypeInfoUtil::isCompound(lhsTypeInfo.getSchemaType()))
@@ -177,12 +183,16 @@ bool ReflectableUtil::arraysEqual(
         const IBasicReflectableConstPtr<ALLOC>& lhsArray, const IBasicReflectableConstPtr<ALLOC>& rhsArray)
 {
     if (lhsArray->size() != rhsArray->size())
+    {
         return false;
+    }
 
     for (size_t i = 0; i < lhsArray->size(); ++i)
     {
         if (!equal<ALLOC>(lhsArray->at(i), rhsArray->at(i)))
+        {
             return false;
+        }
     }
 
     return true;
@@ -197,20 +207,26 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
         auto lhsParameter = lhsCompound->getParameter(parameterInfo.schemaName);
         auto rhsParameter = rhsCompound->getParameter(parameterInfo.schemaName);
         if (!equal<ALLOC>(lhsParameter, rhsParameter))
+        {
             return false;
+        }
     }
 
     if (TypeInfoUtil::hasChoice(lhsCompound->getTypeInfo().getSchemaType()))
     {
         if (lhsCompound->getChoice() != rhsCompound->getChoice())
+        {
             return false;
+        }
 
         if (!lhsCompound->getChoice().empty())
         {
             auto lhsField = lhsCompound->getField(lhsCompound->getChoice());
             auto rhsField = rhsCompound->getField(rhsCompound->getChoice());
             if (!equal<ALLOC>(lhsField, rhsField))
+            {
                 return false;
+            }
         }
     }
     else
@@ -220,7 +236,9 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
             auto lhsField = lhsCompound->getField(fieldInfo.schemaName);
             auto rhsField = rhsCompound->getField(fieldInfo.schemaName);
             if (!equal<ALLOC>(lhsField, rhsField))
+            {
                 return false;
+            }
         }
     }
 
@@ -233,7 +251,9 @@ bool ReflectableUtil::valuesEqual(
 {
     CppType cppType = lhsValue->getTypeInfo().getCppType();
     if (cppType == CppType::ENUM || cppType == CppType::BITMASK)
+    {
         cppType = lhsValue->getTypeInfo().getUnderlyingType().getCppType();
+    }
 
     switch (cppType)
     {
@@ -271,10 +291,14 @@ bool ReflectableUtil::valuesEqual(
 inline bool ReflectableUtil::doubleValuesAlmostEqual(double lhs, double rhs)
 {
     if (std::isinf(lhs) || std::isinf(rhs))
+    {
         return std::isinf(lhs) && std::isinf(rhs) && ((lhs > 0.0 && rhs > 0.0) || (lhs < 0.0 && rhs < 0.0));
+    }
 
     if (std::isnan(lhs) || std::isnan(rhs))
+    {
         return std::isnan(lhs) && std::isnan(rhs);
+    }
 
     // see: https://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
     return std::fabs(lhs - rhs) <= std::numeric_limits<double>::epsilon() * std::fabs(lhs + rhs) ||

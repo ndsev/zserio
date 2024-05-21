@@ -62,7 +62,9 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, float value)
     convertFloatToString(integerPartBuffer, floatingPartBuffer, value, integerPartString, floatingPartString);
     CppRuntimeException& result = exception << integerPartString;
     if (floatingPartString != nullptr)
+    {
         result = result << "." << floatingPartString;
+    }
 
     return result;
 }

@@ -240,7 +240,9 @@ template <typename ALLOC>
 AnyHolder<ALLOC> BitBufferAdapter<ALLOC>::get() const
 {
     if (m_state != VISIT_KEY || !m_buffer.hasValue() || !m_bitSize.hasValue())
+    {
         throw CppRuntimeException("JsonReader: Unexpected end in BitBuffer!");
+    }
 
     return AnyHolder<ALLOC>(BasicBitBuffer<ALLOC>(m_buffer.value(), m_bitSize.value()), get_allocator());
 }
@@ -290,11 +292,17 @@ void BitBufferAdapter<ALLOC>::visitKey(StringView key)
     if (m_state == VISIT_KEY)
     {
         if (key == "buffer"_sv)
+        {
             m_state = BEGIN_ARRAY_BUFFER;
+        }
         else if (key == "bitSize"_sv)
+        {
             m_state = VISIT_VALUE_BITSIZE;
+        }
         else
+        {
             throw CppRuntimeException("JsonReader: Unexpected key '") << key << "' in BitBuffer!";
+        }
     }
     else
     {
@@ -360,7 +368,9 @@ template <typename ALLOC>
 AnyHolder<ALLOC> BytesAdapter<ALLOC>::get() const
 {
     if (m_state != VISIT_KEY || !m_buffer.hasValue())
+    {
         throw CppRuntimeException("JsonReader: Unexpected end in bytes!");
+    }
 
     return AnyHolder<ALLOC>(m_buffer.value(), get_allocator());
 }
@@ -410,9 +420,13 @@ void BytesAdapter<ALLOC>::visitKey(StringView key)
     if (m_state == VISIT_KEY)
     {
         if (key == "buffer"_sv)
+        {
             m_state = BEGIN_ARRAY_BUFFER;
+        }
         else
+        {
             throw CppRuntimeException("JsonReader: Unexpected key '") << key << "' in bytes!";
+        }
     }
     else
     {
@@ -479,7 +493,9 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> CreatorAdapter<ALLOC>::get() const
 {
     if (!m_object)
+    {
         throw CppRuntimeException("JsonReader: Zserio tree not created!");
+    }
 
     return m_object;
 }
@@ -494,7 +510,9 @@ void CreatorAdapter<ALLOC>::beginObject()
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         if (m_keyStack.empty())
         {
@@ -553,7 +571,9 @@ void CreatorAdapter<ALLOC>::endObject()
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         if (m_keyStack.empty())
         {
@@ -585,10 +605,14 @@ void CreatorAdapter<ALLOC>::beginArray()
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         if (m_keyStack.empty())
+        {
             throw CppRuntimeException("JsonReader: ZserioTreeCreator expects json object!");
+        }
 
         m_creator->beginArray(m_keyStack.back());
 
@@ -606,7 +630,9 @@ void CreatorAdapter<ALLOC>::endArray()
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         m_creator->endArray();
 
@@ -625,7 +651,9 @@ void CreatorAdapter<ALLOC>::visitKey(StringView key)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         m_keyStack.push_back(toString(key, get_allocator()));
     }
@@ -641,7 +669,9 @@ void CreatorAdapter<ALLOC>::visitValue(std::nullptr_t nullValue)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         setValue(nullValue);
     }
@@ -657,7 +687,9 @@ void CreatorAdapter<ALLOC>::visitValue(bool boolValue)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         setValue(boolValue);
     }
@@ -673,7 +705,9 @@ void CreatorAdapter<ALLOC>::visitValue(int64_t intValue)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         setValue(intValue);
     }
@@ -689,7 +723,9 @@ void CreatorAdapter<ALLOC>::visitValue(uint64_t uintValue)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         setValue(uintValue);
     }
@@ -705,7 +741,9 @@ void CreatorAdapter<ALLOC>::visitValue(double doubleValue)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         setValue(doubleValue);
     }
@@ -721,7 +759,9 @@ void CreatorAdapter<ALLOC>::visitValue(StringView stringValue)
     else
     {
         if (!m_creator)
+        {
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
+        }
 
         setValue(stringValue);
     }
@@ -732,7 +772,9 @@ template <typename T>
 void CreatorAdapter<ALLOC>::setValue(T&& value)
 {
     if (m_keyStack.empty())
+    {
         throw CppRuntimeException("JsonReader: ZserioTreeCreator expects json object!");
+    }
 
     if (!m_keyStack.back().empty())
     {

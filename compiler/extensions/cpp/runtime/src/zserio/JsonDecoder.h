@@ -111,7 +111,9 @@ public:
     DecoderResult decodeValue(StringView input)
     {
         if (input.empty())
+        {
             return DecoderResult(0, get_allocator());
+        }
 
         switch (input[0])
         {
@@ -129,7 +131,9 @@ public:
             return decodeString(input);
         case '-':
             if (input.size() > 1 && input[1] == 'I')
+            {
                 return decodeLiteral(input, "-Infinity"_sv, -static_cast<double>(INFINITY));
+            }
             return decodeNumber(input);
         default:
             return decodeNumber(input);
@@ -261,21 +265,33 @@ bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(
     // TODO[Mi-L@]: Simplified just to decode what zserio encodes, for complex solution we could use
     //              std::wstring_convert but it's deprecated in C++17.
     if (inputIt == input.end() || *inputIt++ != '0')
+    {
         return false;
+    }
     if (inputIt == input.end() || *inputIt++ != '0')
+    {
         return false;
+    }
 
     if (inputIt == input.end())
+    {
         return false;
+    }
     const char char1 = decodeHex(*inputIt++);
     if (char1 == -1)
+    {
         return false;
+    }
 
     if (inputIt == input.end())
+    {
         return false;
+    }
     const char char2 = decodeHex(*inputIt++);
     if (char2 == -1)
+    {
         return false;
+    }
 
     value.push_back(static_cast<char>((static_cast<uint32_t>(char1) << 4U) | static_cast<uint32_t>(char2)));
     return true;
@@ -285,11 +301,17 @@ template <typename ALLOC>
 char BasicJsonDecoder<ALLOC>::decodeHex(char character)
 {
     if (character >= '0' && character <= '9')
+    {
         return static_cast<char>(character - '0');
+    }
     else if (character >= 'a' && character <= 'f')
+    {
         return static_cast<char>(character - 'a' + 10);
+    }
     else if (character >= 'A' && character <= 'F')
+    {
         return static_cast<char>(character - 'A' + 10);
+    }
 
     return -1;
 }
@@ -351,7 +373,9 @@ size_t BasicJsonDecoder<ALLOC>::checkNumber(StringView input, bool& isDouble, bo
 
     const size_t numberLen = static_cast<size_t>(inputIt - input.begin());
     if (isSigned && numberLen == 1)
+    {
         return 0; // single minus is not a number
+    }
 
     return numberLen;
 }
@@ -363,16 +387,24 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeN
     bool isSigned = false;
     const size_t numChars = checkNumber(input, isDouble, isSigned);
     if (numChars == 0)
+    {
         return DecoderResult(1, get_allocator());
+    }
 
     // for decodeSigned and decodeUnsigned, we know that all numChars will be processed because checkNumber
     // already checked this
     if (isDouble)
+    {
         return decodeDouble(input, numChars);
+    }
     else if (isSigned)
+    {
         return decodeSigned(input);
+    }
     else
+    {
         return decodeUnsigned(input);
+    }
 }
 
 template <typename ALLOC>
@@ -406,7 +438,9 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeD
     char* pEnd = nullptr;
     const double value = std::strtod(input.begin(), &pEnd);
     if (static_cast<size_t>(pEnd - input.begin()) != numChars)
+    {
         return DecoderResult(numChars, get_allocator());
+    }
 
     return DecoderResult(numChars, value, get_allocator());
 }

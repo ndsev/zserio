@@ -184,7 +184,9 @@ AnyHolder<ALLOC> makeAnyEnumValue(
         {
             AnyHolder<ALLOC> anyValue = parseEnumStringValue(stringValue, typeInfo, allocator);
             if (anyValue.hasValue())
+            {
                 return anyValue;
+            }
         }
         // else it's a no match
     }
@@ -240,7 +242,9 @@ AnyHolder<ALLOC> parseBitmaskStringValue(
                 {
                     value |= itemInfo.value;
                     if (newPos == stringValue.size())
+                    {
                         return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator); // end of string
+                    }
                     match = true;
                     pos += itemInfo.schemaName.size();
                     break;
@@ -249,16 +253,24 @@ AnyHolder<ALLOC> parseBitmaskStringValue(
         }
 
         if (!match)
+        {
             break;
+        }
 
         while (pos < stringValue.size() && stringValue[pos] == ' ')
+        {
             ++pos;
+        }
 
         if (pos < stringValue.size() && stringValue[pos] == '|')
+        {
             ++pos;
+        }
 
         while (pos < stringValue.size() && stringValue[pos] == ' ')
+        {
             ++pos;
+        }
     }
 
     // invalid format or identifier
@@ -273,7 +285,9 @@ AnyHolder<ALLOC> parseBitmaskNumericStringValue(
     errno = 0;
     uint64_t value = std::strtoull(stringValue, &pEnd, 10);
     if (errno == ERANGE)
+    {
         return AnyHolder<ALLOC>(allocator);
+    }
     return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator);
 }
 
@@ -289,7 +303,9 @@ AnyHolder<ALLOC> makeAnyBitmaskValue(
         {
             AnyHolder<ALLOC> anyValue = parseBitmaskStringValue(stringValue, typeInfo, allocator);
             if (anyValue.hasValue())
+            {
                 return anyValue;
+            }
         }
         else if (firstChar >= '0' && firstChar <= '9') // bitmask can be only unsigned
         {
@@ -298,7 +314,9 @@ AnyHolder<ALLOC> makeAnyBitmaskValue(
             AnyHolder<ALLOC> anyValue =
                     parseBitmaskNumericStringValue(numericStringValue.c_str(), typeInfo, allocator);
             if (anyValue.hasValue())
+            {
                 return anyValue;
+            }
         }
     }
 
@@ -555,7 +573,9 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginRoot()
 {
     if (m_state != detail::CreatorState::BEFORE_ROOT)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") << m_state << "'!";
+    }
 
     m_valueStack.push_back(m_typeInfo.createInstance(get_allocator()));
     m_state = detail::CreatorState::IN_COMPOUND;
@@ -565,7 +585,9 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> BasicZserioTreeCreator<ALLOC>::endRoot()
 {
     if (m_state != detail::CreatorState::IN_COMPOUND || m_valueStack.size() != 1)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot end root in state '") << m_state << "'!";
+    }
 
     m_state = detail::CreatorState::BEFORE_ROOT;
     auto value = m_valueStack.back();
@@ -577,7 +599,9 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginArray(const string<ALLOC>& name)
 {
     if (m_state != detail::CreatorState::IN_COMPOUND)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") << m_state << "'!";
+    }
 
     const auto& parentTypeInfo = getTypeInfo();
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
@@ -604,7 +628,9 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::endArray()
 {
     if (m_state != detail::CreatorState::IN_ARRAY)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot end array in state '") << m_state << "'!";
+    }
 
     m_fieldInfoStack.pop_back();
     m_valueStack.pop_back();
@@ -615,12 +641,16 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginCompound(const string<ALLOC>& name)
 {
     if (m_state != detail::CreatorState::IN_COMPOUND)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") << m_state << "'!";
+    }
 
     const auto& parentTypeInfo = getTypeInfo();
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
     if (fieldInfo.isArray)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName << "' is an array!";
+    }
 
     if (!TypeInfoUtil::isCompound(fieldInfo.typeInfo.getCppType()))
     {
@@ -653,7 +683,9 @@ void BasicZserioTreeCreator<ALLOC>::endCompound()
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
     if (fieldInfo.isArray)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot end compound, it's an array element!");
+    }
 
     m_fieldInfoStack.pop_back();
     m_valueStack.pop_back();
@@ -664,7 +696,9 @@ template <typename T>
 void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& value)
 {
     if (m_state != detail::CreatorState::IN_COMPOUND)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot set value in state '") << m_state << "'!";
+    }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
     if (fieldInfo.isArray)
@@ -703,7 +737,9 @@ template <typename ALLOC>
 const IBasicTypeInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::getFieldType(const string<ALLOC>& name) const
 {
     if (m_state != detail::CreatorState::IN_COMPOUND)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot get field type in state '") << m_state << "'!";
+    }
 
     return findFieldInfo(getTypeInfo(), name).typeInfo;
 }
@@ -741,7 +777,9 @@ void BasicZserioTreeCreator<ALLOC>::endCompoundElement()
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
     if (!fieldInfo.isArray)
+    {
         throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element, not in array!");
+    }
 
     m_valueStack.pop_back();
     m_state = detail::CreatorState::IN_ARRAY;

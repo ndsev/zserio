@@ -32,7 +32,9 @@ public:
         TRow row;
         row.reserve(nColumns);
         for (const char* colValue : colValuesSpan)
+        {
             row.emplace_back(colValue);
+        }
         result.push_back(row);
         return 0; // continue
     }

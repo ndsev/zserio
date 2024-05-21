@@ -157,7 +157,9 @@ uint16_t convertFloatToUInt16(float float32)
 
     // check rounding
     if (needsRounding)
+    {
         ++float16Value; // might overflow to infinity
+    }
 
     return float16Value;
 }

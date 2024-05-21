@@ -106,7 +106,9 @@ public:
                 {
                     m_maxBitNumber = maxBitNumber;
                     if (m_maxBitNumber > MAX_BIT_NUMBER_LIMIT)
+                    {
                         resetFlag(IS_PACKED_FLAG);
+                    }
                 }
                 m_previousElement = static_cast<uint64_t>(element);
             }
@@ -276,16 +278,22 @@ private:
                     m_firstElementBitSize + (m_numElements - 1) * deltaBitSize;
             const size_t unpackedBitSizeWithDescriptor = 1 + m_unpackedBitSize;
             if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)
+            {
                 resetFlag(IS_PACKED_FLAG);
+            }
         }
     }
 
     size_t bitSizeOfDescriptor() const
     {
         if (isFlagSet(IS_PACKED_FLAG))
+        {
             return 1 + MAX_BIT_NUMBER_BITS;
+        }
         else
+        {
             return 1;
+        }
     }
 
     template <typename ARRAY_TRAITS,
@@ -340,7 +348,9 @@ private:
         const bool isPacked = isFlagSet(IS_PACKED_FLAG);
         out.writeBool(isPacked);
         if (isPacked)
+        {
             out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
+        }
     }
 
     template <typename ARRAY_TRAITS,

@@ -39,9 +39,13 @@ protected:
         ASSERT_EQ(schemaType, typeInfo.getSchemaType());
         ASSERT_EQ(cppType, typeInfo.getCppType());
         if (bitSize > 0)
+        {
             ASSERT_EQ(bitSize, typeInfo.getBitSize());
+        }
         else
+        {
             ASSERT_THROW(typeInfo.getBitSize(), CppRuntimeException);
+        }
 
         ASSERT_THROW(typeInfo.getFields(), CppRuntimeException);
         ASSERT_THROW(typeInfo.getParameters(), CppRuntimeException);

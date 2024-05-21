@@ -93,7 +93,9 @@ static size_t bitSizeOfVarIntImpl(
     for (uint64_t maxValue : maxValues)
     {
         if (value <= maxValue)
+        {
             break;
+        }
         byteSize++;
     }
 
@@ -145,7 +147,9 @@ size_t bitSizeOfVarUInt64(uint64_t value)
 size_t bitSizeOfVarInt(int64_t value)
 {
     if (value == INT64_MIN)
+    {
         return 8; // INT64_MIN is stored as -0
+    }
 
     return bitSizeOfVarIntImpl(convertToAbsValue(value), VARINT_MAX_VALUES, "varint");
 }

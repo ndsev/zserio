@@ -191,7 +191,9 @@ template <typename ALLOC>
 bool BasicJsonTokenizer<ALLOC>::decodeNext()
 {
     if (!skipWhitespaces())
+    {
         return false;
+    }
 
     m_tokenColumnNumber = m_columnNumber;
 
@@ -225,7 +227,9 @@ bool BasicJsonTokenizer<ALLOC>::decodeNext()
     default:
         m_decoderResult = m_decoder.decodeValue(StringView(m_content.data()).substr(m_pos));
         if (m_pos + m_decoderResult.numReadChars >= m_content.size())
+        {
             return false; // we are at the end of chunk => read more
+        }
 
         setTokenValue();
         break;

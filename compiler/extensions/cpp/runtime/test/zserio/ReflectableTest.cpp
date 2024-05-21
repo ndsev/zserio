@@ -76,9 +76,13 @@ protected:
         for (size_t i = 0; i < rawArray.size(); ++i)
         {
             if (i % 2 == 0)
+            {
                 elementChecker(rawArray[i], reflectable->at(i));
+            }
             else
+            {
                 elementChecker(rawArray[i], (*reflectable)[i]);
+            }
         }
 
         ASSERT_THROW(reflectable->at(rawArray.size()), CppRuntimeException);

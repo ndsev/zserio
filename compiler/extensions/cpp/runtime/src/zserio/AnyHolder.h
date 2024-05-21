@@ -441,7 +441,9 @@ public:
             // TODO: do not dealloc unless necessary
             clearHolder();
             if (AllocTraits::propagate_on_container_copy_assignment::value)
+            {
                 set_allocator(other.get_allocator_ref());
+            }
             copy(other);
         }
 
@@ -462,7 +464,9 @@ public:
             // TODO: do not dealloc unless necessary
             clearHolder();
             if (AllocTraits::propagate_on_container_copy_assignment::value)
+            {
                 set_allocator(other.get_allocator_ref());
+            }
             copy(NoInit, other);
         }
 
@@ -528,7 +532,9 @@ public:
         {
             clearHolder();
             if (AllocTraits::propagate_on_container_move_assignment::value)
+            {
                 set_allocator(std::move(other.get_allocator_ref()));
+            }
             move(std::move(other));
         }
 
@@ -548,7 +554,9 @@ public:
         {
             clearHolder();
             if (AllocTraits::propagate_on_container_move_assignment::value)
+            {
                 set_allocator(std::move(other.get_allocator_ref()));
+            }
             move(NoInit, std::move(other));
         }
 
@@ -765,7 +773,9 @@ private:
         if (hasHolder())
         {
             if (getUntypedHolder()->isType(detail::TypeIdHolder::get<T>()))
+            {
                 return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>());
+            }
 
             clearHolder();
         }
@@ -794,7 +804,9 @@ private:
     void checkType() const
     {
         if (!isType<T>())
+        {
             throwBadType();
+        }
     }
 
     /** Optimization which increases changes to inline checkType(). */

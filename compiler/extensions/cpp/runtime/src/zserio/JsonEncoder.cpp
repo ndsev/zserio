@@ -26,7 +26,9 @@ void JsonEncoder::encodeFloatingPoint(std::ostream& stream, double value)
     else if (std::isinf(value))
     {
         if (value < 0.0)
+        {
             stream << "-";
+        }
         stream << "Infinity";
     }
     else

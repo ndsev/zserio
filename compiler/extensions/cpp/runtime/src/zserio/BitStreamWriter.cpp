@@ -428,9 +428,13 @@ void BitStreamWriter::writeVarUInt16(uint16_t data)
 void BitStreamWriter::writeVarInt(int64_t data)
 {
     if (data == INT64_MIN)
+    {
         writeBits(0x80, 8); // INT64_MIN is encoded as -0
+    }
     else
+    {
         writeSignedVarNum(data, 9, zserio::bitSizeOfVarInt(data) / 8);
+    }
 }
 
 void BitStreamWriter::writeVarUInt(uint64_t data)
@@ -471,14 +475,18 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
     {
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
+        {
             writeBits(data[i], 8);
+        }
     }
     else
     {
         // we are aligned to bytes
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
+        {
             std::copy(data.begin(), data.end(), m_buffer.begin() + beginBitPosition / 8);
+        }
     }
 }
 
@@ -492,14 +500,18 @@ void BitStreamWriter::writeString(StringView data)
     {
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
+        {
             writeBits(static_cast<uint8_t>(data[i]), 8);
+        }
     }
     else
     {
         // we are aligned to bytes
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
+        {
             std::copy(data.begin(), data.begin() + len, m_buffer.data() + beginBitPosition / 8);
+        }
     }
 }
 
@@ -511,7 +523,9 @@ void BitStreamWriter::writeBool(bool data)
 void BitStreamWriter::setBitPosition(BitPosType position)
 {
     if (hasWriteBuffer())
+    {
         checkCapacity(position);
+    }
 
     m_bitIndex = position;
 }
@@ -622,7 +636,9 @@ inline void BitStreamWriter::writeVarNum(
         if (hasSignBit)
         {
             if (isNegative)
+            {
                 byte |= 0x80U;
+            }
             numBits--;
         }
         if (hasNextByte)
@@ -634,7 +650,9 @@ inline void BitStreamWriter::writeVarNum(
         else // this is the last byte
         {
             if (!hasMaxByteRange) // next byte indicator is not used in last byte in case of max byte range
+            {
                 numBits--;
+            }
         }
 
         const size_t shiftBits = (numVarBytes - (i + 1)) * 7 + ((hasMaxByteRange && hasNextByte) ? 1 : 0);
@@ -652,7 +670,9 @@ inline void BitStreamWriter::throwInsufficientCapacityException() const
 inline void BitStreamWriter::checkCapacity(size_t bitSize) const
 {
     if (bitSize > m_bufferBitSize)
+    {
         throwInsufficientCapacityException();
+    }
 }
 
 } // namespace zserio

@@ -1841,7 +1841,9 @@ IBasicReflectableConstPtr<ALLOC> getFieldFromObject(const IBasicReflectable<ALLO
         auto fieldsIt = std::find_if(fields.begin(), fields.end(),
                 [name](const BasicFieldInfo<ALLOC>& fieldInfo) { return fieldInfo.schemaName == name; });
         if (fieldsIt != fields.end())
+        {
             return object.getField(name);
+        }
     }
 
     return nullptr;
@@ -1857,7 +1859,9 @@ IBasicReflectablePtr<ALLOC> getFieldFromObject(IBasicReflectable<ALLOC>& object,
         auto fieldsIt = std::find_if(fields.begin(), fields.end(),
                 [name](const BasicFieldInfo<ALLOC>& fieldInfo) { return fieldInfo.schemaName == name; });
         if (fieldsIt != fields.end())
+        {
             return object.getField(name);
+        }
     }
 
     return nullptr;
@@ -1875,7 +1879,9 @@ IBasicReflectableConstPtr<ALLOC> getParameterFromObject(const IBasicReflectable<
                     return parameterInfo.schemaName == name;
                 });
         if (parametersIt != parameters.end())
+        {
             return object.getParameter(name);
+        }
     }
 
     return nullptr;
@@ -1893,7 +1899,9 @@ IBasicReflectablePtr<ALLOC> getParameterFromObject(IBasicReflectable<ALLOC>& obj
                     return parameterInfo.schemaName == name;
                 });
         if (parametersIt != parameters.end())
+        {
             return object.getParameter(name);
+        }
     }
 
     return nullptr;
@@ -1911,7 +1919,9 @@ IBasicReflectableConstPtr<ALLOC> callFunctionInObject(const IBasicReflectable<AL
                     return functionInfo.schemaName == name;
                 });
         if (functionsIt != functions.end())
+        {
             return object.callFunction(name);
+        }
     }
 
     return nullptr;
@@ -1929,7 +1939,9 @@ IBasicReflectablePtr<ALLOC> callFunctionInObject(IBasicReflectable<ALLOC>& objec
                     return functionInfo.schemaName == name;
                 });
         if (functionsIt != functions.end())
+        {
             return object.callFunction(name);
+        }
     }
 
     return nullptr;
@@ -1947,15 +1959,21 @@ IBasicReflectableConstPtr<ALLOC> getFromObject(
 
         auto field = getFieldFromObject(object, name);
         if (field)
+        {
             return isLast ? field : getFromObject(*field, path, dotPos + 1);
+        }
 
         auto parameter = getParameterFromObject(object, name);
         if (parameter)
+        {
             return isLast ? parameter : getFromObject(*parameter, path, dotPos + 1);
+        }
 
         auto functionResult = callFunctionInObject(object, name);
         if (functionResult)
+        {
             return isLast ? functionResult : getFromObject(*functionResult, path, dotPos + 1);
+        }
     }
     catch (const CppRuntimeException&)
     {}
@@ -1974,15 +1992,21 @@ IBasicReflectablePtr<ALLOC> getFromObject(IBasicReflectable<ALLOC>& object, Stri
 
         auto field = getFieldFromObject(object, name);
         if (field)
+        {
             return isLast ? field : getFromObject(*field, path, dotPos + 1);
+        }
 
         auto parameter = getParameterFromObject(object, name);
         if (parameter)
+        {
             return isLast ? parameter : getFromObject(*parameter, path, dotPos + 1);
+        }
 
         auto functionResult = callFunctionInObject(object, name);
         if (functionResult)
+        {
             return isLast ? functionResult : getFromObject(*functionResult, path, dotPos + 1);
+        }
     }
     catch (const CppRuntimeException&)
     {}
@@ -2925,17 +2949,25 @@ public:
         }
 
         if (value.template isType<ElementType>())
+        {
             m_rawArray[index] = value.template get<ElementType>();
+        }
         else
+        {
             m_rawArray[index] = ElementType(value.template get<UnderlyingElementType>());
+        }
     }
 
     void append(const AnyHolder<ALLOC>& value) override
     {
         if (value.template isType<ElementType>())
+        {
             m_rawArray.push_back(value.template get<ElementType>());
+        }
         else
+        {
             m_rawArray.push_back(ElementType(value.template get<UnderlyingElementType>()));
+        }
     }
 
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
@@ -3061,17 +3093,25 @@ public:
         }
 
         if (value.template isType<ElementType>())
+        {
             m_rawArray[index] = value.template get<ElementType>();
+        }
         else
+        {
             m_rawArray[index] = valueToEnum<ElementType>(value.template get<UnderlyingElementType>());
+        }
     }
 
     void append(const AnyHolder<ALLOC>& value) override
     {
         if (value.template isType<ElementType>())
+        {
             m_rawArray.push_back(value.template get<ElementType>());
+        }
         else
+        {
             m_rawArray.push_back(valueToEnum<ElementType>(value.template get<UnderlyingElementType>()));
+        }
     }
 
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override

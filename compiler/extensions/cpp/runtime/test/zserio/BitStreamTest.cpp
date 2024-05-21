@@ -41,18 +41,24 @@ protected:
         for (uint8_t bitPos = 0; bitPos < maxStartBitPos; ++bitPos)
         {
             if (bitPos > 0)
+            {
                 writer.writeBits64(0, bitPos);
+            }
             for (size_t i = 0; i < N; ++i)
             {
                 writerFunc(writer, values.at(i));
             }
 
             if (!writer.hasWriteBuffer())
+            {
                 continue;
+            }
 
             BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
             if (bitPos > 0)
+            {
                 reader.readBits64(bitPos);
+            }
             for (size_t i = 0; i < N; ++i)
             {
                 ASSERT_EQ(readerFunc(reader), values.at(i)) << "[bitPos=" << bitPos << "]";
@@ -72,7 +78,9 @@ protected:
         writer.writeBits(7, 3);
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(1, reader.readBits(1));
@@ -89,7 +97,9 @@ protected:
         writer.writeBits64(UINT64_C(0xFFFFFFFFFFFFFFFE), 64);
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(1, reader.readBits(1));
@@ -104,7 +114,9 @@ protected:
         writer.writeSignedBits(-142, 9);
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(-1, reader.readSignedBits(5));
@@ -120,7 +132,9 @@ protected:
         writer.writeSignedBits64(INT64_C(-820816), 32);
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(INT64_C(1), reader.readSignedBits(4));
@@ -142,7 +156,9 @@ protected:
         writer.writeBits64(UINT64_C(0xCAFEC0DEDEADFACE), 64);
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(UINT8_C(0xCA), reader.readBits(8));
@@ -180,7 +196,9 @@ protected:
         ASSERT_EQ(7, writer.getBitPosition());
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(0, reader.getBitPosition());
@@ -222,7 +240,9 @@ protected:
         ASSERT_EQ(137, writer.getBitPosition());
 
         if (!writer.hasWriteBuffer())
+        {
             return;
+        }
 
         BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(1, reader.readBits(1));

@@ -64,13 +64,19 @@ public:
     bool operator==(const optional_holder_base& other) const
     {
         if (this == &other)
+        {
             return true;
+        }
 
         if (getDerived()->hasValue() != other.getDerived()->hasValue())
+        {
             return false;
+        }
 
         if (getDerived()->hasValue())
+        {
             return get() == other.get();
+        }
 
         return true;
     }
@@ -85,7 +91,9 @@ public:
     bool operator<(const optional_holder_base& other) const
     {
         if (getDerived()->hasValue() && other.getDerived()->hasValue())
+        {
             return get() < other.get();
+        }
 
         return !getDerived()->hasValue() && other.getDerived()->hasValue();
     }
@@ -152,7 +160,9 @@ protected:
     void checkHasValue() const
     {
         if (!getDerived()->hasValue())
+        {
             throwNonPresentException();
+        }
     }
 
 private:
@@ -342,7 +352,9 @@ public:
     heap_optional_holder& operator=(const heap_optional_holder& other)
     {
         if (this == &other)
+        {
             return *this;
+        }
 
         m_storage = copy_initialize(other,
                 select_allocator(other.get_allocator(),
@@ -363,7 +375,9 @@ public:
     heap_optional_holder& assign(NoInitT, const heap_optional_holder& other)
     {
         if (this == &other)
+        {
             return *this;
+        }
 
         m_storage = copy_initialize(NoInit, other,
                 select_allocator(other.get_allocator(),
@@ -382,7 +396,9 @@ public:
     heap_optional_holder& operator=(heap_optional_holder&& other)
     {
         if (this == &other)
+        {
             return *this;
+        }
 
         m_storage = move_initialize(std::move(other),
                 select_allocator(other.get_allocator(),
@@ -403,7 +419,9 @@ public:
     heap_optional_holder& assign(NoInitT, heap_optional_holder&& other)
     {
         if (this == &other)
+        {
             return *this;
+        }
 
         m_storage = move_initialize(NoInit, std::move(other),
                 select_allocator(other.get_allocator(),
@@ -505,18 +523,26 @@ private:
     static storage_type copy_initialize(const heap_optional_holder& other, const allocator_type& allocator)
     {
         if (other.hasValue())
+        {
             return zserio::allocate_unique<T, allocator_type>(allocator, *other);
+        }
         else
+        {
             return storage_type(nullptr, allocator);
+        }
     }
 
     static storage_type copy_initialize(
             NoInitT, const heap_optional_holder& other, const allocator_type& allocator)
     {
         if (other.hasValue())
+        {
             return zserio::allocate_unique<T, allocator_type>(allocator, NoInit, *other);
+        }
         else
+        {
             return storage_type(nullptr, allocator);
+        }
     }
 
     static storage_type move_initialize(heap_optional_holder&& other, const allocator_type& allocator)
@@ -524,7 +550,9 @@ private:
         if (other.hasValue())
         {
             if (allocator == other.get_allocator())
+            {
                 return std::move(other.m_storage);
+            }
 
             return zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
         }
@@ -539,7 +567,9 @@ private:
         if (other.hasValue())
         {
             if (allocator == other.get_allocator())
+            {
                 return std::move(other.m_storage);
+            }
 
             return zserio::allocate_unique<T, allocator_type>(allocator, NoInit, std::move(*other));
         }

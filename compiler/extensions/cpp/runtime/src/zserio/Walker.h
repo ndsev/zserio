@@ -422,7 +422,9 @@ private:
     {
         bool result = true;
         for (IBasicWalkFilter<ALLOC>& walkFilter : m_walkFilters)
+        {
             result &= (walkFilter.*filterFunc)(args...);
+        }
         return result;
     }
 
@@ -456,7 +458,9 @@ template <typename ALLOC>
 void BasicWalker<ALLOC>::walk(const IBasicReflectableConstPtr<ALLOC>& compound)
 {
     if (!compound)
+    {
         throw CppRuntimeException("Walker: Root object cannot be NULL!");
+    }
 
     const IBasicTypeInfo<ALLOC>& typeInfo = compound->getTypeInfo();
     if (!TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
@@ -496,7 +500,9 @@ void BasicWalker<ALLOC>::walkFields(
         for (const BasicFieldInfo<ALLOC>& fieldInfo : typeInfo.getFields())
         {
             if (!walkField(compound->getField(fieldInfo.schemaName), fieldInfo))
+            {
                 break;
+            }
         }
     }
 }
@@ -513,7 +519,9 @@ bool BasicWalker<ALLOC>::walkField(
             for (size_t i = 0; i < reflectable->size(); ++i)
             {
                 if (!walkFieldValue(reflectable->at(i), fieldInfo, i))
+                {
                     break;
+                }
             }
             m_walkObserver.endArray(reflectable, fieldInfo);
         }
@@ -543,7 +551,9 @@ bool BasicWalker<ALLOC>::walkFieldValue(const IBasicReflectableConstPtr<ALLOC>& 
     else
     {
         if (m_walkFilter.beforeValue(reflectable, fieldInfo, elementIndex))
+        {
             m_walkObserver.visitValue(reflectable, fieldInfo, elementIndex);
+        }
         return m_walkFilter.afterValue(reflectable, fieldInfo, elementIndex);
     }
 }
@@ -621,7 +631,9 @@ string<ALLOC> getCurrentPathImpl(const vector<string<ALLOC>, ALLOC>& currentPath
     for (auto it = currentPath.begin(); it != currentPath.end(); ++it)
     {
         if (!currentPathStr.empty())
+        {
             currentPathStr += ".";
+        }
         currentPathStr += *it;
     }
     return currentPathStr;
@@ -647,9 +659,13 @@ void popPathImpl(vector<string<ALLOC>, ALLOC>& currentPath, const BasicFieldInfo
         size_t elementIndex, const ALLOC& allocator)
 {
     if (elementIndex == WALKER_NOT_ELEMENT)
+    {
         currentPath.pop_back();
+    }
     else
+    {
         currentPath.back() = toString(fieldInfo.schemaName, allocator);
+    }
 }
 
 template <typename ALLOC>
@@ -753,7 +769,9 @@ bool BasicRegexWalkFilter<ALLOC>::beforeArray(
     m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size(), m_allocator);
 
     if (std::regex_match(getCurrentPath(), m_pathRegex))
+    {
         return true; // the array itself matches
+    }
 
     for (size_t i = 0; i < array->size(); ++i)
     {
@@ -761,7 +779,9 @@ bool BasicRegexWalkFilter<ALLOC>::beforeArray(
                 toString(fieldInfo.schemaName, m_allocator) + "[" + toString(i, m_allocator) + "]";
 
         if (matchSubtree(array->at(i), fieldInfo))
+        {
             return true;
+        }
     }
 
     m_currentPath.back() = toString(fieldInfo.schemaName, m_allocator);
@@ -783,7 +803,9 @@ bool BasicRegexWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr
 {
     appendPath(fieldInfo, elementIndex);
     if (std::regex_match(getCurrentPath(), m_pathRegex))
+    {
         return true; // the compound itself matches
+    }
 
     return matchSubtree(compound, fieldInfo);
 }
