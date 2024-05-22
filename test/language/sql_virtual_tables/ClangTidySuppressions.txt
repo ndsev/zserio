@@ -1,8 +1,6 @@
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts3VirtualTableTest.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts5VirtualTableTest.cpp
 

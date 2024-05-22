@@ -3,7 +3,6 @@ bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:cpp/SqlTypesTest.cpp
 
 fuchsia-multiple-inheritance:gen/sql_types/SqlTypesDb.h

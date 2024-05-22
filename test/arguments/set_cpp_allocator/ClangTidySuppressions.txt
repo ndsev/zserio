@@ -16,8 +16,6 @@ cppcoreguidelines-pro-type-member-init:gen_complex_allocation/complex_allocation
 cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp
 cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp
-
 fuchsia-multiple-inheritance:gen_sql_allocation/sql_allocation/SqlAllocationDb.h
 
 google-build-using-namespace:cpp/ComplexAllocationTest.cpp

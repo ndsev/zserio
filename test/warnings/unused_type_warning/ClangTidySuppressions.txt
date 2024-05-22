@@ -5,9 +5,6 @@ cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/UnusedChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/UnusedStructure.cpp
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/UnusedTable.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/unused_type_warning/BoolStructureTable.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:gen/unused_type_warning/UnusedTable.cpp
-
 fuchsia-multiple-inheritance:gen/unused_type_warning/BoolStructureDatabase.h
 
 readability-make-member-function-const:gen/unused_type_warning/BoolChoice.cpp

@@ -7,8 +7,6 @@ cppcoreguidelines-pro-type-member-init:gen/without_writer_code/GeoMapTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/without_writer_code/GeoMapTable.cpp
-
 google-explicit-constructor:gen/without_writer_code/VersionAvailability.h
 
 hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h
