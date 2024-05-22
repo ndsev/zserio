@@ -30,7 +30,9 @@ TEST(ArrayTypeTest, bitSizeOfWithoutOptional)
     vector_type<int8_t> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
+    {
         array.push_back(static_cast<int8_t>(i));
+    }
     arrayTypeExpression.setArray(array);
 
     const size_t arrayTypeExpressionBitSizeWithoutOptional = 16;

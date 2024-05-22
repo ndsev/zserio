@@ -56,7 +56,9 @@ protected:
         rows.clear();
         rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
         for (uint32_t blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
+        {
             fillBlobParamTableRowWithNullValues(rows[blobId], blobId);
+        }
     }
 
     static void fillBlobParamTableRow(BlobParamTable::Row& row, uint32_t blobId, const string_type& name)
@@ -79,7 +81,9 @@ protected:
         ParameterizedBlob parameterizedBlob;
         vector_type<uint32_t>& array = parameterizedBlob.getArray();
         for (uint32_t i = 0; i < count; ++i)
+        {
             array.push_back(i);
+        }
         row.setBlob(parameterizedBlob);
     }
 
@@ -88,7 +92,9 @@ protected:
         rows.clear();
         rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
         for (uint32_t blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
+        {
             fillBlobParamTableRow(rows[blobId], blobId, "Name" + zserio::toString<allocator_type>(blobId));
+        }
     }
 
     static void checkBlobParamTableRow(const BlobParamTable::Row& row1, const BlobParamTable::Row& row2)
@@ -96,19 +102,31 @@ protected:
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
 
         if (row1.isNameSet() && row2.isNameSet())
+        {
             ASSERT_EQ(row1.getName(), row2.getName());
+        }
         else
+        {
             ASSERT_EQ(row1.isNameSet(), row2.isNameSet());
+        }
 
         if (row1.isParametersSet() && row2.isParametersSet())
+        {
             ASSERT_EQ(row1.getParameters(), row2.getParameters());
+        }
         else
+        {
             ASSERT_EQ(row1.isParametersSet(), row2.isParametersSet());
+        }
 
         if (row1.isBlobSet() && row2.isBlobSet())
+        {
             ASSERT_EQ(row1.getBlob(), row2.getBlob());
+        }
         else
+        {
             ASSERT_EQ(row1.isBlobSet(), row2.isBlobSet());
+        }
     }
 
     static void checkBlobParamTableRows(
@@ -116,7 +134,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkBlobParamTableRow(rows1[i], rows2[i]);
+        }
     }
 
     bool isTableInDb()
@@ -129,7 +149,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
@@ -169,7 +191,9 @@ TEST_F(BlobParamTableTest, readWithoutCondition)
     vector_type<BlobParamTable::Row> readRows;
     BlobParamTable::Reader reader = testTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkBlobParamTableRows(writtenRows, readRows);
 }
@@ -185,7 +209,9 @@ TEST_F(BlobParamTableTest, readWithoutConditionWithNullValues)
     vector_type<BlobParamTable::Row> readRows;
     BlobParamTable::Reader reader = testTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkBlobParamTableRows(writtenRows, readRows);
 }
@@ -202,7 +228,9 @@ TEST_F(BlobParamTableTest, readWithCondition)
     vector_type<BlobParamTable::Row> readRows;
     BlobParamTable::Reader reader = testTable.createReader(condition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -226,7 +254,9 @@ TEST_F(BlobParamTableTest, update)
     vector_type<BlobParamTable::Row> readRows;
     BlobParamTable::Reader reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     checkBlobParamTableRow(updateRow, readRows[0]);

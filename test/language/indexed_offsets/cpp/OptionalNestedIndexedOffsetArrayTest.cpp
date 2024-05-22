@@ -39,15 +39,21 @@ protected:
             for (uint16_t i = 0; i < length; ++i)
             {
                 if ((i + 1) == length && writeWrongOffsets)
+                {
                     writer.writeBits(wrongOffset, 32);
+                }
                 else
+                {
                     writer.writeBits(currentOffset, 32);
+                }
                 currentOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
             }
 
             // already aligned
             for (uint16_t i = 0; i < length; ++i)
+            {
                 writer.writeString(m_data[i]);
+            }
         }
 
         writer.writeBits(FIELD_VALUE, 6);
@@ -80,7 +86,9 @@ protected:
             const vector_type<string_type>& data = optionalNestedIndexedOffsetArray.getData();
             ASSERT_EQ(length, data.size());
             for (uint16_t i = 0; i < length; ++i)
+            {
                 ASSERT_EQ(m_data[i], data[i]);
+            }
         }
 
         const uint8_t expectedField = FIELD_VALUE;
@@ -100,14 +108,20 @@ protected:
         for (uint16_t i = 0; i < length; ++i)
         {
             if ((i + 1) == length && createWrongOffsets)
+            {
                 offsets.push_back(wrongOffset);
+            }
             else
+            {
                 offsets.push_back(currentOffset);
+            }
             currentOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
         }
 
         if (length > 0)
+        {
             optionalNestedIndexedOffsetArray.setData(m_data);
+        }
 
         optionalNestedIndexedOffsetArray.setField(FIELD_VALUE);
     }
@@ -119,7 +133,9 @@ protected:
         {
             // already aligned
             for (uint16_t i = 0; i < length; ++i)
+            {
                 bitSize += zserio::bitSizeOfString(m_data[i]);
+            }
         }
         bitSize += 6;
 

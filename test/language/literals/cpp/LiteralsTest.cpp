@@ -72,7 +72,9 @@ TEST(LiteralsTest, float16Literal)
 {
     float diff = 15.2F - FLOAT16;
     if (diff < 0.0F)
+    {
         diff = -diff;
+    }
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
@@ -80,7 +82,9 @@ TEST(LiteralsTest, float32Literal)
 {
     float diff = 15.23F - FLOAT32;
     if (diff < 0.0F)
+    {
         diff = -diff;
+    }
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
@@ -88,7 +92,9 @@ TEST(LiteralsTest, float64Literal)
 {
     double diff = 15.234 - FLOAT64;
     if (diff < 0.0)
+    {
         diff = -diff;
+    }
     ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
 }
 

@@ -17,5 +17,3 @@ cppcoreguidelines-pro-type-member-init:gen/allow_implicit_arrays/table_with_impl
 cppcoreguidelines-pro-type-reinterpret-cast:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp
 
 fuchsia-multiple-inheritance:gen/allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.h
-
-readability-braces-around-statements

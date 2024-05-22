@@ -41,7 +41,9 @@ protected:
         void processPublishContext(void* context) override
         {
             if (context == nullptr)
+            {
                 return;
+            }
 
             static_cast<Context*>(context)->seenByPubsub = true;
         }
@@ -49,7 +51,9 @@ protected:
         void processSubscribeContext(void* context) override
         {
             if (context == nullptr)
+            {
                 return;
+            }
 
             static_cast<Context*>(context)->seenByPubsub = true;
         }

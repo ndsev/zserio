@@ -56,7 +56,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
@@ -118,7 +120,9 @@ TEST_F(DbWithRelocationTest, relocatedSlovakiaTable)
     vector_type<CountryMapTable::Row> readRows;
     CountryMapTable::Reader reader = relocatedTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     ASSERT_EQ(1, readRows.size());
     ASSERT_EQ(updateRow.getTileId(), readRows.front().getTileId());
@@ -156,7 +160,9 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
     vector_type<CountryMapTable::Row> readRows;
     CountryMapTable::Reader reader = relocatedTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     ASSERT_EQ(1, readRows.size());
     ASSERT_EQ(updateRow.getTileId(), readRows.front().getTileId());

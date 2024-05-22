@@ -38,8 +38,6 @@ hicpp-signed-bitwise:gen/explicit_parameters/explicit_bitmask_param/TestBitmask.
 performance-move-const-arg:gen/explicit_parameters/multiple_with_same_name/Parameterized1.cpp
 performance-move-const-arg:gen/explicit_parameters/multiple_with_same_name/Parameterized2.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/explicit_parameters/explicit_bitmask_param/TestBlob.cpp
 readability-make-member-function-const:gen/explicit_parameters/explicit_blob_param/Header.cpp
 readability-make-member-function-const:gen/explicit_parameters/explicit_enum_param/TestBlob.cpp

@@ -30,7 +30,9 @@ protected:
             const uint16_t numItems = header.getNumItems();
             block.setValue(numItems);
             for (uint16_t j = 0; j < numItems; ++j)
+            {
                 items.push_back(j * 2);
+            }
             blocks.push_back(block);
         }
 
@@ -43,7 +45,9 @@ protected:
         size_t bitSize = 16; // numBlocks
         bitSize += numBlocks * (16 + 32); // headers
         for (size_t i = 0; i < numBlocks; ++i)
+        {
             bitSize += 64 + (i + 1) * 64; // blocks[i]
+        }
 
         return bitSize;
     }

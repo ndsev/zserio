@@ -21,7 +21,9 @@ protected:
         // usage to none-const getter is intended to check old C++ bug
         vector_type<uint16_t>& dynamicBitfieldArray = parameterizedBitfieldLength.getDynamicBitfieldArray();
         for (uint16_t i = 0; i < DYNAMIC_BITFIELD_ARRAY_SIZE; ++i)
+        {
             dynamicBitfieldArray.push_back(i);
+        }
     }
 
     void checkParameterizedBitfieldLengthInBitStream(
@@ -30,7 +32,9 @@ protected:
         ASSERT_EQ(NUM_BITS_PARAM, parameterizedBitfieldLength.getNumBits());
         ASSERT_EQ(DYNAMIC_BITFIELD_ARRAY_SIZE, reader.readVarSize());
         for (uint16_t i = 0; i < DYNAMIC_BITFIELD_ARRAY_SIZE; ++i)
+        {
             ASSERT_EQ(i, reader.readBits(NUM_BITS_PARAM));
+        }
     }
 
     static const std::string BLOB_NAME;

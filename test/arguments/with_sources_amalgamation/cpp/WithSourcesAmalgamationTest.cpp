@@ -79,7 +79,9 @@ TEST_F(WithSourcesAmalgamation, readWriteWorldDb)
     GeoMapTable::Reader reader = europe.createReader();
     vector_type<GeoMapTable::Row> readRows;
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     ASSERT_EQ(1, readRows.size());
     const GeoMapTable::Row& readRow = readRows.at(0);

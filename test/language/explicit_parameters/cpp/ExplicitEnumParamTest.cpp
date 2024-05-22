@@ -48,19 +48,25 @@ protected:
         TestBlob testBlob1;
         vector_type<uint8_t>& values1 = testBlob1.getValues();
         for (uint32_t i = 0; i < ::zserio::enumToValue(ENUM_PARAM_TABLE_COUNT1); ++i)
+        {
             values1.push_back(static_cast<uint8_t>(id));
+        }
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
         vector_type<uint8_t>& values2 = testBlob2.getValues();
         for (uint32_t i = 0; i < ::zserio::enumToValue(ENUM_PARAM_TABLE_COUNT2); ++i)
+        {
             values2.push_back(static_cast<uint8_t>(id + 1));
+        }
         row.setBlob2(testBlob2);
 
         TestBlob testBlob3;
         vector_type<uint8_t>& values3 = testBlob3.getValues();
         for (uint32_t i = 0; i < ::zserio::enumToValue(ENUM_PARAM_TABLE_COUNT1); ++i)
+        {
             values3.push_back(static_cast<uint8_t>(id + 2));
+        }
         row.setBlob3(testBlob3);
     }
 
@@ -93,7 +99,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkEnumParamTableRow(rows1[i], rows2[i]);
+        }
     }
 
     class EnumParamTableParameterProvider : public EnumParamTable::IParameterProvider
@@ -139,7 +147,9 @@ TEST_F(ExplicitEnumParamTest, readWithoutCondition)
 
     vector_type<EnumParamTable::Row> readRows;
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkEnumParamTableRows(writtenRows, readRows);
 }
 

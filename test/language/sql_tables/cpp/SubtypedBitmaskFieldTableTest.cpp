@@ -68,7 +68,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkRow(rows1[i], rows2[i]);
+        }
     }
 
     static const char* const DB_FILE_NAME;
@@ -92,7 +94,9 @@ TEST_F(SubtypedBitmaskFieldTableTest, readWithoutCondition)
     vector_type<SubtypedBitmaskFieldTable::Row> readRows;
     auto reader = table.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkRows(rows, readRows);
 }

@@ -18,9 +18,13 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+            {
                 writer.writeBits(wrongOffset, 32);
+            }
             else
+            {
                 writer.writeBits(currentOffset, 32);
+            }
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
 
@@ -32,7 +36,9 @@ protected:
             writer.writeBits(i, 32);
             writer.writeBits(i % 8, 3);
             if ((i + 1) != NUM_ELEMENTS)
+            {
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE);
+            }
         }
     }
 
@@ -78,9 +84,13 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
+            {
                 offsets.push_back(wrongOffset);
+            }
             else
+            {
                 offsets.push_back(currentOffset);
+            }
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         compoundIndexedOffsetArray.setSpacer(SPACER_VALUE);

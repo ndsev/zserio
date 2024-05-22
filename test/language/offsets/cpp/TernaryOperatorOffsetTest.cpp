@@ -56,7 +56,9 @@ protected:
         ternaryOffset.setOffsets(offsets);
         ternaryOffset.setValue(FIELD_VALUE);
         if (!createWrongOffset)
+        {
             ternaryOffset.initializeOffsets();
+        }
     }
 
     void testOffset(bool isFirstOffsetUsed)

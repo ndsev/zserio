@@ -58,7 +58,9 @@ protected:
         Greeting sendGreetingImpl(const Name& name, void* context) override
         {
             if (context != nullptr)
+            {
                 static_cast<CountingContext*>(context)->greetingCount++;
+            }
 
             return Greeting(prepareGreeting(name.getName()), get_allocator_ref());
         }

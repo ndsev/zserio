@@ -51,7 +51,9 @@ protected:
         optionalMemberOffset.setHasOptional(hasOptional);
         optionalMemberOffset.setOptionalFieldOffset(optionalFieldOffset);
         if (hasOptional)
+        {
             optionalMemberOffset.setOptionalField(optionalField);
+        }
         optionalMemberOffset.setField(field);
     }
 

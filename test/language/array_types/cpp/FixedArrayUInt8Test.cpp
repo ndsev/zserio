@@ -18,7 +18,9 @@ protected:
     void writeFixedArrayToByteArray(zserio::BitStreamWriter& writer)
     {
         for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+        {
             writer.writeBits(static_cast<uint32_t>(i), 8);
+        }
     }
 
     static const std::string BLOB_NAME;
@@ -33,7 +35,9 @@ TEST_F(FixedArrayUInt8Test, bitSizeOf)
     vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+    {
         uint8Array.push_back(static_cast<uint8_t>(i));
+    }
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -46,7 +50,9 @@ TEST_F(FixedArrayUInt8Test, initializeOffsets)
     vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+    {
         uint8Array.push_back(static_cast<uint8_t>(i));
+    }
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -66,7 +72,9 @@ TEST_F(FixedArrayUInt8Test, readConstructor)
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, uint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
+    {
         ASSERT_EQ(i, uint8Array[i]);
+    }
 }
 
 TEST_F(FixedArrayUInt8Test, writeRead)
@@ -74,7 +82,9 @@ TEST_F(FixedArrayUInt8Test, writeRead)
     vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+    {
         uint8Array.push_back(static_cast<uint8_t>(i));
+    }
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -87,7 +97,9 @@ TEST_F(FixedArrayUInt8Test, writeRead)
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, readUint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
+    {
         ASSERT_EQ(i, readUint8Array[i]);
+    }
 }
 
 TEST_F(FixedArrayUInt8Test, writeReadFile)
@@ -95,7 +107,9 @@ TEST_F(FixedArrayUInt8Test, writeReadFile)
     vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+    {
         uint8Array.push_back(static_cast<uint8_t>(i));
+    }
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -106,7 +120,9 @@ TEST_F(FixedArrayUInt8Test, writeReadFile)
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, readUint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
+    {
         ASSERT_EQ(i, readUint8Array[i]);
+    }
 }
 
 TEST_F(FixedArrayUInt8Test, writeWrongArray)
@@ -115,7 +131,9 @@ TEST_F(FixedArrayUInt8Test, writeWrongArray)
     const size_t wrongArrayLength = FIXED_ARRAY_LENGTH + 1;
     uint8Array.reserve(wrongArrayLength);
     for (size_t i = 0; i < wrongArrayLength; ++i)
+    {
         uint8Array.push_back(static_cast<uint8_t>(i));
+    }
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 

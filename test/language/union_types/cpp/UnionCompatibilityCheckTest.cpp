@@ -46,9 +46,13 @@ protected:
     {
         UNION unionType;
         if (index % 2 == 0)
+        {
             unionType.setCoordXY(CoordXY{10 * index, 20 * index});
+        }
         else
+        {
             unionType.setText("text" + zserio::toString<allocator_type>(index));
+        }
 
         return unionType;
     }

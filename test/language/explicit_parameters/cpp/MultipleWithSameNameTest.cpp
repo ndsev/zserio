@@ -76,7 +76,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkMultipleWithSameNameTableRow(rows1[i], rows2[i]);
+        }
     }
 
     class MultipleParamsTableParameterProvider : public MultipleWithSameNameTable::IParameterProvider
@@ -122,7 +124,9 @@ TEST_F(MultipleWithSameNameTest, readWithoutCondition)
 
     vector_type<MultipleWithSameNameTable::Row> readRows;
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkMultipleWithSameNameTableRows(writtenRows, readRows);
 }
 

@@ -16,7 +16,9 @@ protected:
     {
         auto& tones = blackColor.getTones();
         for (uint8_t i = 0; i < numBlackTones; ++i)
+        {
             tones.push_back(i + 1);
+        }
     }
 
     void checkContainerInBitStream(
@@ -28,7 +30,9 @@ protected:
         {
             ASSERT_EQ(numBlackTones, reader.readBits(8));
             for (uint8_t i = 0; i < numBlackTones; ++i)
+            {
                 ASSERT_EQ(i + 1, reader.readSignedBits(32));
+            }
         }
 
         reader.setBitPosition(0);

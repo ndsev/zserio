@@ -2,7 +2,5 @@ cert-err58-cpp:gen/literals/STRING.h
 
 google-build-using-namespace:cpp/LiteralsTest.cpp
 
-readability-braces-around-statements
-
 readability-uppercase-literal-suffix:gen/literals/FLOAT16.h
 readability-uppercase-literal-suffix:gen/literals/FLOAT32.h

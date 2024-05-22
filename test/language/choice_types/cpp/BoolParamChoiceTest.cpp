@@ -14,9 +14,13 @@ protected:
     void writeBoolParamChoiceToByteArray(zserio::BitStreamWriter& writer, bool selector, int32_t value)
     {
         if (selector)
+        {
             writer.writeSignedBits(value, 8);
+        }
         else
+        {
             writer.writeSignedBits(value, 16);
+        }
     }
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);

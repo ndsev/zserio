@@ -27,7 +27,9 @@ protected:
 
         const uint16_t numStrings = (wrongArrayLength) ? static_cast<uint16_t>(numSentences - 1) : numSentences;
         for (uint16_t i = 0; i < numStrings; ++i)
+        {
             writer.writeString(getSentence(i));
+        }
     }
 
     void checkMessage(const Message& message, uint16_t numSentences)
@@ -55,7 +57,9 @@ protected:
         vector_type<string_type>& sentences = message.getSentences();
         sentences.reserve(numStrings);
         for (uint16_t i = 0; i < numStrings; ++i)
+        {
             sentences.push_back(getSentence(i));
+        }
     }
 
     string_type getSentence(uint16_t index)

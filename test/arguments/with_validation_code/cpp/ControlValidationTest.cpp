@@ -140,7 +140,9 @@ protected:
             {
                 size_t& numErrors = m_numberOfErrorsInRowsPerTable[zserio::toString(tableName)];
                 if (++numErrors >= m_numberOfErrorsInRowsToSkipRestOfTheTable)
+                {
                     return false;
+                }
             }
             return true;
         }

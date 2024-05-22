@@ -19,7 +19,9 @@ protected:
     {
         writer.writeVarSize(static_cast<uint32_t>(numElements));
         for (size_t i = 0; i < numElements; ++i)
+        {
             writer.writeBits(static_cast<uint32_t>(i), 8);
+        }
     }
 
     void checkBitSizeOf(size_t numElements)
@@ -27,7 +29,9 @@ protected:
         vector_type<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             uint8Array.push_back(static_cast<uint8_t>(i));
+        }
         AutoArray autoArray;
         autoArray.setUint8Array(uint8Array);
 
@@ -41,7 +45,9 @@ protected:
         vector_type<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             uint8Array.push_back(static_cast<uint8_t>(i));
+        }
         AutoArray autoArray;
         autoArray.setUint8Array(uint8Array);
 
@@ -61,7 +67,9 @@ protected:
         const vector_type<uint8_t>& uint8Array = autoArray.getUint8Array();
         ASSERT_EQ(numElements, uint8Array.size());
         for (size_t i = 0; i < numElements; ++i)
+        {
             ASSERT_EQ(i, uint8Array[i]);
+        }
     }
 
     void checkWriteRead(size_t numElements)
@@ -69,7 +77,9 @@ protected:
         vector_type<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             uint8Array.push_back(static_cast<uint8_t>(i));
+        }
         AutoArray autoArray;
         autoArray.setUint8Array(uint8Array);
 
@@ -84,7 +94,9 @@ protected:
         const vector_type<uint8_t>& readUint8Array = readAutoArray.getUint8Array();
         ASSERT_EQ(numElements, readUint8Array.size());
         for (size_t i = 0; i < numElements; ++i)
+        {
             ASSERT_EQ(i, readUint8Array[i]);
+        }
     }
 
     void checkWriteReadFile(size_t numElements)
@@ -92,7 +104,9 @@ protected:
         vector_type<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             uint8Array.push_back(static_cast<uint8_t>(i));
+        }
         AutoArray autoArray;
         autoArray.setUint8Array(uint8Array);
 
@@ -103,7 +117,9 @@ protected:
         const vector_type<uint8_t>& readUint8Array = readAutoArray.getUint8Array();
         ASSERT_EQ(numElements, readUint8Array.size());
         for (size_t i = 0; i < numElements; ++i)
+        {
             ASSERT_EQ(i, readUint8Array[i]);
+        }
     }
 
     static const std::string BLOB_NAME_BASE;

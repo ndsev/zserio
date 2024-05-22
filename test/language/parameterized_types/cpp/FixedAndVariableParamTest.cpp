@@ -20,7 +20,9 @@ protected:
         auto& array = arrayHolder.getArray();
         array.clear();
         for (uint32_t i = 0; i < size; ++i)
+        {
             array.push_back(static_cast<uint32_t>(i * i));
+        }
         arrayHolder.setExtraValue(EXTRA_VALUE);
         arrayHolder.setHasBlack(color == Color::BLACK);
         arrayHolder.setHasRead((access & Access::Values::READ) == Access::Values::READ);
@@ -58,7 +60,10 @@ protected:
         ASSERT_EQ(arrayHolder.getFloatValue(), floatValue);
 
         for (uint32_t i = 0; i < size; ++i)
+        {
             ASSERT_EQ(arrayHolder.getArray().at(i), reader.readVarUInt());
+        }
+
         ASSERT_EQ(arrayHolder.getExtraValue(), reader.readBits(3));
         ASSERT_EQ(color == Color::BLACK, reader.readBool());
         ASSERT_EQ((access & Access::Values::READ) == Access::Values::READ, reader.readBool());

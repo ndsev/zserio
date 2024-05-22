@@ -73,7 +73,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkSimpleVirtualColumnsTableRow(rows1[i], rows2[i]);
+        }
     }
 
     bool isTableInDb()
@@ -85,7 +87,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && m_tableName == reinterpret_cast<const char*>(readTableName));
@@ -102,7 +106,9 @@ protected:
         {
             int result = sqlite3_step(statement.get());
             if (result == SQLITE_DONE || result != SQLITE_ROW)
+            {
                 break;
+            }
 
             const unsigned char* readColumnName = sqlite3_column_text(statement.get(), 1);
             if (readColumnName != nullptr &&
@@ -150,7 +156,9 @@ TEST_F(SimpleVirtualColumnsTest, readWithoutCondition)
     vector_type<SimpleVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkSimpleVirtualColumnsTableRows(writtenRows, readRows);
 }
 
@@ -166,7 +174,9 @@ TEST_F(SimpleVirtualColumnsTest, readWithCondition)
     vector_type<SimpleVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -191,7 +201,9 @@ TEST_F(SimpleVirtualColumnsTest, update)
     const string_type readCondition = "content='" + updateContent + "'";
     auto reader = testTable.createReader(readCondition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     checkSimpleVirtualColumnsTableRow(updateRow, readRows[0]);

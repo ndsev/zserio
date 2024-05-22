@@ -22,8 +22,6 @@ performance-move-const-arg:gen/expressions/isset_operator/IsSetOperator.cpp
 performance-move-const-arg:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 performance-move-const-arg:gen/expressions/parameter_type/ParameterTypeExpression.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/expressions/bitmask_type/BitmaskTypeExpression.cpp
 readability-make-member-function-const:gen/expressions/cast_uint8_to_uint64/CastUInt8ToUInt64Expression.cpp
 readability-make-member-function-const:gen/expressions/cast_uint64_to_uint8/CastUInt64ToUInt8Expression.cpp

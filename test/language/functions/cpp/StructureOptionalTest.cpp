@@ -23,7 +23,9 @@ protected:
     {
         writer.writeBits(defaultValue, 4);
         if (defaultValue == INVALID_DEFAULT_VALUE)
+        {
             writer.writeBits(externalValue, 4);
+        }
 
         writer.writeBool((calculateValue(defaultValue, externalValue) < SMALL_VALUE_THRESHOLD));
     }
@@ -34,7 +36,9 @@ protected:
         ValueCalculator& valueCalculator = valueConsumerCreator.getValueCalculator();
         valueCalculator.setDefaultValue(defaultValue);
         if (defaultValue == INVALID_DEFAULT_VALUE)
+        {
             valueCalculator.setExternalValue(externalValue);
+        }
 
         ValueConsumer& valueConsumer = valueConsumerCreator.getValueConsumer();
         valueConsumer.setIsSmall(calculateValue(defaultValue, externalValue) < SMALL_VALUE_THRESHOLD);

@@ -58,7 +58,9 @@ protected:
         }
 
         if (elementA == ELEMENT_A_FOR_EXTRA_VALUE)
+        {
             writer.writeSignedBits(EXTRA_VALUE, 32);
+        }
     }
 
     void fillInner(Inner& inner, uint16_t pos)
@@ -84,7 +86,9 @@ protected:
             elementA = m_items[pos].getValueA();
         }
         if (elementA == ELEMENT_A_FOR_EXTRA_VALUE)
+        {
             inner.setExtra(EXTRA_VALUE);
+        }
 
         inner.initializeChildren();
     }

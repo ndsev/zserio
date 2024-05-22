@@ -33,7 +33,9 @@ protected:
     {
         testStructureArray.reserve(numElements);
         for (uint32_t i = 0; i < numElements; ++i)
+        {
             testStructureArray.push_back(createTestStructure(i));
+        }
     }
 
     TestStructure createTestStructure(uint32_t index)
@@ -48,11 +50,15 @@ protected:
         testStructure.setTestEnum(index % 2 == 0 ? TestEnum::DARK_RED : TestEnum::DARK_GREEN);
         testStructure.setTestBitmask(index % 2 == 0 ? TestBitmask::Values::READ : TestBitmask::Values::CREATE);
         if (index % 2 == 0)
+        {
             testStructure.setTestOptional(static_cast<uint16_t>(index));
+        }
         testStructure.setTestDynamicBitfield(index % 3);
         vector_type<uint64_t> values;
         for (uint64_t value = 1; value < 18; value += 3)
+        {
             values.push_back(value);
+        }
         testStructure.setNumValues(static_cast<uint32_t>(values.size()));
         testStructure.setUnpackedValues(values);
         testStructure.setPackedValues(values);
@@ -66,11 +72,17 @@ protected:
     {
         TestChoice testChoice;
         if (index == 0 || index == 2 || index == 4)
+        {
             testChoice.setValue16(static_cast<uint16_t>(index));
+        }
         else if (index == 5)
+        {
             testChoice.setArray32(vector_type<uint32_t>{index * 2, index * 2 + 1});
+        }
         else
+        {
             testChoice.setValue32(Value32{index * 2});
+        }
 
         return testChoice;
     }
@@ -79,11 +91,17 @@ protected:
     {
         TestUnion testUnion;
         if (index % 2 == 0)
+        {
             testUnion.setValue16(static_cast<uint16_t>(index));
+        }
         else if (index == 5)
+        {
             testUnion.setArray32(vector_type<uint32_t>{index * 2, index * 2 + 1});
+        }
         else
+        {
             testUnion.setValue32(Value32{index * 2});
+        }
 
         return testUnion;
     }

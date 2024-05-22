@@ -46,7 +46,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));

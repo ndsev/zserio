@@ -50,9 +50,13 @@ protected:
             vector_type<uint8_t>& values8 = testBlob1.getValues8();
             vector_type<uint16_t>& values16 = testBlob1.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT1; ++i)
+            {
                 values8.push_back(static_cast<uint8_t>(id));
+            }
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT2; ++i)
+            {
                 values16.push_back(static_cast<uint16_t>(id));
+            }
         }
         row.setBlob1(testBlob1);
 
@@ -113,7 +117,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkMultipleParamsTableRow(rows1[i], rows2[i]);
+        }
     }
 
     class MultipleParamsTableParameterProvider : public MultipleParamsTable::IParameterProvider
@@ -166,7 +172,9 @@ TEST_F(MultipleExplicitParamsTest, readWithoutCondition)
 
     vector_type<MultipleParamsTable::Row> readRows;
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkMultipleParamsTableRows(writtenRows, readRows);
 }
 

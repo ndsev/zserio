@@ -16,8 +16,6 @@ hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h
 performance-move-const-arg:gen/without_writer_code/ItemChoiceHolder.cpp
 performance-move-const-arg:gen/without_writer_code/Item.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/without_writer_code/ItemChoiceHolder.cpp
 readability-make-member-function-const:gen/without_writer_code/ItemChoice.cpp
 readability-make-member-function-const:gen/without_writer_code/Item.cpp

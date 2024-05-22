@@ -61,8 +61,6 @@ performance-move-const-arg:gen/with_validation_code/constraint_table_validation/
 performance-move-const-arg:gen/with_validation_code/control_validation/Table2.cpp
 performance-move-const-arg:gen/with_validation_code/simple_table_validation/RootStruct.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/with_validation_code/blob_table_validation/Blob.cpp
 readability-make-member-function-const:gen/with_validation_code/column_type_validation/Blob.cpp
 readability-make-member-function-const:gen/with_validation_code/constraint_table_validation/Blob.cpp

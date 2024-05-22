@@ -71,11 +71,15 @@ TEST_F(InstantiateTypeAsSqlDatabaseFieldTest, readWrite)
     vector_type<StringTable::Row> readStringTableRows;
     auto readerString = readInstantiateTypeAsSqlDatabaseFieldDb.getStringTable().createReader();
     while (readerString.hasNext())
+    {
         readStringTableRows.push_back(readerString.next());
+    }
     vector_type<StringTable::Row> readOtherStringTableRows;
     auto readerOtherString = readInstantiateTypeAsSqlDatabaseFieldDb.getOtherStringTable().createReader();
     while (readerOtherString.hasNext())
+    {
         readOtherStringTableRows.push_back(readerOtherString.next());
+    }
 
     assertEqualRows(stringTableRows, readStringTableRows);
     assertEqualRows(otherStringTableRows, readOtherStringTableRows);

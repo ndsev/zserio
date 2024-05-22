@@ -80,7 +80,9 @@ protected:
         TestBlob testBlob;
         vector_type<uint8_t>& values = testBlob.getValues();
         for (size_t i = 0; i < COMPLEX_TABLE_COUNT; ++i)
+        {
             values.push_back(static_cast<uint8_t>(blobId));
+        }
         testBlob.setOffsetEnd(TEST_BLOB_OFFSET_END);
         testBlob.setEnd(true);
         row.setBlob(testBlob);
@@ -117,7 +119,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkComplexTableRow(rows1[i], rows2[i]);
+        }
     }
 
     static void checkComplexTableRowWithNullValues(const ComplexTable::Row& row1, const ComplexTable::Row& row2)
@@ -125,44 +129,76 @@ protected:
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
 
         if (row1.isAgeSet() && row2.isAgeSet())
+        {
             ASSERT_EQ(row1.getAge(), row2.getAge());
+        }
         else
+        {
             ASSERT_EQ(row1.isAgeSet(), row2.isAgeSet());
+        }
 
         if (row1.isNameSet() && row2.isNameSet())
+        {
             ASSERT_EQ(row1.getName(), row2.getName());
+        }
         else
+        {
             ASSERT_EQ(row1.isNameSet(), row2.isNameSet());
+        }
 
         if (row1.isIsValidSet() && row2.isIsValidSet())
+        {
             ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
+        }
         else
+        {
             ASSERT_EQ(row1.isIsValidSet(), row2.isIsValidSet());
+        }
 
         if (row1.isSalarySet() && row2.isSalarySet())
+        {
             ASSERT_EQ(row1.getSalary(), row2.getSalary());
+        }
         else
+        {
             ASSERT_EQ(row1.isSalarySet(), row2.isSalarySet());
+        }
 
         if (row1.isBonusSet() && row2.isBonusSet())
+        {
             ASSERT_EQ(row1.getBonus(), row2.getBonus());
+        }
         else
+        {
             ASSERT_EQ(row1.isBonusSet(), row2.isBonusSet());
+        }
 
         if (row1.isValueSet() && row2.isValueSet())
+        {
             ASSERT_EQ(row1.getValue(), row2.getValue());
+        }
         else
+        {
             ASSERT_EQ(row1.isValueSet(), row2.isValueSet());
+        }
 
         if (row1.isColorSet() && row2.isColorSet())
+        {
             ASSERT_EQ(row1.getColor(), row2.getColor());
+        }
         else
+        {
             ASSERT_EQ(row1.isColorSet(), row2.isColorSet());
+        }
 
         if (row1.isBlobSet() && row2.isBlobSet())
+        {
             ASSERT_EQ(row1.getBlob(), row2.getBlob());
+        }
         else
+        {
             ASSERT_EQ(row1.isBlobSet(), row2.isBlobSet());
+        }
     }
 
     static void checkComplexTableRowsWithNullValues(
@@ -170,7 +206,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkComplexTableRowWithNullValues(rows1[i], rows2[i]);
+        }
     }
 
     bool isTableInDb()
@@ -183,7 +221,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
@@ -236,7 +276,9 @@ TEST_F(ComplexTableTest, readWithoutCondition)
     vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkComplexTableRows(writtenRows, readRows);
 }
@@ -253,7 +295,9 @@ TEST_F(ComplexTableTest, readWithoutConditionWithNullValues)
     vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkComplexTableRowsWithNullValues(writtenRows, readRows);
 }
@@ -271,7 +315,9 @@ TEST_F(ComplexTableTest, readWithCondition)
     vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider, condition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     ASSERT_EQ(1, readRows.size());
 
@@ -297,7 +343,9 @@ TEST_F(ComplexTableTest, update)
     vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider, updateCondition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     ASSERT_EQ(1, readRows.size());
 

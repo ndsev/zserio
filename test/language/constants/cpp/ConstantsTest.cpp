@@ -182,7 +182,9 @@ TEST(ConstantsTest, float16Constant)
 {
     float diff = 3.13F - FLOAT16_CONSTANT;
     if (diff < 0.0F)
+    {
         diff = -diff;
+    }
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
@@ -190,7 +192,9 @@ TEST(ConstantsTest, float32Constant)
 {
     float diff = 3.131F - FLOAT32_CONSTANT;
     if (diff < 0.0F)
+    {
         diff = -diff;
+    }
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
@@ -198,7 +202,9 @@ TEST(ConstantsTest, float64Constant)
 {
     double diff = 3.1314 - FLOAT64_CONSTANT;
     if (diff < 0.0)
+    {
         diff = -diff;
+    }
     ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
 }
 

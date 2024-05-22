@@ -5,8 +5,6 @@ cert-err58-cpp:cpp/PackedIndexedOffsetArrayHolderTest.cpp
 
 performance-move-const-arg:gen/indexed_offsets/int14_indexed_offset_array/Int14IndexedOffsetArray.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/indexed_offsets/compound_indexed_offset_array/Compound.cpp
 readability-make-member-function-const:gen/indexed_offsets/optional_nested_indexed_offset_array/Header.cpp
 

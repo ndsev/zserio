@@ -29,7 +29,9 @@ protected:
         bitSize += 8; // varsize (length of auto array)
         bitSize += 1; // packing descriptor: isPacked
         if (numElements > 1)
+        {
             bitSize += 6; // packing descriptor: maxBitNumber
+        }
         bitSize += 8 + 8; // first element
         bitSize += (numElements - 1) * (8 + 2); // all deltas
 

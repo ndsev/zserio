@@ -20,7 +20,9 @@ protected:
         auto& uint8Array = packedFixedArray.getUint8Array();
         uint8Array.reserve(FIXED_ARRAY_LENGTH);
         for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+        {
             uint8Array.push_back(PACKED_ARRAY_ELEMENT);
+        }
     }
 
     size_t getPackedFixedArrayBitSize()
@@ -126,7 +128,9 @@ TEST_F(PackedFixedArrayUInt8Test, writeWrongArray)
     const size_t wrongArrayLength = FIXED_ARRAY_LENGTH + 1;
     uint8Array.reserve(wrongArrayLength);
     for (size_t i = 0; i < wrongArrayLength; ++i)
+    {
         uint8Array.push_back(static_cast<uint8_t>(i));
+    }
     PackedFixedArray packedFixedArray;
     packedFixedArray.setUint8Array(uint8Array);
 

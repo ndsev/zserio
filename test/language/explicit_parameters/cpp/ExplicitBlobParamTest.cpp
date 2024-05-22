@@ -73,19 +73,25 @@ protected:
         TestBlob testBlob1;
         vector_type<uint8_t>& values1 = testBlob1.getValues();
         for (uint32_t i = 0; i < BLOB_PARAM_TABLE_HEADER_COUNT; ++i)
+        {
             values1.push_back(static_cast<uint8_t>(id));
+        }
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
         vector_type<uint8_t>& values2 = testBlob2.getValues();
         for (uint32_t i = 0; i < BLOB_PARAM_TABLE_BLOB_COUNT; ++i)
+        {
             values2.push_back(static_cast<uint8_t>(id + 1));
+        }
         row.setBlob2(testBlob2);
 
         TestBlob testBlob3;
         vector_type<uint8_t>& values3 = testBlob3.getValues();
         for (uint32_t i = 0; i < BLOB_PARAM_TABLE_HEADER_COUNT; ++i)
+        {
             values3.push_back(static_cast<uint8_t>(id + 2));
+        }
         row.setBlob3(testBlob3);
     }
 
@@ -119,7 +125,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkBlobParamTableRow(rows1[i], rows2[i]);
+        }
     }
 
     ExplicitParametersDb* m_database;
@@ -151,7 +159,9 @@ TEST_F(ExplicitBlobParamTest, readWithoutCondition)
 
     vector_type<BlobParamTable::Row> readRows;
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkBlobParamTableRows(writtenRows, readRows);
 }
 

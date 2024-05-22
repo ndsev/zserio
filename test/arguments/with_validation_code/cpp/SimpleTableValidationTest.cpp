@@ -139,14 +139,20 @@ private:
         rootStruct.write(writer);
         uint8_t* buffer = bitBuffer.getBuffer();
         if (wrongOffset)
+        {
             corruptOffsetInFieldBlob(buffer);
+        }
         sqlite3_bind_blob(
                 statement.get(), argIdx++, buffer, static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
 
         if (id == FIELD_ENUM_NULL_ROW_ID)
+        {
             sqlite3_bind_null(statement.get(), argIdx++);
+        }
         else
+        {
             sqlite3_bind_int(statement.get(), argIdx++, static_cast<int>(zserio::enumToValue(fieldEnum)));
+        }
 
         sqlite3_bind_int(statement.get(), argIdx++, fieldBitmask.getValue());
 

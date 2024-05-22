@@ -6,8 +6,6 @@ bugprone-forwarding-reference-overload:gen/templates_warning/default_instantiati
 performance-move-const-arg:gen/templates_warning/default_instantiation_warning/DefaultInstantiationWarning.cpp
 performance-move-const-arg:gen/templates_warning/default_instantiation_warning/Subpackage3TemplateU32.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/templates_warning/default_instantiation_subpackage1/Subpackage1TemplateU32.cpp
 readability-make-member-function-const:gen/templates_warning/default_instantiation_subpackage2/Subpackage2TemplateU32.cpp
 readability-make-member-function-const:gen/templates_warning/default_instantiation_subpackage3/Subpackage3InnerTemplate_uint32.cpp

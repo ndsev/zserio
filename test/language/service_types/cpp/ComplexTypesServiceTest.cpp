@@ -61,9 +61,13 @@ public:
         response.setLength(static_cast<uint32_t>(data.size()));
 
         if (requestData.getModel() == ColorModel::RGB)
+        {
             rgbToCmyk(data, response);
+        }
         else
+        {
             cmykToRgb(data, response);
+        }
 
         response.initializeChildren();
         return response;

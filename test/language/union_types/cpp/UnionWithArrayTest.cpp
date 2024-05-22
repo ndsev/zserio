@@ -23,7 +23,9 @@ protected:
         writer.writeVarSize(static_cast<uint32_t>(TestUnion::CHOICE_array8));
         writer.writeVarSize(static_cast<uint32_t>(ARRAY8.size()));
         for (int8_t element : ARRAY8)
+        {
             writer.writeSignedBits(element, 8);
+        }
     }
 
     static void writeArray16ToByteArray(zserio::BitStreamWriter& writer)
@@ -31,7 +33,9 @@ protected:
         writer.writeVarSize(static_cast<uint32_t>(TestUnion::CHOICE_array16));
         writer.writeVarSize(static_cast<uint32_t>(ARRAY16.size()));
         for (int16_t element : ARRAY16)
+        {
             writer.writeSignedBits(element, 16);
+        }
     }
 
     template <size_t SIZE>
@@ -56,7 +60,10 @@ protected:
     {
         vector_type<Data8> array8(ARRAY8.size());
         for (size_t i = 0; i < ARRAY8.size(); ++i)
+        {
             array8[i].setData(ARRAY8[i]);
+        }
+
         return array8;
     }
 

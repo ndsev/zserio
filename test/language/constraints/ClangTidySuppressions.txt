@@ -10,8 +10,6 @@ performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.
 performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp
 performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp
 readability-make-member-function-const:gen/constraints/literal_constraint/LiteralConstraint.cpp
 readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp

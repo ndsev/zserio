@@ -18,7 +18,9 @@ protected:
     void writeImplicitArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
         for (size_t i = 0; i < numElements; ++i)
+        {
             writer.writeBits64(static_cast<uint64_t>(i), 64);
+        }
     }
 
     static const std::string BLOB_NAME;
@@ -34,7 +36,9 @@ TEST_F(ImplicitArrayUInt64Test, bitSizeOf)
     vector_type<uint64_t> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
+    {
         array.push_back(static_cast<uint64_t>(i));
+    }
     ImplicitArray implicitArray;
     implicitArray.setArray(array);
 
@@ -48,7 +52,9 @@ TEST_F(ImplicitArrayUInt64Test, initializeOffsets)
     vector_type<uint64_t> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
+    {
         array.push_back(static_cast<uint64_t>(i));
+    }
     ImplicitArray implicitArray;
     implicitArray.setArray(array);
 
@@ -68,7 +74,9 @@ TEST_F(ImplicitArrayUInt64Test, readConstructor)
     const vector_type<uint64_t>& array = implicitArray.getArray();
     ASSERT_EQ(numElements, array.size());
     for (size_t i = 0; i < numElements; ++i)
+    {
         ASSERT_EQ(static_cast<uint64_t>(i), array[i]);
+    }
 }
 
 TEST_F(ImplicitArrayUInt64Test, writeRead)
@@ -77,7 +85,9 @@ TEST_F(ImplicitArrayUInt64Test, writeRead)
     vector_type<uint64_t> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
+    {
         array.push_back(static_cast<uint64_t>(i));
+    }
     ImplicitArray implicitArray;
     implicitArray.setArray(array);
 
@@ -89,7 +99,9 @@ TEST_F(ImplicitArrayUInt64Test, writeRead)
     const vector_type<uint64_t>& readArray = readImplicitArray.getArray();
     ASSERT_EQ(numElements, readArray.size());
     for (size_t i = 0; i < numElements; ++i)
+    {
         ASSERT_EQ(static_cast<uint64_t>(i), readArray[i]);
+    }
 }
 
 TEST_F(ImplicitArrayUInt64Test, writeReadFile)
@@ -98,7 +110,9 @@ TEST_F(ImplicitArrayUInt64Test, writeReadFile)
     vector_type<uint64_t> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
+    {
         array.push_back(static_cast<uint64_t>(i));
+    }
     ImplicitArray implicitArray;
     implicitArray.setArray(array);
 
@@ -108,7 +122,9 @@ TEST_F(ImplicitArrayUInt64Test, writeReadFile)
     const vector_type<uint64_t>& readArray = readImplicitArray.getArray();
     ASSERT_EQ(numElements, readArray.size());
     for (size_t i = 0; i < numElements; ++i)
+    {
         ASSERT_EQ(static_cast<uint64_t>(i), readArray[i]);
+    }
 }
 
 } // namespace implicit_array_uint64

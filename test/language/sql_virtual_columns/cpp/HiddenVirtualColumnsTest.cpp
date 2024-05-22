@@ -82,7 +82,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkHiddenVirtualColumnsTableRow(rows1[i], rows2[i]);
+        }
     }
 
     bool isTableInDb()
@@ -94,7 +96,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && m_tableName == reinterpret_cast<const char*>(readTableName));
@@ -140,7 +144,9 @@ TEST_F(HiddenVirtualColumnsTest, readWithoutCondition)
     vector_type<HiddenVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkHiddenVirtualColumnsTableRows(writtenRows, readRows);
 }
 
@@ -156,7 +162,9 @@ TEST_F(HiddenVirtualColumnsTest, readWithCondition)
     vector_type<HiddenVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -180,7 +188,9 @@ TEST_F(HiddenVirtualColumnsTest, update)
     vector_type<HiddenVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     checkHiddenVirtualColumnsTableRow(updateRow, readRows[0]);

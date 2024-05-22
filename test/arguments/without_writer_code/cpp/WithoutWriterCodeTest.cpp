@@ -297,9 +297,13 @@ protected:
             writer.writeBits(static_cast<uint32_t>(offset), 32);
             const bool hasItem = i % 2 == 0;
             if (hasItem)
+            {
                 offset += 8;
+            }
             else
+            {
                 offset += 3;
+            }
         }
 
         for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)

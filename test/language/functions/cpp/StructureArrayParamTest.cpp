@@ -20,12 +20,16 @@ protected:
         writer.writeBits(static_cast<uint32_t>(VALUES.size()), 8);
 
         for (uint64_t value : VALUES)
+        {
             writer.writeBits(static_cast<uint32_t>(value), CHILD_BIT_SIZE);
+        }
 
         writer.writeBits(static_cast<uint32_t>(ANOTHER_VALUES.size()), 8);
 
         for (uint64_t anotherValue : ANOTHER_VALUES)
+        {
             writer.writeBits(static_cast<uint32_t>(anotherValue), ANOTHER_CHILD_BIT_SIZE);
+        }
     }
 
     void createParentStructure(ParentStructure& parentStructure)

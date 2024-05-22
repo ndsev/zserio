@@ -23,7 +23,9 @@ protected:
         PackedAutoArray packedAutoArray;
         auto& array = packedAutoArray.getArray();
         for (size_t i = 0; i < UINT8_FIELD.size(); ++i)
+        {
             array.emplace_back(UINT32_FIELD[i], BYTES_FIELD[i], UINT8_FIELD[i]);
+        }
 
         return packedAutoArray;
     }

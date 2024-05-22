@@ -151,7 +151,9 @@ TEST_F(BitAlignmentTest, bitSizeOfWithPosition)
     // starting up to bit position 77, the structure still fits into original size thanks to alignments
     size_t startBitPosition = 0;
     for (; startBitPosition < 78; ++startBitPosition)
+    {
         ASSERT_EQ(BIT_ALIGNMENT_BIT_SIZE - startBitPosition, bitAlignment.bitSizeOf(startBitPosition));
+    }
     // starting at bit position 78, also next 64bits are needed
     ASSERT_EQ(BIT_ALIGNMENT_BIT_SIZE - startBitPosition + 64, bitAlignment.bitSizeOf(startBitPosition));
 }
@@ -164,7 +166,9 @@ TEST_F(BitAlignmentTest, initializeOffsets)
     // starting up to bit position 77, the structure still fits into original size thanks to alignments
     size_t startBitPosition = 0;
     for (; startBitPosition < 78; ++startBitPosition)
+    {
         ASSERT_EQ(BIT_ALIGNMENT_BIT_SIZE, bitAlignment.initializeOffsets(startBitPosition));
+    }
     // starting at bit position 78, also next 64bits are needed
     ASSERT_EQ(BIT_ALIGNMENT_BIT_SIZE + 64, bitAlignment.initializeOffsets(startBitPosition));
 }

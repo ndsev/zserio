@@ -75,7 +75,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkColumnParamTableRow(rows1[i], rows2[i]);
+        }
     }
 
     bool isTableInDb()
@@ -88,7 +90,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
@@ -130,7 +134,9 @@ TEST_F(ColumnParamTableTest, readWithoutCondition)
     vector_type<ColumnParamTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkColumnParamTableRows(writtenRows, readRows);
 }
@@ -147,7 +153,9 @@ TEST_F(ColumnParamTableTest, readWithCondition)
     vector_type<ColumnParamTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -171,7 +179,9 @@ TEST_F(ColumnParamTableTest, update)
     vector_type<ColumnParamTable::Row> readRows;
     auto reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     checkColumnParamTableRow(updateRow, readRows[0]);

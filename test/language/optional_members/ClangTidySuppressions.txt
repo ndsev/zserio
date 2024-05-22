@@ -12,8 +12,6 @@ misc-no-recursion # reports also tested_release and some system headers
 performance-move-const-arg:gen/optional_members/optional_expression/Container.cpp
 performance-move-const-arg:gen/optional_members/optional_recursion/Block.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/optional_members/auto_optional/Container.cpp
 readability-make-member-function-const:gen/optional_members/optional_array/Data8.cpp
 readability-make-member-function-const:gen/optional_members/optional_array/TestStruct.cpp

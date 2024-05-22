@@ -24,7 +24,9 @@ static void fillParameterizedStruct(ParameterizedStruct& parameterizedStruct, co
 {
     vector_type<uint8_t> array;
     for (uint32_t i = 0; i < simpleStruct.getFieldU32(); i++)
+    {
         array.push_back(static_cast<uint8_t>(i));
+    }
     parameterizedStruct.setArray(array);
 }
 
@@ -61,7 +63,9 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
 
     vector_type<uint64_t> dynamicBitFieldArray;
     for (size_t i = 1; i < 65536; i += 2)
+    {
         dynamicBitFieldArray.push_back(i);
+    }
     complexStruct.setDynamicBitFieldArray(dynamicBitFieldArray);
 
     if (createOptionals)
@@ -81,7 +85,9 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
 
     vector_type<TestBitmask> bitmaskArray;
     for (size_t i = 0; i < static_cast<size_t>(TestEnum::_TWO); ++i)
+    {
         bitmaskArray.push_back(TestBitmask::Values::_Green);
+    }
     complexStruct.setBitmaskArray(bitmaskArray);
 }
 
@@ -148,7 +154,9 @@ static void fillTemplatedParameterizedStruct_TS32(
 {
     vector_type<uint32_t> array;
     for (uint32_t i = ts32.getField(); i > 0; --i)
+    {
         array.push_back(i);
+    }
     templatedParameterizedStruct_TS32.setArray(array);
 }
 

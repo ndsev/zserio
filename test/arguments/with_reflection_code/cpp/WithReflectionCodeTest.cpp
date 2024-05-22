@@ -29,7 +29,10 @@ protected:
     {
         auto parameterized = Parameterized{vector_type<uint8_t>(5)};
         for (uint8_t i = 0; i < param; ++i)
+        {
             parameterized.getArray()[i] = static_cast<uint8_t>(i + 1);
+        }
+
         return parameterized;
     }
 
@@ -63,7 +66,9 @@ protected:
     {
         creator.beginArray("array");
         for (uint8_t i = 0; i < param; ++i)
+        {
             creator.addValueElement(i + 1);
+        }
         creator.endArray();
     }
 
@@ -100,7 +105,9 @@ protected:
         creator.setValue("len", len);
         creator.beginArray("offsets");
         for (size_t i = 0; i < len; ++i)
+        {
             creator.addValueElement(0);
+        }
         creator.endArray();
         creator.beginArray("parameterizedArray");
         for (size_t i = 0; i < len; ++i)

@@ -1,3 +1,1 @@
-readability-braces-around-statements:gen/without_sql_code/Tile.cpp
-
 readability-make-member-function-const:gen/without_sql_code/Tile.cpp

@@ -45,7 +45,9 @@ protected:
         const uint32_t arrayLength = static_cast<uint32_t>(index);
         vector_type<uint32_t> array;
         for (uint32_t i = 0; i < arrayLength; ++i)
+        {
             array.push_back(i);
+        }
         row.setBlob(BlobWithChildrenInitialization{arrayLength, ParameterizedArray{std::move(array)}});
     }
 
@@ -72,7 +74,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkRow(rows1[i], rows2[i]);
+        }
     }
 
     static const char* const DB_FILE_NAME;
@@ -96,7 +100,9 @@ TEST_F(BlobFieldWithChildrenInitializationTableTest, readWithoutCondition)
     vector_type<BlobFieldWithChildrenInitializationTable::Row> readRows;
     auto reader = table.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkRows(rows, readRows);
 }

@@ -47,12 +47,16 @@ protected:
         while ((result = sqlite3_step(statement.get())) != SQLITE_DONE)
         {
             if (result != SQLITE_ROW)
+            {
                 return false;
+            }
 
             const unsigned char* columnName = sqlite3_column_text(statement.get(), 1);
             const unsigned char* columnType = sqlite3_column_text(statement.get(), 2);
             if (columnName == nullptr || columnType == nullptr)
+            {
                 return false;
+            }
 
             sqlColumnTypes[std::string(reinterpret_cast<const char*>(columnName))] =
                     std::string(reinterpret_cast<const char*>(columnType));

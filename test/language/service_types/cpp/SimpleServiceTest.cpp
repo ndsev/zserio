@@ -35,11 +35,15 @@ public:
     Response powerOfTwoImpl(const Request& request, void* context) override
     {
         if (context != nullptr)
+        {
             static_cast<FakeContext*>(context)->seenByService = true;
+        }
 
         int32_t value = request.getValue();
         if (value < 0)
+        {
             value = -value;
+        }
         return Response(static_cast<uint64_t>(value) * static_cast<uint64_t>(value), get_allocator_ref());
     }
 

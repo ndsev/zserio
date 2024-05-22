@@ -21,7 +21,9 @@ protected:
     {
         writer.writeBits(static_cast<uint32_t>(length), 8); // all lengths in this test fits in a single byte
         for (size_t i = 0; i < length; ++i)
+        {
             writer.writeBits(static_cast<uint32_t>(i), 32);
+        }
     }
 
     static const uint8_t CORRECT_LENGTH = 6;
@@ -69,7 +71,9 @@ TEST_F(ArrayLengthofConstraintTest, writeCorrectLength)
     vector_type<uint32_t>& array = arrayLengthofConstraint.getArray();
     array.resize(CORRECT_LENGTH);
     for (size_t i = 0; i < CORRECT_LENGTH; ++i)
+    {
         array[i] = static_cast<uint32_t>(i);
+    }
 
     zserio::BitStreamWriter writer(bitBuffer);
     arrayLengthofConstraint.write(writer);
@@ -86,7 +90,9 @@ TEST_F(ArrayLengthofConstraintTest, writeWrongLengthLess)
     vector_type<uint32_t>& array = arrayLengthofConstraint.getArray();
     array.resize(WRONG_LENGTH_LESS);
     for (size_t i = 0; i < WRONG_LENGTH_LESS; ++i)
+    {
         array[i] = static_cast<uint32_t>(i);
+    }
 
     zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(arrayLengthofConstraint.write(writer), zserio::CppRuntimeException);
@@ -98,7 +104,9 @@ TEST_F(ArrayLengthofConstraintTest, writeWrongLengthGreater)
     vector_type<uint32_t>& array = arrayLengthofConstraint.getArray();
     array.resize(WRONG_LENGTH_GREATER);
     for (size_t i = 0; i < WRONG_LENGTH_GREATER; ++i)
+    {
         array[i] = static_cast<uint32_t>(i);
+    }
 
     zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(arrayLengthofConstraint.write(writer), zserio::CppRuntimeException);

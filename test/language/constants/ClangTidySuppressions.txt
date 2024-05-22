@@ -13,7 +13,5 @@ google-explicit-constructor:gen/constants/Permission.h
 
 hicpp-signed-bitwise:gen/constants/Permission.h
 
-readability-braces-around-statements
-
 readability-uppercase-literal-suffix:gen/constants/FLOAT16_CONSTANT.h
 readability-uppercase-literal-suffix:gen/constants/FLOAT32_CONSTANT.h

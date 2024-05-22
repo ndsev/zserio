@@ -26,5 +26,3 @@ performance-move-const-arg:cpp/BitmaskWithoutNoneTest.cpp
 performance-move-const-arg:cpp/UInt64BitmaskTest.cpp
 performance-move-const-arg:cpp/UInt8BitmaskTest.cpp
 performance-move-const-arg:cpp/VarUIntBitmaskTest.cpp
-
-readability-braces-around-statements

@@ -29,7 +29,9 @@ protected:
         const bool wasTransactionStarted = connection.startTransaction();
 
         for (int16_t id = 0; id < ENTRY_COUNT; id++)
+        {
             insertTestTableRow(connection, id);
+        }
 
         connection.endTransaction(wasTransactionStarted);
     }
@@ -50,9 +52,13 @@ private:
         sqlite3_bind_text(
                 statement.get(), argIdx++, text.c_str(), static_cast<int>(text.size()), SQLITE_TRANSIENT);
         if (id % 2 == 0)
+        {
             sqlite3_bind_int(statement.get(), argIdx++, id / 2);
+        }
         else
+        {
             sqlite3_bind_null(statement.get(), argIdx++);
+        }
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(statement.get()));
     }
 

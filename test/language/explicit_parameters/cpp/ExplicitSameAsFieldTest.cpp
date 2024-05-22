@@ -49,13 +49,17 @@ protected:
         TestBlob testBlob;
         vector_type<uint8_t>& values = testBlob.getValues();
         for (uint32_t i = 0; i < SAME_AS_FIELD_TABLE_COUNT; ++i)
+        {
             values.push_back(static_cast<uint8_t>(id));
+        }
         row.setBlob(testBlob);
 
         TestBlob testBlobExplicit;
         vector_type<uint8_t>& valuesExplicit = testBlobExplicit.getValues();
         for (uint32_t i = 0; i < SAME_AS_FIELD_TABLE_COUNT_EXPLICIT; ++i)
+        {
             valuesExplicit.push_back(static_cast<uint8_t>(id + 1));
+        }
         row.setBlobExplicit(testBlobExplicit);
     }
 
@@ -86,7 +90,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkSameAsFieldTableRow(rows1[i], rows2[i]);
+        }
     }
 
     class SameAsFieldTableParameterProvider : public SameAsFieldTable::IParameterProvider
@@ -127,7 +133,9 @@ TEST_F(ExplicitSameAsFieldTest, readWithoutCondition)
 
     vector_type<SameAsFieldTable::Row> readRows;
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     checkSameAsFieldTableRows(writtenRows, readRows);
 }
 

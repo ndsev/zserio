@@ -48,7 +48,9 @@ protected:
     {
         optionalMemberAlignment.setHasOptional(hasOptional);
         if (hasOptional)
+        {
             optionalMemberAlignment.setOptionalField(optionalField);
+        }
         optionalMemberAlignment.setField(field);
     }
 
@@ -112,7 +114,9 @@ TEST_F(OptionalMemberAlignmentTest, initializeOffsetsWithOptional)
     const size_t expectedBitSize = WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
     size_t bitPosition = 0;
     for (; bitPosition < 32; ++bitPosition)
+    {
         ASSERT_EQ(expectedBitSize, optionalMemberAlignment.initializeOffsets(bitPosition));
+    }
     ASSERT_EQ(expectedBitSize + bitPosition, optionalMemberAlignment.initializeOffsets(bitPosition));
 }
 

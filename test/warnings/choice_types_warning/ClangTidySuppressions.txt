@@ -4,6 +4,4 @@ bugprone-unhandled-self-assignment:gen/choice_types_warning/optional_references_
 
 cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/choice_types_warning/optional_references_in_selector/Selector.cpp

@@ -22,7 +22,10 @@ protected:
         StringTypeExpression stringTypeExpression;
         stringTypeExpression.setHasValue(hasValue);
         if (hasValue)
+        {
             stringTypeExpression.setValue(zserio::toString<allocator_type>(VALUE));
+        }
+
         return stringTypeExpression;
     }
 

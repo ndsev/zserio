@@ -63,7 +63,9 @@ protected:
     void checkBlockInBitStream(zserio::BitStreamReader& reader, const std::array<uint8_t, SIZE>& blockData)
     {
         for (uint8_t data : blockData)
+        {
             ASSERT_EQ(data, reader.readBits(8));
+        }
 
         ASSERT_EQ(0, reader.readBits(8));
     }
@@ -73,7 +75,9 @@ protected:
             const std::array<uint8_t, SIZE2>& block2Data)
     {
         for (uint8_t data1 : block1Data)
+        {
             ASSERT_EQ(data1, reader.readBits(8));
+        }
         ASSERT_EQ(block2Data.size(), reader.readBits(8));
 
         checkBlockInBitStream(reader, block2Data);

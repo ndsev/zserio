@@ -70,8 +70,6 @@ performance-move-const-arg:gen/parameterized_types/parameterized_param/Param.cpp
 performance-move-const-arg:gen/parameterized_types/simple_param/Item.cpp
 performance-move-const-arg:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/parameterized_types/array_element_param/BlockHeader.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional/Param.cpp

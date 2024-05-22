@@ -75,11 +75,15 @@ TEST_F(SqlTableTemplatedFieldTest, readWrite)
     vector_type<TemplatedTable_uint32::Row> readUint32TableRows;
     auto readerUint32 = readSqlTableTemplatedFieldDb.getUint32Table().createReader();
     while (readerUint32.hasNext())
+    {
         readUint32TableRows.push_back(readerUint32.next());
+    }
     vector_type<TemplatedTable_Union::Row> readUnionTableRows;
     auto readerUnion = readSqlTableTemplatedFieldDb.getUnionTable().createReader();
     while (readerUnion.hasNext())
+    {
         readUnionTableRows.push_back(readerUnion.next());
+    }
 
     assertEqualRows(uint32TableRows, readUint32TableRows);
     assertEqualRows(unionTableRows, readUnionTableRows);

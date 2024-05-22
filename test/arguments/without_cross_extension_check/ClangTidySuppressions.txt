@@ -1,3 +1,1 @@
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_python/invalid_in_python/Test.h
-
-readability-braces-around-statements:gen_python/invalid_in_python/Test.cpp

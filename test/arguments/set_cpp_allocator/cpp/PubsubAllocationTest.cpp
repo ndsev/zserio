@@ -62,7 +62,9 @@ protected:
         void processPublishContext(void* context) override
         {
             if (context == nullptr)
+            {
                 return;
+            }
 
             static_cast<CountingContext*>(context)->publishCount++;
         }
@@ -70,7 +72,9 @@ protected:
         void processSubscribeContext(void* context) override
         {
             if (context == nullptr)
+            {
                 return;
+            }
 
             static_cast<CountingContext*>(context)->subscribeCount++;
         }

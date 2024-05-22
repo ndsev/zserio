@@ -34,8 +34,6 @@ performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_
 performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_union/AllocationUnion.cpp
 performance-move-const-arg:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen_complex_allocation/complex_allocation/MainStructure.cpp
 readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_choice/ChoiceCompound.cpp
 readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_struct/Element.cpp

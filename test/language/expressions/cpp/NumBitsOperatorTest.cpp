@@ -13,10 +13,14 @@ namespace
 uint8_t calculateExpectedNumBits(uint64_t value)
 {
     if (value == 0)
+    {
         return 0;
+    }
 
     if (value == 1)
+    {
         return 1;
+    }
 
     return static_cast<uint8_t>(log2(static_cast<double>(value - 1)) + 1);
 }

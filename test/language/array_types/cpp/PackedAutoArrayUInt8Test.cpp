@@ -34,7 +34,9 @@ protected:
         size_t bitSize = 8; // auto array size: varsize
         bitSize += 1; // packing descriptor: isPacked
         if (numElements > 1)
+        {
             bitSize += 6; // packing descriptor: maxBitNumber
+        }
         bitSize += 8; // first element
         bitSize += (numElements - 1) * (PACKED_ARRAY_MAX_BIT_NUMBER + 1); // all deltas
 

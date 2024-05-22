@@ -27,7 +27,9 @@ protected:
 
         writer.writeVarSize(static_cast<uint32_t>(AUTO_ARRAY_LENGTH));
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
+        {
             writer.writeBits(static_cast<uint32_t>(i), 7);
+        }
     }
 
     void checkAutoArrayHolder(const AutoArrayHolder& autoArrayHolder, size_t bitPosition = 0)
@@ -41,7 +43,9 @@ protected:
         const vector_type<int8_t>& autoArray = autoArrayHolder.getAutoArray();
         ASSERT_EQ(AUTO_ARRAY_LENGTH, autoArray.size());
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
+        {
             ASSERT_EQ(i, autoArray[i]);
+        }
     }
 
     void fillAutoArrayHolder(AutoArrayHolder& autoArrayHolder, bool createWrongOffset)
@@ -56,7 +60,9 @@ protected:
         vector_type<int8_t> autoArray;
         autoArray.reserve(AUTO_ARRAY_LENGTH);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
+        {
             autoArray.push_back(static_cast<int8_t>(i));
+        }
         autoArrayHolder.setAutoArray(autoArray);
     }
 

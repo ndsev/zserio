@@ -16,9 +16,13 @@ protected:
             zserio::BitStreamWriter& writer, bool selector, uint8_t value8, uint16_t value16)
     {
         if (selector)
+        {
             writer.writeBits(value8, 8);
+        }
         else
+        {
             writer.writeBits(value16, 16);
+        }
     }
 
     static const uint8_t VALUE8_CORRECT_CONSTRAINT;

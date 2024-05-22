@@ -77,7 +77,9 @@ protected:
     {
         rows.resize(NUM_ROWS);
         for (uint32_t i = 0; i < NUM_ROWS; ++i)
+        {
             fillTableRow(rows.at(i), parameterProvider, allocator, i);
+        }
     }
 
     void fillTableRow(SqlAllocationTable::Row& row, SqlAllocationTableParameterProvider& parameterProvider,
@@ -101,7 +103,10 @@ protected:
         ParameterizedBlob parameterizedBlob{allocator};
         parameterizedBlob.initialize(dataBlob);
         for (uint32_t i = 0; i < dataBlob.getLen(); ++i)
+        {
             parameterizedBlob.getArr().push_back(i);
+        }
+
         return parameterizedBlob;
     }
 
@@ -127,7 +132,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkTableRow(rows1.at(i), rows2.at(i));
+        }
     }
 
 private:
@@ -166,7 +173,9 @@ TEST_F(SqlAllocationTest, readWithoutCondition)
 
     vector_type<SqlAllocationTable::Row> readRows{getAllocator()};
     while (reader.hasNext())
+    {
         readRows.emplace_back(reader.next());
+    }
     checkTableRows(writtenRows, readRows);
 }
 

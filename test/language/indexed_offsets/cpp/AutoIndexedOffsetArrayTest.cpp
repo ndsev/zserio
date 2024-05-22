@@ -19,9 +19,13 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+            {
                 writer.writeBits(wrongOffset, 32);
+            }
             else
+            {
                 writer.writeBits(currentOffset, 32);
+            }
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
 
@@ -33,7 +37,9 @@ protected:
         {
             writer.writeBits(i % 64, ELEMENT_SIZE);
             if ((i + 1) != NUM_ELEMENTS)
+            {
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE);
+            }
         }
     }
 
@@ -62,7 +68,9 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
+        {
             ASSERT_EQ(i % 64, data[i]);
+        }
     }
 
     void fillAutoIndexedOffsetArray(AutoIndexedOffsetArray& autoIndexedOffsetArray, bool createWrongOffsets)
@@ -74,9 +82,13 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
+            {
                 offsets.push_back(wrongOffset);
+            }
             else
+            {
                 offsets.push_back(currentOffset);
+            }
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         autoIndexedOffsetArray.setSpacer(SPACER_VALUE);
@@ -84,7 +96,9 @@ protected:
         auto& data = autoIndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
+        {
             data.push_back(i % 64);
+        }
     }
 
     static const uint8_t NUM_ELEMENTS = 5;

@@ -20,17 +20,23 @@ protected:
         auto& offsetHolders = offsetArray.getOffsetHolders();
         offsetHolders.reserve(numElements + 1);
         for (size_t i = 0; i < numElements + 1; ++i)
+        {
             offsetHolders.emplace_back(UINT32_C(0), vector_type<uint32_t>{0}, static_cast<uint32_t>(i));
+        }
 
         auto& data1 = autoIndexedOffsetArray.getData1();
         data1.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             data1.push_back(static_cast<int32_t>(i));
+        }
 
         auto& data2 = autoIndexedOffsetArray.getData2();
         data2.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             data2.push_back(static_cast<int32_t>(i * 2));
+        }
 
         autoIndexedOffsetArray.initializeOffsets();
     }
@@ -46,10 +52,14 @@ protected:
         }
 
         for (size_t i = 0; i < numElements; ++i)
+        {
             bitSize += 32; // data1[i]
+        }
 
         for (size_t i = 0; i < numElements; ++i)
+        {
             bitSize += 32; // data2[i]
+        }
 
         return bitSize;
     }

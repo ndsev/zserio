@@ -26,9 +26,13 @@ protected:
             const bool wrong = lastWrong && i + 1 == length;
             Element element;
             if (wrong ? !isEven : isEven)
+            {
                 element.setField8(static_cast<uint8_t>(ELEMENTS[i]));
+            }
             else
+            {
                 element.setField16(static_cast<int16_t>(ELEMENTS[i]));
+            }
             elements.push_back(element);
         }
         list.setLength(static_cast<uint16_t>(elements.size()));
@@ -61,9 +65,13 @@ protected:
             const bool wrong = lastWrong && i + 1 == length;
             Element element = list.getElements().at(i);
             if (wrong)
+            {
                 ASSERT_THROW(isEven ? element.getField16() : element.getField8(), zserio::CppRuntimeException);
+            }
             else
+            {
                 ASSERT_EQ(ELEMENTS[i], isEven ? element.getField8() : element.getField16());
+            }
         }
     }
 

@@ -34,9 +34,13 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+            {
                 writer.writeBits(wrongOffset, 32);
+            }
             else
+            {
                 writer.writeBits(currentOffset, 32);
+            }
             currentOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
         }
 
@@ -46,7 +50,9 @@ protected:
         {
             writer.writeBits(0, 7);
             for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
+            {
                 writer.writeString(m_data[i]);
+            }
         }
 
         writer.writeBits(FIELD_VALUE, 6);
@@ -79,7 +85,9 @@ protected:
             const size_t expectedNumElements = NUM_ELEMENTS;
             ASSERT_EQ(expectedNumElements, data.size());
             for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
+            {
                 ASSERT_EQ(m_data[i], data[i]);
+            }
         }
 
         const uint8_t expectedField = FIELD_VALUE;
@@ -96,15 +104,21 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
+            {
                 offsets.push_back(wrongOffset);
+            }
             else
+            {
                 offsets.push_back(currentOffset);
+            }
             currentOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
         }
         optionalIndexedOffsetArray.setHasOptional(hasOptional);
 
         if (hasOptional)
+        {
             optionalIndexedOffsetArray.setData(m_data);
+        }
 
         optionalIndexedOffsetArray.setField(FIELD_VALUE);
     }
@@ -116,7 +130,9 @@ protected:
         {
             bitSize += 7;
             for (size_t i = 0; i < NUM_ELEMENTS; ++i)
+            {
                 bitSize += zserio::bitSizeOfString(m_data[i]);
+            }
         }
         bitSize += 6;
 

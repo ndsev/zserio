@@ -19,7 +19,9 @@ protected:
     {
         writer.writeVarSize(static_cast<uint32_t>(length));
         for (size_t i = 0; i < length; ++i)
+        {
             writer.writeBits(static_cast<uint32_t>(i), 8);
+        }
     }
 
     void checkBitSizeOf(size_t numElements)
@@ -27,7 +29,9 @@ protected:
         vector_type<ArrayElement> array;
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             array.push_back(static_cast<ArrayElement>(i));
+        }
         AutoArray autoArray;
         autoArray.setArray(array);
 
@@ -41,7 +45,9 @@ protected:
         vector_type<ArrayElement> array;
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             array.push_back(static_cast<ArrayElement>(i));
+        }
         AutoArray autoArray;
         autoArray.setArray(array);
 
@@ -61,7 +67,9 @@ protected:
         const vector_type<ArrayElement>& array = autoArray.getArray();
         ASSERT_EQ(numElements, array.size());
         for (size_t i = 0; i < numElements; ++i)
+        {
             ASSERT_EQ(i, array[i]);
+        }
     }
 
     void checkWriteRead(size_t numElements)
@@ -69,7 +77,9 @@ protected:
         vector_type<ArrayElement> array;
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             array.push_back(static_cast<ArrayElement>(i));
+        }
         AutoArray autoArray;
         autoArray.setArray(array);
 
@@ -84,7 +94,9 @@ protected:
         const vector_type<ArrayElement>& readArray = readAutoArray.getArray();
         ASSERT_EQ(numElements, readArray.size());
         for (size_t i = 0; i < numElements; ++i)
+        {
             ASSERT_EQ(i, readArray[i]);
+        }
     }
 
     void checkWriteReadFile(size_t numElements)
@@ -92,7 +104,9 @@ protected:
         vector_type<ArrayElement> array;
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             array.push_back(static_cast<ArrayElement>(i));
+        }
         AutoArray autoArray;
         autoArray.setArray(array);
 
@@ -103,7 +117,9 @@ protected:
         const vector_type<ArrayElement>& readArray = readAutoArray.getArray();
         ASSERT_EQ(numElements, readArray.size());
         for (size_t i = 0; i < numElements; ++i)
+        {
             ASSERT_EQ(i, readArray[i]);
+        }
     }
 
     static const std::string BLOB_NAME_BASE;

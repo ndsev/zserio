@@ -18,7 +18,9 @@ protected:
         auto& blocks = packedVariableArray.getPackedBlocks();
         blocks.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
+        {
             blocks.push_back(createBlock(byteCount, false));
+        }
         packedVariableArray.initializeChildren();
         packedVariableArray.initializeOffsets();
     }
@@ -29,7 +31,9 @@ protected:
         auto& dataBytes = block.getDataBytes();
         dataBytes.reserve(byteCount);
         for (uint8_t i = 0; i < byteCount; ++i)
+        {
             dataBytes.push_back(i);
+        }
 
         if (isLast)
         {
@@ -51,7 +55,9 @@ protected:
         bitSize += 8; // numElements
         const uint8_t byteCount = 1;
         for (size_t i = 0; i < numElements; ++i)
+        {
             bitSize += getUnpackedBlockBitSize(byteCount, false);
+        }
 
         return bitSize;
     }

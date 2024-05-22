@@ -56,7 +56,9 @@ protected:
         ParameterizedBlob& parameterizedBlob = row.getBlob();
         vector_type<uint32_t>& array = parameterizedBlob.getArray();
         for (uint32_t i = 0; i < array_size; ++i)
+        {
             array.push_back(i);
+        }
         parameterizedBlob.initialize(row.getOffsetsHolder());
         parameterizedBlob.initializeOffsets();
     }
@@ -86,7 +88,9 @@ protected:
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
+        {
             checkBlobOffsetsParamTableRow(rows1[i], rows2[i]);
+        }
     }
 
     bool isTableInDb()
@@ -99,7 +103,9 @@ protected:
 
         int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
             return false;
+        }
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
@@ -140,7 +146,9 @@ TEST_F(BlobOffsetsParamTableTest, readWithoutCondition)
     vector_type<BlobOffsetsParamTable::Row> readRows;
     BlobOffsetsParamTable::Reader reader = testTable.createReader();
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
 
     checkBlobOffsetsParamTableRows(writtenRows, readRows);
 }
@@ -157,7 +165,9 @@ TEST_F(BlobOffsetsParamTableTest, readWithCondition)
     vector_type<BlobOffsetsParamTable::Row> readRows;
     BlobOffsetsParamTable::Reader reader = testTable.createReader(condition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -181,7 +191,9 @@ TEST_F(BlobOffsetsParamTableTest, update)
     vector_type<BlobOffsetsParamTable::Row> readRows;
     BlobOffsetsParamTable::Reader reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
+    {
         readRows.push_back(reader.next());
+    }
     ASSERT_EQ(1, readRows.size());
 
     checkBlobOffsetsParamTableRow(updateRow, readRows[0]);

@@ -30,7 +30,9 @@ protected:
             auto& items = block.getItems();
             const uint16_t numItems = header.getNumItems();
             for (uint16_t j = 0; j < numItems; ++j)
+            {
                 items.push_back(j * 2);
+            }
             blocks.push_back(block);
         }
 
@@ -60,7 +62,9 @@ protected:
             const uint16_t numItems = headers.at(i).getNumItems();
             const auto& items = blocks.at(i).getItems();
             for (uint16_t j = 0; j < numItems; ++j)
+            {
                 ASSERT_EQ(items.at(j), reader.readBits64(64));
+            }
         }
     }
 

@@ -25,7 +25,9 @@ protected:
         vector_type<int8_t> autoArray;
         autoArray.reserve(AUTO_ARRAY_LENGTH);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
+        {
             autoArray.push_back(static_cast<int8_t>(i));
+        }
         autoArrayHolder.setAutoArray(autoArray);
     }
 
@@ -43,7 +45,9 @@ protected:
         writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(0, 7);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH - 1; ++i)
+        {
             writer.writeSignedBits(PACKED_ARRAY_DELTA, static_cast<uint8_t>(PACKED_ARRAY_MAX_BIT_NUMBER + 1));
+        }
     }
 
     size_t getAutoArrayHolderBitSize()
@@ -71,7 +75,9 @@ protected:
         const auto& autoArray = autoArrayHolder.getAutoArray();
         ASSERT_EQ(AUTO_ARRAY_LENGTH, autoArray.size());
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
+        {
             ASSERT_EQ(i, autoArray[i]);
+        }
     }
 
     static const std::string BLOB_NAME;

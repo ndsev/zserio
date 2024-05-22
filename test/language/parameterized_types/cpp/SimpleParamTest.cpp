@@ -17,7 +17,9 @@ protected:
     {
         writer.writeBits(param, 16);
         if (version >= HIGHER_VERSION)
+        {
             writer.writeBits(extraParam, 32);
+        }
     }
 
     void checkItemInBitStream(zserio::BitStreamReader& reader, uint32_t version, const Item& item)

@@ -45,7 +45,9 @@ protected:
             bool hasAutoOptional, int32_t autoOptionalField, int32_t field)
     {
         if (hasAutoOptional)
+        {
             autoOptionalMemberAlignment.setAutoOptionalField(autoOptionalField);
+        }
         autoOptionalMemberAlignment.setField(field);
     }
 
@@ -109,7 +111,9 @@ TEST_F(AutoOptionalMemberAlignmentTest, initializeOffsetsWithOptional)
     const size_t expectedBitSize = WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
     size_t bitPosition = 0;
     for (; bitPosition < 32; ++bitPosition)
+    {
         ASSERT_EQ(expectedBitSize, autoOptionalMemberAlignment.initializeOffsets(bitPosition));
+    }
     ASSERT_EQ(expectedBitSize + bitPosition, autoOptionalMemberAlignment.initializeOffsets(bitPosition));
 }
 

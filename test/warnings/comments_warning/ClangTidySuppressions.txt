@@ -45,8 +45,6 @@ performance-move-const-arg:gen_comments/comments_warning/unused_struct_comment_m
 performance-move-const-arg:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/ServiceType.cpp
 performance-move-const-arg:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentdServiceType.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen_comments/comments_warning/unresolved_markdown_see_tag_reference/Test.cpp
 readability-make-member-function-const:gen_comments/comments_warning/unresolved_see_tag_in_templated_struct/TemplatedStructString.cpp
 readability-make-member-function-const:gen_comments/comments_warning/unresolved_see_tag_in_templated_struct/TemplatedStructUInt32.cpp

@@ -35,8 +35,6 @@ performance-move-const-arg:gen/functions/structure_param/MetresConverter.cpp
 performance-move-const-arg:gen/functions/structure_parent_child_value/ParentValue.cpp
 performance-move-const-arg:gen/functions/union_array/ItemRef.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/functions/choice_array/ItemRef.cpp
 readability-make-member-function-const:gen/functions/choice_array/Item.cpp
 readability-make-member-function-const:gen/functions/choice_array/OuterArray.cpp

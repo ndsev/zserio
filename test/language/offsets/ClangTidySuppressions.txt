@@ -12,8 +12,6 @@ performance-move-const-arg:gen/offsets/nested_offset/NestedOffset.cpp
 performance-move-const-arg:gen/offsets/parameter_offset/Room.cpp
 performance-move-const-arg:gen/offsets/parameter_offset/School.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/offsets/auto_array_offset/AutoArrayHolder.cpp
 readability-make-member-function-const:gen/offsets/bit_offset/BitOffset.cpp
 readability-make-member-function-const:gen/offsets/nested_offset/NestedOffsetChoice.cpp

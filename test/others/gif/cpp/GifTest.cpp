@@ -21,7 +21,9 @@ protected:
     {
         std::ifstream inputStream(fileName.c_str(), std::ios::binary);
         if (!inputStream)
+        {
             return false;
+        }
 
         inputStream.seekg(0, inputStream.end);
         const size_t fileSize = static_cast<size_t>(inputStream.tellg());
@@ -37,7 +39,9 @@ protected:
     void convertUInt8ArrayToString(const vector_type<uint8_t>& array, string_type& outputString)
     {
         for (uint8_t element : array)
+        {
             outputString.append(1, static_cast<char>(element));
+        }
     }
 };
 

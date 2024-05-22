@@ -35,8 +35,6 @@ performance-move-const-arg:gen/gif/gif_data/ZippedBlockData.cpp
 performance-move-const-arg:gen/gif/gif_data/ZippedSubBlock.cpp
 performance-move-const-arg:gen/gif/screen_descriptor/ScreenDescriptor.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/gif/gif_data/ApplicationExtension.cpp
 readability-make-member-function-const:gen/gif/gif_data/BlockData.cpp
 readability-make-member-function-const:gen/gif/gif_data/BlockTypes.cpp

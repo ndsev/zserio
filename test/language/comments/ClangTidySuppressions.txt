@@ -41,8 +41,6 @@ performance-move-const-arg:gen/comments/markdown_doc/struct_template_comments/St
 performance-move-const-arg:gen/comments/markdown_doc/union_comments/TestUnion.cpp
 performance-move-const-arg:gen/comments/mixed_doc/struct_comments/DirectionStructure.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/comments/classic_doc/choice_comments/TestChoice.cpp
 readability-make-member-function-const:gen/comments/classic_doc/struct_comments/DirectionStructure.cpp
 readability-make-member-function-const:gen/comments/classic_doc/struct_template_comments/Compound.cpp

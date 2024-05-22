@@ -12,8 +12,6 @@ performance-move-const-arg:gen/optional_members_warning/optional_references_in_c
 performance-move-const-arg:gen/optional_members_warning/optional_references_in_offset/Container.cpp
 performance-move-const-arg:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
 
-readability-braces-around-statements
-
 readability-make-member-function-const:gen/optional_members_warning/optional_references_in_array_length/Container.cpp
 readability-make-member-function-const:gen/optional_members_warning/optional_references_in_bitfield_length/Container.cpp
 readability-make-member-function-const:gen/optional_members_warning/optional_references_in_constraint/Container.cpp

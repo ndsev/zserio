@@ -72,9 +72,13 @@ protected:
         Choice choice;
         choice.initialize(selector);
         if (selector == ENUM::COORD_XY)
+        {
             choice.setCoordXY(CoordXY{10 * index, 20 * index});
+        }
         else
+        {
             choice.setText("text" + zserio::toString<allocator_type>(index));
+        }
 
         HOLDER holder(selector, std::move(choice));
         holder.initializeChildren();
