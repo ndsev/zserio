@@ -282,7 +282,9 @@ void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@f
 {
         <#if field.isExtended>
     if (!${field.isPresentIndicatorName}())
+    {
         m_numExtendedFields = ${numExtendedFields};
+    }
         </#if>
     <@field_member_name field/> = <@compound_setter_field_value field/>;
 }
@@ -293,7 +295,9 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
 {
         <#if field.isExtended>
     if (!${field.isPresentIndicatorName}())
+    {
         m_numExtendedFields = ${numExtendedFields};
+    }
         </#if>
     <@field_member_name field/> = <@compound_setter_field_rvalue field/>;
 }
@@ -322,7 +326,9 @@ void ${name}::${field.optional.resetterName}()
 {
             <#if field.isExtended>
     if (!${field.isPresentIndicatorName}())
+    {
         m_numExtendedFields = ${numExtendedFields};
+    }
             </#if>
     <@field_member_name field/>.reset();
 }
@@ -441,9 +447,13 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
 ${I}if (${field.optional.isUsedIndicatorName}() && other.${field.optional.isUsedIndicatorName}())
 ${I}{
 ${I}    if (<@compound_field_less_than_compare field, lhs, rhs/>)
+${I}    {
 ${I}        return true;
+${I}    }
 ${I}    if (<@compound_field_less_than_compare field, rhs, lhs/>)
+${I}    {
 ${I}        return false;
+${I}    }
 ${I}}
 ${I}else if (${field.optional.isUsedIndicatorName}() != other.${field.optional.isUsedIndicatorName}())
 ${I}{
@@ -451,9 +461,13 @@ ${I}    return !${field.optional.isUsedIndicatorName}();
 ${I}}
     <#else>
 ${I}if (<@compound_field_less_than_compare field, lhs, rhs/>)
+${I}{
 ${I}    return true;
+${I}}
 ${I}if (<@compound_field_less_than_compare field, rhs, lhs/>)
+${I}{
 ${I}    return false;
+${I}}
     </#if>
 </#macro>
 bool ${name}::operator<(const ${name}&<#if compoundParametersData.list?has_content || fieldList?has_content> other</#if>) const
@@ -483,7 +497,9 @@ bool ${name}::operator<(const ${name}&<#if compoundParametersData.list?has_conte
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (${field.optional.isUsedIndicatorName}())
+${I}{
 ${I}    result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+${I}}
     <#else>
 ${I}result = ::zserio::calcHashCode(result, <@field_member_name field/>);
     </#if>

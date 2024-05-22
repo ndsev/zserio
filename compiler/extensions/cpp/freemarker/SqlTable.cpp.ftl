@@ -296,7 +296,9 @@ void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterPr
     writeRow(<#if needsParameterProvider>parameterProvider, </#if>row, *statement);
     const int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
+    {
         throw ::zserio::SqliteException("Update: sqlite3_step() failed: ") << ::zserio::SqliteErrorCode(result);
+    }
 }
 <#if withValidationCode>
 
@@ -307,7 +309,9 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
             m_db, m_attachedDbName, m_name, get_allocator_ref());<#else>0;</#if>
     continueValidation = true;
     if (!validationObserver.beginTable(m_name, numberOfRows))
+    {
         return false;
+    }
 
     size_t numberOfValidatedRows = 0;
     <#if hasNonVirtualField>
@@ -332,7 +336,9 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
 
         <#list fields as field>
             if (!validateType${field.name?cap_first}(validationObserver, statement.get(), continueValidation))
+            {
                 continue;
+            }
         </#list>
 
             Row row;
@@ -340,10 +346,14 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
             <#if field.sqlTypeData.isBlob>
             if (!validateBlob${field.name?cap_first}(validationObserver, statement.get(), row<#rt>
                     <#lt><#if field.hasExplicitParameters>, parameterProvider</#if>, continueTableValidation))
+            {
                 continue;
+            }
             <#else>
             if (!validateField${field.name?cap_first}(validationObserver, statement.get(), row, continueTableValidation))
+            {
                 continue;
+            }
             </#if>
         </#list>
         }
@@ -465,7 +475,9 @@ bool ${name}::validateColumn${field.name?cap_first}(::zserio::IValidationObserve
     }
         <#else>
     if (search != tableSchema.end())
+    {
         tableSchema.erase(search);
+    }
         </#if>
 
     return true;
@@ -490,7 +502,9 @@ bool ${name}::validateType${field.name?cap_first}(::zserio::IValidationObserver&
 {
     const int type = sqlite3_column_type(statement, ${field?index});
     if (type == SQLITE_NULL)
+    {
         return true;
+    }
 
     if (type != <@sqlite_type_field field/>)
     {
@@ -519,7 +533,9 @@ bool ${name}::validateBlob${field.name?cap_first}(::zserio::IValidationObserver&
 {
     const void* blobData = sqlite3_column_blob(statement, ${field?index});
     if (blobData == nullptr)
+    {
         return true;
+    }
 
     try
     {
@@ -582,7 +598,9 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
         <#lt><#if field.sqlRangeCheckData?? || field.typeInfo.isEnum> continueValidation</#if>)
 {
     if (sqlite3_column_type(statement, ${field?index}) == SQLITE_NULL)
+    {
         return true;
+    }
 
                 <#if field.sqlTypeData.isInteger>
     const int64_t intValue = sqlite3_column_int64(statement, ${field?index});

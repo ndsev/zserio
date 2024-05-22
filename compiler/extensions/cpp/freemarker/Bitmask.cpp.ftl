@@ -50,7 +50,9 @@ ${name}::${name}(underlying_type value) :
         m_value(value)
 {
     if (m_value > ${upperBound})
+    {
         throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") << value << "!";
+    }
 }
 </#if>
 <#if withTypeInfoCode>
@@ -201,14 +203,18 @@ ${types.string.name} ${name}::toString(const ${types.string.name}::allocator_typ
 <#list values as value>
     <#if !value.isZero>
     if ((*this & ${name}::Values::${value.name}) == ${name}::Values::${value.name})
+    {
         result += result.empty() ? "${value.name}" : " | ${value.name}";
+    }
     <#else>
         <#assign zeroValueName=value.name/><#-- may be there only once -->
     </#if>
 </#list>
 <#if zeroValueName??>
     if (result.empty() && m_value == 0)
+    {
         result += "${zeroValueName}";
+    }
 </#if>
 
     return ::zserio::toString<${types.string.name}::allocator_type>(m_value, allocator) + "[" + result + "]";

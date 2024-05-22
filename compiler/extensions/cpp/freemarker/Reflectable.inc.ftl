@@ -48,7 +48,9 @@ ${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
         <#if field.isExtended>
 ${I}        if (!m_object.${field.isPresentIndicatorName}())
+${I}        {
 ${I}            return nullptr;
+${I}        }
         </#if>
         <#if field.optional??>
             <#if withWriterCode>
@@ -56,7 +58,9 @@ ${I}        if (!m_object.${field.optional.isSetIndicatorName}())
             <#else>
 ${I}        if (!m_object.${field.optional.isUsedIndicatorName}())
             </#if>
+${I}        {
 ${I}            return nullptr;
+${I}        }
 
         </#if>
 ${I}        return <@reflectable_field_create field/>;

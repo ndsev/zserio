@@ -113,7 +113,9 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
+    {
         throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
+    }
 
     return *<@parameter_member_name compoundParameter.name/>;
 }
@@ -126,7 +128,9 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
         </#if>
 {
     if (!m_isInitialized)
+    {
         throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
+    }
 
     return <#if !compoundParameter.typeInfo.isSimple>*</#if><@parameter_member_name compoundParameter.name/>;
 }
@@ -164,7 +168,9 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
         </#if>
     </#list>
     <#lt>)
+    {
         return false;
+    }
 
     </#if>
 </#macro>
@@ -183,9 +189,13 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
         <#local lhs>${compoundParameter.getterName}()</#local>
         <#local rhs>other.${compoundParameter.getterName}()</#local>
 ${I}if (<@compound_parameter_less_than_compare compoundParameter, lhs, rhs/>)
+${I}{
 ${I}    return true;
+${I}}
 ${I}if (<@compound_parameter_less_than_compare compoundParameter, rhs, lhs/>)
+${I}{
 ${I}    return false;
+${I}}
 
     </#list>
 </#macro>

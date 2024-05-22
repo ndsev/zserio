@@ -478,7 +478,9 @@ ${I}return true; // empty
 bool ${name}::operator==(const ${name}& other) const
 {
     if (this == &other)
+    {
         return true;
+    }
 
     <@compound_parameter_comparison_with_any_holder compoundParametersData/>
     <#if fieldList?has_content>
@@ -494,9 +496,13 @@ bool ${name}::operator==(const ${name}& other) const
         <#local lhs>m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>()</#local>
         <#local rhs>other.m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>()</#local>
 ${I}if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+${I}{
 ${I}    return <@compound_field_less_than_compare member.compoundField, lhs, rhs/>;
+${I}}
 ${I}else
+${I}{
 ${I}    return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+${I}}
     <#else>
 ${I}return false;
     </#if>

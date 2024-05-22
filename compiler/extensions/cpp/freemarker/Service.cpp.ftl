@@ -50,7 +50,9 @@ ${types.serviceDataPtr.name} Service::callMethod(
 {
 <#list methodList as method>
     if (methodName == methodNames()[${method?index}])
+    {
         return ${method.name}Method(requestData, context);
+    }
 </#list>
     throw ::zserio::ServiceException("${serviceFullName}: Method '") << methodName << "' does not exist!";
 }

@@ -146,14 +146,22 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 <#macro compound_copy_initialization compoundConstructorsData>
     <#if needs_compound_initialization(compoundConstructorsData)>
     if (other.m_isInitialized)
+    {
         initialize(<@compound_initialize_copy_argument_list compoundConstructorsData/>);
+    }
     else
+    {
         m_isInitialized = false;
+    }
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
     if (other.m_areChildrenInitialized)
+    {
         initializeChildren();
+    }
     else
+    {
         m_areChildrenInitialized = false;
+    }
     </#if>
 </#macro>
 

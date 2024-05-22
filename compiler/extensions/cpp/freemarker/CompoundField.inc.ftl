@@ -264,7 +264,9 @@ ${I}out.alignTo(${field.alignmentValue});
                 <#lt>${field.constraint.writeConstraint}</#if></#local>
 ${I}// check constraint
 ${I}if (!(${constraintExpresssion}))
+${I}{
 ${I}    throw ::zserio::ConstraintException("${actionName}: Constraint violated at ${compoundName}.${field.name}!");
+${I}}
     </#if>
 </#macro>
 
@@ -989,7 +991,9 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
     <#if initializeCommand??>
         <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
+${I}{
 ${I}    ${initializeCommand}
+${I}}
         <#else>
 ${I}${initializeCommand}
         </#if>

@@ -568,18 +568,26 @@ size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t
 bool ${name}::operator==(const ${name}& other) const
 {
     if (this == &other)
+    {
         return true;
+    }
 
     <@compound_parameter_comparison_with_any_holder compoundParametersData/>
     if (m_choiceTag != other.m_choiceTag)
+    {
         return false;
+    }
 
 <#if fieldList?has_content>
     if (m_objectChoice.hasValue() != other.m_objectChoice.hasValue())
+    {
         return false;
+    }
 
     if (!m_objectChoice.hasValue())
+    {
         return true;
+    }
 
     switch (m_choiceTag)
     {
@@ -600,17 +608,25 @@ bool ${name}::operator==(const ${name}& other) const
     <#local lhs>m_objectChoice.get<<@field_cpp_type_name field/>>()</#local>
     <#local rhs>other.m_objectChoice.get<<@field_cpp_type_name field/>>()</#local>
 ${I}if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+${I}{
 ${I}    return <@compound_field_less_than_compare field, lhs, rhs/>;
+${I}}
 ${I}else
+${I}{
 ${I}    return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+${I}}
 </#macro>
 bool ${name}::operator<(const ${name}& other) const
 {
     <@compound_parameter_less_than compoundParametersData, 1/>
     if (m_choiceTag < other.m_choiceTag)
+    {
         return true;
+    }
     if (other.m_choiceTag < m_choiceTag)
+    {
         return false;
+    }
 <#if fieldList?has_content>
 
     switch (m_choiceTag)

@@ -130,9 +130,13 @@ void ${name}::createSchema(const <@set_type_name types.string.name/>&<#if hasWit
             <#if field.isWithoutRowIdTable>
     if (withoutRowIdTableNamesBlackList.find(::zserio::stringViewToString(
             <@sql_db_table_name_getter field/>, get_allocator_ref())) != withoutRowIdTableNamesBlackList.end())
+    {
         <@sql_field_member_name field/>->createOrdinaryRowIdTable();
+    }
     else
+    {
         <@sql_field_member_name field/>->createTable();
+    }
             <#else>
     <@sql_field_member_name field/>->createTable();
             </#if>
@@ -171,7 +175,9 @@ void ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
             parameterProvider.<@sql_db_table_parameter_provider_getter field/><#rt>
         </#if>
         <#lt>, continueValidation))
+    {
         ++numberOfValidatedTables;
+    }
     </#list>
 
     validationObserver.endDatabase(numberOfValidatedTables);
