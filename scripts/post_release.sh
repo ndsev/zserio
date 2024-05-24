@@ -435,18 +435,6 @@ update_tutorial_cpp()
     local TUTORIAL_CPP_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
 
-    echo -ne "Updating version to ${ZSERIO_VERSION} in Zserio Tutorial Cpp..."
-    local CONANFILE="${TUTORIAL_CPP_DIR}/conan/conanfile.py"
-    sed -i -e 's/zserio\/[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"zserio\/${ZSERIO_VERSION}"'/' \
-            "${CONANFILE}"
-    local SED_RESULT=$?
-    if [ ${SED_RESULT} -ne 0 ] ; then
-        stderr_echo "Sed failed with return code ${SED_RESULT}!"
-        return 1
-    fi
-    echo "Done"
-    echo
-
     echo "Updating generated sources in Zserio Tutorial Cpp."
     echo
     local TUTORIAL_CPP_BUILD_DIR="${TUTORIAL_CPP_DIR}/build"
@@ -834,7 +822,7 @@ Description:
     Update all Zserio dependent repositories after Zserio release.
 
 Usage:
-    $0 [-h] [-e] [-o <dir>] [repository] 
+    $0 [-h] [-e] [-o <dir>] [repository]
 
 Arguments:
     -h, --help       Show this help.
@@ -851,7 +839,7 @@ Repository can be empty for all repositories or arbitrary combination of
     tutorial_java    Update Zserio Tutorial Java repository after new Zserio release
     tutorial_python  Update Zserio Tutorial Python repository after new Zserio release
     streamlit        Update Zserio Streamlit repository after new Zserio release
-    web_pages        Update Zserio Web Pages branch after new Zserio release 
+    web_pages        Update Zserio Web Pages branch after new Zserio release
 
 Examples:
     $0
@@ -880,7 +868,7 @@ parse_arguments()
     local PARAM_TUTORIAL_JAVA_OUT="$1"; shift
     local PARAM_TUTORIAL_PYTHON_OUT="$1"; shift
     local PARAM_STREAMLIT_OUT="$1"; shift
-    local PARAM_WEB_PAGES_OUT="$1"; shift 
+    local PARAM_WEB_PAGES_OUT="$1"; shift
 
     eval ${PARAM_MAVEN_OUT}=0
     eval ${PARAM_PYPI_OUT}=0
