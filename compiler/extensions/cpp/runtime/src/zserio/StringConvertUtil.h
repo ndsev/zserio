@@ -33,30 +33,30 @@ const char* convertIntToString(std::array<char, 24>& buffer, T value, bool isNeg
             "8081828384858687888990919293949596979899"};
 
     auto bufferEnd = buffer.end();
-    *--bufferEnd = 0; // always terminate with '\0'
+    *(--bufferEnd) = 0; // always terminate with '\0'
 
     while (value >= 100)
     {
         const unsigned int index = static_cast<unsigned int>((value % 100) * 2);
         value /= 100;
-        *--bufferEnd = DIGITS[index + 1];
-        *--bufferEnd = DIGITS[index];
+        *(--bufferEnd) = DIGITS[index + 1];
+        *(--bufferEnd) = DIGITS[index];
     }
 
     if (value < 10)
     {
-        *--bufferEnd = static_cast<char>('0' + value);
+        *(--bufferEnd) = static_cast<char>('0' + value);
     }
     else
     {
         const unsigned int index = static_cast<unsigned int>(value * 2);
-        *--bufferEnd = DIGITS[index + 1];
-        *--bufferEnd = DIGITS[index];
+        *(--bufferEnd) = DIGITS[index + 1];
+        *(--bufferEnd) = DIGITS[index];
     }
 
     if (isNegative)
     {
-        *--bufferEnd = '-';
+        *(--bufferEnd) = '-';
     }
 
     return &(*bufferEnd);
