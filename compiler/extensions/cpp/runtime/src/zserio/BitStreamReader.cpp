@@ -851,7 +851,7 @@ void BitStreamReader::setBitPosition(BitPosType position)
     const uint8_t skip = static_cast<uint8_t>(position - m_context.bitIndex);
     if (skip != 0)
     {
-        readBits(skip);
+        (void)readBits(skip);
     }
 }
 
@@ -861,7 +861,7 @@ void BitStreamReader::alignTo(size_t alignment)
     if (offset != 0)
     {
         const uint8_t skip = static_cast<uint8_t>(alignment - offset);
-        readBits64(skip);
+        (void)readBits64(skip);
     }
 }
 

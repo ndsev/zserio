@@ -28,12 +28,12 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
     sqlite3 *internalConnection = nullptr;
     const int sqliteOpenMode = SQLITE_OPEN_URI | <#rt>
             <#lt><#if withWriterCode>SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE<#else>SQLITE_OPEN_READONLY</#if>;
-    const int result = sqlite3_open_v2(dbFileName.c_str(), &internalConnection, sqliteOpenMode, nullptr);
+    const int sqliteResult = sqlite3_open_v2(dbFileName.c_str(), &internalConnection, sqliteOpenMode, nullptr);
     m_db.reset(internalConnection, ::zserio::SqliteConnection::INTERNAL_CONNECTION);
-    if (result != SQLITE_OK)
+    if (sqliteResult != SQLITE_OK)
     {
-        throw ::zserio::SqliteException("${name}::open(): can't open DB ") << dbFileName.c_str() << ": " <<
-                ::zserio::SqliteErrorCode(result);
+        throw ::zserio::SqliteException("${name}::${name}: can't open DB ") << dbFileName.c_str() << ": " <<
+                ::zserio::SqliteErrorCode(sqliteResult);
     }
 
     <@map_type_name "::zserio::StringView" types.string.name/> dbFileNameToAttachedDbNameMap(
@@ -50,9 +50,14 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
             attachDatabase(fileName, attachedDbName);
             attachedDbIt = dbFileNameToAttachedDbNameMap.emplace(fileName, ::std::move(attachedDbName)).first;
         }
-        m_tableToAttachedDbNameRelocationMap.emplace(
+        auto emplaceResult = m_tableToAttachedDbNameRelocationMap.emplace(
                 ${types.string.name}(tableName, get_allocator_ref()),
                 ${types.string.name}(attachedDbIt->second, get_allocator_ref()));
+        if (!emplaceResult.second)
+        {
+            throw ::zserio::SqliteException("${name}::${name}: can't insert ") << tableName.c_str() << 
+                    " into Database Relocation Map!";
+        }
     }
 
     initTables();

@@ -264,7 +264,13 @@ void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterPro
                     ::zserio::SqliteErrorCode(result);
         }
 
-        sqlite3_clear_bindings(statement.get());
+        result = sqlite3_clear_bindings(statement.get());
+        if (result != SQLITE_OK)
+        {
+            throw ::zserio::SqliteException("Write: sqlite3_clear_bindings() failed: ") <<
+                    ::zserio::SqliteErrorCode(result);
+        }
+
         result = sqlite3_reset(statement.get());
         if (result != SQLITE_OK)
         {

@@ -16,8 +16,7 @@ void writeBufferToFile(const uint8_t* buffer, size_t bitSize, BitsTag, const std
     }
 
     const size_t byteSize = (bitSize + 7) / 8;
-    stream.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(byteSize));
-    if (!stream)
+    if (!stream.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(byteSize)))
     {
         throw CppRuntimeException("writeBufferToFile: Failed to write '") << fileName << "'!";
     }
@@ -47,9 +46,8 @@ BitBuffer readBufferFromFile(const std::string& fileName)
     }
 
     zserio::BitBuffer bitBuffer(static_cast<size_t>(fileSize) * 8);
-    stream.read(reinterpret_cast<char*>(bitBuffer.getBuffer()),
-            static_cast<std::streamsize>(bitBuffer.getByteSize()));
-    if (!stream)
+    if (!stream.read(reinterpret_cast<char*>(bitBuffer.getBuffer()),
+                static_cast<std::streamsize>(bitBuffer.getByteSize())))
     {
         throw CppRuntimeException("readBufferFromFile: Failed to read '") << fileName << "'!";
     }

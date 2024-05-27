@@ -82,7 +82,7 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:658
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:668
 # This is necessary for implementation of reading and writing to the file.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:19
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:50
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:49
 
 # This multiple inheritance is intended and we think that to avoid it would mean much more obscure design.
 fuchsia-multiple-inheritance:src/zserio/Reflectable.h:2023
