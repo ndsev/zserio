@@ -210,7 +210,7 @@ const ::std::array<::zserio::StringView, ${fields?size}>& ${name}::tableNames() 
 
 void ${name}::initTables()
 {
-    static ::zserio::StringView EMPTY_STR = ::zserio::StringView();
+    static const ::zserio::StringView EMPTY_STR = ::zserio::StringView();
 <#list fields as field>
     <#if field?is_first>
     auto relocationIt = m_tableToAttachedDbNameRelocationMap.find(
