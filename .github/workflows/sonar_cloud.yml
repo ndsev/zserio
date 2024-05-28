@@ -68,4 +68,4 @@ jobs:
             --define sonar.tests="compiler/extensions/cpp/runtime/test,test" \
             --define sonar.test.inclusions="compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp" \
             --define sonar.scm.exclusions.disabled="true" \
-            --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
+            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
