@@ -206,8 +206,8 @@ choices and unions:
 
 ### Polymorphic Allocators
 
-By default, all generated Zserio objects support the
-[`std::allocator`](https://en.cppreference.com/w/cpp/memory/allocator). However, C++ generator supports as well
+By default, C++ generated objects use [`std::allocator`](https://en.cppreference.com/w/cpp/memory/allocator),
+which doesn't allow any custom memory management. However, C++ generator supports as well
 [`zserio::pmr::PolymorphicAllocator`](https://zserio.org/doc/runtime/latest/cpp/PolymorphicAllocator_8h.html),
 which is inspired by the
 [`std::pmr::polymorphic_allocator`](https://en.cppreference.com/w/cpp/memory/polymorphic_allocator) from C++17
@@ -216,26 +216,9 @@ standard.
 To enable Zserio polymorphic allocators, it is necessary to specify command line
 option `-setCppAllocator polymorphic`.
 
-Usage:
-
-- The application must implement firstly user memory resource by inheriting
-  [`zserio::pmr::MemoryResource`](https://zserio.org/doc/runtime/latest/cpp/MemoryResource_8h.html).
-- Then, the application must construct user memory resource.
-- Created user memory resource must be used to construct Zserio polymorphic allocator.
-- The constructed Zserio polymorphic allocator must be passed to the Zserio object constructor.
-
-```
-MyMemoryResource memoryResource;
-ZserioObject::allocator_type allocator(memoryResource);
-ZserioObject zserioObject(allocator);
-```
-
-> Note that the Zserio polymorphic allocator has empty constructor which uses default memory resource
-  with standard C++ operator new and delete.
-
-> Note that inspiration and more implementation details how to use memory resource and polymorphic allocators
-  can be found in our [test utilities](../../../test/utils/cpp/test_utils/MemoryResources.h) and in
-  [polymorphic allocators test](../../../test/arguments/set_cpp_allocator/cpp/ComplexAllocationTest.cpp).
+For detailed information about custom memory management see
+[Custom Memory Management using Polymorphic Allocators](https://github.com/ndsev/zserio-tutorial-cpp/tree/master/pmr)
+in [ZserioCppTutorial](https://github.com/ndsev/zserio-tutorial-cpp/).
 
 ## Using Zserio CMake Helper
 
@@ -261,7 +244,7 @@ This function can be used for automatic generation of C++ sources from zserio sc
         [ERROR_VAR <variable>]
         [RESULT_VAR <variable>]
         [FORCE_REGENERATION]
-        [CLEAN_GEN_DIR]
+        [CLEAN_GEN_DIR])
 
 ### Arguments
 
