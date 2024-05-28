@@ -83,14 +83,14 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
             </#if>
         }
 
-        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& alloc) const override
         {
-            return ${types.anyHolder.name}(m_value, allocator);
+            return ${types.anyHolder.name}(m_value, alloc);
         }
 
-        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& alloc) override
         {
-            return ${types.anyHolder.name}(m_value, allocator);
+            return ${types.anyHolder.name}(m_value, alloc);
         }
 
         ${underlyingTypeInfo.typeFullName} get<#rt>
@@ -109,9 +109,9 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
             return static_cast<double>(<#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>);
         }
 
-        ${types.string.name} toString(const ${types.allocator.default}& allocator) const override
+        ${types.string.name} toString(const ${types.allocator.default}& alloc) const override
         {
-            return ${types.string.name}(::zserio::enumToString(m_value), allocator);
+            return ${types.string.name}(::zserio::enumToString(m_value), alloc);
         }
 
     private:

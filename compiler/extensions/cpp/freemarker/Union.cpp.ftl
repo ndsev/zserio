@@ -288,8 +288,8 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         using ::zserio::ReflectableConstAllocatorHolderBase<allocator_type>::getAnyValue;
 
     </#if>
-        explicit Reflectable(<#if isConst>const </#if>${fullName}& object, const allocator_type& allocator) :
-                ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
+        explicit Reflectable(<#if isConst>const </#if>${fullName}& object, const allocator_type& alloc) :
+                ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), alloc),
                 m_object(object)
         {}
     <#if !isConst>
@@ -366,15 +366,15 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
     </#if>
         }
 
-        ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) const override
+        ${types.anyHolder.name} getAnyValue(const allocator_type& alloc) const override
         {
-            return ${types.anyHolder.name}(::std::cref(m_object), allocator);
+            return ${types.anyHolder.name}(::std::cref(m_object), alloc);
         }
     <#if !isConst>
 
-        ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) override
+        ${types.anyHolder.name} getAnyValue(const allocator_type& alloc) override
         {
-            return ${types.anyHolder.name}(::std::ref(m_object), allocator);
+            return ${types.anyHolder.name}(::std::ref(m_object), alloc);
         }
     </#if>
 

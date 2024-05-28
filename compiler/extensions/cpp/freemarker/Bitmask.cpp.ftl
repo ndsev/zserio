@@ -99,14 +99,14 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             </#if>
         }
 
-        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& alloc) const override
         {
-            return ${types.anyHolder.name}(m_bitmask, allocator);
+            return ${types.anyHolder.name}(m_bitmask, alloc);
         }
 
-        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& alloc) override
         {
-            return ${types.anyHolder.name}(m_bitmask, allocator);
+            return ${types.anyHolder.name}(m_bitmask, alloc);
         }
 
         <#-- bitmask is always unsigned -->
@@ -125,9 +125,9 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             return static_cast<double>(toUInt());
         }
 
-        ${types.string.name} toString(const ${types.allocator.default}& allocator) const override
+        ${types.string.name} toString(const ${types.allocator.default}& alloc) const override
         {
-            return m_bitmask.toString(allocator);
+            return m_bitmask.toString(alloc);
         }
 
     private:
