@@ -177,9 +177,8 @@ ${I}<@field_member_name field/> = new ${field.typeInfo.typeFullName}(in<#rt>
 </#macro>
 
 
-<#macro compound_write_field_offset_check field compoundName indent>
+<#macro compound_check_offset_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}out.alignTo(java.lang.Byte.SIZE);
 ${I}if (out.getBytePosition() != <@compound_field_get_offset field/>)
 ${I}{
 ${I}    throw new zserio.runtime.ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
@@ -227,8 +226,11 @@ ${I}}
 ${I}out.alignTo(${field.alignmentValue});
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
-        <@compound_write_field_offset_check field, compoundName, indent/>
+${I}out.alignTo(java.lang.Byte.SIZE);
+    <@compound_check_offset_field field, compoundName, indent/>
     </#if>
+    <@compound_check_array_length_field field, compoundName, indent/>
+    <@compound_check_parameterized_field field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isIntegral>
 ${I}zserioContext.${field.getterName}().write(<@array_traits field/>, out,
@@ -237,19 +239,11 @@ ${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_fiel
 ${I}<@compound_get_field field/>.write(zserioContext.${field.getterName}(), out);
         </#if>
     <#elseif field.array??>
-        <#if field.array.length??>
-${I}if (<@compound_get_field field/>.size() != (int)(${field.array.length}))
-${I}{
-${I}    throw new zserio.runtime.ZserioError("Write: Wrong array length for field ${compoundName}.${field.name}: " +
-${I}            <@compound_get_field field/>.size() + " != " + (int)(${field.array.length}) + "!");
-${I}}
-        </#if>
 ${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(out);
     <#elseif field.runtimeFunction??>
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>);
     <#else>
         <#-- enum or compound -->
-        <@compound_check_parameterized_field field, compoundName, indent/>
 ${I}<@compound_get_field field/>.write(out);
     </#if>
 </#macro>
@@ -259,6 +253,17 @@ ${I}<@compound_get_field field/>.write(out);
     <#if field.constraint??>
 ${I}if (<#if field.optional??>${field.optional.isUsedIndicatorName}() && </#if>!(${field.constraint}))
 ${I}    throw new zserio.runtime.ConstraintError("Constraint violated at ${compoundName}.${field.name}!");
+    </#if>
+</#macro>
+
+<#macro compound_check_array_length_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.array?? && field.array.length??>
+${I}if (<@compound_get_field field/>.size() != (int)(${field.array.length}))
+${I}{
+${I}    throw new zserio.runtime.ZserioError("Write: Wrong array length for field ${compoundName}.${field.name}: " +
+${I}            <@compound_get_field field/>.size() + " != " + (int)(${field.array.length}) + "!");
+${I}}
     </#if>
 </#macro>
 

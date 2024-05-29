@@ -300,7 +300,7 @@ ${I}zserio_writer.alignto(${field.alignmentValue})
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
 ${I}zserio_writer.alignto(8)
-        <@compound_check_offset_field field, compoundName, "zserio_writer.bitposition", indent/>
+    <@compound_check_offset_field field, compoundName, "zserio_writer.bitposition", indent/>
     </#if>
     <@compound_check_constraint_field field, compoundName, indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
