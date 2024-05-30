@@ -929,9 +929,9 @@ ${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<
 <#macro compound_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
+${I}(void)m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
     <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>.assign(::zserio::NoInit, other.<@field_member_name field/>);
+${I}(void)<@field_member_name field/>.assign(::zserio::NoInit, other.<@field_member_name field/>);
     <#else>
 ${I}<@field_member_name field/> = other.<@field_member_name field/>;
     </#if>
@@ -940,9 +940,9 @@ ${I}<@field_member_name field/> = other.<@field_member_name field/>;
 <#macro compound_move_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
+${I}(void)m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
     <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>.assign(::zserio::NoInit, ::std::move(other.<@field_member_name field/>));
+${I}(void)<@field_member_name field/>.assign(::zserio::NoInit, ::std::move(other.<@field_member_name field/>));
     <#else>
 ${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>);
     </#if>

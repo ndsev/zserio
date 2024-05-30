@@ -444,7 +444,7 @@ bool ${name}::validateColumn${field.name?cap_first}(::zserio::IValidationObserve
         <#-- SQLite does not maintain column properties for virtual tables columns or for virtual columns -->
         <#if !virtualTableUsing?? && !field.isVirtual>
     const auto column = search->second;<#-- copy the column since it will be erased from schema -->
-    tableSchema.erase(search);
+    (void)tableSchema.erase(search);
 
     if (column.type != "${field.sqlTypeData.name}")
     {
@@ -482,7 +482,7 @@ bool ${name}::validateColumn${field.name?cap_first}(::zserio::IValidationObserve
         <#else>
     if (search != tableSchema.end())
     {
-        tableSchema.erase(search);
+        (void)tableSchema.erase(search);
     }
         </#if>
 
@@ -719,7 +719,7 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
             const <@vector_type_name types.string.name/>& rowKeyValuesHolder)
 {
     <@vector_type_name "::zserio::StringView"/> rowKeyValues{get_allocator_ref()};
-    ::std::transform(rowKeyValuesHolder.begin(), rowKeyValuesHolder.end(),
+    (void)::std::transform(rowKeyValuesHolder.begin(), rowKeyValuesHolder.end(),
             ::std::back_inserter(rowKeyValues),
             [](const ${types.string.name}& message) -> ::zserio::StringView { return message; });
     return rowKeyValues;
