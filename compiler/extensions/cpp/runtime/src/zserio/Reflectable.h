@@ -1960,19 +1960,19 @@ IBasicReflectableConstPtr<ALLOC> getFromObject(
         auto field = getFieldFromObject(object, name);
         if (field)
         {
-            return isLast ? field : getFromObject(*field, path, dotPos + 1);
+            return isLast ? std::move(field) : getFromObject(*field, path, dotPos + 1);
         }
 
         auto parameter = getParameterFromObject(object, name);
         if (parameter)
         {
-            return isLast ? parameter : getFromObject(*parameter, path, dotPos + 1);
+            return isLast ? std::move(parameter) : getFromObject(*parameter, path, dotPos + 1);
         }
 
         auto functionResult = callFunctionInObject(object, name);
         if (functionResult)
         {
-            return isLast ? functionResult : getFromObject(*functionResult, path, dotPos + 1);
+            return isLast ? std::move(functionResult) : getFromObject(*functionResult, path, dotPos + 1);
         }
     }
     catch (const CppRuntimeException&)
@@ -1993,19 +1993,19 @@ IBasicReflectablePtr<ALLOC> getFromObject(IBasicReflectable<ALLOC>& object, Stri
         auto field = getFieldFromObject(object, name);
         if (field)
         {
-            return isLast ? field : getFromObject(*field, path, dotPos + 1);
+            return isLast ? std::move(field) : getFromObject(*field, path, dotPos + 1);
         }
 
         auto parameter = getParameterFromObject(object, name);
         if (parameter)
         {
-            return isLast ? parameter : getFromObject(*parameter, path, dotPos + 1);
+            return isLast ? std::move(parameter) : getFromObject(*parameter, path, dotPos + 1);
         }
 
         auto functionResult = callFunctionInObject(object, name);
         if (functionResult)
         {
-            return isLast ? functionResult : getFromObject(*functionResult, path, dotPos + 1);
+            return isLast ? std::move(functionResult) : getFromObject(*functionResult, path, dotPos + 1);
         }
     }
     catch (const CppRuntimeException&)
