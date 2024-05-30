@@ -371,7 +371,7 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
     }
     <#else>
     <#-- If the table has only virtual fields, skip everything except of schema checking. -->
-    validateSchema(validationObserver);
+    (void)validateSchema(validationObserver);
     </#if>
 
     continueValidation = validationObserver.endTable(m_name, numberOfValidatedRows);
