@@ -31,10 +31,17 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Zserio
-   &#160;<span id="projectnumber">2.11.0</span>
+   <div id="projectname">Zserio C++ runtime library</div>
+   <div id="projectbrief">
+    Built for Zserio
+<select id="zserio-version-select" style="font-size: 100%; margin-bottom: 1px; padding: 2px;" onChange="(function(value){ var url = top.document.URL.split('/'); url[url.length-3] = `${value}`; top.location.href=url.join('/'); })(value)">
+<option value="2.14.0">2.14.0</option>
+<option value="2.13.0">2.13.0</option>
+<option value="2.12.0">2.12.0</option>
+<option value="2.11.0" selected>2.11.0</option>
+<option value="2.10.0">2.10.0</option>
+</select>
    </div>
-   <div id="projectbrief">C++ runtime library</div>
   </td>
  </tr>
  </tbody>
@@ -59,8 +66,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -93,7 +100,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
