@@ -164,7 +164,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
             <fileset refid="zserio_java_runtime.sources"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Java Runtime Library Documentation ${zserio_java_runtime.version}</h1>
-                    <h2>Built for Zserio ${zserio_core.version}</h2]]>
+                    <h2>Built for Zserio ${zserio_core.version}</h2>]]>
             </doctitle>
             <bottom>
                 <![CDATA[<i>Last updated ${timestamp}</i>]]>

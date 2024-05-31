@@ -626,7 +626,7 @@ update_web_pages()
     local GIT_MESSAGE="Add generated v${ZSERIO_VERSION} runtime documentation"
     local GREP_RESULT=`"${GIT}" log web-pages | grep "${GIT_MESSAGE}"`
     if [ $? -ne 0 -o -z "${GREP_RESULT}" ] ; then
-        echo "Merging master into Zserio Web Pages branch."
+        echo "Rebasing Zserio Web Pages branch onto the v${ZSERIO_VERSION} tag."
 
         "${GIT}" checkout web-pages
         if [ $? -ne 0 ] ; then
@@ -655,6 +655,18 @@ update_web_pages()
         rm -rf "${WEB_PAGES_BUILD_DIR}"
         mkdir -p "${WEB_PAGES_BUILD_DIR}"
 
+        echo -ne "Removing Zserio runtime libraries latest version..."
+        local DEST_LATEST_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/latest"
+        rm -rf "${DEST_LATEST_DIR}"
+        echo "Done"
+
+        echo -ne "Adding cross references between runtime libraries versions to old documentations..."
+        patch_old_runtime_doc "${ZSERIO_PROJECT_ROOT}/doc/runtime" "${ZSERIO_VERSION}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+        echo "Done"
+
         echo -ne "Downloading Zserio runtime libraries from GitHub..."
         get_zserio_runtime_libs ${ZSERIO_VERSION} "${WEB_PAGES_BUILD_DIR}" "runtime-libs.zip"
         if [ $? -ne 0 ] ; then
@@ -673,6 +685,14 @@ update_web_pages()
                 -d "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc -x META-INF/*
         if [ $? -ne 0 ] ; then
             stderr_echo "Cannot unzip zserio runtime javadocs jar!"
+            return 1
+        fi
+        echo "Done"
+
+        echo -ne "Adding cross references between runtime libraries versions to new documentations..."
+        patch_new_runtime_doc "${ZSERIO_PROJECT_ROOT}/doc/runtime" "${WEB_PAGES_BUILD_DIR}/runtime_libs" \
+                "${ZSERIO_VERSION}"
+        if [ $? -ne 0 ] ; then
             return 1
         fi
         echo "Done"
@@ -696,15 +716,13 @@ update_web_pages()
         fi
         echo "Done"
 
-        echo -ne "Creating Zserio runtime library GitHub badges..."
-        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
-        echo "Done"
-
         echo -ne "Copying Zserio runtime libraries latest version..."
-        local DEST_LATEST_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/latest"
-        rm -rf "${DEST_LATEST_DIR}"
         mkdir -p "${DEST_LATEST_DIR}"
         cp -r "${DEST_RUNTIME_DIR}"/* "${DEST_LATEST_DIR}"
+        echo "Done"
+
+        echo -ne "Creating Zserio runtime library GitHub badges..."
+        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
         echo "Done"
 
         # This is necessary because Jekyll ignores Python runtime doc directories that start with underscores.
@@ -721,12 +739,18 @@ update_web_pages()
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+
+        echo $'\e[1;33m'"Don't forget to check the 'web_pages' branch!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to PUSH the 'web_pages' branch..."
+        echo
+
         "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+
         "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" checkout master
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
@@ -738,6 +762,61 @@ update_web_pages()
         echo $'\e[1;33m'"Zserio Web Pages already up to date."$'\e[0m'
         echo
     fi
+
+    return 0
+}
+
+# Patch old runtime documentations - add the new release option
+patch_old_runtime_doc()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_DOC_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+
+    local PATTERN="<select id=\"zserio-version-select\""
+
+    local HTML_FILES=($(grep "${PATTERN}" "${ZSERIO_DOC_DIR}" -R -l))
+    for HTML_FILE  in "${HTML_FILES[@]}" ; do
+        sed -i '/'"${PATTERN}"'/a <option value="'"${ZSERIO_VERSION}"'">'"${ZSERIO_VERSION}"'</option>' ${HTML_FILE}
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to append the new version <option>!"
+            return 1
+        fi
+    done
+
+    return 0
+}
+
+# Patch new runtime documentations - add cross references between runtime versions
+patch_new_runtime_doc()
+{
+    exit_if_argc_ne $# 3
+    local ZSERIO_OLD_DOC_DIR="$1"; shift
+    local ZSERIO_NEW_DOC_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+
+    local ZSERIO_VERSION_SELECT="\n\
+<select id=\"zserio-version-select\" style=\"font-size: 100%; margin-bottom: 1px; padding: 2px;\"\
+ onChange=\"(function(value){ var url = top.document.URL.split('\/'); url[url.length-3] = \`\${value}\`;\
+ top.location.href=url.join('\/'); \
+})(value)\">\n\
+<option value=\"${ZSERIO_VERSION}\" selected>${ZSERIO_VERSION}<\/option>\n\
+"
+    local OLD_VERSIONS=($(ls -1 "${ZSERIO_OLD_DOC_DIR}" | sort -rV))
+    for OLD_VERSION in ${OLD_VERSIONS[@]}; do
+        ZSERIO_VERSION_SELECT+="<option value=\"${OLD_VERSION}\">${OLD_VERSION}<\/option>\n"
+    done
+    ZSERIO_VERSION_SELECT+="<\/select>\n"
+
+    local GREP_INCLUDE=(--include "index.html" --include "zserio.html" --include "overview-summary.html")
+    local HTML_FILES=($(grep "Built for Zserio" "${ZSERIO_NEW_DOC_DIR}" -R -l ${GREP_INCLUDE[@]}))
+    for HTML_FILE  in "${HTML_FILES[@]}" ; do
+        sed -i 's/\(Built for Zserio\)\s*[a-zA-Z0-9.-]*/\1'"${ZSERIO_VERSION_SELECT}"'/' "${HTML_FILE}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to apply zserio-version-select!"
+            return 1
+        fi
+    done
 
     return 0
 }
@@ -754,12 +833,6 @@ create_github_badge_jsons()
             tr -s ' ' | cut -d' ' -f 10`
     create_github_badge_json "${CLANG_COVERAGE_DIR}"/coverage_github_badge.json \
             "C++ clang runtime ${ZSERIO_VERSION} coverage" "${CLANG_LINES_COVERAGE}"
-
-    local GCC_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/cpp/coverage/gcc
-    local GCC_LINES_COVERAGE=`cat "${GCC_COVERAGE_DIR}"/coverage_report.txt | grep lines: | \
-            tr -s ' ' | cut -d' ' -f 2`
-    create_github_badge_json "${GCC_COVERAGE_DIR}"/coverage_github_badge.json \
-            "C++ gcc runtime ${ZSERIO_VERSION} coverage" "${GCC_LINES_COVERAGE}"
 
     local JAVA_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/java/coverage
     local JAVA_COVERAGE_REPORT=`cat "${JAVA_COVERAGE_DIR}"/jacoco_report.xml`
