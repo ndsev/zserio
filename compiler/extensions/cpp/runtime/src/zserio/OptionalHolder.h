@@ -236,34 +236,34 @@ public:
     /**
      * Constructor from a given value.
      *
-     * \param value Value to store in the holder.
+     * \param val Value to store in the holder.
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    heap_optional_holder(const T& value, const allocator_type& allocator = allocator_type()) :
-            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, value))
+    heap_optional_holder(const T& val, const allocator_type& allocator = allocator_type()) :
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, val))
     {}
 
     /**
      * Constructor from a given value passed by rvalue reference.
      *
-     * \param value Value to store in the holder.
+     * \param val Value to store in the holder.
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    heap_optional_holder(T&& value, const allocator_type& allocator = allocator_type()) :
-            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(value)))
+    heap_optional_holder(T&& val, const allocator_type& allocator = allocator_type()) :
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(val)))
     {}
 
     // called from allocatorPropagatingCopy
     /**
      * Constructor from a given value passed by rvalue reference which prevents initialization.
      *
-     * \param value Value to store in the holder.
+     * \param val Value to store in the holder.
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
     template <typename U = T,
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    heap_optional_holder(NoInitT, T&& value, const allocator_type& allocator = allocator_type()) :
-            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, NoInit, std::move(value)))
+    heap_optional_holder(NoInitT, T&& val, const allocator_type& allocator = allocator_type()) :
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, NoInit, std::move(val)))
     {}
 
     /**
@@ -433,13 +433,13 @@ public:
     /**
      * Assignment operator from value.
      *
-     * \param value Value to assign.
+     * \param val Value to assign.
      *
      * \return Reference to the current holder.
      */
-    heap_optional_holder& operator=(const T& value)
+    heap_optional_holder& operator=(const T& val)
     {
-        set(value);
+        set(val);
 
         return *this;
     }
@@ -447,13 +447,13 @@ public:
     /**
      * Assignment operator from rvalue reference to value.
      *
-     * \param value Value to move-assign.
+     * \param val Value to move-assign.
      *
      * \return Reference to the current holder.
      */
-    heap_optional_holder& operator=(T&& value)
+    heap_optional_holder& operator=(T&& val)
     {
-        set(std::move(value));
+        set(std::move(val));
 
         return *this;
     }
@@ -514,10 +514,10 @@ private:
     }
 
     template <typename U = T>
-    void set(U&& value)
+    void set(U&& val)
     {
         reset();
-        m_storage = zserio::allocate_unique<T, allocator_type>(get_allocator(), std::forward<U>(value));
+        m_storage = zserio::allocate_unique<T, allocator_type>(get_allocator(), std::forward<U>(val));
     }
 
     static storage_type copy_initialize(const heap_optional_holder& other, const allocator_type& allocator)
@@ -702,22 +702,22 @@ public:
     /**
      * Constructor from a given value.
      *
-     * \param value Value to store in the holder.
+     * \param val Value to store in the holder.
      */
-    inplace_optional_holder(const T& value)
+    inplace_optional_holder(const T& val)
     {
-        new (m_storage.getStorage()) T(value);
+        new (m_storage.getStorage()) T(val);
         m_hasValue = true;
     }
 
     /**
      * Constructor from a given value passed by rvalue reference.
      *
-     * \param value Value to store in the holder.
+     * \param val Value to store in the holder.
      */
-    inplace_optional_holder(T&& value)
+    inplace_optional_holder(T&& val)
     {
-        new (m_storage.getStorage()) T(std::move(value));
+        new (m_storage.getStorage()) T(std::move(val));
         m_hasValue = true;
     }
 
@@ -725,13 +725,13 @@ public:
     /**
      * Constructor from a given value passed by rvalue reference which prevents initialization.
      *
-     * \param value Value to store in the holder.
+     * \param val Value to store in the holder.
      */
     template <typename U = T,
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder(NoInitT, T&& value)
+    inplace_optional_holder(NoInitT, T&& val)
     {
-        new (m_storage.getStorage()) T(NoInit, std::move(value));
+        new (m_storage.getStorage()) T(NoInit, std::move(val));
         m_hasValue = true;
     }
 
@@ -916,13 +916,13 @@ public:
     /**
      * Assignment operator from value.
      *
-     * \param value Value to assign.
+     * \param val Value to assign.
      *
      * \return Reference to the current holder.
      */
-    inplace_optional_holder& operator=(const T& value)
+    inplace_optional_holder& operator=(const T& val)
     {
-        set(value);
+        set(val);
 
         return *this;
     }
@@ -930,13 +930,13 @@ public:
     /**
      * Assignment operator from rvalue reference to value.
      *
-     * \param value Value to move-assign.
+     * \param val Value to move-assign.
      *
      * \return Reference to the current holder.
      */
-    inplace_optional_holder& operator=(T&& value)
+    inplace_optional_holder& operator=(T&& val)
     {
-        set(std::move(value));
+        set(std::move(val));
 
         return *this;
     }
@@ -991,10 +991,10 @@ public:
 
 private:
     template <typename U = T>
-    void set(U&& value)
+    void set(U&& val)
     {
         reset();
-        new (m_storage.getStorage()) T(std::forward<U>(value));
+        new (m_storage.getStorage()) T(std::forward<U>(val));
         m_hasValue = true;
     }
 

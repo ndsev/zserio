@@ -84,22 +84,22 @@ public:
      * Constructor. Initializes Span holding a reference starting at given pointer, having
      * given number of elements.
      *
-     * \param first Pointer to first element in the sequence.
+     * \param first_ Pointer to first element in the sequence.
      * \param count Number of elements.
      */
-    constexpr Span(pointer first, size_type count) :
-            m_storage(first, count)
+    constexpr Span(pointer first_, size_type count) :
+            m_storage(first_, count)
     {}
 
     /**
      * Constructor. Initializes Span holding a reference starting at given pointer, ending
      * at another pointer.
      *
-     * \param first Pointer to first element in the sequence.
-     * \param last Pointer to one-after-last element in the sequence.
+     * \param first_ Pointer to first element in the sequence.
+     * \param last_ Pointer to one-after-last element in the sequence.
      */
-    constexpr Span(pointer first, pointer last) :
-            m_storage(first, static_cast<size_t>(last - first))
+    constexpr Span(pointer first_, pointer last_) :
+            m_storage(first_, static_cast<size_t>(last_ - first_))
     {}
 
     /**
