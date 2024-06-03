@@ -885,6 +885,7 @@ create_jekyll_config_file()
     echo "  - _images" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
     echo "  - _modules" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
     echo "  - _static" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - CONTRIBUTING.md" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
 }
 
 # Print help message.
