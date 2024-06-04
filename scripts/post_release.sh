@@ -725,11 +725,6 @@ update_web_pages()
         create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
         echo "Done"
 
-        # This is necessary because Jekyll ignores Python runtime doc directories that start with underscores.
-        echo -ne "Creating Jekyll configuration file..."
-        create_jekyll_config_file "${ZSERIO_PROJECT_ROOT}"
-        echo "Done"
-
         echo
         echo "Committing changes to Zserio Web Pages branch."
         "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" add -A
@@ -740,8 +735,8 @@ update_web_pages()
             return 1
         fi
 
-        echo $'\e[1;33m'"Don't forget to check the 'web_pages' branch!"$'\e[0m'
-        read -n 1 -s -r -p "Press any key to PUSH the 'web_pages' branch..."
+        echo $'\e[1;33m'"Don't forget to check the 'web-pages' branch!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to PUSH the 'web-pages' branch..."
         echo
 
         "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages
@@ -871,21 +866,6 @@ create_github_badge_json()
     "color": "green"
 }
 EOF
-}
-
-# Create Jekyll configuration file
-create_jekyll_config_file()
-{
-    exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-
-    echo "theme: jekyll-theme-slate" > "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "exclude: 3rdparty" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "include:" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - _images" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - _modules" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - _static" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - CONTRIBUTING.md" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
 }
 
 # Print help message.
