@@ -15,15 +15,24 @@ The following summarizes the process for contributing changes to the Zserio proj
 
 * Follow our coding style.
 
-  * For all C++ and Java code we use **clang-format** to check that the code follow the defined
-    [coding style](.clang-format).
+  * For all C++ and Java code we use [**clang-format**](https://clang.llvm.org/docs/ClangFormat.html) to check
+    that the code follows the defined [coding style](.clang-format).
 
     > Note that you have to run `clang-format` on your own, our pipeline only checks that the code follows
       the rules.
+    ```bash
+    clang-format --style=file -i source.cpp
+    ```
 
-  * Python code is not yet automatically checked, please try use the same coding style as is used in our
-    [Python runtime library](https://github.com/ndsev/zserio/tree/master/compiler/extensions/python/runtime/src/zserio)
-    (in general we follow the [PEP-8](https://www.python.org/dev/peps/pep-0008/)).
+  * For Python code we use [**black**](https://black.readthedocs.io/en/stable/) to check that the code follows
+    the defined coding style, which is basically [PEP-8](https://www.python.org/dev/peps/pep-0008/) with line
+    length limited to 112 characters.
+
+    > Note that you have to run `black` on your own, our pipeline only checks that the code follows
+      the rules.
+    ```bash
+    black source.py --line-length 112
+    ```
 
 * Ensure that all GitHub [workflows](https://github.com/ndsev/zserio/actions) are passing.
 
