@@ -380,6 +380,16 @@ public:
     </#if>
 </#if>
 
+<#if withSourceRegion>
+    /**
+     * Get the source offset and size of the structure in bits.
+     * For objects not loaded from a blob, the offest is 0.
+     *
+     * \return Tuple of the objects offset and size in bits.
+     */
+    std::tuple<size_t, size_t> getSourceRegion() const;
+</#if>
+
 private:
     <@private_section_declarations name, fieldList/>
 <#list fieldList as field>

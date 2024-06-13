@@ -114,6 +114,8 @@ public:
     string<ALLOC> toString(const ALLOC& allocator) const override;
     string<ALLOC> toString() const override;
 
+    std::tuple<size_t, size_t> getSourceRegion() const override;
+
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
 };

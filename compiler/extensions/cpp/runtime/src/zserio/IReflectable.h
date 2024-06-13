@@ -508,6 +508,17 @@ public:
     virtual string<ALLOC> toString(const ALLOC& allocator) const = 0;
     virtual string<ALLOC> toString() const = 0;
     /** \} */
+
+    /**
+     * Returns the reflectables source region (blob) as byte offset and length tuple.
+     *
+     * \note The source region is only stored for code generated using zserios `-withSourceRegion`
+     *       option and only set for objects read from a blob.
+     *
+     * \return Tuple holding the offset and size of the reflectable
+     * \throw CppRuntimeException If the object was compiled without the source region feature enabled.
+     */
+    virtual std::tuple<size_t, size_t> getSourceRegion() const = 0;
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */
