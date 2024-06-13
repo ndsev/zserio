@@ -30,6 +30,7 @@ public final class CppExtensionParameters
         withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
         withSourcesAmalgamation = !parameters.argumentExists(OptionWithoutSourcesAmalgamation);
         withCodeComments = parameters.getWithCodeComments();
+        withSourceRegion = parameters.argumentExists(OptionWithSourceRegion);
 
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator == null || cppAllocator.equals(StdAllocator))
@@ -58,6 +59,8 @@ public final class CppExtensionParameters
             description.add("sourcesAmalgamation");
         if (withCodeComments)
             description.add("codeComments");
+        if (withSourceRegion)
+            description.add("sourceRegion");
         addAllocatorDescription(description);
         parametersDescription = description.toString();
 
@@ -119,6 +122,11 @@ public final class CppExtensionParameters
         return withCodeComments;
     }
 
+    public boolean getWithSourceRegion()
+    {
+        return withSourceRegion;
+    }
+
     public TypesContext.AllocatorDefinition getAllocatorDefinition()
     {
         return allocatorDefinition;
@@ -164,6 +172,12 @@ public final class CppExtensionParameters
         sourcesAmalgamationGroup.addOption(option);
         sourcesAmalgamationGroup.setRequired(false);
         options.addOptionGroup(sourcesAmalgamationGroup);
+
+        final OptionGroup sourceRegionGroup = new OptionGroup();
+        sourceRegionGroup.addOption(new Option(OptionWithSourceRegion, false, "enable storage of source region allong compounds"));
+        sourceRegionGroup.addOption(new Option(OptionWithoutSourceRegion, false, "disable storage of source region allong compounds"));
+        sourceRegionGroup.setRequired(false);
+        options.addOptionGroup(sourceRegionGroup);
     }
 
     static boolean hasOptionCpp(ExtensionParameters parameters)
@@ -215,6 +229,8 @@ public final class CppExtensionParameters
     private static final String OptionWithReflectionCode = "withReflectionCode";
     private static final String OptionWithSourcesAmalgamation = "withSourcesAmalgamation";
     private static final String OptionWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
+    private static final String OptionWithSourceRegion = "withSourceRegion";
+    private static final String OptionWithoutSourceRegion = "withoutSourceRegion";
 
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
@@ -230,6 +246,7 @@ public final class CppExtensionParameters
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;
     private final boolean withCodeComments;
+    private final boolean withSourceRegion;
     private final TypesContext.AllocatorDefinition allocatorDefinition;
     private final String parametersDescription;
     private final String zserioVersion;

@@ -1,3 +1,4 @@
+<#include "CppUtility.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#macro compound_default_constructor compoundConstructorsData>
@@ -29,19 +30,20 @@
     <#local numExtendedFields=num_extended_fields(compoundConstructorsData.fieldList)/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const allocator_type&<#rt>
-        <#lt><#if empty_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>) <#rt>
-        <#lt>noexcept<#if hasInitializers> :</#if>
+        <#lt><#if empty_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>) noexcept<#t>
+<@cpp_initializer_list>
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false)<#if memberInitializationMacroName != "">,</#if>
+        m_isInitialized(false)
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false)<#if memberInitializationMacroName != "">,</#if>
+        m_areChildrenInitialized(false)
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (numExtendedFields > 0)>
-        m_numExtendedFields(${numExtendedFields}),
+        m_numExtendedFields(${numExtendedFields})
         </#if>
         <@.vars[memberInitializationMacroName]/>
     </#if>
+</@cpp_initializer_list>
 {
 }
 </#macro>
@@ -83,36 +85,42 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             needs_compound_initialization(compoundConstructorsData) ||
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
+    <#local wantsBitStreamReader = compoundConstructorsData.fieldList?has_content || withSourceRegion>
+    <#---->
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
         ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
     </#if>
-        ::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#t>
+        ::zserio::BitStreamReader&<#if wantsBitStreamReader> in</#if><#t>
     <#if constructorArgumentTypeList?has_content>
         <#lt>,
         ${constructorArgumentTypeList}<#t>
     </#if>
-        , const allocator_type&<#if read_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if><#t>
-    <#if hasInitializers>
-        <#lt>) :
-    <#else>
-        <#lt>)
+        , const allocator_type&<#if read_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>)<#t>
+<@cpp_initializer_list>
+    <#-- Store reader bit position (option -withSourceRegion) -->
+    <#if withSourceRegion>
+        m_sourcePosition(<#if wantsBitStreamReader>in.getBitPosition()<#else>0u</#if>)
     </#if>
+
     <#if constructorArgumentTypeList?has_content>
         <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2,
                 needs_compound_initialization(compoundConstructorsData)/>
     </#if>
+
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(true)<#if memberInitializationMacroName != "">,</#if>
+        m_isInitialized(true)
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(true)<#if memberInitializationMacroName != "">,</#if>
+        m_areChildrenInitialized(true)
     </#if>
+
     <#if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(0),
+            m_numExtendedFields(0)
         </#if>
         <@.vars[memberInitializationMacroName] packed/>
     </#if>
+</@cpp_initializer_list>
 {
 }
 </#macro>
@@ -167,16 +175,23 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_copy_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
-    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(other.m_numExtendedFields),
+        <#lt>const ${compoundConstructorsData.compoundName}& other)<#rt>
+<@cpp_initializer_list>
+    <#if withSourceRegion>
+        m_sourcePosition(other.m_sourcePosition)
     </#if>
+
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields)
+    </#if>
+
     <#list compoundConstructorsData.fieldList as field>
         <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
     </#list>
+</@cpp_initializer_list>
 {
     <@compound_copy_initialization compoundConstructorsData/>
 }
@@ -289,9 +304,13 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_move_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>${compoundConstructorsData.compoundName}&& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+        <#lt>${compoundConstructorsData.compoundName}&& other)<#rt>
+<@cpp_initializer_list>
+    <#if withSourceRegion>
+        m_sourcePosition(::std::move(other.m_sourcePosition))
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(other.m_numExtendedFields),
+        m_numExtendedFields(other.m_numExtendedFields)
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_move_constructor_initializer_field field, field?has_next, 2/>
@@ -299,6 +318,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             <#break>
         </#if>
     </#list>
+</@cpp_initializer_list>
 {
     <@compound_copy_initialization compoundConstructorsData/>
 }
@@ -306,17 +326,25 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_move_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
-        ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>) :
-        m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
-    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(other.m_numExtendedFields),
+        ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)<#rt>
+<@cpp_initializer_list>
+    <#if withSourceRegion>
+        m_sourcePosition(::std::move(other.m_sourcePosition))
     </#if>
+
+    m_isInitialized(false)
+
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields)
+    </#if>
+
     <#list compoundConstructorsData.fieldList as field>
         <@compound_move_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
     </#list>
+</@cpp_initializer_list>
 {
 }
 </#macro>
@@ -351,6 +379,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
         <#lt>${compoundConstructorsData.compoundName}&& other)
 {
+    <#if withSourceRegion>
+    m_sourcePosition = ::std::move(other.m_sourcePosition);
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
     </#if>
@@ -370,6 +401,9 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
         ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
 {
+    <#if withSourceRegion>
+    m_sourcePosition = other.m_sourcePosition;
+    </#if>
     m_isInitialized = false;
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -418,16 +452,22 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         const ${compoundConstructorsData.compoundName}&<#rt>
         <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
         <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
-        <#lt><#if compoundConstructorsData.fieldList?has_content> :</#if>
-    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(other.m_numExtendedFields),
+<@cpp_initializer_list>
+    <#if withSourceRegion>
+        m_sourcePosition(other.m_sourcePosition)
     </#if>
+
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields)
+    </#if>
+
     <#list compoundConstructorsData.fieldList as field>
         <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
     </#list>
+</@cpp_initializer_list>
 {
     <#if initialization?has_content>
     ${initialization}<#t>
@@ -440,17 +480,25 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <#lt>::zserio::PropagateAllocatorT, ::zserio::NoInitT,
         const ${compoundConstructorsData.compoundName}&<#rt>
         <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
-        <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>) :
-        m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
-    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(other.m_numExtendedFields),
+        <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
+<@cpp_initializer_list>
+    <#if withSourceRegion>
+        m_sourcePosition(other.m_sourcePosition)
     </#if>
+
+    m_isInitialized(false)
+
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields)
+    </#if>
+
     <#list compoundConstructorsData.fieldList as field>
         <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
     </#list>
+</@cpp_initializer_list>
 {
 }
 </#macro>

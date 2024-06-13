@@ -401,6 +401,11 @@ private:
 
     </#if>
 </#list>
+<#-- The source-position must be the first member to get called first in
+     the constructors initializer list -->
+<#if withSourceRegion>
+    uint32_t m_sourcePosition = 0;
+</#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#if (numExtendedFields > 0)>
