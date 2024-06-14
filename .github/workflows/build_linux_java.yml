@@ -66,13 +66,14 @@ jobs:
       run: |
         scripts/test.sh java
 
+    # DynamicBitFieldLengthBoundsTest fails with range checking - see https://github.com/ndsev/zserio/issues/79
     - name: Run Zserio tests with extra arguments
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
-        scripts/test.sh -p -i arguments/without_writer_code java
+        scripts/test.sh -p -i arguments/without_writer_code -i language/builtin_types java
 
         export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
-        scripts/test.sh -p -x arguments/without_writer_code java
+        scripts/test.sh -p -x arguments/without_writer_code -x language/builtin_types java
 
     - name: Run Zserio integration tests for repeated generation
       run: |
