@@ -21,6 +21,7 @@ add_custom_test(builtin_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/AllBuiltInTypesTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitFieldFunctionLengthTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitFieldUInt64LengthTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicBitFieldLengthBoundsTest.cpp
     GENERATED_SOURCES
         ${GENERATED_SOURCES}
 )
