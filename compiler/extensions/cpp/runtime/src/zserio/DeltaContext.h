@@ -139,7 +139,7 @@ public:
         }
         else
         {
-            return m_maxBitNumber + (m_maxBitNumber > 0 ? 1 : 0);
+            return static_cast<size_t>(m_maxBitNumber) + (m_maxBitNumber > 0 ? 1 : 0);
         }
     }
 
@@ -273,8 +273,8 @@ private:
     {
         if (isFlagSet(IS_PACKED_FLAG))
         {
-            const size_t deltaBitSize = m_maxBitNumber + (m_maxBitNumber > 0 ? 1 : 0);
-            const size_t packedBitSizeWithDescriptor = 1 + MAX_BIT_NUMBER_BITS + // descriptor
+            const size_t deltaBitSize = static_cast<size_t>(m_maxBitNumber) + (m_maxBitNumber > 0 ? 1 : 0);
+            const size_t packedBitSizeWithDescriptor = 1U + MAX_BIT_NUMBER_BITS + // descriptor
                     m_firstElementBitSize + (m_numElements - 1) * deltaBitSize;
             const size_t unpackedBitSizeWithDescriptor = 1 + m_unpackedBitSize;
             if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)

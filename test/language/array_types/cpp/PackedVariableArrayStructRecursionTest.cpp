@@ -64,7 +64,7 @@ protected:
 
     size_t getUnpackedBlockBitSize(uint8_t byteCount, bool isLast)
     {
-        size_t bitSize = 8 * byteCount; // dataBytes[byteCount]
+        size_t bitSize = 8U * byteCount; // dataBytes[byteCount]
         bitSize += 8; // blockTerminator
         if (!isLast)
         {

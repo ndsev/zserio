@@ -43,7 +43,7 @@ protected:
     size_t getUnpackedDatabaseBitSize(uint16_t numBlocks)
     {
         size_t bitSize = 16; // numBlocks
-        bitSize += numBlocks * (16 + 32); // headers
+        bitSize += static_cast<size_t>(numBlocks) * (16 + 32); // headers
         for (size_t i = 0; i < numBlocks; ++i)
         {
             bitSize += 64 + (i + 1) * 64; // blocks[i]

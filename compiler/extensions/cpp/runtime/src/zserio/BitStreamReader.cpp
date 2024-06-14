@@ -435,7 +435,7 @@ int64_t BitStreamReader::readSignedBits64(uint8_t numBits)
             numBits < 64 && (static_cast<uint64_t>(value) >= (UINT64_C(1) << (numBits - 1)));
     if (needsSignExtension)
     {
-        value -= UINT64_C(1) << numBits;
+        value = static_cast<int64_t>(static_cast<uint64_t>(value) - (UINT64_C(1) << numBits));
     }
 
     return value;

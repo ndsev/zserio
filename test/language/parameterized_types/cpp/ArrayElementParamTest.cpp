@@ -53,7 +53,7 @@ protected:
             const uint16_t numItems = static_cast<uint16_t>(reader.readBits(16));
             ASSERT_EQ(headers.at(i).getNumItems(), numItems);
             ASSERT_EQ(expectedOffset, reader.readBits(32));
-            expectedOffset += 8 * numItems;
+            expectedOffset += 8U * numItems;
         }
 
         const auto& blocks = database.getBlocks();

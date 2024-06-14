@@ -129,15 +129,18 @@ protected:
 
         // externalField
         writer.writeVarSize(EXTERNAL_FIELD_VAR_SIZE);
-        writer.writeBits(EXTERNAL_FIELD_DATA >> (8U - (EXTERNAL_FIELD_VAR_SIZE % 8U)), EXTERNAL_FIELD_VAR_SIZE);
+        writer.writeBits(static_cast<uint32_t>(EXTERNAL_FIELD_DATA) >> (8U - (EXTERNAL_FIELD_VAR_SIZE % 8U)),
+                EXTERNAL_FIELD_VAR_SIZE);
 
         // externalArray
         writer.writeVarSize(EXTERNAL_ARRAY_SIZE);
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE);
-        writer.writeBits(EXTERNAL_ARRAY_ELEMENT0_DATA >> (8U - (EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE % 8U)),
+        writer.writeBits(static_cast<uint32_t>(EXTERNAL_ARRAY_ELEMENT0_DATA) >>
+                        (8U - (EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE % 8U)),
                 EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE);
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
-        writer.writeBits(EXTERNAL_ARRAY_ELEMENT1_DATA >> (8U - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8U)),
+        writer.writeBits(static_cast<uint32_t>(EXTERNAL_ARRAY_ELEMENT1_DATA) >>
+                        (8U - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8U)),
                 EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
 
         // bytesField

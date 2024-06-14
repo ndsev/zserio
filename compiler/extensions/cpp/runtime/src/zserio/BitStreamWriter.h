@@ -264,7 +264,7 @@ public:
 
         if (numRestBits > 0)
         {
-            writeUnsignedBits(*itEnd >> (8U - numRestBits), numRestBits);
+            writeUnsignedBits(static_cast<uint32_t>(*itEnd) >> (8U - numRestBits), numRestBits);
         }
     }
 

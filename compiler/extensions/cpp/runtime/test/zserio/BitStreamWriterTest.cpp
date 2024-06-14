@@ -119,7 +119,7 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
 
     for (uint8_t offset = 0; offset <= 64; ++offset)
     {
-        BitBuffer bitBuffer(8 + offset);
+        BitBuffer bitBuffer(8U + offset);
         // fill the buffer with 1s to check proper masking
         std::memset(bitBuffer.getBuffer(), 0xFF, bitBuffer.getByteSize());
 

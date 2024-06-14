@@ -38,7 +38,7 @@ protected:
             bitSize += 6; // packing descriptor: maxBitNumber
         }
         bitSize += 8; // first element
-        bitSize += (numElements - 1) * (PACKED_ARRAY_MAX_BIT_NUMBER + 1); // all deltas
+        bitSize += (numElements - 1) * (PACKED_ARRAY_MAX_BIT_NUMBER + 1U); // all deltas
 
         return bitSize;
     }

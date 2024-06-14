@@ -59,7 +59,7 @@ protected:
         bitSize += 1; // packing descriptor: isPacked
         bitSize += 6; // packing descriptor: maxBitNumber
         bitSize += 7; // first element
-        bitSize += (AUTO_ARRAY_LENGTH - 1) * (PACKED_ARRAY_MAX_BIT_NUMBER + 1); // all deltas
+        bitSize += (AUTO_ARRAY_LENGTH - 1) * (PACKED_ARRAY_MAX_BIT_NUMBER + 1U); // all deltas
 
         return bitSize;
     }

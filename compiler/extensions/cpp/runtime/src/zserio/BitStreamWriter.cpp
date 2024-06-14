@@ -656,7 +656,7 @@ inline void BitStreamWriter::writeVarNum(
         }
 
         const size_t shiftBits = (numVarBytes - (i + 1)) * 7 + ((hasMaxByteRange && hasNextByte) ? 1 : 0);
-        const uint8_t add = static_cast<uint8_t>((value >> shiftBits) & bitMasks[numBits - 1]);
+        const uint8_t add = static_cast<uint8_t>((value >> shiftBits) & bitMasks[numBits - 1U]);
         byte = static_cast<uint8_t>(byte | add);
         writeUnsignedBits(byte, 8);
     }

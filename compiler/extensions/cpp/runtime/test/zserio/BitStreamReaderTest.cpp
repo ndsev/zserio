@@ -85,7 +85,7 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
 
     for (uint8_t offset = 0; offset <= 64; ++offset)
     {
-        BitBuffer buffer(8 + offset);
+        BitBuffer buffer(8U + offset);
 
         // write test value at offset to data buffer
         buffer.getData()[offset / 8U] = static_cast<uint8_t>(

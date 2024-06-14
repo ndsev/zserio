@@ -1440,7 +1440,7 @@ const IBasicTypeInfo<ALLOC>& FixedSizeBuiltinTypeInfo<ALLOC>::getFixedSignedBitF
                     {"int:63"_sv, SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT64, 63},
                     {"int:64"_sv, SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT64, 64}}};
 
-    return bitFieldTypeInfoArray[bitSize - 1];
+    return bitFieldTypeInfoArray[bitSize - 1U];
 }
 
 template <typename ALLOC>
@@ -1518,7 +1518,7 @@ const IBasicTypeInfo<ALLOC>& FixedSizeBuiltinTypeInfo<ALLOC>::getFixedUnsignedBi
                     {"bit:63"_sv, SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT64, 63},
                     {"bit:64"_sv, SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT64, 64}}};
 
-    return bitFieldTypeInfoArray[bitSize - 1];
+    return bitFieldTypeInfoArray[static_cast<size_t>(bitSize - 1)];
 }
 
 template <typename ALLOC>

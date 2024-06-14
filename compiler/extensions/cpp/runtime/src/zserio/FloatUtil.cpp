@@ -65,7 +65,7 @@ float convertUInt16ToFloat(uint16_t float16Value)
     else
     {
         // normal number
-        exponent32 = exponent16 - FLOAT16_EXPONENT_BIAS + FLOAT32_EXPONENT_BIAS;
+        exponent32 = static_cast<uint32_t>(exponent16) - FLOAT16_EXPONENT_BIAS + FLOAT32_EXPONENT_BIAS;
     }
 
     // compose single precision float (float32)
