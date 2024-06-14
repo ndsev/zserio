@@ -762,7 +762,7 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if field.offset?? && !field.offset.containsIndex>
-    <#local I>${""?left_pad(indent * 4)}</#local> 
+    <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
 ${I}    const ${field.offset.typeInfo.typeFullName} value =
 ${I}            static_cast<${field.offset.typeInfo.typeFullName}>(endBitPosition / 8);

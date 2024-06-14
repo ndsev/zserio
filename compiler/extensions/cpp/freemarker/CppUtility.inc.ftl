@@ -9,18 +9,23 @@
   -->
 <#macro cpp_initializer_list>
     <#local body><#nested></#local>
-    <#local members = body?split(r'\R', 'r')>
-    <#local indent = '    '>
-    <#list members><#lt> :
-        <#items as member>
-            <#local member = member?trim>
-            <#if member == ''>
-                <#continue>
-            </#if>
-            <#lt>${indent}${member?remove_ending(',')}<#rt>
-            <#sep><#lt>,
-            </#sep>
-        </#items>
-        <#t>${'\n'}
-    </#list>
+    <#if body?trim != ''>
+        <#local members = body?split(r'\R', 'r')>
+        <#local indent = '    '>
+        <#list members>
+            <#lt> :
+            <#items as member>
+                <#local member = member?trim>
+                <#if member == ''>
+                    <#continue>
+                </#if>
+                <#lt>${indent}${member?remove_ending(',')}<#rt>
+                <#sep><#lt>,
+                </#sep>
+            </#items>
+            <#t>${'\n'}
+        </#list>
+    <#else>
+        ${'\n'}<#t>
+    </#if>
 </#macro>

@@ -11,10 +11,10 @@ project(ZserioCppRuntimeTest)
 include(gtest_utils)
 gtest_add_library("${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/googletest")
 
-## add SQLite3 library
+# add SQLite3 library
 include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
-#
+
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
 if (SANITIZERS_ENABLED)
@@ -193,18 +193,18 @@ set(ZSERIO_CPP_RUNTIME_TEST_HEADERS
     zserio/TrackingAllocator.h
 )
 
-#add_executable(${PROJECT_NAME}
-#    ${TEST_OBJECT_SRCS}
-#    ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
-#    ${ZSERIO_CPP_RUNTIME_TEST_HEADERS})
+add_executable(${PROJECT_NAME}
+    ${TEST_OBJECT_SRCS}
+    ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
+    ${ZSERIO_CPP_RUNTIME_TEST_HEADERS})
 
-#target_include_directories(${PROJECT_NAME} PRIVATE .)
-#target_include_directories(${PROJECT_NAME} PRIVATE ../src)
-#target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
-#target_link_libraries(${PROJECT_NAME} PRIVATE ZserioCppRuntime gtest_main ${SQLITE_LIBRARY})
+target_include_directories(${PROJECT_NAME} PRIVATE .)
+target_include_directories(${PROJECT_NAME} PRIVATE ../src)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE ZserioCppRuntime gtest_main ${SQLITE_LIBRARY})
 
-#gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${ZSERIO_CPP_RUNTIME_TEST_SRCS})
+gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${ZSERIO_CPP_RUNTIME_TEST_SRCS})
 
-#add_subdirectory(zserio/deprecated_attribute)
-#set_source_files_properties(zserio/deprecated_attribute/DeprecatedAttributeTest.cpp
-#    PROPERTIES COMPILE_DEFINITIONS ${DEPRECATED_ATTRIBUTE_COMPILE_DEFINITIONS})
+add_subdirectory(zserio/deprecated_attribute)
+set_source_files_properties(zserio/deprecated_attribute/DeprecatedAttributeTest.cpp
+    PROPERTIES COMPILE_DEFINITIONS ${DEPRECATED_ATTRIBUTE_COMPILE_DEFINITIONS})

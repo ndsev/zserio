@@ -86,7 +86,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
     <#local wantsBitStreamReader = compoundConstructorsData.fieldList?has_content || withSourceRegion>
-    <#---->
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
         ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
@@ -326,7 +325,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_move_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
-        ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)<#rt>
+    <#lt>${compoundConstructorsData.compoundName}&& <#if compoundConstructorsData.fieldList?has_content>other</#if>)<#rt>
 <@cpp_initializer_list>
     <#if withSourceRegion>
         m_sourcePosition(::std::move(other.m_sourcePosition))
@@ -399,7 +398,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_move_assignment_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
-        ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
+    <#lt>${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
 {
     <#if withSourceRegion>
     m_sourcePosition = other.m_sourcePosition;
@@ -449,9 +448,8 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
     <#local initialization><@compound_copy_initialization compoundConstructorsData/></#local>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT,
-        const ${compoundConstructorsData.compoundName}&<#rt>
-        <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
-        <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
+        <#lt>const ${compoundConstructorsData.compoundName}& <#if compoundConstructorsData.fieldList?has_content || initialization?has_content>other</#if>,
+        <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
     <#if withSourceRegion>
         m_sourcePosition(other.m_sourcePosition)
@@ -478,9 +476,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 <#macro compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT, ::zserio::NoInitT,
-        const ${compoundConstructorsData.compoundName}&<#rt>
-        <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
-        <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
+        <#lt>const ${compoundConstructorsData.compoundName}& <#if compoundConstructorsData.fieldList?has_content || initialization?has_content>other</#if>,
+        <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
     <#if withSourceRegion>
         m_sourcePosition(other.m_sourcePosition)

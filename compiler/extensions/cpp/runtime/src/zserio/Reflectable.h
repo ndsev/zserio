@@ -3399,6 +3399,11 @@ public:
         return toString(ALLOC());
     }
 
+    std::tuple<size_t, size_t> getSourceRegion() const override
+    {
+        return m_reflectable->getSourceRegion();
+    }
+
 private:
     T m_object;
     IBasicReflectablePtr<ALLOC> m_reflectable;
@@ -4368,6 +4373,12 @@ template <typename ALLOC>
 string<ALLOC> ReflectableBase<ALLOC>::toString() const
 {
     return toString(ALLOC());
+}
+
+template <typename ALLOC>
+std::tuple<size_t, size_t> ReflectableBase<ALLOC>::getSourceRegion() const
+{
+    throw CppRuntimeException("Source region unavailable for type '") << getTypeInfo().getSchemaName() << "'!";
 }
 
 template <typename ALLOC>

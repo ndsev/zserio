@@ -174,8 +174,10 @@ public final class CppExtensionParameters
         options.addOptionGroup(sourcesAmalgamationGroup);
 
         final OptionGroup sourceRegionGroup = new OptionGroup();
-        sourceRegionGroup.addOption(new Option(OptionWithSourceRegion, false, "enable storage of source region allong compounds"));
-        sourceRegionGroup.addOption(new Option(OptionWithoutSourceRegion, false, "disable storage of source region allong compounds"));
+        sourceRegionGroup.addOption(
+                new Option(OptionWithSourceRegion, false, "enable storage of source region allong compounds"));
+        sourceRegionGroup.addOption(new Option(
+                OptionWithoutSourceRegion, false, "disable storage of source region allong compounds"));
         sourceRegionGroup.setRequired(false);
         options.addOptionGroup(sourceRegionGroup);
     }

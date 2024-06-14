@@ -292,7 +292,14 @@ ${I}return {};
 
         <#if withWriterCode>
 <@choice_reflectable false/>
+        </#if>
 
+        <#if withSourceRegion>
+            <#lt>std::tuple<size_t, size_t> ${name}::getSourceRegion() const
+            <#lt>{
+            <#lt>    return std::make_tuple<size_t, size_t>(
+            <#lt>        m_sourcePosition, bitSizeOf(m_sourcePosition));
+            <#lt>}
         </#if>
     </#if>
 </#if>
