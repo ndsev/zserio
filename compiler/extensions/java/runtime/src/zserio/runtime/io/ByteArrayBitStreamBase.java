@@ -59,9 +59,27 @@ abstract class ByteArrayBitStreamBase
      */
     protected static void checkRange(final int numBits) throws IllegalArgumentException
     {
-        if (numBits <= 0 || numBits > 64)
+        if (numBits < 1 || numBits > 64)
+        {
             throw new IllegalArgumentException(
                     "ByteArrayBitStreamBase: Number of bits " + numBits + " is out of range [1, 64].");
+        }
+    }
+
+    /**
+     * Checks if the given numBits value is situated in the range 0 to 63.
+     *
+     * @param numBits Number of bits to check.
+     *
+     * @throws IllegalArgumentException If the numBits value is smaller than zero or greater than 63.
+     */
+    protected static void checkUnsignedRange(final int numBits) throws IllegalArgumentException
+    {
+        if (numBits < 1 || numBits > 63)
+        {
+            throw new IllegalArgumentException(
+                    "ByteArrayBitStreamBase: Number of bits " + numBits + " is out of range [1, 63].");
+        }
     }
 
     /**

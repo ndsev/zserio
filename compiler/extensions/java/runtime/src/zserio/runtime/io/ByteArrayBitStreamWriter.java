@@ -59,10 +59,7 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
     @Override
     public void writeBits(final long value, final int numBits) throws IOException
     {
-        // the MSB must be zero
-        if (numBits <= 0 || numBits >= 64)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Number of written bits " + numBits +
-                    " is out of range [1, 64].");
+        checkUnsignedRange(numBits);
 
         final long lowerBound = 0;
         final long upperBound = BitFieldUtil.getBitFieldUpperBound(numBits, false);
@@ -193,9 +190,11 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
     @Override
     public void writeBigInteger(final BigInteger value, final int numBits) throws IOException
     {
+        checkRange(numBits);
+
         // total number of bits including sign bit for negative numbers
         final boolean isNegative = value.signum() < 0;
-        final int valueBits = value.bitLength() + (isNegative ? +1 : 0);
+        final int valueBits = value.bitLength() + (isNegative ? 1 : 0);
         if (valueBits > numBits)
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Written value " + value +
                     " does not fit into " + numBits + " bits.");

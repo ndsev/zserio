@@ -125,7 +125,10 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
 
         BitStreamWriter writer(bitBuffer);
 
-        writer.writeBits64(0, offset);
+        if (offset > 0)
+        {
+            writer.writeBits64(0, offset);
+        }
         writer.writeBits(testValue, 8);
 
         // check eof
@@ -149,6 +152,7 @@ TEST_F(BitStreamWriterTest, writeBits)
     const std::array<uint8_t, 3> numBitsArray = {255, 0, 33};
     for (uint8_t numBits : numBitsArray)
     {
+        ASSERT_THROW(m_externalBufferWriter.writeBits(0, numBits), CppRuntimeException);
         ASSERT_THROW(m_externalBufferWriter.writeBits(1, numBits), CppRuntimeException);
     }
 
@@ -170,6 +174,7 @@ TEST_F(BitStreamWriterTest, writeBits64)
     const std::array<uint8_t, 3> numBitsArray = {255, 0, 65};
     for (uint8_t numBits : numBitsArray)
     {
+        ASSERT_THROW(m_externalBufferWriter.writeBits64(0, numBits), CppRuntimeException);
         ASSERT_THROW(m_externalBufferWriter.writeBits64(1, numBits), CppRuntimeException);
     }
 
@@ -191,6 +196,7 @@ TEST_F(BitStreamWriterTest, writeSignedBits)
     const std::array<uint8_t, 3> numBitsArray = {255, 0, 33};
     for (uint8_t numBits : numBitsArray)
     {
+        ASSERT_THROW(m_externalBufferWriter.writeSignedBits(0, numBits), CppRuntimeException);
         ASSERT_THROW(m_externalBufferWriter.writeSignedBits(1, numBits), CppRuntimeException);
     }
 
@@ -217,6 +223,7 @@ TEST_F(BitStreamWriterTest, writeSignedBits64)
     const std::array<uint8_t, 3> numBitsArray = {255, 0, 65};
     for (uint8_t numBits : numBitsArray)
     {
+        ASSERT_THROW(m_externalBufferWriter.writeSignedBits64(0, numBits), CppRuntimeException);
         ASSERT_THROW(m_externalBufferWriter.writeSignedBits64(1, numBits), CppRuntimeException);
     }
 

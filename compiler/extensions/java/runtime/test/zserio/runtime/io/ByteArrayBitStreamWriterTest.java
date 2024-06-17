@@ -405,6 +405,23 @@ public class ByteArrayBitStreamWriterTest
     }
 
     @Test
+    public void writeBigIntegerInvalidNumException() throws IOException
+    {
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            final int numBits[] = {-1, 0}; //, 65};
+            for (int i = 0; i < numBits.length; ++i)
+            {
+                final int numBitsArg = numBits[i];
+                assertThrows(IllegalArgumentException.class,
+                        () -> writer.writeBigInteger(BigInteger.ZERO, numBitsArg));
+                assertThrows(IllegalArgumentException.class,
+                        () -> writer.writeBigInteger(BigInteger.ONE, numBitsArg));
+            } // for numbits
+        }
+    }
+
+    @Test
     public void writeFloat16() throws IOException
     {
         writeReadTest(new WriteReadTestable() {
@@ -526,7 +543,11 @@ public class ByteArrayBitStreamWriterTest
             for (int i = 0; i < numBits.length; ++i)
             {
                 final int numBitsArg = numBits[i];
+                assertThrows(IllegalArgumentException.class, () -> writer.writeBits(0x0L, numBitsArg));
                 assertThrows(IllegalArgumentException.class, () -> writer.writeBits(0x1L, numBitsArg));
+
+                assertThrows(IllegalArgumentException.class, () -> writer.writeSignedBits(0x0L, numBitsArg));
+                assertThrows(IllegalArgumentException.class, () -> writer.writeSignedBits(0x1L, numBitsArg));
             } // for numbits
         }
     }
