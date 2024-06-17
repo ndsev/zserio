@@ -67,11 +67,12 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(b"\x00\xff\xff\xff\x0f\x80", writer.byte_array)
         self.assertEqual(6 * 8, writer.bitposition)
 
-        with self.assertRaises(PythonRuntimeException):
-            writer.write_bits(1, 0)  # zero bits!
+        for numbits in [-1, 0, 65]:
+            with self.assertRaises(PythonRuntimeException):
+                writer.write_bits(0, numbits)
 
-        with self.assertRaises(PythonRuntimeException):
-            writer.write_bits(1, -1)  # negative number of bits!
+            with self.assertRaises(PythonRuntimeException):
+                writer.write_bits(1, numbits)
 
         with self.assertRaises(PythonRuntimeException):
             writer.write_bits(256, 8)  # above the upper bound
@@ -91,8 +92,12 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(b"\x7f\xff", writer.byte_array)
         self.assertEqual(16, writer.bitposition)
 
-        with self.assertRaises(PythonRuntimeException):
-            writer.write_signed_bits(1, 0)  # zero bits!
+        for numbits in [-1, 0, 65]:
+            with self.assertRaises(PythonRuntimeException):
+                writer.write_signed_bits(0, numbits)
+
+            with self.assertRaises(PythonRuntimeException):
+                writer.write_signed_bits(1, numbits)
 
         with self.assertRaises(PythonRuntimeException):
             writer.write_signed_bits(1, 1)  # above the upper bound

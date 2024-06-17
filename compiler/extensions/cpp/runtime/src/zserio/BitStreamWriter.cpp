@@ -353,7 +353,7 @@ BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer, size_t bufferBitSize) :
 
 void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
 {
-    if (numBits > sizeof(uint32_t) * 8 || data > MAX_U32_VALUES[numBits])
+    if (numBits == 0 || numBits > sizeof(uint32_t) * 8 || data > MAX_U32_VALUES[numBits])
     {
         throw CppRuntimeException("BitStreamWriter: Writing of ")
                 << numBits << "-bits value '" << data << "' failed!";
@@ -364,7 +364,7 @@ void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
 
 void BitStreamWriter::writeBits64(uint64_t data, uint8_t numBits)
 {
-    if (numBits > sizeof(uint64_t) * 8 || data > MAX_U64_VALUES[numBits])
+    if (numBits == 0 || numBits > sizeof(uint64_t) * 8 || data > MAX_U64_VALUES[numBits])
     {
         throw CppRuntimeException("BitStreamWriter: Writing of ")
                 << numBits << "-bits value '" << data << "' failed!";
@@ -375,7 +375,8 @@ void BitStreamWriter::writeBits64(uint64_t data, uint8_t numBits)
 
 void BitStreamWriter::writeSignedBits(int32_t data, uint8_t numBits)
 {
-    if (numBits > sizeof(int32_t) * 8 || data < MIN_I32_VALUES[numBits] || data > MAX_I32_VALUES[numBits])
+    if (numBits == 0 || numBits > sizeof(int32_t) * 8 || data < MIN_I32_VALUES[numBits] ||
+            data > MAX_I32_VALUES[numBits])
     {
         throw CppRuntimeException("BitStreamWriter: Writing of ")
                 << numBits << "-bits value '" << data << "' failed!";
@@ -386,7 +387,8 @@ void BitStreamWriter::writeSignedBits(int32_t data, uint8_t numBits)
 
 void BitStreamWriter::writeSignedBits64(int64_t data, uint8_t numBits)
 {
-    if (numBits > sizeof(int64_t) * 8 || data < MIN_I64_VALUES[numBits] || data > MAX_I64_VALUES[numBits])
+    if (numBits == 0 || numBits > sizeof(int64_t) * 8 || data < MIN_I64_VALUES[numBits] ||
+            data > MAX_I64_VALUES[numBits])
     {
         throw CppRuntimeException("BitStreamWriter: Writing of ")
                 << numBits << "-bits value '" << data << "' failed!";

@@ -353,7 +353,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -383,7 +386,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -420,7 +426,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -458,7 +467,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -494,7 +506,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -534,7 +549,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -567,7 +585,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -600,7 +621,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
@@ -633,7 +657,10 @@ private:
             ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
-            writer.writeBits(0, i);
+            if (i > 0)
+            {
+                writer.writeBits(0, i);
+            }
             arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
