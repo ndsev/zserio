@@ -118,7 +118,7 @@ The length should not exceed 64 bits. An unsigned bit field type corresponds to 
 given length. Thus, `bit:16` and `uint16` are equivalent. The value range of `bit:n` is 0..2<sup>n</sup>-1.
 
 Unsigned bitfield types of variable length (dynamic unsigned bitfield types) can be specified as `bit<expr>`,
-where `expr` is an expression of integer type to be evaluated at run-time and should not exceed 64 bits.
+where `expr` is an expression of integer type to be evaluated at run-time and shall be in range `[1, 64]` bits.
 
 #### Signed Bit Field Types
 
@@ -130,7 +130,7 @@ length. Thus, `int:16` and `int16` are equivalent. The value range of `int:n`
 is -2<sup>n-1</sup>..2<sup>n-1</sup>-1.
 
 Signed bitfield types of variable length (dynamic signed bitfield types) can be specified as `int<expr>`,
-where `expr` is an expression of integer type to be evaluated at run-time and should not exceed 64 bits.
+where `expr` is an expression of integer type to be evaluated at run-time and shall be in range `[1, 64]` bits.
 
 ### Floating Point Types
 
@@ -156,15 +156,15 @@ The value ranges of the variable integer types are:
 
 Data Type    | Value Range                                        | Max Value | Max Bytes
 ------------ | -------------------------------------------------- | --------- |----------
-varint16     | `-16383 to 16383`                                | `2^14-1` | `2`
-varint32     | `-268435455 to 268435455`                       | `2^28-1` | `4`
-varint64     | `-72057594037927935 to 72057594037927935`     | `2^56-1` | `8`
-varint       | `-9223372036854775808 to 9223372036854775807` | `2^63-1`| `9`
-varuint16    | `0 to 32767`                                      | `2^15-1` | `2`
-varuint32    | `0 to 536870911`                                  | `2^29-1` | `4`
-varuint64    | `0 to 144115188075855871`                        | `2^57-1` | `8`
-varuint      | `0 to 18446744073709551615`                      | `2^64-1` | `9`
-varsize      | `0 to 2147483647`                                | `2^31-1` | `5`
+varint16     | `-16383 to 16383`                                  | `2^14-1` | `2`
+varint32     | `-268435455 to 268435455`                          | `2^28-1` | `4`
+varint64     | `-72057594037927935 to 72057594037927935`          | `2^56-1` | `8`
+varint       | `-9223372036854775808 to 9223372036854775807`      | `2^63-1`| `9`
+varuint16    | `0 to 32767`                                       | `2^15-1` | `2`
+varuint32    | `0 to 536870911`                                   | `2^29-1` | `4`
+varuint64    | `0 to 144115188075855871`                          | `2^57-1` | `8`
+varuint      | `0 to 18446744073709551615`                        | `2^64-1` | `9`
+varsize      | `0 to 2147483647`                                  | `2^31-1` | `5`
 
 > Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
 
