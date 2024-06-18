@@ -52,7 +52,8 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public long readSignedBits(final int numBits) throws IOException
     {
-        long result = readBits(numBits);
+        checkRange(numBits);
+        long result = readBitsImpl(numBits);
 
         /*
          * Perform a sign extension if needed.
@@ -69,55 +70,8 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public long readBits(final int numBits) throws IOException
     {
-        checkRange(numBits);
-
-        int bitsToRead = bitOffset + numBits;
-        long accum = nextUnsignedByte() & BIT_MASKS[bitOffset];
-        bitsToRead -= 8;
-
-        if (bitsToRead < 0)
-        {
-            // less than already read byte is needed
-            accum = accum >>> -bitsToRead;
-            bytePosition--; // consumed only few bits
-        }
-        else
-        {
-            // full bytes
-            while (bitsToRead >= 8)
-            {
-                accum = (accum << 8) | nextUnsignedByte();
-                bitsToRead -= 8;
-            }
-
-            // last few bits
-            if (bitsToRead > 0)
-            {
-                accum = (accum << bitsToRead) | (nextUnsignedByte() >>> (8 - bitsToRead));
-                bytePosition--; // consumed only few bits
-            }
-        }
-
-        bitOffset = (bitOffset + numBits) & BYTE_MOD_MASK;
-
-        if (bytePosition == buffer.length) // consumed full last byte
-        {
-            if (lastByteBits < 8) // check if whole byte is available
-            {
-                throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
-                        lastByteBits + " in the last byte.");
-            }
-        }
-        else if (bytePosition + 1 >= buffer.length) // consumed last byte only partially or not at all
-        {
-            if (bitOffset > lastByteBits) // check if we didn't read more bits than available
-            {
-                throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
-                        bitOffset + " in the last byte.");
-            }
-        }
-
-        return accum;
+        checkUnsignedRange(numBits);
+        return readBitsImpl(numBits);
     }
 
     @Override
@@ -207,7 +161,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            result = readBits(64);
+            result = readSignedBits(64);
         }
         return result;
     }
@@ -215,6 +169,8 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public BigInteger readBigInteger(final int numBits) throws IOException
     {
+        checkRange(numBits);
+
         BigInteger result = BigInteger.ZERO;
         int bitsToRead = numBits;
         if (bitsToRead > 8)
@@ -672,6 +628,57 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     protected byte[] getBuffer()
     {
         return buffer;
+    }
+
+    private long readBitsImpl(final int numBits) throws IOException
+    {
+        int bitsToRead = bitOffset + numBits;
+        long accum = nextUnsignedByte() & BIT_MASKS[bitOffset];
+        bitsToRead -= 8;
+
+        if (bitsToRead < 0)
+        {
+            // less than already read byte is needed
+            accum = accum >>> -bitsToRead;
+            bytePosition--; // consumed only few bits
+        }
+        else
+        {
+            // full bytes
+            while (bitsToRead >= 8)
+            {
+                accum = (accum << 8) | nextUnsignedByte();
+                bitsToRead -= 8;
+            }
+
+            // last few bits
+            if (bitsToRead > 0)
+            {
+                accum = (accum << bitsToRead) | (nextUnsignedByte() >>> (8 - bitsToRead));
+                bytePosition--; // consumed only few bits
+            }
+        }
+
+        bitOffset = (bitOffset + numBits) & BYTE_MOD_MASK;
+
+        if (bytePosition == buffer.length) // consumed full last byte
+        {
+            if (lastByteBits < 8) // check if whole byte is available
+            {
+                throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
+                        lastByteBits + " in the last byte.");
+            }
+        }
+        else if (bytePosition + 1 >= buffer.length) // consumed last byte only partially or not at all
+        {
+            if (bitOffset > lastByteBits) // check if we didn't read more bits than available
+            {
+                throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
+                        bitOffset + " in the last byte.");
+            }
+        }
+
+        return accum;
     }
 
     private void readFully(final byte[] b) throws IOException

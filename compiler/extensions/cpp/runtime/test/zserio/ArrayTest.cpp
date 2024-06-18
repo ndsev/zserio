@@ -361,7 +361,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayRead(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
@@ -394,7 +397,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayRead(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
@@ -434,7 +440,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayRead(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
@@ -475,7 +484,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayRead(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
@@ -514,7 +526,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayRead(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
@@ -557,7 +572,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayReadPacked(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
@@ -593,7 +611,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayReadPacked(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
@@ -629,7 +650,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayReadPacked(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
@@ -665,7 +689,10 @@ private:
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
-            ASSERT_EQ(0, reader.readBits(i));
+            if (i > 0)
+            {
+                ASSERT_EQ(0, reader.readBits(i));
+            }
             ArrayT readArray;
             arrayReadPacked(readArray, owner, reader);
             ASSERT_EQ(array, readArray);

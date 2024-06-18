@@ -93,7 +93,7 @@ public class ByteArrayBitStreamReaderTest
             {
                 // read offset bits
                 if (offset != 0) // java reader cannot read 0 bits
-                    assertEquals(0, reader.readBits(offset));
+                    assertEquals(0, reader.readSignedBits(offset)); // java readBits is up to 63 bits!
 
                 // read magic number
                 assertEquals(testValue, reader.readBits(8), "offset: " + offset);
@@ -114,7 +114,7 @@ public class ByteArrayBitStreamReaderTest
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
-                assertThrows(IllegalArgumentException.class, () -> reader.readBits(-1));
+                assertThrows(IllegalArgumentException.class, () -> reader.readBits(0));
             }
         });
     }
@@ -129,7 +129,7 @@ public class ByteArrayBitStreamReaderTest
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
-                assertThrows(IllegalArgumentException.class, () -> reader.readBits(65));
+                assertThrows(IllegalArgumentException.class, () -> reader.readBits(64));
             }
         });
     }
@@ -578,6 +578,50 @@ public class ByteArrayBitStreamReaderTest
     }
 
     @Test
+    public void readBits() throws IOException
+    {
+        writeReadTest(new WriteReadTestable() {
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+                writer.writeLong((1L << 63) - 1);
+                writer.writeLong(0);
+            }
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+                assertEquals(0, reader.readBits(1)); // MSB
+                assertEquals((1L << 63) - 1, reader.readBits(63));
+                assertEquals(0, reader.readBits(1)); // MSB
+                assertEquals(0, reader.readBits(63));
+            }
+        });
+    }
+
+    @Test
+    public void readBitsInvalidNumException() throws IOException
+    {
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]))
+        {
+            assertThrows(IllegalArgumentException.class, () -> reader.readBits(-1));
+            assertThrows(IllegalArgumentException.class, () -> reader.readBits(0));
+            assertThrows(IllegalArgumentException.class, () -> reader.readBits(64));
+        }
+    }
+
+    @Test
+    public void readSignedBitsInvalidNumException() throws IOException
+    {
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]))
+        {
+            assertThrows(IllegalArgumentException.class, () -> reader.readSignedBits(-1));
+            assertThrows(IllegalArgumentException.class, () -> reader.readSignedBits(0));
+            assertThrows(IllegalArgumentException.class, () -> reader.readSignedBits(65));
+        }
+    }
+
+    @Test
     public void readBigInteger() throws IOException
     {
         writeReadTest(new WriteReadTestable() {
@@ -595,6 +639,17 @@ public class ByteArrayBitStreamReaderTest
                 assertEquals(BigInteger.valueOf(Long.MAX_VALUE), reader.readBigInteger(64));
             }
         });
+    }
+
+    @Test
+    public void readBigIntegerInvalidNumException() throws IOException
+    {
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]))
+        {
+            assertThrows(IllegalArgumentException.class, () -> reader.readBigInteger(-1));
+            assertThrows(IllegalArgumentException.class, () -> reader.readBigInteger(0));
+            assertThrows(IllegalArgumentException.class, () -> reader.readBigInteger(65));
+        }
     }
 
     @Test

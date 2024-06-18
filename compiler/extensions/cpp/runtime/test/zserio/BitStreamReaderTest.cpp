@@ -99,7 +99,10 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
         BitStreamReader reader(buffer);
 
         // read offset bits
-        ASSERT_EQ(0, reader.readBits64(offset));
+        if (offset > 0)
+        {
+            ASSERT_EQ(0, reader.readBits64(offset));
+        }
 
         // read magic number
         ASSERT_EQ(testValue, reader.readBits(8)) << "Offset: " << offset;
@@ -113,40 +116,32 @@ TEST_F(BitStreamReaderTest, readBits)
 {
     // check invalid bitlength acceptance
     ASSERT_THROW(m_reader.readBits(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readBits(0), CppRuntimeException);
     ASSERT_THROW(m_reader.readBits(33), CppRuntimeException);
-
-    // return 0 for 0 bits
-    ASSERT_EQ(0, m_reader.readBits(0));
 }
 
 TEST_F(BitStreamReaderTest, readBits64)
 {
     // check invalid bit length acceptance
     ASSERT_THROW(m_reader.readBits64(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readBits64(0), CppRuntimeException);
     ASSERT_THROW(m_reader.readBits64(65), CppRuntimeException);
-
-    // return 0 for 0 bits
-    ASSERT_EQ(0, m_reader.readBits64(0));
 }
 
 TEST_F(BitStreamReaderTest, readSignedBits)
 {
     // check invalid bit length acceptance
     ASSERT_THROW(m_reader.readSignedBits(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readSignedBits(0), CppRuntimeException);
     ASSERT_THROW(m_reader.readSignedBits(33), CppRuntimeException);
-
-    // return 0 for 0 bits
-    ASSERT_EQ(0, m_reader.readSignedBits(0));
 }
 
 TEST_F(BitStreamReaderTest, readSignedBits64)
 {
     // check invalid bit length acceptance
     ASSERT_THROW(m_reader.readSignedBits64(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readSignedBits64(0), CppRuntimeException);
     ASSERT_THROW(m_reader.readSignedBits64(65), CppRuntimeException);
-
-    // return 0 for 0 bits
-    ASSERT_EQ(0, m_reader.readSignedBits64(0));
 }
 
 TEST_F(BitStreamReaderTest, readVarSize)

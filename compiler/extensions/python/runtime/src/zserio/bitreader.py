@@ -73,8 +73,8 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.
         """
 
-        if numbits < 0:
-            raise PythonRuntimeException("BitStreamReader: Reading negative number of bits!")
+        if numbits < 1 or numbits > 64:
+            raise PythonRuntimeException("BitStreamReader: numbits '{numbits}' not in range [1,64]!")
 
         return self.read_bits_unchecked(numbits)
 
@@ -87,8 +87,8 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.
         """
 
-        if numbits < 0:
-            raise PythonRuntimeException("BitStreamReader: Reading negative number of bits!")
+        if numbits < 1 or numbits > 64:
+            raise PythonRuntimeException(f"BitStreamReader: numbits '{numbits}' not in range [1,64]!")
 
         return self.read_signed_bits_unchecked(numbits)
 
