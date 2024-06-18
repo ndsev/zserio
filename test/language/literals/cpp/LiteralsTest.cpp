@@ -29,6 +29,8 @@ namespace literals
 
 TEST(LiteralsTest, Boolean)
 {
+    static_assert(BOOLEAN_TRUE, "shall be constexpr");
+
     bool expectedBoolean = true;
     ASSERT_EQ(expectedBoolean, BOOLEAN_TRUE);
 
@@ -38,6 +40,8 @@ TEST(LiteralsTest, Boolean)
 
 TEST(LiteralsTest, Decimal)
 {
+    static_assert(DECIMAL_NEGATIVE == -255, "shall be constexpr");
+
     ASSERT_EQ(static_cast<int32_t>(255), DECIMAL_POSITIVE);
     ASSERT_EQ(static_cast<int32_t>(255), DECIMAL_POSITIVE_WITH_SIGN);
     ASSERT_EQ(static_cast<int32_t>(-255), DECIMAL_NEGATIVE);
@@ -46,6 +50,8 @@ TEST(LiteralsTest, Decimal)
 
 TEST(LiteralsTest, Hexadecimal)
 {
+    static_assert(255 == HEXADECIMAL_POSITIVE, "shall be constexpr");
+
     ASSERT_EQ(static_cast<int32_t>(255), HEXADECIMAL_POSITIVE);
     ASSERT_EQ(static_cast<int32_t>(255), HEXADECIMAL_POSITIVE_WITH_CAPITAL_X);
     ASSERT_EQ(static_cast<int32_t>(255), HEXADECIMAL_POSITIVE_WITH_SIGN);
@@ -54,6 +60,8 @@ TEST(LiteralsTest, Hexadecimal)
 
 TEST(LiteralsTest, Octal)
 {
+    static_assert(255 == HEXADECIMAL_POSITIVE, "shall be constexpr");
+
     ASSERT_EQ(static_cast<int32_t>(255), OCTAL_POSITIVE);
     ASSERT_EQ(static_cast<int32_t>(255), OCTAL_POSITIVE_WITH_SIGN);
     ASSERT_EQ(static_cast<int32_t>(-255), OCTAL_NEGATIVE);
@@ -62,6 +70,8 @@ TEST(LiteralsTest, Octal)
 
 TEST(LiteralsTest, Binary)
 {
+    static_assert(BINARY_POSITIVE == 0xff, "shall be constexpr");
+
     ASSERT_EQ(static_cast<int32_t>(255), BINARY_POSITIVE);
     ASSERT_EQ(static_cast<int32_t>(255), BINARY_POSITIVE_WITH_CAPITAL_B);
     ASSERT_EQ(static_cast<int32_t>(255), BINARY_POSITIVE_WITH_SIGN);
@@ -70,36 +80,32 @@ TEST(LiteralsTest, Binary)
 
 TEST(LiteralsTest, float16Literal)
 {
-    float diff = 15.2F - FLOAT16;
-    if (diff < 0.0F)
-    {
-        diff = -diff;
-    }
+    constexpr float diff = 15.2F - FLOAT16 < 0.0F ? FLOAT16 - 15.2F : 15.2F - FLOAT16;
+    static_assert(diff <= std::numeric_limits<float>::epsilon(), "shall be constexpr");
+
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
 TEST(LiteralsTest, float32Literal)
 {
-    float diff = 15.23F - FLOAT32;
-    if (diff < 0.0F)
-    {
-        diff = -diff;
-    }
+    constexpr float diff = (15.23F - FLOAT32) < 0.0F ? FLOAT32 - 15.23F : 15.23F - FLOAT32;
+    static_assert(diff <= std::numeric_limits<float>::epsilon(), "shall be constexpr");
+
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
 TEST(LiteralsTest, float64Literal)
 {
-    double diff = 15.234 - FLOAT64;
-    if (diff < 0.0)
-    {
-        diff = -diff;
-    }
+    constexpr double diff = 15.234 - FLOAT64 < 0.0 ? FLOAT64 - 15.234 : 15.234 - FLOAT64;
+    static_assert(diff <= std::numeric_limits<double>::epsilon(), "shall be constexpr");
+
     ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
 }
 
 TEST(LiteralsTest, String)
 {
+    static_assert(STRING.size() == 44, "shall be constexpr");
+
     ASSERT_EQ("String with escaped values \x31 \x32 \063 \n \t \f \r \\ \""_sv, STRING);
 }
 

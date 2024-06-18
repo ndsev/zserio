@@ -432,8 +432,7 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(::zserio::BitStreamReader&",
             "VersionAvailability::VersionAvailability(::zserio::BitStreamReader&");
     ASSERT_METHOD_PRESENT(PATH, type, "constexpr VersionAvailability(Values value) noexcept :", nullptr);
-    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(underlying_type value)",
-            "VersionAvailability::VersionAvailability(underlying_type value)");
+    ASSERT_METHOD_PRESENT(PATH, type, "constexpr explicit VersionAvailability(underlying_type value)", nullptr);
     ASSERT_METHOD_PRESENT(PATH, type, "~VersionAvailability() = default;", nullptr);
     ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(const VersionAvailability&) = default;", nullptr);
     ASSERT_METHOD_PRESENT(

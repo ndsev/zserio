@@ -44,17 +44,6 @@ ${name}::${name}(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
         m_value(readValue(context, in))
 {}
 </#if>
-<#if upperBound??>
-
-${name}::${name}(underlying_type value) :
-        m_value(value)
-{
-    if (m_value > ${upperBound})
-    {
-        throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") << value << "!";
-    }
-}
-</#if>
 <#if withTypeInfoCode>
 
 const ${types.typeInfo.name}& ${name}::typeInfo()
@@ -219,6 +208,13 @@ ${types.string.name} ${name}::toString(const ${types.string.name}::allocator_typ
 
     return ::zserio::toString<${types.string.name}::allocator_type>(m_value, allocator) + "[" + result + "]";
 }
+<#if upperBound??>
+
+${name}::underlying_type ${name}::throwOutOfBounds(underlying_type value)
+{
+    throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") << value << "!";
+}
+</#if>
 
 ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
 {

@@ -13,7 +13,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-const ${typeInfo.typeFullName} ${name} = ${value};
+constexpr ${typeInfo.typeFullName} ${name} = ${value};
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

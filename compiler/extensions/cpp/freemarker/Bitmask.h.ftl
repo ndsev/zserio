@@ -97,13 +97,9 @@ public:
      * \param value Raw bitmask value to construct from.
      */
 </#if>
-<#if upperBound??>
-    explicit ${name}(underlying_type value);
-<#else>
-    constexpr explicit ${name}(underlying_type value) noexcept :
-            m_value(value)
+    constexpr explicit ${name}(underlying_type value)<#if !upperBound??> noexcept</#if> :
+            m_value(value<#if upperBound??> > ${upperBound} ? throwOutOfBounds(value) : value</#if>)
     {}
-</#if>
 
 <#if withCodeComments>
     /** Default destructor. */
@@ -296,6 +292,10 @@ public:
             ${types.string.name}::allocator_type()) const;
 
 private:
+<#if upperBound??>
+    static underlying_type throwOutOfBounds(underlying_type value);
+
+</#if>
 <#if underlyingTypeInfo.arrayTraits.isTemplated && underlyingTypeInfo.arrayTraits.requiresElementDynamicBitSize>
     class ZserioElementBitSize
     {
@@ -322,7 +322,7 @@ private:
  * \return True if lhs is equal to the rhs, otherwise false.
  */
 </#if>
-inline bool operator==(const ${name}& lhs, const ${name}& rhs)
+inline constexpr bool operator==(const ${name}& lhs, const ${name}& rhs)
 {
     return lhs.getValue() == rhs.getValue();
 }
@@ -337,7 +337,7 @@ inline bool operator==(const ${name}& lhs, const ${name}& rhs)
  * \return True if lhs is not equal to the rhs, otherwise false.
  */
 </#if>
-inline bool operator!=(const ${name}& lhs, const ${name}& rhs)
+inline constexpr bool operator!=(const ${name}& lhs, const ${name}& rhs)
 {
     return lhs.getValue() != rhs.getValue();
 }
@@ -352,7 +352,7 @@ inline bool operator!=(const ${name}& lhs, const ${name}& rhs)
  * \return True if lhs is less than the rhs, otherwise false.
  */
 </#if>
-inline bool operator<(const ${name}& lhs, const ${name}& rhs)
+inline constexpr bool operator<(const ${name}& lhs, const ${name}& rhs)
 {
     return lhs.getValue() < rhs.getValue();
 }
@@ -367,7 +367,7 @@ inline bool operator<(const ${name}& lhs, const ${name}& rhs)
  * \return Bitmask which contains result after applying the operator '|' on given operands.
  */
 </#if>
-inline ${name} operator|(${name}::Values lhs, ${name}::Values rhs)
+inline constexpr ${name} operator|(${name}::Values lhs, ${name}::Values rhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(lhs) | static_cast<${name}::underlying_type>(rhs));
 }
@@ -382,7 +382,7 @@ inline ${name} operator|(${name}::Values lhs, ${name}::Values rhs)
  * \return Bitmask which contains result after applying the operator '|' on given operands.
  */
 </#if>
-inline ${name} operator|(const ${name}& lhs, const ${name}& rhs)
+inline constexpr ${name} operator|(const ${name}& lhs, const ${name}& rhs)
 {
     return ${name}(lhs.getValue() | rhs.getValue());
 }
@@ -397,7 +397,7 @@ inline ${name} operator|(const ${name}& lhs, const ${name}& rhs)
  * \return Bitmask which contains result after applying the operator '&' on given operands.
  */
 </#if>
-inline ${name} operator&(${name}::Values lhs, ${name}::Values rhs)
+inline constexpr ${name} operator&(${name}::Values lhs, ${name}::Values rhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(lhs) & static_cast<${name}::underlying_type>(rhs));
 }
@@ -412,7 +412,7 @@ inline ${name} operator&(${name}::Values lhs, ${name}::Values rhs)
  * \return Bitmask which contains result after applying the operator '&' on given operands.
  */
 </#if>
-inline ${name} operator&(const ${name}& lhs, const ${name}& rhs)
+inline constexpr ${name} operator&(const ${name}& lhs, const ${name}& rhs)
 {
     return ${name}(lhs.getValue() & rhs.getValue());
 }
@@ -427,7 +427,7 @@ inline ${name} operator&(const ${name}& lhs, const ${name}& rhs)
  * \return Bitmask which contains result after applying the operator '^' on given operands.
  */
 </#if>
-inline ${name} operator^(${name}::Values lhs, ${name}::Values rhs)
+inline constexpr ${name} operator^(${name}::Values lhs, ${name}::Values rhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(lhs) ^ static_cast<${name}::underlying_type>(rhs));
 }
@@ -442,7 +442,7 @@ inline ${name} operator^(${name}::Values lhs, ${name}::Values rhs)
  * \return Bitmask which contains result after applying the operator '^' on given operands.
  */
 </#if>
-inline ${name} operator^(const ${name}& lhs, const ${name}& rhs)
+inline constexpr ${name} operator^(const ${name}& lhs, const ${name}& rhs)
 {
     return ${name}(lhs.getValue() ^ rhs.getValue());
 }
@@ -456,7 +456,7 @@ inline ${name} operator^(const ${name}& lhs, const ${name}& rhs)
  * \return Bitmask which contains result after applying the operator '~' on given operand.
  */
 </#if>
-inline ${name} operator~(${name}::Values lhs)
+inline constexpr ${name} operator~(${name}::Values lhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(<#rt>
             <#lt>static_cast<${name}::underlying_type>(~static_cast<${name}::underlying_type>(lhs))<#if upperBound??> & ${upperBound}</#if>));
@@ -471,7 +471,7 @@ inline ${name} operator~(${name}::Values lhs)
  * \return Bitmask which contains result after applying the operator '~' on given operand.
  */
 </#if>
-inline ${name} operator~(const ${name}& lhs)
+inline constexpr ${name} operator~(const ${name}& lhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(<#rt>
             <#lt>static_cast<${name}::underlying_type>(~lhs.getValue())<#if upperBound??> & ${upperBound}</#if>));
