@@ -53,7 +53,8 @@ class BitStreamReaderTest(unittest.TestCase):
             reader = BitStreamReader.from_bitbuffer(bitbuffer)
 
             # read offset bits
-            self.assertEqual(0, reader.read_bits(offset))
+            if offset > 0:
+                self.assertEqual(0, reader.read_bits(offset))
 
             # read magic number
             self.assertEqual(test_value, reader.read_bits(8), msg="Offset: " + str(offset))
@@ -68,10 +69,9 @@ class BitStreamReaderTest(unittest.TestCase):
         for byte in data:
             self.assertEqual(byte, reader.read_bits(8))
 
-        with self.assertRaises(PythonRuntimeException):
-            reader.read_bits(-1)
-
-        self.assertEqual(0, reader.read_bits(0))  # read 0 bits
+        for numbits in [-1, 0, 65]:
+            with self.assertRaises(PythonRuntimeException, msg=f"numbits={numbits}"):
+                reader.read_bits(numbits)
 
         with self.assertRaises(PythonRuntimeException):
             reader.read_bits(1)  # no more bits available
@@ -85,13 +85,12 @@ class BitStreamReaderTest(unittest.TestCase):
         self.assertEqual(127, reader.read_signed_bits(8))
         self.assertEqual(-128, reader.read_signed_bits(8))  # 0x80 == -128
 
-        self.assertEqual(0, reader.read_signed_bits(0))  # read 0 bits
+        for numbits in [-1, 0, 65]:
+            with self.assertRaises(PythonRuntimeException, msg=f"numbits={numbits}"):
+                reader.read_signed_bits(numbits)
 
         with self.assertRaises(PythonRuntimeException):
             reader.read_signed_bits(1)  # no more bits available
-
-        with self.assertRaises(PythonRuntimeException):
-            reader.read_signed_bits(-1)
 
     def test_read_varint16(self):
         reader = BitStreamReader(bytes(1))

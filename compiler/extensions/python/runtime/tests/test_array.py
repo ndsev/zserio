@@ -635,7 +635,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader(array_traits, from_reader, len(array_values))
             self.assertEqual(array, read_array_from_reader, i)
 
@@ -661,7 +662,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader(array_traits, from_reader, is_auto=True)
             self.assertEqual(array, read_array_from_reader, i)
 
@@ -692,7 +694,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader(
                 array_traits,
                 from_reader,
@@ -734,7 +737,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader(
                 array_traits,
                 from_reader,
@@ -807,7 +811,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader_packed(array_traits, from_reader, len(array_values))
             self.assertEqual(array, read_array_from_reader, i)
 
@@ -834,7 +839,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader_packed(array_traits, from_reader, is_auto=True)
             self.assertEqual(array, read_array_from_reader, i)
 
@@ -866,7 +872,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader_packed(
                 array_traits,
                 from_reader,
@@ -909,7 +916,8 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(i + bitsize, writer.bitposition, i)
 
             from_reader = BitStreamReader(writer.byte_array, writer.bitposition)
-            self.assertEqual(0, from_reader.read_bits(i))
+            if i > 0:
+                self.assertEqual(0, from_reader.read_bits(i))
             read_array_from_reader = Array.from_reader_packed(
                 array_traits,
                 from_reader,

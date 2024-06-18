@@ -207,7 +207,7 @@ inline void throwNumBitsIsNotValid(uint8_t numBits)
 /** Checks numBits validity for 32-bit reads. */
 inline void checkNumBits(uint8_t numBits)
 {
-    if (numBits > 32)
+    if (numBits == 0 || numBits > 32)
     {
         throwNumBitsIsNotValid(numBits);
     }
@@ -216,7 +216,7 @@ inline void checkNumBits(uint8_t numBits)
 /** Checks numBits validity for 64-bit reads. */
 inline void checkNumBits64(uint8_t numBits)
 {
-    if (numBits > 64)
+    if (numBits == 0 || numBits > 64)
     {
         throwNumBitsIsNotValid(numBits);
     }
