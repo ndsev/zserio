@@ -103,4 +103,11 @@ TEST(LiteralsTest, String)
     ASSERT_EQ("String with escaped values \x31 \x32 \063 \n \t \f \r \\ \""_sv, STRING);
 }
 
+TEST(LiteralsTest, constexprLiteral)
+{
+    static_assert(BINARY_POSITIVE == 0xff, "BINARY_POSITIVE fail");
+    static_assert(DECIMAL_NEGATIVE == -255, "DECIMAL_NEGATIVE fail");
+    static_assert(STRING.size() == 44, "STRING fail");
+}
+
 } // namespace literals
