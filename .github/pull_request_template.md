@@ -1,4 +1,4 @@
-**Please check [contribution guide](https://github.com/ndsev/zserio/CONTRIBUTING.md) first.**
+**Please check [contribution guide](https://github.com/ndsev/zserio/blob/master/CONTRIBUTING.md) first.**
 
 # Description
 
