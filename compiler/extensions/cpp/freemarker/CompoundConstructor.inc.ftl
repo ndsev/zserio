@@ -185,7 +185,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
 
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
+        <#-- hasNext is set to false because joining lines by comma is handled by the cpp_initializer_list macro -->
+        <@compound_copy_constructor_initializer_field field, false, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -198,10 +199,11 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_copy_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
-        const ${compoundConstructorsData.compoundName}&<#if compoundConstructorsData.fieldList?has_content> other</#if>) :
-        m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+        const ${compoundConstructorsData.compoundName}& other)
+<@cpp_initializer_list>
+    m_isInitialized(false)
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(other.m_numExtendedFields),
+        m_numExtendedFields(other.m_numExtendedFields)
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
@@ -209,7 +211,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             <#break>
         </#if>
     </#list>
+</@cpp_initializer_list>
 {
+    (void)other;
 }
 </#macro>
 
@@ -259,7 +263,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_assignment_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
-        const ${compoundConstructorsData.compoundName}&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
+        const ${compoundConstructorsData.compoundName}& other)
 {
     m_isInitialized = false;
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -272,6 +276,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
         </#if>
     </#list>
 
+    (void)other;
     return *this;
 }
 </#macro>
@@ -325,7 +330,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_move_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
-    <#lt>${compoundConstructorsData.compoundName}&& <#if compoundConstructorsData.fieldList?has_content>other</#if>)<#rt>
+    <#lt>${compoundConstructorsData.compoundName}&& other)<#rt>
 <@cpp_initializer_list>
     <#if withSourceRegion>
         m_sourcePosition(::std::move(other.m_sourcePosition))
@@ -345,6 +350,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#list>
 </@cpp_initializer_list>
 {
+    (void)other;
 }
 </#macro>
 
@@ -398,7 +404,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_move_assignment_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
-    <#lt>${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
+    <#lt>${compoundConstructorsData.compoundName}&& other)
 {
     <#if withSourceRegion>
     m_sourcePosition = other.m_sourcePosition;
@@ -414,6 +420,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
         </#if>
     </#list>
 
+    (void)other;
     return *this;
 }
 </#macro>
@@ -448,7 +455,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
     <#local initialization><@compound_copy_initialization compoundConstructorsData/></#local>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT,
-        <#lt>const ${compoundConstructorsData.compoundName}& <#if compoundConstructorsData.fieldList?has_content || initialization?has_content>other</#if>,
+        <#lt>const ${compoundConstructorsData.compoundName}& other,
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
     <#if withSourceRegion>
@@ -470,13 +477,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if initialization?has_content>
     ${initialization}<#t>
     </#if>
+    (void)other;
 }
 </#macro>
 
 <#macro compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT, ::zserio::NoInitT,
-        <#lt>const ${compoundConstructorsData.compoundName}& <#if compoundConstructorsData.fieldList?has_content || initialization?has_content>other</#if>,
+        <#lt>const ${compoundConstructorsData.compoundName}& other,
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
     <#if withSourceRegion>
@@ -497,6 +505,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#list>
 </@cpp_initializer_list>
 {
+    (void)other;
 }
 </#macro>
 
