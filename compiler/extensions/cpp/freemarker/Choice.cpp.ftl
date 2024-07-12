@@ -281,6 +281,13 @@ ${I}return {};
         }
     </#if>
 
+    <#if withSourceRegion>
+        ::std::tuple<size_t, size_t> getSourceRegion() const override
+        {
+            return m_object.getSourceRegion();
+        }
+    </#if>
+
     private:
         <#if isConst>const </#if>${fullName}& m_object;
     };
@@ -292,14 +299,6 @@ ${I}return {};
 
         <#if withWriterCode>
 <@choice_reflectable false/>
-        </#if>
-
-        <#if withSourceRegion>
-            <#lt>std::tuple<size_t, size_t> ${name}::getSourceRegion() const
-            <#lt>{
-            <#lt>    return std::make_tuple<size_t, size_t>(
-            <#lt>        m_sourcePosition, bitSizeOf(m_sourcePosition));
-            <#lt>}
         </#if>
     </#if>
 </#if>
@@ -582,6 +581,13 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     <@choice_switch "choice_write_member", "choice_no_match", selectorExpression, 1, true/>
 }
     </#if>
+</#if>
+<#if withSourceRegion>
+std::tuple<size_t, size_t> ${name}::getSourceRegion() const
+{
+    return std::make_tuple<size_t, size_t>(
+        m_sourcePosition, bitSizeOf(m_sourcePosition));
+}
 </#if>
 <#if fieldList?has_content>
 

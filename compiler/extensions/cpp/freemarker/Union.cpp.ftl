@@ -378,6 +378,13 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         }
     </#if>
 
+    <#if withSourceRegion>
+        ::std::tuple<size_t, size_t> getSourceRegion() const override
+        {
+            return m_object.getSourceRegion();
+        }
+    </#if>
+
     private:
         <#if isConst>const </#if>${fullName}& m_object;
     };
@@ -705,6 +712,13 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
     }
 }
     </#if>
+</#if>
+<#if withSourceRegion>
+std::tuple<size_t, size_t> ${name}::getSourceRegion() const
+{
+    return std::make_tuple<size_t, size_t>(
+        m_sourcePosition, bitSizeOf(m_sourcePosition));
+}
 </#if>
 <#if fieldList?has_content>
 
