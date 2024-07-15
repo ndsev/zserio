@@ -150,8 +150,10 @@ enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withRangeCheckCode|-withoutRangeCheckCode`**
 
-Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
-Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
+Enables/disables code for integer range checking for fields before serialization which allows identification
+of the wrong field. By default is disabled. This option does not influence integer range checking during
+serialization which cannot be disabled (but which cannot identify the wrong field). Note that integer range
+checking before serialization can be enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withReflectionCode|-withoutReflectionCode`**
 

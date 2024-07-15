@@ -347,10 +347,10 @@ final class CommandLineArguments
 
         final OptionGroup rangeCheckCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithRangeCheckCode, false,
-                "enable code for integer range checking for field and parameter setters");
+                "enable code for integer range checking for fields before serialization");
         rangeCheckCodeGroup.addOption(option);
         option = new Option(OptionNameWithoutRangeCheckCode, false,
-                "disable code for integer range checking for field and parameter setters (default)");
+                "disable code for integer range checking for fields before serialization (default)");
         rangeCheckCodeGroup.addOption(option);
         rangeCheckCodeGroup.setRequired(false);
         options.addOptionGroup(rangeCheckCodeGroup);
