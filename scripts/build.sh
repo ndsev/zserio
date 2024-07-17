@@ -554,7 +554,9 @@ main()
     fi
 
     local ANT_PROPS=(-Dzserio.build_dir="${ZSERIO_BUILD_DIR}"
-                     -Dzserio.install_dir="${ZSERIO_DISTR_DIR}")
+                     -Dzserio.install_dir="${ZSERIO_DISTR_DIR}"
+                     -Dzserio_extensions.build_dir="${ZSERIO_BUILD_DIR}/compiler/extensions"
+                     -Dzserio_extensions.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs")
 
     # build Zserio Ant task
     if [[ ${PARAM_ANT_TASK} == 1 ]] ; then
