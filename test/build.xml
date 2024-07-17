@@ -61,6 +61,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     </fail>
 
     <!-- Test common utilities needed for some tests. -->
+    <property name="test_utils.build_dir" location="${zserio_java_test.build_dir}/utils"/>
     <include file="${zserio_java_test.base_dir}/utils/java/build.xml"/>
 
     <!-- Zserio ant task -->
