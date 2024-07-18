@@ -10,7 +10,7 @@ package zserio.extension.java;
 public final class JavaExtensionVersion
 {
     /** Java extension version string. */
-    public static final String JAVA_EXTENSION_VERSION_STRING = "1.1.0";
+    public static final String JAVA_EXTENSION_VERSION_STRING = "1.1.1";
 
     /** Expected Zserio core version string. */
     public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.14.1";

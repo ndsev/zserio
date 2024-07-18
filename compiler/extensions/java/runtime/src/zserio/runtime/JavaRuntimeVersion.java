@@ -6,5 +6,5 @@ package zserio.runtime;
 public class JavaRuntimeVersion
 {
     /** Java extension runtime version string. */
-    public static final String JAVA_EXTENSION_RUNTIME_VERSION_STRING = "1.1.0";
+    public static final String JAVA_EXTENSION_RUNTIME_VERSION_STRING = "1.1.1";
 }
