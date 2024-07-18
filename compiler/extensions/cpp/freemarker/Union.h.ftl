@@ -326,14 +326,14 @@ public:
     </#if>
 </#if>
 
-<#if withSourceRegion>
+<#if withBitPosition>
     /**
      * Get the source offset and size of the structure in bits.
      * For objects not loaded from a blob, the offest is 0.
      *
      * \return Tuple of the objects offset and size in bits.
      */
-    std::tuple<size_t, size_t> getSourceRegion() const;
+    size_t bitPosition() const;
 </#if>
 
 private:
@@ -351,8 +351,8 @@ private:
     ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 <#-- The source-position must be the first member to get called first in
      the constructors initializer list -->
-<#if withSourceRegion>
-    uint32_t m_sourcePosition = 0;
+<#if withBitPosition>
+    size_t m_bitPosition = 0;
 </#if>
 </#if>
     <@compound_parameter_members compoundParametersData/>

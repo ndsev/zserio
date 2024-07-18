@@ -234,10 +234,10 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         }
     </#if>
 
-    <#if withSourceRegion>
-        ::std::tuple<size_t, size_t> getSourceRegion() const override
+    <#if withBitPosition>
+        size_t bitPosition() const override
         {
-            return m_object.getSourceRegion();
+            return m_object.bitPosition();
         }
     </#if>
 
@@ -565,11 +565,10 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 }
     </#if>
 </#if>
-<#if withSourceRegion>
-std::tuple<size_t, size_t> ${name}::getSourceRegion() const
+<#if withBitPosition>
+size_t ${name}::bitPosition() const
 {
-    return std::make_tuple<size_t, size_t>(
-        m_sourcePosition, bitSizeOf(m_sourcePosition));
+    return m_bitPosition;
 }
 </#if>
 <#if fieldList?has_content>

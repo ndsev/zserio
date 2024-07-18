@@ -30,7 +30,7 @@ public final class CppExtensionParameters
         withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
         withSourcesAmalgamation = !parameters.argumentExists(OptionWithoutSourcesAmalgamation);
         withCodeComments = parameters.getWithCodeComments();
-        withSourceRegion = parameters.argumentExists(OptionWithSourceRegion);
+        withBitPosition = parameters.argumentExists(OptionWithBitPosition);
 
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator == null || cppAllocator.equals(StdAllocator))
@@ -59,8 +59,8 @@ public final class CppExtensionParameters
             description.add("sourcesAmalgamation");
         if (withCodeComments)
             description.add("codeComments");
-        if (withSourceRegion)
-            description.add("sourceRegion");
+        if (withBitPosition)
+            description.add("bitPosition");
         addAllocatorDescription(description);
         parametersDescription = description.toString();
 
@@ -122,9 +122,9 @@ public final class CppExtensionParameters
         return withCodeComments;
     }
 
-    public boolean getWithSourceRegion()
+    public boolean getWithBitPosition()
     {
-        return withSourceRegion;
+        return withBitPosition;
     }
 
     public TypesContext.AllocatorDefinition getAllocatorDefinition()
@@ -173,13 +173,13 @@ public final class CppExtensionParameters
         sourcesAmalgamationGroup.setRequired(false);
         options.addOptionGroup(sourcesAmalgamationGroup);
 
-        final OptionGroup sourceRegionGroup = new OptionGroup();
-        sourceRegionGroup.addOption(
-                new Option(OptionWithSourceRegion, false, "enable storage of source region allong compounds"));
-        sourceRegionGroup.addOption(new Option(
-                OptionWithoutSourceRegion, false, "disable storage of source region allong compounds"));
-        sourceRegionGroup.setRequired(false);
-        options.addOptionGroup(sourceRegionGroup);
+        final OptionGroup bitPositionGroup = new OptionGroup();
+        bitPositionGroup.addOption(
+                new Option(OptionWithBitPosition, false, "enable storage of source region allong compounds"));
+        bitPositionGroup.addOption(new Option(
+                OptionWithoutBitPosition, false, "disable storage of source region allong compounds"));
+        bitPositionGroup.setRequired(false);
+        options.addOptionGroup(bitPositionGroup);
     }
 
     static boolean hasOptionCpp(ExtensionParameters parameters)
@@ -231,8 +231,8 @@ public final class CppExtensionParameters
     private static final String OptionWithReflectionCode = "withReflectionCode";
     private static final String OptionWithSourcesAmalgamation = "withSourcesAmalgamation";
     private static final String OptionWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
-    private static final String OptionWithSourceRegion = "withSourceRegion";
-    private static final String OptionWithoutSourceRegion = "withoutSourceRegion";
+    private static final String OptionWithBitPosition = "withBitPosition";
+    private static final String OptionWithoutBitPosition = "withoutBitPosition";
 
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
@@ -248,7 +248,7 @@ public final class CppExtensionParameters
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;
     private final boolean withCodeComments;
-    private final boolean withSourceRegion;
+    private final boolean withBitPosition;
     private final TypesContext.AllocatorDefinition allocatorDefinition;
     private final String parametersDescription;
     private final String zserioVersion;

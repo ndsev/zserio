@@ -329,14 +329,14 @@ public:
     </#if>
 </#if>
 
-<#if withSourceRegion>
+<#if withBitPosition>
     /**
      * Get the source offset and size of the structure in bits.
      * For objects not loaded from a blob, the offest is 0.
      *
      * \return Tuple of the objects offset and size in bits.
      */
-    std::tuple<size_t, size_t> getSourceRegion() const;
+    size_t bitPosition() const;
 </#if>
 
 private:
@@ -351,9 +351,9 @@ private:
 
 </#if>
 <#-- Data members -->
-<#if withSourceRegion>
+<#if withBitPosition>
     <#-- Source position must be the first member in order to get initialized first. -->
-    uint32_t m_sourcePosition = 0;
+    size_t m_bitPosition = 0;
 </#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>

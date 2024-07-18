@@ -510,15 +510,15 @@ public:
     /** \} */
 
     /**
-     * Returns the reflectables source region (blob) as byte offset and length tuple.
+     * Returns the reflectables bit position (blob) in bits.
      *
-     * \note The source region is only stored for code generated using zserios `-withSourceRegion`
+     * \note The bit position is only stored for code generated using zserios `-withBitPosition`
      *       option and only set for objects read from a blob.
      *
-     * \return Tuple holding the offset and size of the reflectable
+     * \return The blob offset of the objects in bits
      * \throw CppRuntimeException If the object was compiled without the source region feature enabled.
      */
-    virtual std::tuple<size_t, size_t> getSourceRegion() const = 0;
+    virtual size_t bitPosition() const = 0;
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */

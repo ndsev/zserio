@@ -85,7 +85,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             needs_compound_initialization(compoundConstructorsData) ||
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
-    <#local wantsBitStreamReader = compoundConstructorsData.fieldList?has_content || withSourceRegion>
+    <#local wantsBitStreamReader = compoundConstructorsData.fieldList?has_content || withBitPosition>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
         ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
@@ -97,9 +97,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
         , const allocator_type&<#if read_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>)<#t>
 <@cpp_initializer_list>
-    <#-- Store reader bit position (option -withSourceRegion) -->
-    <#if withSourceRegion>
-        m_sourcePosition(<#if wantsBitStreamReader>in.getBitPosition()<#else>0u</#if>)
+    <#-- Store reader bit position (option -withBitPosition) -->
+    <#if withBitPosition>
+        m_bitPosition(<#if wantsBitStreamReader>in.getBitPosition()<#else>0u</#if>)
     </#if>
 
     <#if constructorArgumentTypeList?has_content>
@@ -176,8 +176,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const ${compoundConstructorsData.compoundName}& other)<#rt>
 <@cpp_initializer_list>
-    <#if withSourceRegion>
-        m_sourcePosition(other.m_sourcePosition)
+    <#if withBitPosition>
+        m_bitPosition(other.m_bitPosition)
     </#if>
 
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -310,8 +310,8 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>${compoundConstructorsData.compoundName}&& other)<#rt>
 <@cpp_initializer_list>
-    <#if withSourceRegion>
-        m_sourcePosition(::std::move(other.m_sourcePosition))
+    <#if withBitPosition>
+        m_bitPosition(::std::move(other.m_bitPosition))
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -332,8 +332,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
     <#lt>${compoundConstructorsData.compoundName}&& other)<#rt>
 <@cpp_initializer_list>
-    <#if withSourceRegion>
-        m_sourcePosition(::std::move(other.m_sourcePosition))
+    <#if withBitPosition>
+        m_bitPosition(::std::move(other.m_bitPosition))
     </#if>
 
     m_isInitialized(false)
@@ -384,8 +384,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
         <#lt>${compoundConstructorsData.compoundName}&& other)
 {
-    <#if withSourceRegion>
-    m_sourcePosition = ::std::move(other.m_sourcePosition);
+    <#if withBitPosition>
+    m_bitPosition = ::std::move(other.m_bitPosition);
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -406,8 +406,8 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
     <#lt>${compoundConstructorsData.compoundName}&& other)
 {
-    <#if withSourceRegion>
-    m_sourcePosition = other.m_sourcePosition;
+    <#if withBitPosition>
+    m_bitPosition = other.m_bitPosition;
     </#if>
     m_isInitialized = false;
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -458,8 +458,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <#lt>const ${compoundConstructorsData.compoundName}& other,
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
-    <#if withSourceRegion>
-        m_sourcePosition(other.m_sourcePosition)
+    <#if withBitPosition>
+        m_bitPosition(other.m_bitPosition)
     </#if>
 
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -487,8 +487,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <#lt>const ${compoundConstructorsData.compoundName}& other,
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
-    <#if withSourceRegion>
-        m_sourcePosition(other.m_sourcePosition)
+    <#if withBitPosition>
+        m_bitPosition(other.m_bitPosition)
     </#if>
 
     m_isInitialized(false)

@@ -114,7 +114,7 @@ public:
     string<ALLOC> toString(const ALLOC& allocator) const override;
     string<ALLOC> toString() const override;
 
-    std::tuple<size_t, size_t> getSourceRegion() const override;
+    size_t bitPosition() const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -3399,9 +3399,9 @@ public:
         return toString(ALLOC());
     }
 
-    std::tuple<size_t, size_t> getSourceRegion() const override
+    size_t bitPosition() const override
     {
-        return m_reflectable->getSourceRegion();
+        return m_reflectable->bitPosition();
     }
 
 private:
@@ -4376,9 +4376,9 @@ string<ALLOC> ReflectableBase<ALLOC>::toString() const
 }
 
 template <typename ALLOC>
-std::tuple<size_t, size_t> ReflectableBase<ALLOC>::getSourceRegion() const
+size_t ReflectableBase<ALLOC>::bitPosition() const
 {
-    throw CppRuntimeException("Source region unavailable for type '") << getTypeInfo().getSchemaName() << "'!";
+    throw CppRuntimeException("Bit position unavailable for type '") << getTypeInfo().getSchemaName() << "'!";
 }
 
 template <typename ALLOC>

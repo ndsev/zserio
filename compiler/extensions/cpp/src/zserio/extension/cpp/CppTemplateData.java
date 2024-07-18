@@ -26,7 +26,7 @@ public abstract class CppTemplateData implements IncludeCollector
         withReflectionCode = context.getWithReflectionCode();
         withRangeCheckCode = context.getWithRangeCheckCode();
         withCodeComments = context.getWithCodeComments();
-        withSourceRegion = context.getWithSourceRegion();
+        withBitPosition = context.getWithBitPosition();
 
         headerSystemIncludes = new TreeSet<String>();
         headerUserIncludes = new TreeSet<String>();
@@ -76,9 +76,9 @@ public abstract class CppTemplateData implements IncludeCollector
         return withCodeComments;
     }
 
-    public boolean getWithSourceRegion()
+    public boolean getWithBitPosition()
     {
-        return withSourceRegion;
+        return withBitPosition;
     }
 
     public Iterable<String> getHeaderSystemIncludes()
@@ -446,7 +446,7 @@ public abstract class CppTemplateData implements IncludeCollector
     private final boolean withReflectionCode;
     private final boolean withRangeCheckCode;
     private final boolean withCodeComments;
-    private final boolean withSourceRegion;
+    private final boolean withBitPosition;
 
     private final TreeSet<String> headerSystemIncludes;
     private final TreeSet<String> headerUserIncludes;
