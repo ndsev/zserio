@@ -314,7 +314,7 @@ public class ${name} implements <#rt>
         </#if>
     public boolean ${field.optional.isUsedIndicatorName}()
     {
-        return <#if field.optional.clause??>(${field.optional.clause});<#else>${field.optional.isSetIndicatorName}();</#if>
+        return <#if field.optional.clause??>(${field.optional.clause});<#else>(<@field_member_name field/> != null);</#if>
     }
 
         <#if withWriterCode>
