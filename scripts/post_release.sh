@@ -739,7 +739,7 @@ update_web_pages()
         read -n 1 -s -r -p "Press any key to PUSH the 'web-pages' branch..."
         echo
 
-        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages
+        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --force --set-upstream origin web-pages
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
