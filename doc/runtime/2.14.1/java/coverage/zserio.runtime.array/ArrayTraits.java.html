@@ -1,0 +1,1509 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayTraits.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">ArrayTraits.java</span></div><h1>ArrayTraits.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.PackableSizeOf;
+import zserio.runtime.SizeOf;
+import zserio.runtime.array.ArrayElement.IntegralArrayElement;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.PackableWriter;
+import zserio.runtime.io.Writer;
+
+/**
+ * Interface for array traits.
+ *
+ * Array traits provides an implementation of zserio functions for one element given by index and raw array.
+ */
+public interface ArrayTraits
+{
+    /**
+     * Checks if bit size of the array elements is always the same.
+     *
+     * @return true if bit size of the array elements is constant.
+     */
+    public boolean isBitSizeOfConstant();
+
+    /**
+     * Gets packed array traits.
+     *
+     * @return Instance of packed array traits or null if the array is not packable.
+     */
+    public PackedArrayTraits getPackedArrayTraits();
+
+    /**
+     * Gets the bit size of the array element if it is stored in the bit stream.
+     *
+     * @param bitPosition Current bit position in the bit stream.
+     * @param element     Array element.
+     *
+     * @return Bit size of the given array element if it is stored in the bit stream.
+     */
+    public int bitSizeOf(long bitPosition, ArrayElement element);
+
+    /**
+     * Initializes indexed offsets for the array element.
+     *
+     * @param bitPosition Current bit position in the bit stream.
+     * @param element     Array element.
+     *
+     * @return Updated bit stream position which points to the first bit after the array element.
+     */
+    public long initializeOffsets(long bitPosition, ArrayElement element);
+
+    /**
+     * Reads the array element from the bit stream.
+     *
+     * @param reader Bit stream reader to read from.
+     * @param index  Index of the array element to read.
+     *
+     * @return Array element filled by read element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public ArrayElement read(BitStreamReader reader, int index) throws IOException;
+
+    /**
+     * Writes the array element to the bit stream.
+     *
+     * @param writer  Bit stream write to write to.
+     * @param element Array element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void write(BitStreamWriter writer, ArrayElement element) throws IOException;
+
+    /**
+     * Interface for integral array traits.
+     */
+    public static interface IntegralArrayTraits extends ArrayTraits {
+        /**
+         * Creates integral array element from given big integer value.
+         *
+         * @param value Big integer value of the element to create.
+         *
+         * @return Integral array element.
+         */
+        public IntegralArrayElement fromBigInteger(BigInteger value);
+
+        /**
+         * Gets the bit size of the array element if it is stored in the bit stream.
+         *
+         * @param element     Array element.
+         *
+         * @return Bit size of the given array element if it is stored in the bit stream.
+         */
+        public int bitSizeOf(ArrayElement element);
+
+        /**
+         * Reads the array element from the bit stream.
+         *
+         * @param reader Bit stream reader to read from.
+         *
+         * @return Array element filled by read element.
+         *
+         * @throws IOException Failure during bit stream manipulation.
+         */
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException;
+    }
+
+    /**
+     * Implementation of common integral array traits functionality.
+     */
+    public static abstract class IntegralArrayTraitsBase implements IntegralArrayTraits
+    {
+        /**
+         * Constructor.
+         */
+        public IntegralArrayTraitsBase()
+<span class="fc" id="L122">        {</span>
+<span class="fc" id="L123">            this.packedArrayTraits = new PackedArrayTraits.IntegralPackedArrayTraits(this);</span>
+<span class="fc" id="L124">        }</span>
+
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L129">            return packedArrayTraits;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L135">            return bitSizeOf(element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L141">            return read(reader);</span>
+        }
+
+        private final PackedArrayTraits packedArrayTraits;
+    }
+
+    /**
+     * Array traits for zserio int8 and int:1...int:8 arrays which are mapped to Java byte[] array.
+     */
+    public static final class SignedBitFieldByteArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public SignedBitFieldByteArrayTraits(int numBits)
+<span class="fc" id="L158">        {</span>
+<span class="fc" id="L159">            this.numBits = numBits;</span>
+<span class="fc" id="L160">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L165">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L171">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L177">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L183">            return new ArrayElement.ByteArrayElement((byte)reader.readSignedBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L189">            writer.writeSignedBits(((ArrayElement.ByteArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L190">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L195">            return new ArrayElement.ByteArrayElement(bigInteger.byteValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio int16 and int:9...int:16 arrays which are mapped to Java short[] array.
+     */
+    public static final class SignedBitFieldShortArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public SignedBitFieldShortArrayTraits(int numBits)
+<span class="fc" id="L212">        {</span>
+<span class="fc" id="L213">            this.numBits = numBits;</span>
+<span class="fc" id="L214">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L219">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L225">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L231">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L237">            return new ArrayElement.ShortArrayElement((short)reader.readSignedBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L243">            writer.writeSignedBits(((ArrayElement.ShortArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L244">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L249">            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio int32 and int:17...int:32 arrays which are mapped to Java int[] array.
+     */
+    public static final class SignedBitFieldIntArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public SignedBitFieldIntArrayTraits(int numBits)
+<span class="fc" id="L266">        {</span>
+<span class="fc" id="L267">            this.numBits = numBits;</span>
+<span class="fc" id="L268">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L273">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L279">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L285">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L291">            return new ArrayElement.IntArrayElement((int)reader.readSignedBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L297">            writer.writeSignedBits(((ArrayElement.IntArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L298">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L303">            return new ArrayElement.IntArrayElement(bigInteger.intValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio int64 and int:33...int:64 arrays which are mapped to Java long[] array.
+     */
+    public static final class SignedBitFieldLongArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public SignedBitFieldLongArrayTraits(int numBits)
+<span class="fc" id="L320">        {</span>
+<span class="fc" id="L321">            this.numBits = numBits;</span>
+<span class="fc" id="L322">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L327">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L333">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L339">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L345">            return new ArrayElement.LongArrayElement(reader.readSignedBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L351">            writer.writeSignedBits(((ArrayElement.LongArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L352">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L357">            return new ArrayElement.LongArrayElement(bigInteger.longValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio bit:1...bit:7 arrays which are mapped to Java byte[] array.
+     */
+    public static final class BitFieldByteArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public BitFieldByteArrayTraits(int numBits)
+<span class="fc" id="L374">        {</span>
+<span class="fc" id="L375">            this.numBits = numBits;</span>
+<span class="fc" id="L376">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L381">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L387">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L393">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L399">            return new ArrayElement.ByteArrayElement((byte)reader.readBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L405">            writer.writeBits(((ArrayElement.ByteArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L406">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L411">            return new ArrayElement.ByteArrayElement(bigInteger.byteValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio uint8 and bit:8...bit:15 arrays which are mapped to Java short[] array.
+     */
+    public static final class BitFieldShortArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public BitFieldShortArrayTraits(int numBits)
+<span class="fc" id="L428">        {</span>
+<span class="fc" id="L429">            this.numBits = numBits;</span>
+<span class="fc" id="L430">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L435">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L441">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L447">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L453">            return new ArrayElement.ShortArrayElement((short)reader.readBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L459">            writer.writeBits(((ArrayElement.ShortArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L460">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L465">            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio uint16 and bit:16...bit:31 arrays which are mapped to Java int[] array.
+     */
+    public static final class BitFieldIntArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public BitFieldIntArrayTraits(int numBits)
+<span class="fc" id="L482">        {</span>
+<span class="fc" id="L483">            this.numBits = numBits;</span>
+<span class="fc" id="L484">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L489">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L495">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L501">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L507">            return new ArrayElement.IntArrayElement((int)reader.readBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L513">            writer.writeBits(((ArrayElement.IntArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L514">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L519">            return new ArrayElement.IntArrayElement(bigInteger.intValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio uint32 and bit:32...bit:63 arrays which are mapped to Java long[] array.
+     */
+    public static final class BitFieldLongArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public BitFieldLongArrayTraits(int numBits)
+<span class="fc" id="L536">        {</span>
+<span class="fc" id="L537">            this.numBits = numBits;</span>
+<span class="fc" id="L538">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L543">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L549">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L555">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L561">            return new ArrayElement.LongArrayElement(reader.readBits(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L567">            writer.writeBits(((ArrayElement.LongArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L568">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L573">            return new ArrayElement.LongArrayElement(bigInteger.longValue());</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio uint64, bit:64 and dynamic bit field arrays which are mapped to
+     * Java BigInteger[] array.
+     */
+    public static final class BitFieldBigIntegerArrayTraits extends IntegralArrayTraitsBase
+    {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
+        public BitFieldBigIntegerArrayTraits(int numBits)
+<span class="fc" id="L591">        {</span>
+<span class="fc" id="L592">            this.numBits = numBits;</span>
+<span class="fc" id="L593">        }</span>
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L598">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L604">            return numBits;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L610">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L616">            return new ArrayElement.BigIntegerArrayElement(reader.readBigInteger(numBits));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L622">            writer.writeBigInteger(((ArrayElement.BigIntegerArrayElement)element).get(), numBits);</span>
+<span class="fc" id="L623">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L628">            return new ArrayElement.BigIntegerArrayElement(bigInteger);</span>
+        }
+
+        private final int numBits;
+    }
+
+    /**
+     * Array traits for zserio varint16 arrays which are mapped to Java short[] array.
+     */
+<span class="fc" id="L637">    public static final class VarInt16ArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L642">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L648">            return BitSizeOfCalculator.getBitSizeOfVarInt16(((ArrayElement.ShortArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L654">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L660">            return new ArrayElement.ShortArrayElement(reader.readVarInt16());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L666">            writer.writeVarInt16(((ArrayElement.ShortArrayElement)element).get());</span>
+<span class="fc" id="L667">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L672">            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varint32 arrays which are mapped to Java int[] array.
+     */
+<span class="fc" id="L679">    public static final class VarInt32ArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L684">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L690">            return BitSizeOfCalculator.getBitSizeOfVarInt32(((ArrayElement.IntArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L696">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L702">            return new ArrayElement.IntArrayElement(reader.readVarInt32());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L708">            writer.writeVarInt32(((ArrayElement.IntArrayElement)element).get());</span>
+<span class="fc" id="L709">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L714">            return new ArrayElement.IntArrayElement(bigInteger.intValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varint64 arrays which are mapped to Java long[] array.
+     */
+<span class="fc" id="L721">    public static final class VarInt64ArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L726">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L732">            return BitSizeOfCalculator.getBitSizeOfVarInt64(((ArrayElement.LongArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L738">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L744">            return new ArrayElement.LongArrayElement(reader.readVarInt64());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L750">            writer.writeVarInt64(((ArrayElement.LongArrayElement)element).get());</span>
+<span class="fc" id="L751">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L756">            return new ArrayElement.LongArrayElement(bigInteger.longValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varint arrays which are mapped to Java long[] array.
+     */
+<span class="fc" id="L763">    public static final class VarIntArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L768">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L774">            return BitSizeOfCalculator.getBitSizeOfVarInt(((ArrayElement.LongArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L780">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L786">            return new ArrayElement.LongArrayElement(reader.readVarInt());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L792">            writer.writeVarInt(((ArrayElement.LongArrayElement)element).get());</span>
+<span class="fc" id="L793">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L798">            return new ArrayElement.LongArrayElement(bigInteger.longValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varuint16 arrays which are mapped to Java short[] array.
+     */
+<span class="fc" id="L805">    public static final class VarUInt16ArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L810">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L816">            return BitSizeOfCalculator.getBitSizeOfVarUInt16(((ArrayElement.ShortArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L822">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L828">            return new ArrayElement.ShortArrayElement(reader.readVarUInt16());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L834">            writer.writeVarUInt16(((ArrayElement.ShortArrayElement)element).get());</span>
+<span class="fc" id="L835">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L840">            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varuint32 arrays which are mapped to Java int[] array.
+     */
+<span class="fc" id="L847">    public static final class VarUInt32ArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L852">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L858">            return BitSizeOfCalculator.getBitSizeOfVarUInt32(((ArrayElement.IntArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L864">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L870">            return new ArrayElement.IntArrayElement(reader.readVarUInt32());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L876">            writer.writeVarUInt32(((ArrayElement.IntArrayElement)element).get());</span>
+<span class="fc" id="L877">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L882">            return new ArrayElement.IntArrayElement(bigInteger.intValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varuint64 arrays which are mapped to Java long[] array.
+     */
+<span class="fc" id="L889">    public static final class VarUInt64ArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L894">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L900">            return BitSizeOfCalculator.getBitSizeOfVarUInt64(((ArrayElement.LongArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L906">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L912">            return new ArrayElement.LongArrayElement(reader.readVarUInt64());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L918">            writer.writeVarUInt64(((ArrayElement.LongArrayElement)element).get());</span>
+<span class="fc" id="L919">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L924">            return new ArrayElement.LongArrayElement(bigInteger.longValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varuint arrays which are mapped to Java BigInteger[] array.
+     */
+<span class="fc" id="L931">    public static final class VarUIntArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L936">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L942">            return BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L943">                    ((ArrayElement.BigIntegerArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L949">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L955">            return new ArrayElement.BigIntegerArrayElement(reader.readVarUInt());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L961">            writer.writeVarUInt(((ArrayElement.BigIntegerArrayElement)element).get());</span>
+<span class="fc" id="L962">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L967">            return new ArrayElement.BigIntegerArrayElement(bigInteger);</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio varsize arrays which are mapped to Java int[] array.
+     */
+<span class="fc" id="L974">    public static final class VarSizeArrayTraits extends IntegralArrayTraitsBase</span>
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L979">            return false;</span>
+        }
+
+        @Override
+        public int bitSizeOf(ArrayElement element)
+        {
+<span class="fc" id="L985">            return BitSizeOfCalculator.getBitSizeOfVarSize(((ArrayElement.IntArrayElement)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L991">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
+        {
+<span class="fc" id="L997">            return new ArrayElement.IntArrayElement(reader.readVarSize());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1003">            writer.writeVarSize(((ArrayElement.IntArrayElement)element).get());</span>
+<span class="fc" id="L1004">        }</span>
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+<span class="fc" id="L1009">            return new ArrayElement.IntArrayElement(bigInteger.intValue());</span>
+        }
+    }
+
+    /**
+     * Array traits for zserio float16 arrays which are mapped to Java float[] array.
+     */
+<span class="fc" id="L1016">    public static final class Float16ArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1021">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1027">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1033">            return 16;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1039">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1045">            return new ArrayElement.FloatArrayElement(reader.readFloat16());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1051">            writer.writeFloat16(((ArrayElement.FloatArrayElement)element).get());</span>
+<span class="fc" id="L1052">        }</span>
+    }
+
+    /**
+     * Array traits for zserio float32 arrays which are mapped to Java float[] array.
+     */
+<span class="fc" id="L1058">    public static final class Float32ArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1063">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1069">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1075">            return 32;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1081">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1087">            return new ArrayElement.FloatArrayElement(reader.readFloat32());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1093">            writer.writeFloat32(((ArrayElement.FloatArrayElement)element).get());</span>
+<span class="fc" id="L1094">        }</span>
+    }
+
+    /**
+     * Array traits for zserio float64 arrays which are mapped to Java double[] array.
+     */
+<span class="fc" id="L1100">    public static final class Float64ArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1105">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1111">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1117">            return 64;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1123">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1129">            return new ArrayElement.DoubleArrayElement(reader.readFloat64());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1135">            writer.writeFloat64(((ArrayElement.DoubleArrayElement)element).get());</span>
+<span class="fc" id="L1136">        }</span>
+    }
+
+    /**
+     * Array traits for zserio bytes arrays which are mapped to Java byte[][] array.
+     */
+<span class="fc" id="L1142">    public static final class BytesArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1147">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1153">            return false;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1160">            return BitSizeOfCalculator.getBitSizeOfBytes(</span>
+<span class="fc" id="L1161">                    ((ArrayElement.ObjectArrayElement&lt;byte[]&gt;)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1167">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1173">            return new ArrayElement.ObjectArrayElement&lt;&gt;(reader.readBytes());</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1180">            writer.writeBytes(((ArrayElement.ObjectArrayElement&lt;byte[]&gt;)element).get());</span>
+<span class="fc" id="L1181">        }</span>
+    }
+
+    /**
+     * Array traits for zserio string arrays which are mapped to Java String[] array.
+     */
+<span class="fc" id="L1187">    public static final class StringArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1192">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1198">            return false;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1205">            return BitSizeOfCalculator.getBitSizeOfString(</span>
+<span class="fc" id="L1206">                    ((ArrayElement.ObjectArrayElement&lt;String&gt;)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1212">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1218">            return new ArrayElement.ObjectArrayElement&lt;&gt;(reader.readString());</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1225">            writer.writeString(((ArrayElement.ObjectArrayElement&lt;String&gt;)element).get());</span>
+<span class="fc" id="L1226">        }</span>
+    }
+
+    /**
+     * Array traits for zserio bool arrays which are mapped to Java boolean[] array.
+     */
+<span class="fc" id="L1232">    public static final class BoolArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1237">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1243">            return true;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1249">            return 1;</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1255">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1261">            return new ArrayElement.BooleanArrayElement(reader.readBool());</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1267">            writer.writeBool(((ArrayElement.BooleanArrayElement)element).get());</span>
+<span class="fc" id="L1268">        }</span>
+    }
+
+    /**
+     * Array traits for zserio extern bit buffer arrays which are mapped to Java BitBuffer[] array.
+     */
+<span class="fc" id="L1274">    public static final class BitBufferArrayTraits implements ArrayTraits</span>
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1279">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1285">            return false;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1292">            return BitSizeOfCalculator.getBitSizeOfBitBuffer(</span>
+<span class="fc" id="L1293">                    ((ArrayElement.ObjectArrayElement&lt;BitBuffer&gt;)element).get());</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1299">            return bitPosition + bitSizeOf(bitPosition, element);</span>
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1305">            return new ArrayElement.ObjectArrayElement&lt;&gt;(reader.readBitBuffer());</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1312">            writer.writeBitBuffer(((ArrayElement.ObjectArrayElement&lt;BitBuffer&gt;)element).get());</span>
+<span class="fc" id="L1313">        }</span>
+    }
+
+    /**
+     * Array traits for zserio object arrays (without writer part) which are mapped to Java zserio object array.
+     */
+    public static class ObjectArrayTraits&lt;E extends SizeOf&gt; implements ArrayTraits
+    {
+        /**
+         * Constructor from element factory.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public ObjectArrayTraits(ElementFactory&lt;E&gt; elementFactory)
+<span class="fc" id="L1327">        {</span>
+<span class="fc" id="L1328">            this.elementFactory = elementFactory;</span>
+<span class="fc" id="L1329">        }</span>
+
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1334">            return null;</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1340">            return false;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1347">            return ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().bitSizeOf(bitPosition);</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="nc" id="L1353">            throw new UnsupportedOperationException(</span>
+                    &quot;ArrayTraits: initializeOffsets is not implemented for read only ObjectArrayTraits!&quot;);
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1360">            return new ArrayElement.ObjectArrayElement&lt;&gt;(elementFactory.create(reader, index));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="nc" id="L1366">            throw new UnsupportedOperationException(</span>
+                    &quot;ArrayTraits: write is not implemented for read only ObjectArrayTraits!&quot;);
+        }
+
+        private final ElementFactory&lt;E&gt; elementFactory;
+    }
+
+    /**
+     * Array traits for zserio object arrays (with writer part) which are mapped to Java zserio object array.
+     */
+    public static final class WriteObjectArrayTraits&lt;E extends Writer &amp; SizeOf&gt; extends ObjectArrayTraits&lt;E&gt;
+    {
+        /**
+         * Constructor from element factory.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public WriteObjectArrayTraits(ElementFactory&lt;E&gt; elementFactory)
+        {
+<span class="fc" id="L1385">            super(elementFactory);</span>
+<span class="fc" id="L1386">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1392">            return ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().initializeOffsets(bitPosition);</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1399">            ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().write(writer);</span>
+<span class="fc" id="L1400">        }</span>
+    }
+
+    /**
+     * Array traits for zserio packable object arrays (without writer part) which are mapped to Java zserio
+     * object array.
+     */
+    public static class PackableObjectArrayTraits&lt;E extends PackableSizeOf&gt; implements ArrayTraits
+    {
+        /**
+         * Constructor from element factory.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public PackableObjectArrayTraits(PackableElementFactory&lt;E&gt; elementFactory)
+<span class="fc" id="L1415">        {</span>
+<span class="fc" id="L1416">            this.elementFactory = elementFactory;</span>
+<span class="fc" id="L1417">        }</span>
+
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="nc" id="L1422">            return new PackedArrayTraits.ObjectPackedArrayTraits&lt;&gt;(getElementFactory());</span>
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+<span class="fc" id="L1428">            return false;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1435">            return ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().bitSizeOf(bitPosition);</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="nc" id="L1441">            throw new UnsupportedOperationException(</span>
+                    &quot;ArrayTraits: initializeOffsets is not implemented for read only ObjectArrayTraits!&quot;);
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L1448">            return new ArrayElement.ObjectArrayElement&lt;&gt;(elementFactory.create(reader, index));</span>
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="nc" id="L1454">            throw new UnsupportedOperationException(</span>
+                    &quot;ArrayTraits: write is not implemented for read only ObjectArrayTraits!&quot;);
+        }
+
+        /**
+         * Gets the element factory.
+         *
+         * @return Element factory.
+         */
+        protected PackableElementFactory&lt;E&gt; getElementFactory()
+        {
+<span class="fc" id="L1465">            return elementFactory;</span>
+        }
+
+        private final PackableElementFactory&lt;E&gt; elementFactory;
+    }
+
+    /**
+     * Array traits for zserio packable object arrays (with writer part) which are mapped to Java zserio
+     * object array.
+     */
+    public static final class WritePackableObjectArrayTraits&lt;E extends PackableWriter &amp; PackableSizeOf&gt;
+            extends PackableObjectArrayTraits&lt;E&gt;
+    {
+        /**
+         * Constructor from element factory.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public WritePackableObjectArrayTraits(PackableElementFactory&lt;E&gt; elementFactory)
+        {
+<span class="fc" id="L1485">            super(elementFactory);</span>
+<span class="fc" id="L1486">        }</span>
+
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+<span class="fc" id="L1491">            return new PackedArrayTraits.WriteObjectPackedArrayTraits&lt;&gt;(getElementFactory());</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L1498">            return ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().initializeOffsets(bitPosition);</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+<span class="fc" id="L1505">            ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().write(writer);</span>
+<span class="fc" id="L1506">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
