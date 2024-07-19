@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonTokenizer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonTokenizer.java</span></div><h1>JsonTokenizer.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import java.io.IOException;
+import java.io.Reader;
+
+/**
+ * Json Tokenizer used by Json Parser.
+ */
+class JsonTokenizer
+{
+    /**
+     * Constructor.
+     *
+     * @param reader Text stream to tokenize.
+     */
+    public JsonTokenizer(Reader reader)
+<span class="fc" id="L17">    {</span>
+<span class="fc" id="L18">        this.reader = reader;</span>
+
+<span class="fc" id="L20">        content = readContent();</span>
+<span class="fc" id="L21">        lineNumber = 1;</span>
+<span class="fc" id="L22">        columnNumber = 1;</span>
+<span class="fc" id="L23">        tokenColumnNumber = 1;</span>
+<span class="fc" id="L24">        pos = 0;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        setToken(content.isEmpty() ? JsonToken.END_OF_FILE : JsonToken.BEGIN_OF_FILE, null);</span>
+<span class="fc" id="L26">        decoderResult = null;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Moves to next token.
+     *
+     * @return Next token.
+     */
+    public JsonToken next()
+    {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        while (!decodeNext())</span>
+        {
+<span class="fc" id="L38">            String newContent = readContent();</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (newContent.isEmpty())</span>
+            {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                if (token == JsonToken.END_OF_FILE)</span>
+                {
+<span class="fc" id="L43">                    tokenColumnNumber = columnNumber;</span>
+                }
+                else
+                {
+                    // stream is finished but last token is not EOF =&gt; value must be at the end
+<span class="fc" id="L48">                    setTokenValue();</span>
+                }
+
+<span class="fc" id="L51">                return token;</span>
+            }
+
+<span class="fc" id="L54">            content = content.substring(pos) + newContent;</span>
+<span class="fc" id="L55">            pos = 0;</span>
+<span class="fc" id="L56">        }</span>
+
+<span class="fc" id="L58">        return token;</span>
+    }
+
+    /**
+     * Gets current token.
+     *
+     * @return Current token.
+     */
+    public JsonToken getToken()
+    {
+<span class="fc" id="L68">        return token;</span>
+    }
+
+    /**
+     * Gets current value.
+     *
+     * @return Current value.
+     */
+    public Object getValue()
+    {
+<span class="fc" id="L78">        return value;</span>
+    }
+
+    /**
+     * Gets line number of the current token.
+     *
+     * @return Line number.
+     */
+    public int getLine()
+    {
+<span class="fc" id="L88">        return lineNumber;</span>
+    }
+
+    /**
+     * Gets column number of the current token.
+     *
+     * @return Column number.
+     */
+    public int getColumn()
+    {
+<span class="fc" id="L98">        return tokenColumnNumber;</span>
+    }
+
+    private String readContent()
+    {
+        try
+        {
+<span class="fc" id="L105">            final int count = reader.read(buffer);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (count == -1)</span>
+<span class="fc" id="L107">                return &quot;&quot;;</span>
+
+<span class="fc" id="L109">            return new String(buffer, 0, count);</span>
+        }
+<span class="nc" id="L111">        catch (IOException excpt)</span>
+        {
+<span class="nc" id="L113">            throw new JsonParserError(&quot;JsonTokenizer: Read failure!&quot;, excpt);</span>
+        }
+    }
+
+    private boolean decodeNext()
+    {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (!skipWhitespaces())</span>
+<span class="fc" id="L120">            return false;</span>
+
+<span class="fc" id="L122">        tokenColumnNumber = columnNumber;</span>
+
+<span class="fc" id="L124">        final char nextChar = content.charAt(pos);</span>
+<span class="fc bfc" id="L125" title="All 7 branches covered.">        switch (nextChar)</span>
+        {
+        case '{':
+<span class="fc" id="L128">            setToken(JsonToken.BEGIN_OBJECT, nextChar);</span>
+<span class="fc" id="L129">            setPosition(pos + 1, columnNumber + 1);</span>
+<span class="fc" id="L130">            break;</span>
+
+        case '}':
+<span class="fc" id="L133">            setToken(JsonToken.END_OBJECT, nextChar);</span>
+<span class="fc" id="L134">            setPosition(pos + 1, columnNumber + 1);</span>
+<span class="fc" id="L135">            break;</span>
+
+        case '[':
+<span class="fc" id="L138">            setToken(JsonToken.BEGIN_ARRAY, nextChar);</span>
+<span class="fc" id="L139">            setPosition(pos + 1, columnNumber + 1);</span>
+<span class="fc" id="L140">            break;</span>
+
+        case ']':
+<span class="fc" id="L143">            setToken(JsonToken.END_ARRAY, nextChar);</span>
+<span class="fc" id="L144">            setPosition(pos + 1, columnNumber + 1);</span>
+<span class="fc" id="L145">            break;</span>
+
+        case ':':
+<span class="fc" id="L148">            setToken(JsonToken.KEY_SEPARATOR, nextChar);</span>
+<span class="fc" id="L149">            setPosition(pos + 1, columnNumber + 1);</span>
+<span class="fc" id="L150">            break;</span>
+
+        case ',':
+<span class="fc" id="L153">            setToken(JsonToken.ITEM_SEPARATOR, nextChar);</span>
+<span class="fc" id="L154">            setPosition(pos + 1, columnNumber + 1);</span>
+<span class="fc" id="L155">            break;</span>
+
+        default:
+<span class="fc" id="L158">            decoderResult = JsonDecoder.decodeValue(content, pos);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (pos + decoderResult.getNumReadChars() &gt;= content.length())</span>
+<span class="fc" id="L160">                return false; // we are at the end of chunk =&gt; try to read more</span>
+
+<span class="fc" id="L162">            setTokenValue();</span>
+            break;
+        }
+
+<span class="fc" id="L166">        return true;</span>
+    }
+
+    private boolean skipWhitespaces()
+    {
+        while (true)
+        {
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            if (pos &gt;= content.length())</span>
+            {
+<span class="fc" id="L175">                setToken(JsonToken.END_OF_FILE, null);</span>
+<span class="fc" id="L176">                return false;</span>
+            }
+
+<span class="fc" id="L179">            final char nextChar = content.charAt(pos);</span>
+<span class="pc bpc" id="L180" title="1 of 4 branches missed.">            if (nextChar == ' ' || nextChar == '\t')</span>
+            {
+<span class="fc" id="L182">                setPosition(pos + 1, columnNumber + 1);</span>
+            }
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            else if (nextChar == '\n')</span>
+            {
+<span class="fc" id="L186">                lineNumber++;</span>
+<span class="fc" id="L187">                setPosition(pos + 1, 1);</span>
+            }
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            else if (nextChar == '\r')</span>
+            {
+<span class="fc bfc" id="L191" title="All 2 branches covered.">                if (pos + 1 &gt;= content.length())</span>
+                {
+<span class="fc" id="L193">                    setToken(JsonToken.END_OF_FILE, null);</span>
+<span class="fc" id="L194">                    return false;</span>
+                }
+<span class="fc" id="L196">                final char nextNextChar = content.charAt(pos + 1);</span>
+<span class="fc" id="L197">                lineNumber++;</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                setPosition(pos + ((nextNextChar == '\n') ? 2 : 1), 1);</span>
+            }
+            else
+            {
+                break;
+            }
+<span class="fc" id="L204">        }</span>
+
+<span class="fc" id="L206">        return true;</span>
+    }
+
+    private void setToken(JsonToken newToken, Object newValue)
+    {
+<span class="fc" id="L211">        token = newToken;</span>
+<span class="fc" id="L212">        value = newValue;</span>
+<span class="fc" id="L213">    }</span>
+
+    private void setPosition(int newPos, int newColumnNumber)
+    {
+<span class="fc" id="L217">        pos = newPos;</span>
+<span class="fc" id="L218">        columnNumber = newColumnNumber;</span>
+<span class="fc" id="L219">    }</span>
+
+    private void setTokenValue()
+    {
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (!decoderResult.success())</span>
+        {
+<span class="fc" id="L225">            throw new JsonParserError(</span>
+                    &quot;JsonTokenizer:&quot; + lineNumber + &quot;:&quot; + tokenColumnNumber + &quot;: Unknown token!&quot;);
+        }
+
+<span class="fc" id="L229">        setToken(JsonToken.VALUE, decoderResult.getValue());</span>
+<span class="fc" id="L230">        final int numReadChars = decoderResult.getNumReadChars();</span>
+<span class="fc" id="L231">        setPosition(pos + numReadChars, columnNumber + numReadChars);</span>
+<span class="fc" id="L232">    }</span>
+
+    private static final int MAX_LINE_LEN = 64 * 1024;
+
+    private final Reader reader;
+<span class="fc" id="L237">    private final char[] buffer = new char[MAX_LINE_LEN];</span>
+
+    private String content;
+    private int lineNumber;
+    private int columnNumber;
+    private int tokenColumnNumber;
+    private int pos;
+    private JsonToken token;
+    private Object value;
+    private JsonDecoder.Result decoderResult;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
