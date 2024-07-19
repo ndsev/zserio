@@ -18,6 +18,11 @@ union ExtraParamUnion
     uint32  value32;
 };
 
+struct ItemWithOptionalField
+{
+    optional uint16 opt;
+};
+
 struct Item(ItemType itemType)
 {
     uint16          param;
