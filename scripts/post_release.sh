@@ -282,7 +282,7 @@ update_conan()
 
     local RELEASE_BRANCH="zserio-${ZSERIO_VERSION}"
     local GIT_MESSAGE="zserio: Add new Zserio release ${ZSERIO_VERSION}"
-    local GREP_RESULT=`"${GIT}" -C "${CONAN_DIR}" log ${RELEASE_BRANCH} | grep "${GIT_MESSAGE}"`
+    local GREP_RESULT=`"${GIT}" -C "${CONAN_DIR}" log ${RELEASE_BRANCH} 2>&1 | grep "${GIT_MESSAGE}"`
     if [ $? -ne 0 -o -z "${GREP_RESULT}" ] ; then
         echo "Adding version ${ZSERIO_VERSION} to Zserio Conan Center Index."
 
@@ -310,6 +310,14 @@ update_conan()
         local ZSERIO_LICENSE_SHA256=$(${SHASUM} -a 256 "${DOWNLOAD_DIR}/${ZSERIO_LICENSE_NAME}" | cut -d' ' -f1)
 
         echo "Done"
+
+        if [ ! `"${GIT}" -C "${CONAN_DIR}" remote | grep "upstream"` ] ; then
+            echo "Adding remote 'upstream' to 'git@github.com:conan-io/conan-center-index.git'."
+            "${GIT}" -C "${CONAN_DIR}" remote add upstream git@github.com:conan-io/conan-center-index.git
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+        fi
 
         echo "Syncing master with upstream."
         "${GIT}" -C "${CONAN_DIR}" fetch upstream
