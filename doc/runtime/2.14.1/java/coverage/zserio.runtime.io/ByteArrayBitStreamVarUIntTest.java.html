@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamVarUIntTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamVarUIntTest.java</span></div><h1>ByteArrayBitStreamVarUIntTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L11">public class ByteArrayBitStreamVarUIntTest</span>
+{
+    @Test
+    public void readWriteZero() throws IOException
+    {
+<span class="fc" id="L16">        readWriteTest(BigInteger.ZERO, 1);</span>
+<span class="fc" id="L17">    }</span>
+
+    @Test
+    public void readWriteLongMax() throws IOException
+    {
+<span class="fc" id="L22">        readWriteTest(BigInteger.valueOf(Long.MAX_VALUE), 9);</span>
+<span class="fc" id="L23">    }</span>
+
+    @Test
+    public void readWriteOne() throws IOException
+    {
+<span class="fc" id="L28">        readWriteTest(BigInteger.ONE, 1);</span>
+<span class="fc" id="L29">    }</span>
+
+    @Test
+    public void readWriteByte1Max() throws IOException
+    {
+<span class="fc" id="L34">        readWriteTest(BigInteger.ONE.shiftLeft(7).subtract(BigInteger.ONE), 1);</span>
+<span class="fc" id="L35">    }</span>
+
+    @Test
+    public void readWriteByte2Min() throws IOException
+    {
+<span class="fc" id="L40">        readWriteTest(BigInteger.ONE.shiftLeft(7), 2);</span>
+<span class="fc" id="L41">    }</span>
+
+    @Test
+    public void readWriteByte2Max() throws IOException
+    {
+<span class="fc" id="L46">        readWriteTest(BigInteger.ONE.shiftLeft(14).subtract(BigInteger.ONE), 2);</span>
+<span class="fc" id="L47">    }</span>
+
+    @Test
+    public void readWriteByte3Min() throws IOException
+    {
+<span class="fc" id="L52">        readWriteTest(BigInteger.ONE.shiftLeft(14), 3);</span>
+<span class="fc" id="L53">    }</span>
+
+    @Test
+    public void readWriteByte3Max() throws IOException
+    {
+<span class="fc" id="L58">        readWriteTest(BigInteger.ONE.shiftLeft(21).subtract(BigInteger.ONE), 3);</span>
+<span class="fc" id="L59">    }</span>
+
+    @Test
+    public void readWriteByte4Min() throws IOException
+    {
+<span class="fc" id="L64">        readWriteTest(BigInteger.ONE.shiftLeft(21), 4);</span>
+<span class="fc" id="L65">    }</span>
+
+    @Test
+    public void readWriteByte4Max() throws IOException
+    {
+<span class="fc" id="L70">        readWriteTest(BigInteger.ONE.shiftLeft(28).subtract(BigInteger.ONE), 4);</span>
+<span class="fc" id="L71">    }</span>
+
+    @Test
+    public void readWriteByte5Min() throws IOException
+    {
+<span class="fc" id="L76">        readWriteTest(BigInteger.ONE.shiftLeft(28), 5);</span>
+<span class="fc" id="L77">    }</span>
+
+    @Test
+    public void readWriteByte5Max() throws IOException
+    {
+<span class="fc" id="L82">        readWriteTest(BigInteger.ONE.shiftLeft(35).subtract(BigInteger.ONE), 5);</span>
+<span class="fc" id="L83">    }</span>
+
+    @Test
+    public void readWriteByte6Min() throws IOException
+    {
+<span class="fc" id="L88">        readWriteTest(BigInteger.ONE.shiftLeft(35), 6);</span>
+<span class="fc" id="L89">    }</span>
+
+    @Test
+    public void readWriteByte6Max() throws IOException
+    {
+<span class="fc" id="L94">        readWriteTest(BigInteger.ONE.shiftLeft(42).subtract(BigInteger.ONE), 6);</span>
+<span class="fc" id="L95">    }</span>
+
+    @Test
+    public void readWriteByte7Min() throws IOException
+    {
+<span class="fc" id="L100">        readWriteTest(BigInteger.ONE.shiftLeft(42), 7);</span>
+<span class="fc" id="L101">    }</span>
+
+    @Test
+    public void readWriteByte7Max() throws IOException
+    {
+<span class="fc" id="L106">        readWriteTest(BigInteger.ONE.shiftLeft(49).subtract(BigInteger.ONE), 7);</span>
+<span class="fc" id="L107">    }</span>
+
+    @Test
+    public void readWriteByte8Min() throws IOException
+    {
+<span class="fc" id="L112">        readWriteTest(BigInteger.ONE.shiftLeft(49), 8);</span>
+<span class="fc" id="L113">    }</span>
+
+    @Test
+    public void readWriteByte8Max() throws IOException
+    {
+<span class="fc" id="L118">        readWriteTest(BigInteger.ONE.shiftLeft(56).subtract(BigInteger.ONE), 8);</span>
+<span class="fc" id="L119">    }</span>
+
+    @Test
+    public void readWriteByte9Min() throws IOException
+    {
+<span class="fc" id="L124">        readWriteTest(BigInteger.ONE.shiftLeft(56), 9);</span>
+<span class="fc" id="L125">    }</span>
+
+    @Test
+    public void readWriteByte9Max() throws IOException
+    {
+<span class="fc" id="L130">        readWriteTest(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE), 9);</span>
+<span class="fc" id="L131">    }</span>
+
+    @Test
+    public void writeOneAboveMaxThrows() throws IOException
+    {
+<span class="fc" id="L136">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="pc" id="L138">            assertThrows(IOException.class, () -&gt; writer.writeVarUInt(BigInteger.ONE.shiftLeft(64)));</span>
+        }
+<span class="fc" id="L140">    }</span>
+
+    @Test
+    public void writeMinusOneThrows() throws IOException
+    {
+<span class="fc" id="L145">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="pc" id="L147">            assertThrows(IOException.class, () -&gt; writer.writeVarUInt(BigInteger.valueOf(-1)));</span>
+        }
+<span class="fc" id="L149">    }</span>
+
+    @Test
+    public void writeLongMinThrows() throws IOException
+    {
+<span class="fc" id="L154">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="pc" id="L156">            assertThrows(IOException.class, () -&gt; writer.writeVarUInt(BigInteger.valueOf(Long.MIN_VALUE)));</span>
+        }
+<span class="fc" id="L158">    }</span>
+
+    private void readWriteTest(BigInteger value, int expectedNumBytes) throws IOException
+    {
+<span class="fc" id="L162">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L164">            writer.writeVarUInt(value);</span>
+<span class="fc" id="L165">            assertEquals(0, writer.getBitPosition() % 8);</span>
+<span class="fc" id="L166">            assertEquals(expectedNumBytes, writer.getBytePosition());</span>
+<span class="fc" id="L167">            final byte[] buffer = writer.toByteArray();</span>
+<span class="fc" id="L168">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+            {
+<span class="fc" id="L170">                final BigInteger readValue = reader.readVarUInt();</span>
+<span class="fc" id="L171">                assertEquals(value, readValue);</span>
+            }
+        }
+<span class="fc" id="L174">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

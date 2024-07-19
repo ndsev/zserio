@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WalkerTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.walker</a> &gt; <span class="el_source">WalkerTest.java</span></div><h1>WalkerTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.walker;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
+
+import test_object.WalkerBitmask;
+import test_object.WalkerObject;
+
+<span class="fc" id="L13">public class WalkerTest</span>
+{
+    @Test
+    public void walkNonCompound()
+    {
+<span class="fc" id="L18">        final DefaultWalkObserver defaultObserver = new DefaultWalkObserver();</span>
+<span class="fc" id="L19">        final DefaultWalkFilter defaultFilter = new DefaultWalkFilter();</span>
+<span class="fc" id="L20">        final Walker walker = new Walker(defaultObserver, defaultFilter);</span>
+<span class="fc" id="L21">        final WalkerBitmask walkerBitmask = new WalkerBitmask();</span>
+
+<span class="pc" id="L23">        assertThrows(ZserioError.class, () -&gt; walker.walk(walkerBitmask));</span>
+<span class="fc" id="L24">    }</span>
+
+    @Test
+    public void walk()
+    {
+<span class="fc" id="L29">        final TestWalkObserver observer = new TestWalkObserver();</span>
+<span class="fc" id="L30">        final DefaultWalkFilter defaultFilter = new DefaultWalkFilter();</span>
+<span class="fc" id="L31">        final Walker walker = new Walker(observer, defaultFilter);</span>
+<span class="fc" id="L32">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L33">        walker.walk(walkerObject);</span>
+
+<span class="fc" id="L35">        assertEquals(walkerObject, observer.getCaptures(&quot;beginRoot&quot;).get(0));</span>
+<span class="fc" id="L36">        assertEquals(walkerObject, observer.getCaptures(&quot;endRoot&quot;).get(0));</span>
+
+<span class="fc" id="L38">        assertEquals(2, observer.getCaptures(&quot;beginArray&quot;).size());</span>
+<span class="fc" id="L39">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;beginArray&quot;).get(0));</span>
+<span class="fc" id="L40">        assertEquals(</span>
+<span class="fc" id="L41">                walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures(&quot;beginArray&quot;).get(1));</span>
+
+<span class="fc" id="L43">        assertEquals(2, observer.getCaptures(&quot;endArray&quot;).size());</span>
+<span class="fc" id="L44">        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures(&quot;endArray&quot;).get(0));</span>
+<span class="fc" id="L45">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;endArray&quot;).get(1));</span>
+
+<span class="fc" id="L47">        assertEquals(5, observer.getCaptures(&quot;beginCompound&quot;).size());</span>
+<span class="fc" id="L48">        assertEquals(walkerObject.getNested(), observer.getCaptures(&quot;beginCompound&quot;).get(0));</span>
+<span class="fc" id="L49">        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures(&quot;beginCompound&quot;).get(1));</span>
+<span class="fc" id="L50">        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures(&quot;beginCompound&quot;).get(2));</span>
+<span class="fc" id="L51">        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures(&quot;beginCompound&quot;).get(3));</span>
+<span class="fc" id="L52">        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],</span>
+<span class="fc" id="L53">                observer.getCaptures(&quot;beginCompound&quot;).get(4));</span>
+
+<span class="fc" id="L55">        assertEquals(5, observer.getCaptures(&quot;endCompound&quot;).size());</span>
+<span class="fc" id="L56">        assertEquals(walkerObject.getNested(), observer.getCaptures(&quot;endCompound&quot;).get(0));</span>
+<span class="fc" id="L57">        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures(&quot;endCompound&quot;).get(1));</span>
+<span class="fc" id="L58">        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures(&quot;endCompound&quot;).get(2));</span>
+<span class="fc" id="L59">        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],</span>
+<span class="fc" id="L60">                observer.getCaptures(&quot;endCompound&quot;).get(3));</span>
+<span class="fc" id="L61">        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures(&quot;endCompound&quot;).get(4));</span>
+
+<span class="fc" id="L63">        assertEquals(7, observer.getCaptures(&quot;visitValue&quot;).size());</span>
+<span class="fc" id="L64">        assertEquals((long)13, observer.getCaptures(&quot;visitValue&quot;).get(0));</span>
+<span class="fc" id="L65">        assertEquals(&quot;nested&quot;, observer.getCaptures(&quot;visitValue&quot;).get(1));</span>
+<span class="fc" id="L66">        assertEquals(&quot;test&quot;, observer.getCaptures(&quot;visitValue&quot;).get(2));</span>
+<span class="fc" id="L67">        assertEquals(&quot;1&quot;, observer.getCaptures(&quot;visitValue&quot;).get(3));</span>
+<span class="fc" id="L68">        assertEquals((long)2, observer.getCaptures(&quot;visitValue&quot;).get(4));</span>
+<span class="fc" id="L69">        assertEquals(&quot;nestedArray&quot;, observer.getCaptures(&quot;visitValue&quot;).get(5));</span>
+<span class="fc" id="L70">        assertEquals(null, observer.getCaptures(&quot;visitValue&quot;).get(6));</span>
+<span class="fc" id="L71">    }</span>
+
+    @Test
+    public void walkWrongOptionalCondition()
+    {
+        // use case: optional condition states that the optional is used, but it is not set!
+<span class="fc" id="L77">        final TestWalkObserver observer = new TestWalkObserver();</span>
+<span class="fc" id="L78">        final DefaultWalkFilter defaultFilter = new DefaultWalkFilter();</span>
+<span class="fc" id="L79">        final Walker walker = new Walker(observer, defaultFilter);</span>
+<span class="fc" id="L80">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject(13, false);</span>
+<span class="fc" id="L81">        walker.walk(walkerObject);</span>
+
+<span class="fc" id="L83">        assertEquals(walkerObject, observer.getCaptures(&quot;beginRoot&quot;).get(0));</span>
+<span class="fc" id="L84">        assertEquals(walkerObject, observer.getCaptures(&quot;endRoot&quot;).get(0));</span>
+
+<span class="fc" id="L86">        assertEquals(2, observer.getCaptures(&quot;beginArray&quot;).size());</span>
+<span class="fc" id="L87">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;beginArray&quot;).get(0));</span>
+<span class="fc" id="L88">        assertEquals(</span>
+<span class="fc" id="L89">                walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures(&quot;beginArray&quot;).get(1));</span>
+
+<span class="fc" id="L91">        assertEquals(2, observer.getCaptures(&quot;endArray&quot;).size());</span>
+<span class="fc" id="L92">        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures(&quot;endArray&quot;).get(0));</span>
+<span class="fc" id="L93">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;endArray&quot;).get(1));</span>
+
+<span class="fc" id="L95">        assertEquals(4, observer.getCaptures(&quot;beginCompound&quot;).size());</span>
+<span class="fc" id="L96">        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures(&quot;beginCompound&quot;).get(0));</span>
+<span class="fc" id="L97">        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures(&quot;beginCompound&quot;).get(1));</span>
+<span class="fc" id="L98">        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures(&quot;beginCompound&quot;).get(2));</span>
+<span class="fc" id="L99">        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],</span>
+<span class="fc" id="L100">                observer.getCaptures(&quot;beginCompound&quot;).get(3));</span>
+
+<span class="fc" id="L102">        assertEquals(4, observer.getCaptures(&quot;endCompound&quot;).size());</span>
+<span class="fc" id="L103">        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures(&quot;endCompound&quot;).get(0));</span>
+<span class="fc" id="L104">        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures(&quot;endCompound&quot;).get(1));</span>
+<span class="fc" id="L105">        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],</span>
+<span class="fc" id="L106">                observer.getCaptures(&quot;endCompound&quot;).get(2));</span>
+<span class="fc" id="L107">        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures(&quot;endCompound&quot;).get(3));</span>
+
+<span class="fc" id="L109">        assertEquals(7, observer.getCaptures(&quot;visitValue&quot;).size());</span>
+<span class="fc" id="L110">        assertEquals((long)13, observer.getCaptures(&quot;visitValue&quot;).get(0));</span>
+<span class="fc" id="L111">        assertEquals(null, observer.getCaptures(&quot;visitValue&quot;).get(1));</span>
+<span class="fc" id="L112">        assertEquals(&quot;test&quot;, observer.getCaptures(&quot;visitValue&quot;).get(2));</span>
+<span class="fc" id="L113">        assertEquals(&quot;1&quot;, observer.getCaptures(&quot;visitValue&quot;).get(3));</span>
+<span class="fc" id="L114">        assertEquals((long)2, observer.getCaptures(&quot;visitValue&quot;).get(4));</span>
+<span class="fc" id="L115">        assertEquals(&quot;nestedArray&quot;, observer.getCaptures(&quot;visitValue&quot;).get(5));</span>
+<span class="fc" id="L116">        assertEquals(null, observer.getCaptures(&quot;visitValue&quot;).get(6));</span>
+<span class="fc" id="L117">    }</span>
+
+    @Test
+    public void walkSkipCompound()
+    {
+<span class="fc" id="L122">        final TestWalkObserver observer = new TestWalkObserver();</span>
+<span class="fc" id="L123">        final TestWalkFilter filter = new TestWalkFilter();</span>
+<span class="fc" id="L124">        filter.beforeCompound(false);</span>
+<span class="fc" id="L125">        final Walker walker = new Walker(observer, filter);</span>
+<span class="fc" id="L126">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L127">        walker.walk(walkerObject);</span>
+
+<span class="fc" id="L129">        assertEquals(walkerObject, observer.getCaptures(&quot;beginRoot&quot;).get(0));</span>
+<span class="fc" id="L130">        assertEquals(walkerObject, observer.getCaptures(&quot;endRoot&quot;).get(0));</span>
+
+<span class="fc" id="L132">        assertEquals(1, observer.getCaptures(&quot;beginArray&quot;).size());</span>
+<span class="fc" id="L133">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;beginArray&quot;).get(0));</span>
+
+<span class="fc" id="L135">        assertEquals(1, observer.getCaptures(&quot;endArray&quot;).size());</span>
+<span class="fc" id="L136">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;endArray&quot;).get(0));</span>
+
+<span class="fc" id="L138">        assertEquals(0, observer.getCaptures(&quot;beginCompound&quot;).size());</span>
+<span class="fc" id="L139">        assertEquals(0, observer.getCaptures(&quot;endCompound&quot;).size());</span>
+
+<span class="fc" id="L141">        assertEquals(3, observer.getCaptures(&quot;visitValue&quot;).size());</span>
+<span class="fc" id="L142">        assertEquals((long)13, observer.getCaptures(&quot;visitValue&quot;).get(0));</span>
+<span class="fc" id="L143">        assertEquals(&quot;test&quot;, observer.getCaptures(&quot;visitValue&quot;).get(1));</span>
+<span class="fc" id="L144">        assertEquals(null, observer.getCaptures(&quot;visitValue&quot;).get(2));</span>
+<span class="fc" id="L145">    }</span>
+
+    @Test
+    public void walkSkipSiblings()
+    {
+<span class="fc" id="L150">        final TestWalkObserver observer = new TestWalkObserver();</span>
+<span class="fc" id="L151">        final TestWalkFilter filter = new TestWalkFilter();</span>
+<span class="fc" id="L152">        filter.afterValue(false);</span>
+<span class="fc" id="L153">        final Walker walker = new Walker(observer, filter);</span>
+<span class="fc" id="L154">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L155">        walker.walk(walkerObject);</span>
+
+<span class="fc" id="L157">        assertEquals(walkerObject, observer.getCaptures(&quot;beginRoot&quot;).get(0));</span>
+<span class="fc" id="L158">        assertEquals(walkerObject, observer.getCaptures(&quot;endRoot&quot;).get(0));</span>
+
+<span class="fc" id="L160">        assertEquals(0, observer.getCaptures(&quot;beginArray&quot;).size());</span>
+<span class="fc" id="L161">        assertEquals(0, observer.getCaptures(&quot;endArray&quot;).size());</span>
+
+<span class="fc" id="L163">        assertEquals(0, observer.getCaptures(&quot;beginCompound&quot;).size());</span>
+<span class="fc" id="L164">        assertEquals(0, observer.getCaptures(&quot;endCompound&quot;).size());</span>
+
+<span class="fc" id="L166">        assertEquals(1, observer.getCaptures(&quot;visitValue&quot;).size());</span>
+<span class="fc" id="L167">        assertEquals((long)13, observer.getCaptures(&quot;visitValue&quot;).get(0));</span>
+<span class="fc" id="L168">    }</span>
+
+    @Test
+    public void walkSkipAfterNested()
+    {
+<span class="fc" id="L173">        final TestWalkObserver observer = new TestWalkObserver();</span>
+<span class="fc" id="L174">        final TestWalkFilter filter = new TestWalkFilter();</span>
+<span class="fc" id="L175">        filter.afterCompound(false);</span>
+<span class="fc" id="L176">        final Walker walker = new Walker(observer, filter);</span>
+<span class="fc" id="L177">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L178">        walker.walk(walkerObject);</span>
+
+<span class="fc" id="L180">        assertEquals(walkerObject, observer.getCaptures(&quot;beginRoot&quot;).get(0));</span>
+<span class="fc" id="L181">        assertEquals(walkerObject, observer.getCaptures(&quot;endRoot&quot;).get(0));</span>
+
+<span class="fc" id="L183">        assertEquals(0, observer.getCaptures(&quot;beginArray&quot;).size());</span>
+<span class="fc" id="L184">        assertEquals(0, observer.getCaptures(&quot;endArray&quot;).size());</span>
+
+<span class="fc" id="L186">        assertEquals(1, observer.getCaptures(&quot;beginCompound&quot;).size());</span>
+<span class="fc" id="L187">        assertEquals(walkerObject.getNested(), observer.getCaptures(&quot;beginCompound&quot;).get(0));</span>
+
+<span class="fc" id="L189">        assertEquals(1, observer.getCaptures(&quot;endCompound&quot;).size());</span>
+<span class="fc" id="L190">        assertEquals(walkerObject.getNested(), observer.getCaptures(&quot;endCompound&quot;).get(0));</span>
+
+<span class="fc" id="L192">        assertEquals(2, observer.getCaptures(&quot;visitValue&quot;).size());</span>
+<span class="fc" id="L193">        assertEquals((long)13, observer.getCaptures(&quot;visitValue&quot;).get(0));</span>
+<span class="fc" id="L194">        assertEquals(&quot;nested&quot;, observer.getCaptures(&quot;visitValue&quot;).get(1));</span>
+<span class="fc" id="L195">    }</span>
+
+    @Test
+    public void walkOnlyFirstElement()
+    {
+<span class="fc" id="L200">        final TestWalkObserver observer = new TestWalkObserver();</span>
+<span class="fc" id="L201">        final TestWalkFilter filter = new TestWalkFilter();</span>
+<span class="fc" id="L202">        filter.onlyFirstElement(true);</span>
+<span class="fc" id="L203">        final Walker walker = new Walker(observer, filter);</span>
+<span class="fc" id="L204">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L205">        walker.walk(walkerObject);</span>
+
+<span class="fc" id="L207">        assertEquals(walkerObject, observer.getCaptures(&quot;beginRoot&quot;).get(0));</span>
+<span class="fc" id="L208">        assertEquals(walkerObject, observer.getCaptures(&quot;endRoot&quot;).get(0));</span>
+
+<span class="fc" id="L210">        assertEquals(1, observer.getCaptures(&quot;beginArray&quot;).size());</span>
+<span class="fc" id="L211">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;beginArray&quot;).get(0));</span>
+
+<span class="fc" id="L213">        assertEquals(1, observer.getCaptures(&quot;endArray&quot;).size());</span>
+<span class="fc" id="L214">        assertEquals(walkerObject.getUnionArray(), observer.getCaptures(&quot;endArray&quot;).get(0));</span>
+
+<span class="fc" id="L216">        assertEquals(2, observer.getCaptures(&quot;beginCompound&quot;).size());</span>
+<span class="fc" id="L217">        assertEquals(walkerObject.getNested(), observer.getCaptures(&quot;beginCompound&quot;).get(0));</span>
+<span class="fc" id="L218">        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures(&quot;beginCompound&quot;).get(1));</span>
+
+<span class="fc" id="L220">        assertEquals(2, observer.getCaptures(&quot;endCompound&quot;).size());</span>
+<span class="fc" id="L221">        assertEquals(walkerObject.getNested(), observer.getCaptures(&quot;endCompound&quot;).get(0));</span>
+<span class="fc" id="L222">        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures(&quot;endCompound&quot;).get(1));</span>
+
+<span class="fc" id="L224">        assertEquals(5, observer.getCaptures(&quot;visitValue&quot;).size());</span>
+<span class="fc" id="L225">        assertEquals((long)13, observer.getCaptures(&quot;visitValue&quot;).get(0));</span>
+<span class="fc" id="L226">        assertEquals(&quot;nested&quot;, observer.getCaptures(&quot;visitValue&quot;).get(1));</span>
+<span class="fc" id="L227">        assertEquals(&quot;test&quot;, observer.getCaptures(&quot;visitValue&quot;).get(2));</span>
+<span class="fc" id="L228">        assertEquals(&quot;1&quot;, observer.getCaptures(&quot;visitValue&quot;).get(3));</span>
+<span class="fc" id="L229">        assertEquals(null, observer.getCaptures(&quot;visitValue&quot;).get(4));</span>
+<span class="fc" id="L230">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

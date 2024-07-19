@@ -1,0 +1,18 @@
+<map id="zserio::TypeInfoBase&lt; ALLOC &gt;" name="zserio::TypeInfoBase&lt; ALLOC &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="216,169,372,211"/>
+<area shape="rect" id="node3" href="$classzserio_1_1BuiltinTypeInfo.html" title=" " alt="" coords="449,5,616,47"/>
+<area shape="rect" id="node5" href="$classzserio_1_1PubsubTypeInfo.html" title=" " alt="" coords="447,71,618,112"/>
+<area shape="rect" id="node6" href="$classzserio_1_1ServiceTypeInfo.html" title=" " alt="" coords="447,136,619,177"/>
+<area shape="rect" id="node7" href="$classzserio_1_1SqlDatabaseTypeInfo.html" title=" " alt="" coords="429,201,636,243"/>
+<area shape="rect" id="node8" href="$classzserio_1_1TemplatableTypeInfoBase.html" title=" " alt="" coords="431,267,635,308"/>
+<area shape="rect" id="node14" href="$classzserio_1_1TypeInfoWithUnderlyingTypeBase.html" title=" " alt="" coords="420,332,645,373"/>
+<area shape="rect" id="node2" href="$classzserio_1_1IBasicTypeInfo.html" title=" " alt="" coords="5,169,168,211"/>
+<area shape="rect" id="node4" href="$classzserio_1_1FixedSizeBuiltinTypeInfo.html" title=" " alt="" coords="705,5,877,47"/>
+<area shape="rect" id="node9" href="$classzserio_1_1CompoundTypeInfoBase.html" title=" " alt="" coords="693,201,888,243"/>
+<area shape="rect" id="node13" href="$classzserio_1_1SqlTableTypeInfo.html" title=" " alt="" coords="701,267,880,308"/>
+<area shape="rect" id="node10" href="$classzserio_1_1ChoiceTypeInfo.html" title=" " alt="" coords="936,136,1104,177"/>
+<area shape="rect" id="node11" href="$classzserio_1_1StructTypeInfo.html" title=" " alt="" coords="939,201,1101,243"/>
+<area shape="rect" id="node12" href="$classzserio_1_1UnionTypeInfo.html" title=" " alt="" coords="939,267,1101,308"/>
+<area shape="rect" id="node15" href="$classzserio_1_1BitmaskTypeInfo.html" title=" " alt="" coords="701,332,880,373"/>
+<area shape="rect" id="node16" href="$classzserio_1_1EnumTypeInfo.html" title=" " alt="" coords="710,397,871,439"/>
+</map>
