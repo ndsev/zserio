@@ -1,0 +1,1667 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">TypeInfo.java</span></div><h1>TypeInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
+
+/**
+ * Type information interface which is returned from the generated zserio objects.
+ *
+ * This interface provides additional schema information of the corresponded zserio object, like schema
+ * name, schema type, etc...
+ *
+ * Not all methods are implemented for all zserio objects. For example, the method getFields() is implemented
+ * for compound types only.
+ */
+public interface TypeInfo
+{
+    /**
+     * Gets the schema name.
+     *
+     * @return The zserio full name stored in schema.
+     */
+    String getSchemaName();
+
+    /**
+     * Gets the schema type.
+     *
+     * @return The zserio type stored in schema.
+     */
+    SchemaType getSchemaType();
+
+    /**
+     * Gets the Java type.
+     *
+     * @return The Java type to which zserio type is mapped.
+     */
+    JavaType getJavaType();
+
+    /**
+     * Gets the Java Class object.
+     *
+     * @return The Java Class object.
+     */
+    Class&lt;?&gt; getJavaClass();
+
+    /**
+     * Gets the bit size of the fixed size integral schema type.
+     *
+     * @return The bit size of zserio type.
+     *
+     * @throws ZserioError If the zserio type is not fixed size integral (e.g. varint).
+     */
+    byte getBitSize();
+
+    // methods for compound types
+
+    /**
+     * Gets the type information for compound type fields.
+     *
+     * @return Sequence of type informations for fields.
+     *
+     * @throws ZserioError If the zserio type is not compound type.
+     */
+    List&lt;FieldInfo&gt; getFields();
+
+    /**
+     * Gets the type information for compound type parameters.
+     *
+     * @return Sequence of type informations for parameters.
+     *
+     * @throws ZserioError If the zserio type is not compound type.
+     */
+    List&lt;ParameterInfo&gt; getParameters();
+
+    /**
+     * Gets the type information for compound type functions.
+     *
+     * @return Sequence of type informations for functions.
+     *
+     * @throws ZserioError If the zserio type is not compound type.
+     */
+    List&lt;FunctionInfo&gt; getFunctions();
+
+    // methods for choice type
+
+    /**
+     * Gets the selector for choice type.
+     *
+     * @return Selector expression of choice type.
+     *
+     * @throws ZserioError If the zserio type is not choice type.
+     */
+    String getSelector();
+
+    /**
+     * Gets the type information for choice type cases.
+     *
+     * @return Sequence of type informations for choice type cases.
+     *
+     * @throws ZserioError If the zserio type is not choice type.
+     */
+    List&lt;CaseInfo&gt; getCases();
+
+    // methods for enumeration and bitmask types
+
+    /**
+     * Gets the reference to type information of underlying zserio type.
+     *
+     * @return Reference to type information of underlying zserio type.
+     *
+     * @throws ZserioError If the zserio type is not enumeration or bitmask type.
+     */
+    TypeInfo getUnderlyingType();
+
+    /**
+     * Gets the reference to type information of underlying zserio type arguments.
+     *
+     * @return Underlying zserio type arguments.
+     *
+     * @throws ZserioError If the zserio type is not enumeration or bitmask type.
+     */
+    List&lt;Supplier&lt;Object&gt;&gt; getUnderlyingTypeArguments();
+
+    /**
+     * Gets the type information for enumeration type items.
+     *
+     * @return Sequence of type informations for enumeration type items.
+     *
+     * @throws ZserioError If the zserio type is not enumeration type.
+     */
+    List&lt;ItemInfo&gt; getEnumItems();
+
+    /**
+     * Gets the type information for bitmask type values.
+     *
+     * @return Sequence of type informations for bitmask type values.
+     *
+     * @throws ZserioError If the zserio type is not bitmask type.
+     */
+    List&lt;ItemInfo&gt; getBitmaskValues();
+
+    // methods for SQL table types
+
+    /**
+     * Gets the type information for SQL table columns.
+     *
+     * @return Sequence of type informations for SQL table columns.
+     *
+     * @throws ZserioError If the zserio type is not SQL table type.
+     */
+    List&lt;ColumnInfo&gt; getColumns();
+
+    /**
+     * Gets the SQL table constraint.
+     *
+     * @return The SQL table constraint.
+     *
+     * @throws ZserioError If the zserio type is not SQL table type.
+     */
+    String getSqlConstraint();
+
+    /**
+     * Gets the SQL table using specification.
+     *
+     * @return The SQL table using specification.
+     *
+     * @throws ZserioError If the zserio type is not SQL table type.
+     */
+    String getVirtualTableUsing();
+
+    /**
+     * Checks if SQL table is without row id table.
+     *
+     * @return true if SQL table is without row id table, otherwise false.
+     *
+     * @throws ZserioError If the zserio type is not SQL table type.
+     */
+    boolean isWithoutRowId();
+
+    // method for SQL database type
+
+    /**
+     * Gets the type information for SQL database tables.
+     *
+     * @return Sequence of type informations for SQL database tables.
+     *
+     * @throws ZserioError If the zserio type is not SQL database type.
+     */
+    List&lt;TableInfo&gt; getTables();
+
+    // methods for templatable types
+
+    /**
+     * Gets the full schema template name.
+     *
+     * @return The full schema template name.
+     *
+     * @throws ZserioError If the zserio type is not templatable.
+     */
+    String getTemplateName();
+
+    /**
+     * Gets the type information for template arguments.
+     *
+     * @return Sequence of type informations for template arguments.
+     *
+     * @throws ZserioError If the zserio type is not templatable.
+     */
+    List&lt;TypeInfo&gt; getTemplateArguments();
+
+    // method for pubsub type
+
+    /**
+     * Gets the type information for pubsub messages.
+     *
+     * @return Sequence of type informations for pubsub messages.
+     *
+     * @throws ZserioError If the zserio type is not pubsub type.
+     */
+    List&lt;MessageInfo&gt; getMessages();
+
+    // method for service type
+
+    /**
+     * Gets the type information for service methods.
+     *
+     * @return Sequence of type informations for service methods.
+     *
+     * @throws ZserioError If the zserio type is not service type.
+     */
+    List&lt;MethodInfo&gt; getMethods();
+
+    /**
+     * Type information abstract base class.
+     *
+     * This base class implements fully the methods getSchemaName(), getSchemaName() and getJavaType().
+     * All other interface methods just throw an exception.
+     */
+    public static abstract class TypeInfoBase implements TypeInfo
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param schemaType The schema type to be stored in type information.
+         * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         */
+        public TypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType, Class&lt;?&gt; javaClass)
+<span class="fc" id="L254">        {</span>
+<span class="fc" id="L255">            this.schemaName = schemaName;</span>
+<span class="fc" id="L256">            this.schemaType = schemaType;</span>
+<span class="fc" id="L257">            this.javaType = javaType;</span>
+<span class="fc" id="L258">            this.javaClass = javaClass;</span>
+<span class="fc" id="L259">        }</span>
+
+        @Override
+        public String getSchemaName()
+        {
+<span class="fc" id="L264">            return schemaName;</span>
+        }
+
+        @Override
+        public SchemaType getSchemaType()
+        {
+<span class="fc" id="L270">            return schemaType;</span>
+        }
+
+        @Override
+        public JavaType getJavaType()
+        {
+<span class="fc" id="L276">            return javaType;</span>
+        }
+
+        @Override
+        public Class&lt;?&gt; getJavaClass()
+        {
+<span class="fc" id="L282">            return javaClass;</span>
+        }
+
+        @Override
+        public byte getBitSize()
+        {
+<span class="fc" id="L288">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a fixed size type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;FieldInfo&gt; getFields()
+        {
+<span class="fc" id="L294">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a compound type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;ParameterInfo&gt; getParameters()
+        {
+<span class="fc" id="L300">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a compound type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;FunctionInfo&gt; getFunctions()
+        {
+<span class="fc" id="L306">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a compound type!&quot;);</span>
+        }
+
+        @Override
+        public String getSelector()
+        {
+<span class="fc" id="L312">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a choice type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;CaseInfo&gt; getCases()
+        {
+<span class="fc" id="L318">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a choice type!&quot;);</span>
+        }
+
+        @Override
+        public TypeInfo getUnderlyingType()
+        {
+<span class="fc" id="L324">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' does not have underlying type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;Supplier&lt;Object&gt;&gt; getUnderlyingTypeArguments()
+        {
+<span class="fc" id="L330">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' does not have underlying type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;ItemInfo&gt; getEnumItems()
+        {
+<span class="fc" id="L336">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not an enum type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;ItemInfo&gt; getBitmaskValues()
+        {
+<span class="fc" id="L342">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a bitmask type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;ColumnInfo&gt; getColumns()
+        {
+<span class="fc" id="L348">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a SQL table type!&quot;);</span>
+        }
+
+        @Override
+        public String getSqlConstraint()
+        {
+<span class="fc" id="L354">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a SQL table type!&quot;);</span>
+        }
+
+        @Override
+        public String getVirtualTableUsing()
+        {
+<span class="fc" id="L360">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a SQL table type!&quot;);</span>
+        }
+
+        @Override
+        public boolean isWithoutRowId()
+        {
+<span class="fc" id="L366">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a SQL table type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;TableInfo&gt; getTables()
+        {
+<span class="fc" id="L372">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a SQL database type!&quot;);</span>
+        }
+
+        @Override
+        public String getTemplateName()
+        {
+<span class="fc" id="L378">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a templatable type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;TypeInfo&gt; getTemplateArguments()
+        {
+<span class="fc" id="L384">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a templatable type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;MessageInfo&gt; getMessages()
+        {
+<span class="fc" id="L390">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a pubsub type!&quot;);</span>
+        }
+
+        @Override
+        public List&lt;MethodInfo&gt; getMethods()
+        {
+<span class="fc" id="L396">            throw new ZserioError(&quot;Type '&quot; + getSchemaName() + &quot;' is not a service type!&quot;);</span>
+        }
+
+        private final String schemaName;
+        private final SchemaType schemaType;
+        private final JavaType javaType;
+        private final Class&lt;?&gt; javaClass;
+    }
+
+    /**
+     * Type information abstract base class for builtin types.
+     */
+    public static class BuiltinTypeInfo extends TypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param schemaType The schema type to be stored in type information.
+         * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         */
+        public BuiltinTypeInfo(String schemaName, SchemaType schemaType, JavaType javaType, Class&lt;?&gt; javaClass)
+        {
+<span class="fc" id="L420">            super(schemaName, schemaType, javaType, javaClass);</span>
+<span class="fc" id="L421">        }</span>
+
+        /**
+         * Gets the type information of bool schema type.
+         *
+         * @return Type information of bool schema type.
+         */
+        public static BuiltinTypeInfo getBool()
+        {
+<span class="fc" id="L430">            return FixedSizeBuiltinTypeInfo.getBool();</span>
+        }
+
+        /**
+         * Gets the type information of int8 schema type.
+         *
+         * @return Type information of int8 schema type.
+         */
+        public static BuiltinTypeInfo getInt8()
+        {
+<span class="fc" id="L440">            return FixedSizeBuiltinTypeInfo.getInt8();</span>
+        }
+
+        /**
+         * Gets the type information of int16 schema type.
+         *
+         * @return Type information of int16 schema type.
+         */
+        public static BuiltinTypeInfo getInt16()
+        {
+<span class="fc" id="L450">            return FixedSizeBuiltinTypeInfo.getInt16();</span>
+        }
+
+        /**
+         * Gets the type information of int32 schema type.
+         *
+         * @return Type information of int32 schema type.
+         */
+        public static BuiltinTypeInfo getInt32()
+        {
+<span class="fc" id="L460">            return FixedSizeBuiltinTypeInfo.getInt32();</span>
+        }
+
+        /**
+         * Gets the type information of int64 schema type.
+         *
+         * @return Type information of int64 schema type.
+         */
+        public static BuiltinTypeInfo getInt64()
+        {
+<span class="fc" id="L470">            return FixedSizeBuiltinTypeInfo.getInt64();</span>
+        }
+
+        /**
+         * Gets the type information of uint8 schema type.
+         *
+         * @return Type information of uint8 schema type.
+         */
+        public static BuiltinTypeInfo getUInt8()
+        {
+<span class="fc" id="L480">            return FixedSizeBuiltinTypeInfo.getUInt8();</span>
+        }
+
+        /**
+         * Gets the type information of uint16 schema type.
+         *
+         * @return Type information of uint16 schema type.
+         */
+        public static BuiltinTypeInfo getUInt16()
+        {
+<span class="fc" id="L490">            return FixedSizeBuiltinTypeInfo.getUInt16();</span>
+        }
+
+        /**
+         * Gets the type information of uint32 schema type.
+         *
+         * @return Type information of uint32 schema type.
+         */
+        public static BuiltinTypeInfo getUInt32()
+        {
+<span class="fc" id="L500">            return FixedSizeBuiltinTypeInfo.getUInt32();</span>
+        }
+
+        /**
+         * Gets the type information of uint64 schema type.
+         *
+         * @return Type information of uint64 schema type.
+         */
+        public static BuiltinTypeInfo getUInt64()
+        {
+<span class="fc" id="L510">            return FixedSizeBuiltinTypeInfo.getUInt64();</span>
+        }
+
+        /**
+         * Gets the type information of varint16 schema type.
+         *
+         * @return Type information of varint16 schema type.
+         */
+        public static BuiltinTypeInfo getVarInt16()
+        {
+<span class="fc" id="L520">            return VARINT16;</span>
+        }
+
+        /**
+         * Gets the type information of varint32 schema type.
+         *
+         * @return Type information of varint32 schema type.
+         */
+        public static BuiltinTypeInfo getVarInt32()
+        {
+<span class="fc" id="L530">            return VARINT32;</span>
+        }
+
+        /**
+         * Gets the type information of varint64 schema type.
+         *
+         * @return Type information of varint64 schema type.
+         */
+        public static BuiltinTypeInfo getVarInt64()
+        {
+<span class="fc" id="L540">            return VARINT64;</span>
+        }
+
+        /**
+         * Gets the type information of varint schema type.
+         *
+         * @return Type information of varint schema type.
+         */
+        public static BuiltinTypeInfo getVarInt()
+        {
+<span class="fc" id="L550">            return VARINT;</span>
+        }
+
+        /**
+         * Gets the type information of varuint16 schema type.
+         *
+         * @return Type information of varuint16 schema type.
+         */
+        public static BuiltinTypeInfo getVarUInt16()
+        {
+<span class="fc" id="L560">            return VARUINT16;</span>
+        }
+
+        /**
+         * Gets the type information of varuint32 schema type.
+         *
+         * @return Type information of varuint32 schema type.
+         */
+        public static BuiltinTypeInfo getVarUInt32()
+        {
+<span class="fc" id="L570">            return VARUINT32;</span>
+        }
+
+        /**
+         * Gets the type information of varuint64 schema type.
+         *
+         * @return Type information of varuint64 schema type.
+         */
+        public static BuiltinTypeInfo getVarUInt64()
+        {
+<span class="fc" id="L580">            return VARUINT64;</span>
+        }
+
+        /**
+         * Gets the type information of varuint schema type.
+         *
+         * @return Type information of varuint schema type.
+         */
+        public static BuiltinTypeInfo getVarUInt()
+        {
+<span class="fc" id="L590">            return VARUINT;</span>
+        }
+
+        /**
+         * Gets the type information of varsize schema type.
+         *
+         * @return Type information of varsize schema type.
+         */
+        public static BuiltinTypeInfo getVarSize()
+        {
+<span class="fc" id="L600">            return VARSIZE;</span>
+        }
+
+        /**
+         * Gets the type information of float16 schema type.
+         *
+         * @return Type information of float16 schema type.
+         */
+        public static BuiltinTypeInfo getFloat16()
+        {
+<span class="fc" id="L610">            return FixedSizeBuiltinTypeInfo.getFloat16();</span>
+        }
+
+        /**
+         * Gets the type information of float32 schema type.
+         *
+         * @return Type information of float32 schema type.
+         */
+        public static BuiltinTypeInfo getFloat32()
+        {
+<span class="fc" id="L620">            return FixedSizeBuiltinTypeInfo.getFloat32();</span>
+        }
+
+        /**
+         * Gets the type information of float64 schema type.
+         *
+         * @return Type information of float64 schema type.
+         */
+        public static BuiltinTypeInfo getFloat64()
+        {
+<span class="fc" id="L630">            return FixedSizeBuiltinTypeInfo.getFloat64();</span>
+        }
+
+        /**
+         * Gets the type information of bytes schema type.
+         *
+         * @return Type information of bytes schema type.
+         */
+        public static BuiltinTypeInfo getBytes()
+        {
+<span class="fc" id="L640">            return BYTES;</span>
+        }
+
+        /**
+         * Gets the type information of string schema type.
+         *
+         * @return Type information of string schema type.
+         */
+        public static BuiltinTypeInfo getString()
+        {
+<span class="fc" id="L650">            return STRING;</span>
+        }
+
+        /**
+         * Gets the type information of extern schema type.
+         *
+         * @return Type information of extern schema type.
+         */
+        public static BuiltinTypeInfo getBitBuffer()
+        {
+<span class="fc" id="L660">            return BIT_BUFFER;</span>
+        }
+
+        /**
+         * Gets the type information of fixed signed bit field schema type.
+         *
+         * @param bitSize The bit size of the bit field.
+         *
+         * @return Type information of fixed signed bit field schema type.
+         */
+        public static BuiltinTypeInfo getFixedSignedBitField(byte bitSize)
+        {
+<span class="fc" id="L672">            return FixedSizeBuiltinTypeInfo.getFixedSignedBitField(bitSize);</span>
+        }
+
+        /**
+         * Gets the type information of fixed unsigned bit field schema type.
+         *
+         * @param bitSize The bit size of the bit field.
+         *
+         * @return Type information of fixed unsigned bit field schema type.
+         */
+        public static BuiltinTypeInfo getFixedUnsignedBitField(byte bitSize)
+        {
+<span class="fc" id="L684">            return FixedSizeBuiltinTypeInfo.getFixedUnsignedBitField(bitSize);</span>
+        }
+
+        /**
+         * Gets the type information of dynamic signed bit field schema type.
+         *
+         * @param maxBitSize The maximum bit size of the dynamic bit field.
+         *
+         * @return Type information of dynamic signed bit field schema type.
+         */
+        public static BuiltinTypeInfo getDynamicSignedBitField(byte maxBitSize)
+        {
+<span class="fc bfc" id="L696" title="All 4 branches covered.">            if (maxBitSize &lt;= 0 || maxBitSize &gt; 64)</span>
+            {
+<span class="fc" id="L698">                throw new ZserioError(</span>
+                        &quot;BuiltinTypeInfo.getDynamicSignedBitField: Invalid max bit size '&quot; + maxBitSize + &quot;'!&quot;);
+            }
+
+<span class="fc bfc" id="L702" title="All 2 branches covered.">            if (maxBitSize &lt;= 8)</span>
+            {
+<span class="fc" id="L704">                return new BuiltinTypeInfo(</span>
+                        &quot;int&lt;&gt;&quot;, SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.BYTE, byte.class);
+            }
+<span class="fc bfc" id="L707" title="All 2 branches covered.">            else if (maxBitSize &lt;= 16)</span>
+            {
+<span class="fc" id="L709">                return new BuiltinTypeInfo(</span>
+                        &quot;int&lt;&gt;&quot;, SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.SHORT, short.class);
+            }
+<span class="fc bfc" id="L712" title="All 2 branches covered.">            else if (maxBitSize &lt;= 32)</span>
+            {
+<span class="fc" id="L714">                return new BuiltinTypeInfo(</span>
+                        &quot;int&lt;&gt;&quot;, SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.INT, int.class);
+            }
+            else
+            {
+<span class="fc" id="L719">                return new BuiltinTypeInfo(</span>
+                        &quot;int&lt;&gt;&quot;, SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.LONG, long.class);
+            }
+        }
+
+        /**
+         * Gets the type information of dynamic unsigned bit field schema type.
+         *
+         * @param maxBitSize The maximum bit size of the dynamic bit field.
+         *
+         * @return Type information of dynamic unsigned bit field schema type.
+         */
+        public static BuiltinTypeInfo getDynamicUnsignedBitField(byte maxBitSize)
+        {
+<span class="fc bfc" id="L733" title="All 4 branches covered.">            if (maxBitSize &lt;= 0 || maxBitSize &gt; 64)</span>
+            {
+<span class="fc" id="L735">                throw new ZserioError(&quot;BuiltinTypeInfo.getDynamicUnsignedBitField: Invalid max bit size '&quot; +</span>
+                        maxBitSize + &quot;'!&quot;);
+            }
+
+<span class="fc bfc" id="L739" title="All 2 branches covered.">            if (maxBitSize &lt; 8)</span>
+            {
+<span class="fc" id="L741">                return new BuiltinTypeInfo(</span>
+                        &quot;bit&lt;&gt;&quot;, SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BYTE, byte.class);
+            }
+<span class="fc bfc" id="L744" title="All 2 branches covered.">            else if (maxBitSize &lt; 16)</span>
+            {
+<span class="fc" id="L746">                return new BuiltinTypeInfo(</span>
+                        &quot;bit&lt;&gt;&quot;, SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.SHORT, short.class);
+            }
+<span class="fc bfc" id="L749" title="All 2 branches covered.">            else if (maxBitSize &lt; 32)</span>
+            {
+<span class="fc" id="L751">                return new BuiltinTypeInfo(</span>
+                        &quot;bit&lt;&gt;&quot;, SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.INT, int.class);
+            }
+<span class="fc bfc" id="L754" title="All 2 branches covered.">            else if (maxBitSize &lt; 64)</span>
+            {
+<span class="fc" id="L756">                return new BuiltinTypeInfo(</span>
+                        &quot;bit&lt;&gt;&quot;, SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.LONG, long.class);
+            }
+            else
+            {
+<span class="fc" id="L761">                return new BuiltinTypeInfo(</span>
+                        &quot;bit&lt;&gt;&quot;, SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER, BigInteger.class);
+            }
+        }
+
+<span class="fc" id="L766">        private static final BuiltinTypeInfo VARINT16 =</span>
+                new BuiltinTypeInfo(&quot;varint16&quot;, SchemaType.VARINT16, JavaType.SHORT, short.class);
+<span class="fc" id="L768">        private static final BuiltinTypeInfo VARINT32 =</span>
+                new BuiltinTypeInfo(&quot;varint32&quot;, SchemaType.VARINT32, JavaType.INT, int.class);
+<span class="fc" id="L770">        private static final BuiltinTypeInfo VARINT64 =</span>
+                new BuiltinTypeInfo(&quot;varint64&quot;, SchemaType.VARINT64, JavaType.LONG, long.class);
+<span class="fc" id="L772">        private static final BuiltinTypeInfo VARINT =</span>
+                new BuiltinTypeInfo(&quot;varint&quot;, SchemaType.VARINT, JavaType.LONG, long.class);
+
+<span class="fc" id="L775">        private static final BuiltinTypeInfo VARUINT16 =</span>
+                new BuiltinTypeInfo(&quot;varuint16&quot;, SchemaType.VARUINT16, JavaType.SHORT, short.class);
+<span class="fc" id="L777">        private static final BuiltinTypeInfo VARUINT32 =</span>
+                new BuiltinTypeInfo(&quot;varuint32&quot;, SchemaType.VARUINT32, JavaType.INT, int.class);
+<span class="fc" id="L779">        private static final BuiltinTypeInfo VARUINT64 =</span>
+                new BuiltinTypeInfo(&quot;varuint64&quot;, SchemaType.VARUINT64, JavaType.LONG, long.class);
+<span class="fc" id="L781">        private static final BuiltinTypeInfo VARUINT =</span>
+                new BuiltinTypeInfo(&quot;varuint&quot;, SchemaType.VARUINT, JavaType.BIG_INTEGER, BigInteger.class);
+
+<span class="fc" id="L784">        private static final BuiltinTypeInfo VARSIZE =</span>
+                new BuiltinTypeInfo(&quot;varsize&quot;, SchemaType.VARSIZE, JavaType.INT, int.class);
+
+<span class="fc" id="L787">        private static final BuiltinTypeInfo BYTES =</span>
+                new BuiltinTypeInfo(&quot;bytes&quot;, SchemaType.BYTES, JavaType.BYTES, byte[].class);
+<span class="fc" id="L789">        private static final BuiltinTypeInfo STRING =</span>
+                new BuiltinTypeInfo(&quot;string&quot;, SchemaType.STRING, JavaType.STRING, String.class);
+<span class="fc" id="L791">        private static final BuiltinTypeInfo BIT_BUFFER =</span>
+                new BuiltinTypeInfo(&quot;extern&quot;, SchemaType.EXTERN, JavaType.BIT_BUFFER, BitBuffer.class);
+    }
+
+    /**
+     * Type information abstract base class for fixed size builtin types.
+     */
+    public static final class FixedSizeBuiltinTypeInfo extends BuiltinTypeInfo
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param schemaType The schema type to be stored in type information.
+         * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param bitSize The bit size of the fixed size integral schema type.
+         */
+        public FixedSizeBuiltinTypeInfo(
+                String schemaName, SchemaType schemaType, JavaType javaType, Class&lt;?&gt; javaClass, byte bitSize)
+        {
+<span class="fc" id="L812">            super(schemaName, schemaType, javaType, javaClass);</span>
+
+<span class="fc" id="L814">            this.bitSize = bitSize;</span>
+<span class="fc" id="L815">        }</span>
+
+        @Override
+        public byte getBitSize()
+        {
+<span class="fc" id="L820">            return bitSize;</span>
+        }
+
+        /**
+         * Gets the type information of bool schema type.
+         *
+         * @return Type information of bool schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getBool()
+        {
+<span class="fc" id="L830">            return BOOL;</span>
+        }
+
+        /**
+         * Gets the type information of int8 schema type.
+         *
+         * @return Type information of int8 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getInt8()
+        {
+<span class="fc" id="L840">            return INT8;</span>
+        }
+
+        /**
+         * Gets the type information of int16 schema type.
+         *
+         * @return Type information of int16 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getInt16()
+        {
+<span class="fc" id="L850">            return INT16;</span>
+        }
+
+        /**
+         * Gets the type information of int32 schema type.
+         *
+         * @return Type information of int32 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getInt32()
+        {
+<span class="fc" id="L860">            return INT32;</span>
+        }
+
+        /**
+         * Gets the type information of int64 schema type.
+         *
+         * @return Type information of int64 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getInt64()
+        {
+<span class="fc" id="L870">            return INT64;</span>
+        }
+
+        /**
+         * Gets the type information of uint8 schema type.
+         *
+         * @return Type information of uint8 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getUInt8()
+        {
+<span class="fc" id="L880">            return UINT8;</span>
+        }
+
+        /**
+         * Gets the type information of uint16 schema type.
+         *
+         * @return Type information of uint16 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getUInt16()
+        {
+<span class="fc" id="L890">            return UINT16;</span>
+        }
+
+        /**
+         * Gets the type information of uint32 schema type.
+         *
+         * @return Type information of uint32 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getUInt32()
+        {
+<span class="fc" id="L900">            return UINT32;</span>
+        }
+
+        /**
+         * Gets the type information of uint64 schema type.
+         *
+         * @return Type information of uint64 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getUInt64()
+        {
+<span class="fc" id="L910">            return UINT64;</span>
+        }
+
+        /**
+         * Gets the type information of float16 schema type.
+         *
+         * @return Type information of float16 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getFloat16()
+        {
+<span class="fc" id="L920">            return FLOAT16;</span>
+        }
+
+        /**
+         * Gets the type information of float32 schema type.
+         *
+         * @return Type information of float32 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getFloat32()
+        {
+<span class="fc" id="L930">            return FLOAT32;</span>
+        }
+
+        /**
+         * Gets the type information of float64 schema type.
+         *
+         * @return Type information of float64 schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getFloat64()
+        {
+<span class="fc" id="L940">            return FLOAT64;</span>
+        }
+
+        /**
+         * Gets the type information of fixed signed bit field schema type.
+         *
+         * @param bitSize The bit size of the bit field.
+         *
+         * @return Type information of fixed signed bit field schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getFixedSignedBitField(byte bitSize)
+        {
+<span class="fc bfc" id="L952" title="All 4 branches covered.">            if (bitSize &lt;= 0 || bitSize &gt; 64)</span>
+            {
+<span class="fc" id="L954">                throw new ZserioError(</span>
+                        &quot;FixedSizeBuiltinTypeInfo.getFixedSignedBitField: Invalid bit size '&quot; + bitSize + &quot;'!&quot;);
+            }
+
+<span class="fc" id="L958">            final String schemaName = &quot;int:&quot; + bitSize;</span>
+<span class="fc bfc" id="L959" title="All 2 branches covered.">            if (bitSize &lt;= 8)</span>
+            {
+<span class="fc" id="L961">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.BYTE, byte.class, bitSize);
+            }
+<span class="fc bfc" id="L964" title="All 2 branches covered.">            else if (bitSize &lt;= 16)</span>
+            {
+<span class="fc" id="L966">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.SHORT, short.class, bitSize);
+            }
+<span class="fc bfc" id="L969" title="All 2 branches covered.">            else if (bitSize &lt;= 32)</span>
+            {
+<span class="fc" id="L971">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.INT, int.class, bitSize);
+            }
+            else // bitSize &lt;= 64
+            {
+<span class="fc" id="L976">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.LONG, long.class, bitSize);
+            }
+        }
+
+        /**
+         * Gets the type information of fixed unsigned bit field schema type.
+         *
+         * @param bitSize The bit size of the bit field.
+         *
+         * @return Type information of fixed unsigned bit field schema type.
+         */
+        public static FixedSizeBuiltinTypeInfo getFixedUnsignedBitField(byte bitSize)
+        {
+<span class="fc bfc" id="L990" title="All 4 branches covered.">            if (bitSize &lt;= 0 || bitSize &gt; 64)</span>
+            {
+<span class="fc" id="L992">                throw new ZserioError(</span>
+                        &quot;FixedSizeBuiltinTypeInfo.getFixedSignedBitField: Invalid bit size '&quot; + bitSize + &quot;'!&quot;);
+            }
+
+<span class="fc" id="L996">            final String schemaName = &quot;bit:&quot; + bitSize;</span>
+<span class="fc bfc" id="L997" title="All 2 branches covered.">            if (bitSize &lt; 8)</span>
+            {
+<span class="fc" id="L999">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BYTE, byte.class, bitSize);
+            }
+<span class="fc bfc" id="L1002" title="All 2 branches covered.">            else if (bitSize &lt; 16)</span>
+            {
+<span class="fc" id="L1004">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.SHORT, short.class, bitSize);
+            }
+<span class="fc bfc" id="L1007" title="All 2 branches covered.">            else if (bitSize &lt; 32)</span>
+            {
+<span class="fc" id="L1009">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.INT, int.class, bitSize);
+            }
+<span class="fc bfc" id="L1012" title="All 2 branches covered.">            else if (bitSize &lt; 64)</span>
+            {
+<span class="fc" id="L1014">                return new FixedSizeBuiltinTypeInfo(</span>
+                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.LONG, long.class, bitSize);
+            }
+            else // bitSize == 64
+            {
+<span class="fc" id="L1019">                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD,</span>
+                        JavaType.BIG_INTEGER, BigInteger.class, bitSize);
+            }
+        }
+
+<span class="fc" id="L1024">        private static final FixedSizeBuiltinTypeInfo BOOL =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;bool&quot;, SchemaType.BOOL, JavaType.BOOLEAN, boolean.class, (byte)1);
+
+<span class="fc" id="L1027">        private static final FixedSizeBuiltinTypeInfo INT8 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;int8&quot;, SchemaType.INT8, JavaType.BYTE, byte.class, (byte)8);
+<span class="fc" id="L1029">        private static final FixedSizeBuiltinTypeInfo INT16 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;int16&quot;, SchemaType.INT16, JavaType.SHORT, short.class, (byte)16);
+<span class="fc" id="L1031">        private static final FixedSizeBuiltinTypeInfo INT32 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;int32&quot;, SchemaType.INT32, JavaType.INT, int.class, (byte)32);
+<span class="fc" id="L1033">        private static final FixedSizeBuiltinTypeInfo INT64 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;int64&quot;, SchemaType.INT64, JavaType.LONG, long.class, (byte)64);
+
+<span class="fc" id="L1036">        private static final FixedSizeBuiltinTypeInfo UINT8 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;uint8&quot;, SchemaType.UINT8, JavaType.SHORT, short.class, (byte)8);
+<span class="fc" id="L1038">        private static final FixedSizeBuiltinTypeInfo UINT16 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;uint16&quot;, SchemaType.UINT16, JavaType.INT, int.class, (byte)16);
+<span class="fc" id="L1040">        private static final FixedSizeBuiltinTypeInfo UINT32 =</span>
+                new FixedSizeBuiltinTypeInfo(&quot;uint32&quot;, SchemaType.UINT32, JavaType.LONG, long.class, (byte)32);
+<span class="fc" id="L1042">        private static final FixedSizeBuiltinTypeInfo UINT64 = new FixedSizeBuiltinTypeInfo(</span>
+                &quot;uint64&quot;, SchemaType.UINT64, JavaType.BIG_INTEGER, BigInteger.class, (byte)64);
+
+<span class="fc" id="L1045">        private static final FixedSizeBuiltinTypeInfo FLOAT16 = new FixedSizeBuiltinTypeInfo(</span>
+                &quot;float16&quot;, SchemaType.FLOAT16, JavaType.FLOAT, float.class, (byte)16);
+<span class="fc" id="L1047">        private static final FixedSizeBuiltinTypeInfo FLOAT32 = new FixedSizeBuiltinTypeInfo(</span>
+                &quot;float32&quot;, SchemaType.FLOAT32, JavaType.FLOAT, float.class, (byte)32);
+<span class="fc" id="L1049">        private static final FixedSizeBuiltinTypeInfo FLOAT64 = new FixedSizeBuiltinTypeInfo(</span>
+                &quot;float64&quot;, SchemaType.FLOAT64, JavaType.DOUBLE, double.class, (byte)64);
+
+        private final byte bitSize;
+    }
+
+    /**
+     * Type information abstract base class for templatable types.
+     */
+    public static class TemplatableTypeInfoBase extends TypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param schemaType The schema type to be stored in type information.
+         * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param templateName The full schema template name.
+         * @param templateArguments The sequence of type informations for template arguments.
+         */
+        public TemplatableTypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType,
+                Class&lt;?&gt; javaClass, String templateName, List&lt;TypeInfo&gt; templateArguments)
+        {
+<span class="fc" id="L1073">            super(schemaName, schemaType, javaType, javaClass);</span>
+
+<span class="fc" id="L1075">            this.templateName = templateName;</span>
+<span class="fc" id="L1076">            this.templateArguments = templateArguments;</span>
+<span class="fc" id="L1077">        }</span>
+
+        @Override
+        public String getTemplateName()
+        {
+<span class="fc" id="L1082">            return templateName;</span>
+        }
+
+        @Override
+        public List&lt;TypeInfo&gt; getTemplateArguments()
+        {
+<span class="fc" id="L1088">            return Collections.unmodifiableList(templateArguments);</span>
+        }
+
+        private final String templateName;
+        private final List&lt;TypeInfo&gt; templateArguments;
+    }
+
+    /**
+     * Type information abstract base class for compound types.
+     */
+    public static abstract class CompoundTypeInfoBase extends TemplatableTypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param schemaType The schema type to be stored in type information.
+         * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param templateName The full schema template name.
+         * @param templateArguments The sequence of type informations for template arguments.
+         * @param fields The sequence of type informations for fields.
+         * @param parameters The sequence of type informations for parameters.
+         * @param functions The sequence of type informations for functions.
+         */
+        public CompoundTypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType,
+                Class&lt;?&gt; javaClass, String templateName, List&lt;TypeInfo&gt; templateArguments,
+                List&lt;FieldInfo&gt; fields, List&lt;ParameterInfo&gt; parameters, List&lt;FunctionInfo&gt; functions)
+        {
+<span class="fc" id="L1117">            super(schemaName, schemaType, javaType, javaClass, templateName, templateArguments);</span>
+
+<span class="fc" id="L1119">            this.fields = fields;</span>
+<span class="fc" id="L1120">            this.parameters = parameters;</span>
+<span class="fc" id="L1121">            this.functions = functions;</span>
+<span class="fc" id="L1122">        }</span>
+
+        @Override
+        public List&lt;FieldInfo&gt; getFields()
+        {
+<span class="fc" id="L1127">            return Collections.unmodifiableList(fields);</span>
+        }
+
+        @Override
+        public List&lt;ParameterInfo&gt; getParameters()
+        {
+<span class="fc" id="L1133">            return Collections.unmodifiableList(parameters);</span>
+        }
+
+        @Override
+        public List&lt;FunctionInfo&gt; getFunctions()
+        {
+<span class="fc" id="L1139">            return Collections.unmodifiableList(functions);</span>
+        }
+
+        private final List&lt;FieldInfo&gt; fields;
+        private final List&lt;ParameterInfo&gt; parameters;
+        private final List&lt;FunctionInfo&gt; functions;
+    }
+
+    /**
+     * Type information class for structure types.
+     */
+    public static final class StructTypeInfo extends CompoundTypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param templateName The full schema template name.
+         * @param templateArguments The sequence of type informations for template arguments.
+         * @param fields The sequence of type informations for fields.
+         * @param parameters The sequence of type informations for parameters.
+         * @param functions The sequence of type informations for functions.
+         */
+        public StructTypeInfo(String schemaName, Class&lt;?&gt; javaClass, String templateName,
+                List&lt;TypeInfo&gt; templateArguments, List&lt;FieldInfo&gt; fields, List&lt;ParameterInfo&gt; parameters,
+                List&lt;FunctionInfo&gt; functions)
+        {
+<span class="fc" id="L1167">            super(schemaName, SchemaType.STRUCT, JavaType.STRUCT, javaClass, templateName, templateArguments,</span>
+                    fields, parameters, functions);
+<span class="fc" id="L1169">        }</span>
+    }
+
+    /**
+     * Type information class for union types.
+     */
+    public static final class UnionTypeInfo extends CompoundTypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param templateName The full schema template name.
+         * @param templateArguments The sequence of type informations for template arguments.
+         * @param fields The sequence of type informations for fields.
+         * @param parameters The sequence of type informations for parameters.
+         * @param functions The sequence of type informations for functions.
+         */
+        public UnionTypeInfo(String schemaName, Class&lt;?&gt; javaClass, String templateName,
+                List&lt;TypeInfo&gt; templateArguments, List&lt;FieldInfo&gt; fields, List&lt;ParameterInfo&gt; parameters,
+                List&lt;FunctionInfo&gt; functions)
+        {
+<span class="fc" id="L1192">            super(schemaName, SchemaType.UNION, JavaType.UNION, javaClass, templateName, templateArguments,</span>
+                    fields, parameters, functions);
+<span class="fc" id="L1194">        }</span>
+    }
+
+    /**
+     * Type information class for choice types.
+     */
+    public static final class ChoiceTypeInfo extends CompoundTypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param templateName The full schema template name.
+         * @param templateArguments The sequence of type informations for template arguments.
+         * @param fields The sequence of type informations for fields.
+         * @param parameters The sequence of type informations for parameters.
+         * @param functions The sequence of type informations for functions.
+         * @param selector The selector expression.
+         * @param cases The sequence of type informations for cases.
+         */
+        public ChoiceTypeInfo(String schemaName, Class&lt;?&gt; javaClass, String templateName,
+                List&lt;TypeInfo&gt; templateArguments, List&lt;FieldInfo&gt; fields, List&lt;ParameterInfo&gt; parameters,
+                List&lt;FunctionInfo&gt; functions, String selector, List&lt;CaseInfo&gt; cases)
+        {
+<span class="fc" id="L1219">            super(schemaName, SchemaType.CHOICE, JavaType.CHOICE, javaClass, templateName, templateArguments,</span>
+                    fields, parameters, functions);
+
+<span class="fc" id="L1222">            this.selector = selector;</span>
+<span class="fc" id="L1223">            this.cases = cases;</span>
+<span class="fc" id="L1224">        }</span>
+
+        @Override
+        public String getSelector()
+        {
+<span class="fc" id="L1229">            return selector;</span>
+        }
+
+        @Override
+        public List&lt;CaseInfo&gt; getCases()
+        {
+<span class="fc" id="L1235">            return Collections.unmodifiableList(cases);</span>
+        }
+
+        private final String selector;
+        private final List&lt;CaseInfo&gt; cases;
+    }
+
+    /**
+     * Type information abstract base class for enumeration and bitmask types.
+     */
+    public static abstract class TypeInfoWithUnderlyingTypeBase extends TypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param schemaType The schema type to be stored in type information.
+         * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param underlyingType The reference to type information of underlying zserio type.
+         * @param underlyingTypeArguments The underlying zserio type arguments.
+         */
+        public TypeInfoWithUnderlyingTypeBase(String schemaName, SchemaType schemaType, JavaType javaType,
+                Class&lt;?&gt; javaClass, TypeInfo underlyingType, List&lt;Supplier&lt;Object&gt;&gt; underlyingTypeArguments)
+        {
+<span class="fc" id="L1260">            super(schemaName, schemaType, javaType, javaClass);</span>
+
+<span class="fc" id="L1262">            this.underlyingType = underlyingType;</span>
+<span class="fc" id="L1263">            this.underlyingTypeArguments = underlyingTypeArguments;</span>
+<span class="fc" id="L1264">        }</span>
+
+        @Override
+        public TypeInfo getUnderlyingType()
+        {
+<span class="fc" id="L1269">            return underlyingType;</span>
+        }
+
+        @Override
+        public List&lt;Supplier&lt;Object&gt;&gt; getUnderlyingTypeArguments()
+        {
+<span class="fc" id="L1275">            return Collections.unmodifiableList(underlyingTypeArguments);</span>
+        }
+
+        private final TypeInfo underlyingType;
+        private final List&lt;Supplier&lt;Object&gt;&gt; underlyingTypeArguments;
+    }
+
+    /**
+     * Type information class for enumeration types.
+     */
+    public static final class EnumTypeInfo extends TypeInfoWithUnderlyingTypeBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param underlyingType The reference to type information of underlying zserio type.
+         * @param underlyingTypeArguments The underlying zserio type arguments.
+         * @param enumItems The sequence of type informations for enumeration items.
+         */
+        public EnumTypeInfo(String schemaName, Class&lt;?&gt; javaClass, TypeInfo underlyingType,
+                List&lt;Supplier&lt;Object&gt;&gt; underlyingTypeArguments, List&lt;ItemInfo&gt; enumItems)
+        {
+<span class="fc" id="L1299">            super(schemaName, SchemaType.ENUM, JavaType.ENUM, javaClass, underlyingType,</span>
+                    underlyingTypeArguments);
+
+<span class="fc" id="L1302">            this.enumItems = enumItems;</span>
+<span class="fc" id="L1303">        }</span>
+
+        @Override
+        public List&lt;ItemInfo&gt; getEnumItems()
+        {
+<span class="fc" id="L1308">            return Collections.unmodifiableList(enumItems);</span>
+        }
+
+        private final List&lt;ItemInfo&gt; enumItems;
+    }
+
+    /**
+     * Type information class for bitmask types.
+     */
+    public static final class BitmaskTypeInfo extends TypeInfoWithUnderlyingTypeBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param underlyingType The reference to type information of underlying zserio type.
+         * @param underlyingTypeArguments The underlying zserio type arguments.
+         * @param bitmaskValues The sequence of type informations for bitmask values.
+         */
+        public BitmaskTypeInfo(String schemaName, Class&lt;?&gt; javaClass, TypeInfo underlyingType,
+                List&lt;Supplier&lt;Object&gt;&gt; underlyingTypeArguments, List&lt;ItemInfo&gt; bitmaskValues)
+        {
+<span class="fc" id="L1331">            super(schemaName, SchemaType.BITMASK, JavaType.BITMASK, javaClass, underlyingType,</span>
+                    underlyingTypeArguments);
+
+<span class="fc" id="L1334">            this.bitmaskValues = bitmaskValues;</span>
+<span class="fc" id="L1335">        }</span>
+
+        @Override
+        public List&lt;ItemInfo&gt; getBitmaskValues()
+        {
+<span class="fc" id="L1340">            return Collections.unmodifiableList(bitmaskValues);</span>
+        }
+
+        private final List&lt;ItemInfo&gt; bitmaskValues;
+    }
+
+    /**
+     * Type information class for SQL table types.
+     */
+    public static final class SqlTableTypeInfo extends TemplatableTypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param templateName The full schema template name.
+         * @param templateArguments The sequence of type informations for template arguments.
+         * @param columns The sequence of type informations for columns.
+         * @param sqlConstraint The SQL table constraint.
+         * @param virtualTableUsing The SQL virtual table using specification.
+         * @param isWithoutRowId True if SQL table is without row id table, otherwise false.
+         */
+        public SqlTableTypeInfo(String schemaName, Class&lt;?&gt; javaClass, String templateName,
+                List&lt;TypeInfo&gt; templateArguments, List&lt;ColumnInfo&gt; columns, String sqlConstraint,
+                String virtualTableUsing, boolean isWithoutRowId)
+        {
+<span class="fc" id="L1367">            super(schemaName, SchemaType.SQL_TABLE, JavaType.SQL_TABLE, javaClass, templateName,</span>
+                    templateArguments);
+
+<span class="fc" id="L1370">            this.columns = columns;</span>
+<span class="fc" id="L1371">            this.sqlConstraint = sqlConstraint;</span>
+<span class="fc" id="L1372">            this.virtualTableUsing = virtualTableUsing;</span>
+<span class="fc" id="L1373">            this.isWithoutRowId = isWithoutRowId;</span>
+<span class="fc" id="L1374">        }</span>
+
+        @Override
+        public List&lt;ColumnInfo&gt; getColumns()
+        {
+<span class="fc" id="L1379">            return Collections.unmodifiableList(columns);</span>
+        }
+
+        @Override
+        public String getSqlConstraint()
+        {
+<span class="fc" id="L1385">            return sqlConstraint;</span>
+        }
+
+        @Override
+        public String getVirtualTableUsing()
+        {
+<span class="fc" id="L1391">            return virtualTableUsing;</span>
+        }
+
+        @Override
+        public boolean isWithoutRowId()
+        {
+<span class="fc" id="L1397">            return isWithoutRowId;</span>
+        }
+
+        private final List&lt;ColumnInfo&gt; columns;
+        private final String sqlConstraint;
+        private final String virtualTableUsing;
+        private final boolean isWithoutRowId;
+    }
+
+    /**
+     * Type information class for SQL database types.
+     */
+    public static final class SqlDatabaseTypeInfo extends TypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param tables The sequence of type informations for tables.
+         */
+        public SqlDatabaseTypeInfo(String schemaName, Class&lt;?&gt; javaClass, List&lt;TableInfo&gt; tables)
+        {
+<span class="fc" id="L1420">            super(schemaName, SchemaType.SQL_DATABASE, JavaType.SQL_DATABASE, javaClass);</span>
+
+<span class="fc" id="L1422">            this.tables = tables;</span>
+<span class="fc" id="L1423">        }</span>
+
+        @Override
+        public List&lt;TableInfo&gt; getTables()
+        {
+<span class="fc" id="L1428">            return Collections.unmodifiableList(tables);</span>
+        }
+
+        private final List&lt;TableInfo&gt; tables;
+    }
+
+    /**
+     * Type information class for pubsub types.
+     */
+    public static final class PubsubTypeInfo extends TypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param messages The sequence of type informations for pubsub messages.
+         */
+        public PubsubTypeInfo(String schemaName, Class&lt;?&gt; javaClass, List&lt;MessageInfo&gt; messages)
+        {
+<span class="fc" id="L1448">            super(schemaName, SchemaType.PUBSUB, JavaType.PUBSUB, javaClass);</span>
+
+<span class="fc" id="L1450">            this.messages = messages;</span>
+<span class="fc" id="L1451">        }</span>
+
+        @Override
+        public List&lt;MessageInfo&gt; getMessages()
+        {
+<span class="fc" id="L1456">            return Collections.unmodifiableList(messages);</span>
+        }
+
+        private final List&lt;MessageInfo&gt; messages;
+    }
+
+    /**
+     * Type information class for service types.
+     */
+    public static final class ServiceTypeInfo extends TypeInfoBase
+    {
+        /**
+         * Constructor.
+         *
+         * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
+         * @param methods The sequence of type informations for service methods.
+         */
+        public ServiceTypeInfo(String schemaName, Class&lt;?&gt; javaClass, List&lt;MethodInfo&gt; methods)
+        {
+<span class="fc" id="L1476">            super(schemaName, SchemaType.SERVICE, JavaType.SERVICE, javaClass);</span>
+
+<span class="fc" id="L1478">            this.methods = methods;</span>
+<span class="fc" id="L1479">        }</span>
+
+        @Override
+        public List&lt;MethodInfo&gt; getMethods()
+        {
+<span class="fc" id="L1484">            return Collections.unmodifiableList(methods);</span>
+        }
+
+        private final List&lt;MethodInfo&gt; methods;
+    }
+
+    /**
+     * Type info for recursive types used as a wrapper around generated static typeInfo method to prevent
+     * infinite recursion in type info definition.
+     */
+    public static final class RecursiveTypeInfo implements TypeInfo
+    {
+        /**
+         * Type info getter.
+         */
+        public static interface TypeInfoGetter {
+            /**
+             * Gets the type info.
+             *
+             * @return Type info.
+             */
+            public TypeInfo get();
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param typeInfoGetter Implementation of TypeInfoGetter interface.
+         */
+        public RecursiveTypeInfo(TypeInfoGetter typeInfoGetter)
+<span class="fc" id="L1514">        {</span>
+<span class="fc" id="L1515">            this.typeInfoGetter = typeInfoGetter;</span>
+<span class="fc" id="L1516">        }</span>
+
+        @Override
+        public String getSchemaName()
+        {
+<span class="fc" id="L1521">            return getTypeInfo().getSchemaName();</span>
+        }
+
+        @Override
+        public SchemaType getSchemaType()
+        {
+<span class="fc" id="L1527">            return getTypeInfo().getSchemaType();</span>
+        }
+
+        @Override
+        public JavaType getJavaType()
+        {
+<span class="fc" id="L1533">            return getTypeInfo().getJavaType();</span>
+        }
+
+        @Override
+        public Class&lt;?&gt; getJavaClass()
+        {
+<span class="nc" id="L1539">            return getTypeInfo().getJavaClass();</span>
+        }
+
+        @Override
+        public byte getBitSize()
+        {
+<span class="nc" id="L1545">            return getTypeInfo().getBitSize();</span>
+        }
+
+        @Override
+        public List&lt;FieldInfo&gt; getFields()
+        {
+<span class="fc" id="L1551">            return getTypeInfo().getFields();</span>
+        }
+
+        @Override
+        public List&lt;ParameterInfo&gt; getParameters()
+        {
+<span class="fc" id="L1557">            return getTypeInfo().getParameters();</span>
+        }
+
+        @Override
+        public List&lt;FunctionInfo&gt; getFunctions()
+        {
+<span class="fc" id="L1563">            return getTypeInfo().getFunctions();</span>
+        }
+
+        @Override
+        public String getSelector()
+        {
+<span class="nc" id="L1569">            return getTypeInfo().getSelector();</span>
+        }
+
+        @Override
+        public List&lt;CaseInfo&gt; getCases()
+        {
+<span class="nc" id="L1575">            return getTypeInfo().getCases();</span>
+        }
+
+        @Override
+        public TypeInfo getUnderlyingType()
+        {
+<span class="nc" id="L1581">            return getTypeInfo().getUnderlyingType();</span>
+        }
+
+        @Override
+        public List&lt;Supplier&lt;Object&gt;&gt; getUnderlyingTypeArguments()
+        {
+<span class="nc" id="L1587">            return getTypeInfo().getUnderlyingTypeArguments();</span>
+        }
+
+        @Override
+        public List&lt;ItemInfo&gt; getEnumItems()
+        {
+<span class="nc" id="L1593">            return getTypeInfo().getEnumItems();</span>
+        }
+
+        @Override
+        public List&lt;ItemInfo&gt; getBitmaskValues()
+        {
+<span class="nc" id="L1599">            return getTypeInfo().getBitmaskValues();</span>
+        }
+
+        @Override
+        public List&lt;ColumnInfo&gt; getColumns()
+        {
+<span class="nc" id="L1605">            return getTypeInfo().getColumns();</span>
+        }
+
+        @Override
+        public String getSqlConstraint()
+        {
+<span class="nc" id="L1611">            return getTypeInfo().getSqlConstraint();</span>
+        }
+
+        @Override
+        public String getVirtualTableUsing()
+        {
+<span class="nc" id="L1617">            return getTypeInfo().getVirtualTableUsing();</span>
+        }
+
+        @Override
+        public boolean isWithoutRowId()
+        {
+<span class="nc" id="L1623">            return getTypeInfo().isWithoutRowId();</span>
+        }
+
+        @Override
+        public List&lt;TableInfo&gt; getTables()
+        {
+<span class="nc" id="L1629">            return getTypeInfo().getTables();</span>
+        }
+
+        @Override
+        public String getTemplateName()
+        {
+<span class="fc" id="L1635">            return getTypeInfo().getTemplateName();</span>
+        }
+
+        @Override
+        public List&lt;TypeInfo&gt; getTemplateArguments()
+        {
+<span class="fc" id="L1641">            return getTypeInfo().getTemplateArguments();</span>
+        }
+
+        @Override
+        public List&lt;MessageInfo&gt; getMessages()
+        {
+<span class="nc" id="L1647">            return getTypeInfo().getMessages();</span>
+        }
+
+        @Override
+        public List&lt;MethodInfo&gt; getMethods()
+        {
+<span class="nc" id="L1653">            return getTypeInfo().getMethods();</span>
+        }
+
+        private TypeInfo getTypeInfo()
+        {
+<span class="fc bfc" id="L1658" title="All 2 branches covered.">            if (typeInfo == null)</span>
+<span class="fc" id="L1659">                typeInfo = typeInfoGetter.get();</span>
+<span class="fc" id="L1660">            return typeInfo;</span>
+        }
+
+        private final TypeInfoGetter typeInfoGetter;
+<span class="fc" id="L1664">        private TypeInfo typeInfo = null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
