@@ -739,13 +739,13 @@ update_web_pages()
         fi
         echo "Done"
 
+        echo -ne "Creating Zserio runtime library GitHub badges..."
+        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
+        echo "Done"
+
         echo -ne "Copying Zserio runtime libraries latest version..."
         mkdir -p "${DEST_LATEST_DIR}"
         cp -r "${DEST_RUNTIME_DIR}"/* "${DEST_LATEST_DIR}"
-        echo "Done"
-
-        echo -ne "Creating Zserio runtime library GitHub badges..."
-        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
         echo "Done"
 
         echo
