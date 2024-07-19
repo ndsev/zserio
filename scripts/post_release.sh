@@ -443,13 +443,28 @@ update_tutorial_cpp()
     local TUTORIAL_CPP_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
 
-    echo "Updating generated sources in Zserio Tutorial Cpp."
+    echo "Updating generated sources with default allocators in Zserio Tutorial Cpp."
     echo
     local TUTORIAL_CPP_BUILD_DIR="${TUTORIAL_CPP_DIR}/build"
     rm -rf "${TUTORIAL_CPP_BUILD_DIR}"
     mkdir -p "${TUTORIAL_CPP_BUILD_DIR}"
     pushd "${TUTORIAL_CPP_BUILD_DIR}" > /dev/null
     "${CMAKE}" -DREGENERATE_CPP_SOURCES=ON ..
+    local CMAKE_RESULT=$?
+    popd > /dev/null
+    if [ ${CMAKE_RESULT} -ne 0 ] ; then
+        stderr_echo "CMake failed with return code ${CMAKE_RESULT}!"
+        return 1
+    fi
+    echo
+
+    echo "Updating generated sources with polymorphic allocators in Zserio Tutorial Cpp."
+    echo
+    local TUTORIAL_CPP_BUILD_DIR="${TUTORIAL_CPP_DIR}/build"
+    rm -rf "${TUTORIAL_CPP_BUILD_DIR}"
+    mkdir -p "${TUTORIAL_CPP_BUILD_DIR}"
+    pushd "${TUTORIAL_CPP_BUILD_DIR}" > /dev/null
+    "${CMAKE}" -DREGENERATE_CPP_SOURCES=ON ../pmr
     local CMAKE_RESULT=$?
     popd > /dev/null
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
