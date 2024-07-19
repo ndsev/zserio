@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">JavaType.java</span></div><h1>JavaType.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+/**
+ * Enumeration which specifies Java type used in type information.
+ */
+<span class="fc" id="L6">public enum JavaType</span>
+{
+    /** Java boolean type */
+<span class="fc" id="L9">    BOOLEAN,</span>
+    /** Java byte type */
+<span class="fc" id="L11">    BYTE,</span>
+    /** Java short type */
+<span class="fc" id="L13">    SHORT,</span>
+    /** Java int type */
+<span class="fc" id="L15">    INT,</span>
+    /** Java long type */
+<span class="fc" id="L17">    LONG,</span>
+    /** Java BigInteger type */
+<span class="fc" id="L19">    BIG_INTEGER,</span>
+    /** Java float type */
+<span class="fc" id="L21">    FLOAT,</span>
+    /** Java double type */
+<span class="fc" id="L23">    DOUBLE,</span>
+    /** Java bytes type (mapped to byte[]) */
+<span class="fc" id="L25">    BYTES,</span>
+    /** Java String type */
+<span class="fc" id="L27">    STRING,</span>
+    /** Java zserio.runtime.io.BitBuffer type */
+<span class="fc" id="L29">    BIT_BUFFER,</span>
+    /** Java enumeration generated from zserio enumeration type */
+<span class="fc" id="L31">    ENUM,</span>
+    /** Java object generated from zserio bitmask type */
+<span class="fc" id="L33">    BITMASK,</span>
+    /** Java object generated from zserio structure type */
+<span class="fc" id="L35">    STRUCT,</span>
+    /** Java object generated from zserio choice type */
+<span class="fc" id="L37">    CHOICE,</span>
+    /** Java object generated from zserio union type */
+<span class="fc" id="L39">    UNION,</span>
+    /** Java object generated from zserio SQL table type */
+<span class="fc" id="L41">    SQL_TABLE,</span>
+    /** Java object generated from zserio SQL database type */
+<span class="fc" id="L43">    SQL_DATABASE,</span>
+    /** Java object generated from zserio service type */
+<span class="fc" id="L45">    SERVICE,</span>
+    /** Java object generated from zserio pubsub type */
+<span class="fc" id="L47">    PUBSUB</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
