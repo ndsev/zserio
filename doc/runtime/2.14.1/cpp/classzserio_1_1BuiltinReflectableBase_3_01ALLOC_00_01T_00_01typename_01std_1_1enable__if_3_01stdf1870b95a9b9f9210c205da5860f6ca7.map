@@ -1,0 +1,5 @@
+<map id="zserio::BuiltinReflectableBase&lt; ALLOC, T, typename std::enable_if&lt; std::is_arithmetic&lt; T &gt;::value||std::is_same&lt; T, StringView &gt;::value||is_span&lt; T &gt;::value &gt;::type &gt;" name="zserio::BuiltinReflectableBase&lt; ALLOC, T, typename std::enable_if&lt; std::is_arithmetic&lt; T &gt;::value||std::is_same&lt; T, StringView &gt;::value||is_span&lt; T &gt;::value &gt;::type &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,184,269,284"/>
+<area shape="rect" id="node2" href="$classzserio_1_1ReflectableBase.html" title=" " alt="" coords="50,95,225,136"/>
+<area shape="rect" id="node3" href="$classzserio_1_1IBasicReflectable.html" title=" " alt="" coords="47,5,228,47"/>
+</map>

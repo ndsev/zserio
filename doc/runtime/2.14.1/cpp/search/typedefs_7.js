@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['ibasicreflectableconstptr_1964',['IBasicReflectableConstPtr',['../namespacezserio.html#afa832065a53b359ef36369ae60a8942d',1,'zserio']]],
+  ['ibasicreflectableptr_1965',['IBasicReflectablePtr',['../namespacezserio.html#af36feb20c4f713a829d2ebac7e5ddedc',1,'zserio']]],
+  ['ibasicservicedataptr_1966',['IBasicServiceDataPtr',['../namespacezserio.html#ae2ac5bc0f933c338bb8c8ca84588d39a',1,'zserio']]],
+  ['inplaceoptionalholder_1967',['InplaceOptionalHolder',['../namespacezserio.html#afac88696d3a6e89f68c2196b1cff0ec8',1,'zserio']]],
+  ['int16reflectablearray_1968',['Int16ReflectableArray',['../namespacezserio.html#af87d2eba6fe3cef62adcdfb51bb3fd9f',1,'zserio']]],
+  ['int16reflectableconstarray_1969',['Int16ReflectableConstArray',['../namespacezserio.html#a36cb872e86ed6bf3f4b18a4f09d4bc06',1,'zserio']]],
+  ['int32reflectablearray_1970',['Int32ReflectableArray',['../namespacezserio.html#ac0ac6de5b25dd8e8157e0d1be1b1e8d8',1,'zserio']]],
+  ['int32reflectableconstarray_1971',['Int32ReflectableConstArray',['../namespacezserio.html#adb2875c6a542269c56ffdcfb3561e09b',1,'zserio']]],
+  ['int64reflectablearray_1972',['Int64ReflectableArray',['../namespacezserio.html#aefebe32f8fc51db4ab4adea98146ff4a',1,'zserio']]],
+  ['int64reflectableconstarray_1973',['Int64ReflectableConstArray',['../namespacezserio.html#adb8444deaecc0e5cc8862b9ead0b6c47',1,'zserio']]],
+  ['int8reflectablearray_1974',['Int8ReflectableArray',['../namespacezserio.html#ae4b3d226a626de08961aa61874d802f0',1,'zserio']]],
+  ['int8reflectableconstarray_1975',['Int8ReflectableConstArray',['../namespacezserio.html#a2e4bfe754ffcd90c5188e4e4fe2cd0cc',1,'zserio']]],
+  ['ireflectable_1976',['IReflectable',['../namespacezserio.html#adc448b5264e6a84e26fca5e65850005e',1,'zserio::IReflectable()'],['../namespacezserio_1_1pmr.html#aca4892c53933e3b0164bd38cb25ccd96',1,'zserio::pmr::IReflectable()']]],
+  ['ireflectableconstptr_1977',['IReflectableConstPtr',['../namespacezserio_1_1pmr.html#a99cfc8bda42d5070068c5dd57d132f13',1,'zserio::pmr::IReflectableConstPtr()'],['../namespacezserio.html#abf47f9fe33afeab3d514daba0ea2dc14',1,'zserio::IReflectableConstPtr()']]],
+  ['ireflectableptr_1978',['IReflectablePtr',['../namespacezserio.html#a4823ee4de4271af00620c1d1c40c3b78',1,'zserio::IReflectablePtr()'],['../namespacezserio_1_1pmr.html#ad867b140e2f9180bcf8c4f8bbdb6015f',1,'zserio::pmr::IReflectablePtr()']]],
+  ['is_5ffield_5fconstructor_5fenabled_5ft_1979',['is_field_constructor_enabled_t',['../namespacezserio.html#a7ae86dff238a9f22729ca7a9537c81da',1,'zserio']]],
+  ['iservice_1980',['IService',['../namespacezserio.html#a4bb3e5c3a1a10883f5c658e203c85f23',1,'zserio::IService()'],['../namespacezserio_1_1pmr.html#a1d46a6baa7d8495c63d778773dfc9d18',1,'zserio::pmr::IService()']]],
+  ['iserviceclient_1981',['IServiceClient',['../namespacezserio.html#ade33a26f701b20f992ba6486690f832c',1,'zserio::IServiceClient()'],['../namespacezserio_1_1pmr.html#abad0c1e2fce45f503e2f842035308b8a',1,'zserio::pmr::IServiceClient()']]],
+  ['iservicedata_1982',['IServiceData',['../namespacezserio.html#a59f31db159724904f4787335d7d6b070',1,'zserio::IServiceData()'],['../namespacezserio_1_1pmr.html#a6af3ad41becc547f53df09a4e8b46c37',1,'zserio::pmr::IServiceData()']]],
+  ['iservicedataptr_1983',['IServiceDataPtr',['../namespacezserio.html#a80997d5c7c80270f065604c937213f85',1,'zserio::IServiceDataPtr()'],['../namespacezserio_1_1pmr.html#a7ec8f45ae4ed94cbc39d04e6a26ed3a3',1,'zserio::pmr::IServiceDataPtr()']]],
+  ['iterator_1984',['iterator',['../classzserio_1_1BasicStringView.html#a44facfed873c82a6ac23e20edd7872d8',1,'zserio::BasicStringView::iterator()'],['../classzserio_1_1Span.html#a21baa97d68cc46f2217403145316d991',1,'zserio::Span::iterator()']]],
+  ['itypeinfo_1985',['ITypeInfo',['../namespacezserio.html#a56a4d41526f4e06980f0d83f90e9eb90',1,'zserio::ITypeInfo()'],['../namespacezserio_1_1pmr.html#a6bafc8277ef5a6a9d8c4b1044d660641',1,'zserio::pmr::ITypeInfo()']]],
+  ['iwalkfilter_1986',['IWalkFilter',['../namespacezserio.html#abfccee65f2b3196c9af76ad8f805f5b4',1,'zserio']]],
+  ['iwalkobserver_1987',['IWalkObserver',['../namespacezserio.html#a282c384b5768835fd3af2adc4b288aac',1,'zserio']]]
+];
