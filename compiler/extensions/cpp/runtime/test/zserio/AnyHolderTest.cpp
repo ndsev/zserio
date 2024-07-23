@@ -353,7 +353,7 @@ private:
             const ALLOC newAllocator;
             AnyHolder<ALLOC> anyMove(std::move(any), newAllocator);
             ASSERT_EQ(value, anyMove.template get<T>());
-            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
+            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no further allocations
         }
     }
 
@@ -393,7 +393,7 @@ private:
             const ALLOC newAllocator;
             AnyHolder<ALLOC> anyMove(NoInit, std::move(any), newAllocator);
             ASSERT_EQ(value, anyMove.template get<T>());
-            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
+            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no further allocations
         }
     }
 
@@ -427,7 +427,7 @@ private:
             AnyHolder<ALLOC> anyMove;
             anyMove = std::move(any);
             ASSERT_EQ(value, anyMove.template get<T>());
-            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
+            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no further allocations
         }
     }
 
@@ -461,7 +461,7 @@ private:
             AnyHolder<ALLOC> anyMove;
             anyMove.assign(NoInit, std::move(any));
             ASSERT_EQ(value, anyMove.template get<T>());
-            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
+            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no further allocations
         }
     }
 
