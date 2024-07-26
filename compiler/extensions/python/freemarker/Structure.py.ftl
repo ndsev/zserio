@@ -301,7 +301,7 @@ ${I}<#rt>
         """
 
         </#if>
-        return <#if field.optional.clause??>${field.optional.clause}<#else>self.${field.optional.isSetIndicatorName}()</#if>
+        return <#if field.optional.clause??>${field.optional.clause}<#else>not self.<@field_member_name field/> is None</#if>
         <#if withWriterCode>
 
     def ${field.optional.isSetIndicatorName}(self) -> bool:

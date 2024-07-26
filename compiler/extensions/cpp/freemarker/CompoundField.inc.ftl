@@ -182,7 +182,7 @@ ${I}}
 </#macro>
 
 <#macro field_optional_condition field>
-    <#if field.optional.clause??>${field.optional.clause}<#else>${field.optional.isSetIndicatorName}()</#if><#t>
+    <#if field.optional.clause??>${field.optional.clause}<#else><@field_member_name field/>.hasValue()</#if><#t>
 </#macro>
 
 <#macro compound_write_field field compoundName indent packed=false>
