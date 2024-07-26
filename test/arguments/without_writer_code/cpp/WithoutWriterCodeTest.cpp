@@ -286,7 +286,9 @@ protected:
         // Tile
         writer.writeBits(VERSION_AVAILABILITY, 3);
         writer.writeBits(VERSION, 8);
-        writer.writeBits(6, 32); // numElementsOffset
+        writer.writeBool(true);
+        writer.writeBits(OPTIONAL_VERSION_INFO, 8);
+        writer.writeBits(3 + 4, 32); // numElementsOffset
         writer.alignTo(8);
         writer.writeBits(NUM_ELEMENTS, 32);
 
@@ -339,8 +341,10 @@ protected:
 
     void checkTile(const Tile& tile)
     {
-        ASSERT_EQ(VERSION, tile.getVersion());
         ASSERT_EQ(VERSION_AVAILABILITY, tile.getVersionAvailability().getValue());
+        ASSERT_EQ(VERSION, tile.getVersion());
+        ASSERT_EQ(OPTIONAL_VERSION_INFO, tile.getOptionalVersionInfo());
+
         ASSERT_EQ(NUM_ELEMENTS, tile.getNumElements());
 
         const auto& data = tile.getData();
@@ -377,6 +381,7 @@ protected:
     static const int32_t TILE_ID_AMERICA;
     static const uint8_t VERSION_AVAILABILITY;
     static const uint8_t VERSION;
+    static const uint8_t OPTIONAL_VERSION_INFO;
     static const uint32_t NUM_ELEMENTS;
     static const uint16_t PARAMS0;
     static const uint16_t PARAMS1;
@@ -391,6 +396,7 @@ const int32_t WithoutWriterCode::TILE_ID_EUROPE = 99;
 const int32_t WithoutWriterCode::TILE_ID_AMERICA = 11;
 const uint8_t WithoutWriterCode::VERSION_AVAILABILITY = 0x01;
 const uint8_t WithoutWriterCode::VERSION = 8;
+const uint8_t WithoutWriterCode::OPTIONAL_VERSION_INFO = 0xBA;
 const uint32_t WithoutWriterCode::NUM_ELEMENTS = 2;
 const uint16_t WithoutWriterCode::PARAMS0 = 13;
 const uint16_t WithoutWriterCode::PARAMS1 = 21;
@@ -614,6 +620,11 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setVersionString(", "void Tile::setVersionString(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "bool isVersionStringSet(", "bool Tile::isVersionStringSet(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "void resetVersionString(", "void Tile::resetVersionString(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setOptionalVersionInfo(", "void Tile::setOptionalVersionInfo(");
+    ASSERT_METHOD_NOT_PRESENT(
+            PATH, type, "bool isOptionalVersionInfoSet(", "bool Tile::isOptionalVersionInfoSet(");
+    ASSERT_METHOD_NOT_PRESENT(
+            PATH, type, "void resetOptionalVersionInfo(", "void Tile::resetOptionalVersionInfo(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setNumElements(", "void Tile::setNumElements(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setData(", "void Tile::setData(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
@@ -644,6 +655,10 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     ASSERT_METHOD_PRESENT(PATH, type, MethodNames::GET_VERSION_STRING_DECLARATION,
             MethodNames::GET_VERSION_STRING_DEFINITION);
     ASSERT_METHOD_PRESENT(PATH, type, "bool isVersionStringUsed(", "bool Tile::isVersionStringUsed(");
+    ASSERT_METHOD_PRESENT(
+            PATH, type, "uint8_t getOptionalVersionInfo(", "uint8_t Tile::getOptionalVersionInfo(");
+    ASSERT_METHOD_PRESENT(
+            PATH, type, "bool isOptionalVersionInfoUsed(", "bool Tile::isOptionalVersionInfoUsed(");
     ASSERT_METHOD_PRESENT(PATH, type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
     ASSERT_METHOD_PRESENT(PATH, type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");
     ASSERT_METHOD_PRESENT(PATH, type, "& getOffsets() const", "& Tile::getOffsets() const");

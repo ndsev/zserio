@@ -157,6 +157,10 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(Tile.class, "write(");
         assertMethodNotPresent(Tile.class, "setVersion(");
         assertMethodNotPresent(Tile.class, "isVersionSet(");
+        assertMethodNotPresent(Tile.class, "setVersionString(");
+        assertMethodNotPresent(Tile.class, "isVersionStringSet(");
+        assertMethodNotPresent(Tile.class, "setOptionalVersionInfo(");
+        assertMethodNotPresent(Tile.class, "isOptionalVersionInfoSet(");
         assertMethodNotPresent(Tile.class, "setNumElementsOffset(");
         assertMethodNotPresent(Tile.class, "setVersionString(");
         assertMethodNotPresent(Tile.class, "isVersionStringSet(");
@@ -172,6 +176,8 @@ public class WithoutWriterCodeTest
         assertMethodPresent(Tile.class, "getNumElementsOffset()");
         assertMethodPresent(Tile.class, "getNumElements()");
         assertMethodPresent(Tile.class, "getVersion()");
+        assertMethodPresent(Tile.class, "getVersionString()");
+        assertMethodPresent(Tile.class, "getOptionalVersionInfo()");
         assertMethodPresent(Tile.class, "read(zserio.runtime.io.BitStreamReader)");
     }
 
@@ -319,7 +325,9 @@ public class WithoutWriterCodeTest
         // Tile
         writer.writeBits(VERSION_AVAILABILITY, 3);
         writer.writeBits((long)VERSION, 8);
-        writer.writeBits(6, 32); // numElementsOffset
+        writer.writeBool(true);
+        writer.writeBits((long)OPTIONAL_VERSION_INFO, 8);
+        writer.writeBits(3 + 4, 32); // numElementsOffset
         writer.alignTo(8);
         writer.writeBits(NUM_ELEMENTS, 32);
 
@@ -358,8 +366,9 @@ public class WithoutWriterCodeTest
 
     private void checkTile(Tile tile)
     {
-        assertEquals(VERSION, tile.getVersion().shortValue());
         assertEquals(VERSION_AVAILABILITY, tile.getVersionAvailability().getValue());
+        assertEquals(VERSION, tile.getVersion().shortValue());
+        assertEquals(OPTIONAL_VERSION_INFO, tile.getOptionalVersionInfo().shortValue());
         assertEquals(NUM_ELEMENTS, tile.getNumElements());
 
         final ItemChoiceHolder[] data = tile.getData();
@@ -385,8 +394,9 @@ public class WithoutWriterCodeTest
     private static final String BLOB_NAME = "without_writer_code.blob";
     private static final int TILE_ID_EUROPE = 99;
     private static final int TILE_ID_AMERICA = 11;
-    private static final short VERSION = 8;
     private static final byte VERSION_AVAILABILITY = 1;
+    private static final short VERSION = 8;
+    private static final short OPTIONAL_VERSION_INFO = 0xBA;
     private static final long NUM_ELEMENTS = 2;
     private static final int PARAMS[] = {13, 21};
     private static final long EXTRA_PARAM = 42;
