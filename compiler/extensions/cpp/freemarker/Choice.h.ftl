@@ -329,7 +329,7 @@ public:
     </#if>
 </#if>
 
-<#if withBitPosition>
+<#if withBitPositionCode>
     /**
      * Get the source offset and size of the structure in bits.
      * For objects not loaded from a blob, the offest is 0.
@@ -351,7 +351,7 @@ private:
 
 </#if>
 <#-- Data members -->
-<#if withBitPosition>
+<#if withBitPositionCode>
     <#-- Source position must be the first member in order to get initialized first. -->
     size_t m_bitPosition = 0;
 </#if>

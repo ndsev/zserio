@@ -380,7 +380,7 @@ public:
     </#if>
 </#if>
 
-<#if withBitPosition>
+<#if withBitPositionCode>
     /**
      * Get the source offset and size of the structure in bits.
      * For objects not loaded from a blob, the offest is 0.
@@ -413,7 +413,7 @@ private:
 </#list>
 <#-- The source-position must be the first member to get called first in
      the constructors initializer list -->
-<#if withBitPosition>
+<#if withBitPositionCode>
     size_t m_bitPosition = 0;
 </#if>
     <@compound_parameter_members compoundParametersData/>

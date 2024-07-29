@@ -234,7 +234,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         }
     </#if>
 
-    <#if withBitPosition>
+    <#if withBitPositionCode>
         size_t bitPosition() const override
         {
             return m_object.bitPosition();
@@ -565,7 +565,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 }
     </#if>
 </#if>
-<#if withBitPosition>
+<#if withBitPositionCode>
 size_t ${name}::bitPosition() const
 {
     return m_bitPosition;
