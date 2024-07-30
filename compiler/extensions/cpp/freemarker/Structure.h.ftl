@@ -380,6 +380,16 @@ public:
     </#if>
 </#if>
 
+<#if withBitPositionCode>
+    /**
+     * Get the source offset and size of the structure in bits.
+     * For objects not loaded from a blob, the offest is 0.
+     *
+     * \return Tuple of the objects offset and size in bits.
+     */
+    size_t bitPosition() const;
+</#if>
+
 private:
     <@private_section_declarations name, fieldList/>
 <#list fieldList as field>
@@ -401,6 +411,11 @@ private:
 
     </#if>
 </#list>
+<#-- The source-position must be the first member to get called first in
+     the constructors initializer list -->
+<#if withBitPositionCode>
+    size_t m_bitPosition = 0;
+</#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#if (numExtendedFields > 0)>

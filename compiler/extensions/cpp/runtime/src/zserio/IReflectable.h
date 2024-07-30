@@ -508,6 +508,17 @@ public:
     virtual string<ALLOC> toString(const ALLOC& allocator) const = 0;
     virtual string<ALLOC> toString() const = 0;
     /** \} */
+
+    /**
+     * Returns the reflectables bit position (blob) in bits.
+     *
+     * \note The bit position is only stored for code generated using zserios `-withBitPositionCode`
+     *       option and only set for objects read from a blob.
+     *
+     * \return The blob offset of the objects in bits
+     * \throw CppRuntimeException If the object was compiled without the source region feature enabled.
+     */
+    virtual size_t bitPosition() const = 0;
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */

@@ -281,6 +281,13 @@ ${I}return {};
         }
     </#if>
 
+    <#if withBitPositionCode>
+        size_t bitPosition() const override
+        {
+            return m_object.bitPosition();
+        }
+    </#if>
+
     private:
         <#if isConst>const </#if>${fullName}& m_object;
     };
@@ -292,7 +299,6 @@ ${I}return {};
 
         <#if withWriterCode>
 <@choice_reflectable false/>
-
         </#if>
     </#if>
 </#if>
@@ -575,6 +581,12 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     <@choice_switch "choice_write_member", "choice_no_match", selectorExpression, 1, true/>
 }
     </#if>
+</#if>
+<#if withBitPositionCode>
+size_t ${name}::bitPosition() const
+{
+    return m_bitPosition;
+}
 </#if>
 <#if fieldList?has_content>
 

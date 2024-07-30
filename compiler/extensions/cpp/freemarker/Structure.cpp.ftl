@@ -234,6 +234,13 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         }
     </#if>
 
+    <#if withBitPositionCode>
+        size_t bitPosition() const override
+        {
+            return m_object.bitPosition();
+        }
+    </#if>
+
     private:
         <#if isConst>const </#if>${fullName}& m_object;
     };
@@ -557,6 +564,12 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
         </#list>
 }
     </#if>
+</#if>
+<#if withBitPositionCode>
+size_t ${name}::bitPosition() const
+{
+    return m_bitPosition;
+}
 </#if>
 <#if fieldList?has_content>
 

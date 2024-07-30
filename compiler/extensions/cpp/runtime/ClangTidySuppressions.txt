@@ -87,7 +87,7 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:19
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:49
 
 # This multiple inheritance is intended and we think that to avoid it would mean much more obscure design.
-fuchsia-multiple-inheritance:src/zserio/Reflectable.h:2023
+fuchsia-multiple-inheritance:src/zserio/Reflectable.h:2025
 
 # This is necessary for implementation of low level implementation to mimic standard C++17 abstractions.
 google-explicit-constructor:src/zserio/OptionalHolder.h:232
@@ -119,8 +119,8 @@ misc-no-recursion:src/zserio/JsonParser.h:163
 misc-no-recursion:src/zserio/ReflectableUtil.h:131
 misc-no-recursion:src/zserio/ReflectableUtil.h:135
 misc-no-recursion:src/zserio/ReflectableUtil.h:146
-misc-no-recursion:src/zserio/Reflectable.h:1951
-misc-no-recursion:src/zserio/Reflectable.h:1985
+misc-no-recursion:src/zserio/Reflectable.h:1953
+misc-no-recursion:src/zserio/Reflectable.h:1987
 misc-no-recursion:src/zserio/Walker.h:73
 misc-no-recursion:src/zserio/Walker.h:74
 misc-no-recursion:src/zserio/Walker.h:75

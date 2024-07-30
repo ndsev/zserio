@@ -114,6 +114,8 @@ public:
     string<ALLOC> toString(const ALLOC& allocator) const override;
     string<ALLOC> toString() const override;
 
+    size_t bitPosition() const override;
+
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
 };
@@ -3397,6 +3399,11 @@ public:
         return toString(ALLOC());
     }
 
+    size_t bitPosition() const override
+    {
+        return m_reflectable->bitPosition();
+    }
+
 private:
     T m_object;
     IBasicReflectablePtr<ALLOC> m_reflectable;
@@ -4366,6 +4373,12 @@ template <typename ALLOC>
 string<ALLOC> ReflectableBase<ALLOC>::toString() const
 {
     return toString(ALLOC());
+}
+
+template <typename ALLOC>
+size_t ReflectableBase<ALLOC>::bitPosition() const
+{
+    throw CppRuntimeException("Bit position unavailable for type '") << getTypeInfo().getSchemaName() << "'!";
 }
 
 template <typename ALLOC>
