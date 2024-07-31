@@ -1,16 +1,15 @@
 name: SonarCloud C/C++ CI
 
 on:
-  push:
-    branches: [ "master", '*-ci' ]
-  pull_request:
-    branches: [ "master" ]
-  workflow_dispatch:
+  workflow_run:
+    workflows: [ 'SonarCloud C/C++ CI Trigger' ]
+    types: [ completed ]
 
 jobs:
-  build:
+  run:
     name: sonar_cloud
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
     env:
       BUILD_WRAPPER_OUT_DIR: build_wrapper
 
@@ -18,8 +17,56 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        # checkout out the proper repository in case of pull request
+        repository: ${{ github.event.workflow_run.head_repository.full_name }}
+        ref: ${{ github.event.workflow_run.head_branch }}
         fetch-depth: 0 # shallow clones should be disabled for a better relevancy of analysis
         submodules: recursive
+
+    # BEGIN PULL REQUEST
+
+    - name: Download pull request number artifact
+      if: github.event.workflow_run.event == 'pull_request'
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        workflow: sonar_cloud_trigger
+        run_id: ${{ github.event.workflow_run.id }}
+        name: pull_request_number
+
+    - name: "Read pull request number"
+      if: github.event.workflow_run.event == 'pull_request'
+      id: pull_request_number
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ./pull_request_number.txt
+
+    - name: Request GitHub API for pull_request data
+      if: github.event.workflow_run.event == 'pull_request'
+      uses: octokit/request-action@v2.x
+      id: get_pull_request_data
+      with:
+        route: GET /repos/${{ github.event.repository.full_name }}/pulls/${{ steps.pull_request_number.outputs.content }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Checkout upstream base branch and checkout pull request head branch
+      if: github.event.workflow_run.event == 'pull_request'
+      run: |
+        git remote add upstream ${{ github.event.repository.clone_url }}
+        git fetch upstream
+        git checkout -B ${{ fromJson(steps.get_pull_request_data.outputs.data).base.ref }} \
+            upstream/${{ fromJson(steps.get_pull_request_data.outputs.data).base.ref }}
+        git checkout origin/${{ github.event.workflow_run.head_branch }}
+        git clean -ffdx && git reset --hard HEAD
+
+    - name: Set pull request variables
+      if: github.event.workflow_run.event == 'pull_request'
+      run: |
+        echo "PULL_REQUEST_KEY=${{ fromJson(steps.get_pull_request_data.outputs.data).number }}" >> ${GITHUB_ENV}
+        echo "PULL_REQUEST_BRANCH=${{ fromJson(steps.get_pull_request_data.outputs.data).head.ref }}"  >> ${GITHUB_ENV}
+        echo "PULL_REQUEST_BASE=${{ fromJson(steps.get_pull_request_data.outputs.data).base.ref }}"  >> ${GITHUB_ENV}
+
+    # END PULL REQUEST
 
     - name: Install sonar-scanner and build-wrapper
       uses: SonarSource/sonarcloud-github-c-cpp@v2
@@ -68,4 +115,7 @@ jobs:
             --define sonar.tests="compiler/extensions/cpp/runtime/test,test" \
             --define sonar.test.inclusions="compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp" \
             --define sonar.scm.exclusions.disabled="true" \
-            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json" \
+            --define sonar.pullrequest.key="${{ env.PULL_REQUEST_KEY }}" \
+            --define sonar.pullrequest.branch="${{ env.PULL_REQUEST_BRANCH }}" \
+            --define sonar.pullrequest.base="${{ env.PULL_REQUEST_BASE }}"

@@ -1,0 +1,27 @@
+name: SonarCloud C/C++ CI Trigger
+
+on:
+  push:
+    branches: [ master, '*-ci' ]
+  pull_request:
+    branches: [ master, '*-ci' ]
+  workflow_dispatch:
+
+jobs:
+  run:
+    name: sonar_cloud_trigger
+    runs-on: ubuntu-latest
+
+    # just save the pull request number in case of pull request
+    steps:
+    - name: Save pull request number to file
+      if: github.event_name == 'pull_request'
+      run: echo ${{ github.event.number }} > pull_request_number.txt
+
+    - name: Archive pull request number
+      if: github.event_name == 'pull_request'
+      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
+      uses: actions/upload-artifact@v3
+      with:
+        name: pull_request_number
+        path: pull_request_number.txt
