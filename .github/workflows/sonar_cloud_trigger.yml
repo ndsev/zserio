@@ -1,4 +1,4 @@
-name: SonarCloud C/C++ CI Trigger
+name: SonarCloud Trigger
 
 on:
   push:

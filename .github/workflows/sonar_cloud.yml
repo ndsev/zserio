@@ -2,7 +2,7 @@ name: SonarCloud C/C++ CI
 
 on:
   workflow_run:
-    workflows: [ 'SonarCloud C/C++ CI Trigger' ]
+    workflows: [ SonarCloud Trigger ]
     types: [ completed ]
 
 jobs:
