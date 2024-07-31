@@ -44,6 +44,7 @@ struct Tile
     VersionAvailability versionAvailability;
     uint8               version if valueof(versionAvailability & VersionAvailability.VERSION_NUMBER) != 0;
     string              versionString if valueof(versionAvailability & VersionAvailability.VERSION_STRING) != 0;
+    optional uint8      optionalVersionInfo;
 
     uint32              numElementsOffset;
 

@@ -122,6 +122,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
         assertMethodPresent(self, userType, "bitsizeof")
 
         assertPropertyPresent(self, userType, "version", readOnly=True)
+        assertPropertyPresent(self, userType, "version_string", readOnly=True)
+        assertPropertyPresent(self, userType, "optional_version_info", readOnly=True)
         assertPropertyPresent(self, userType, "num_elements_offset", readOnly=True)
         assertPropertyPresent(self, userType, "num_elements", readOnly=True)
         assertPropertyPresent(self, userType, "data", readOnly=True)
@@ -226,7 +228,9 @@ class WithoutWriterCodeTest(unittest.TestCase):
         # Tile
         writer.write_bits(VERSION_AVAILABILITY, 3)
         writer.write_bits(VERSION, 8)
-        writer.write_bits(6, 32)  # numElementsOffset
+        writer.write_bool(True)
+        writer.write_bits(OPTIONAL_VERSION_INFO, 8)
+        writer.write_bits(3 + 4, 32)  # numElementsOffset
         writer.alignto(8)
         writer.write_bits(NUM_ELEMENTS, 32)
 
@@ -258,6 +262,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def _checkTile(self, tile):
         self.assertEqual(VERSION, tile.version)
         self.assertEqual(NUM_ELEMENTS, tile.num_elements)
+        self.assertEqual(OPTIONAL_VERSION_INFO, tile.optional_version_info)
 
         data = tile.data
         self.assertEqual(NUM_ELEMENTS, len(data))
@@ -285,6 +290,7 @@ TILE_ID_EUROPE = 99
 TILE_ID_AMERICA = 11
 VERSION_AVAILABILITY = 1
 VERSION = 8
+OPTIONAL_VERSION_INFO = 0xBA
 NUM_ELEMENTS = 2
 PARAMS = [13, 21]
 EXTRA_PARAM = 42

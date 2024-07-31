@@ -79,4 +79,19 @@
             </And>
         </Or>
     </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions. -->
+        <Bug code="CT"/>
+        <Or>
+            <Class name="test_object.ArrayHolder"/>
+            <Class name="test_object.ArrayObject"/>
+            <Class name="test_object.CreatorNested"/>
+            <Class name="test_object.CreatorObject"/>
+            <Class name="test_object.SerializeNested"/>
+            <Class name="test_object.SerializeObject"/>
+            <Class name="test_object.WalkerNested"/>
+            <Class name="test_object.WalkerObject"/>
+            <Class name="test_object.WalkerUnion"/>
+        </Or>
+    </Match>
 </FindBugsFilter>

@@ -282,7 +282,7 @@ update_conan()
 
     local RELEASE_BRANCH="zserio-${ZSERIO_VERSION}"
     local GIT_MESSAGE="zserio: Add new Zserio release ${ZSERIO_VERSION}"
-    local GREP_RESULT=`"${GIT}" -C "${CONAN_DIR}" log ${RELEASE_BRANCH} | grep "${GIT_MESSAGE}"`
+    local GREP_RESULT=`"${GIT}" -C "${CONAN_DIR}" log ${RELEASE_BRANCH} 2>&1 | grep "${GIT_MESSAGE}"`
     if [ $? -ne 0 -o -z "${GREP_RESULT}" ] ; then
         echo "Adding version ${ZSERIO_VERSION} to Zserio Conan Center Index."
 
@@ -310,6 +310,14 @@ update_conan()
         local ZSERIO_LICENSE_SHA256=$(${SHASUM} -a 256 "${DOWNLOAD_DIR}/${ZSERIO_LICENSE_NAME}" | cut -d' ' -f1)
 
         echo "Done"
+
+        if [ ! `"${GIT}" -C "${CONAN_DIR}" remote | grep "upstream"` ] ; then
+            echo "Adding remote 'upstream' to 'git@github.com:conan-io/conan-center-index.git'."
+            "${GIT}" -C "${CONAN_DIR}" remote add upstream git@github.com:conan-io/conan-center-index.git
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+        fi
 
         echo "Syncing master with upstream."
         "${GIT}" -C "${CONAN_DIR}" fetch upstream
@@ -435,13 +443,28 @@ update_tutorial_cpp()
     local TUTORIAL_CPP_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
 
-    echo "Updating generated sources in Zserio Tutorial Cpp."
+    echo "Updating generated sources with default allocators in Zserio Tutorial Cpp."
     echo
     local TUTORIAL_CPP_BUILD_DIR="${TUTORIAL_CPP_DIR}/build"
     rm -rf "${TUTORIAL_CPP_BUILD_DIR}"
     mkdir -p "${TUTORIAL_CPP_BUILD_DIR}"
     pushd "${TUTORIAL_CPP_BUILD_DIR}" > /dev/null
     "${CMAKE}" -DREGENERATE_CPP_SOURCES=ON ..
+    local CMAKE_RESULT=$?
+    popd > /dev/null
+    if [ ${CMAKE_RESULT} -ne 0 ] ; then
+        stderr_echo "CMake failed with return code ${CMAKE_RESULT}!"
+        return 1
+    fi
+    echo
+
+    echo "Updating generated sources with polymorphic allocators in Zserio Tutorial Cpp."
+    echo
+    local TUTORIAL_CPP_BUILD_DIR="${TUTORIAL_CPP_DIR}/build"
+    rm -rf "${TUTORIAL_CPP_BUILD_DIR}"
+    mkdir -p "${TUTORIAL_CPP_BUILD_DIR}"
+    pushd "${TUTORIAL_CPP_BUILD_DIR}" > /dev/null
+    "${CMAKE}" -DREGENERATE_CPP_SOURCES=ON ../pmr
     local CMAKE_RESULT=$?
     popd > /dev/null
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
@@ -716,13 +739,13 @@ update_web_pages()
         fi
         echo "Done"
 
+        echo -ne "Creating Zserio runtime library GitHub badges..."
+        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
+        echo "Done"
+
         echo -ne "Copying Zserio runtime libraries latest version..."
         mkdir -p "${DEST_LATEST_DIR}"
         cp -r "${DEST_RUNTIME_DIR}"/* "${DEST_LATEST_DIR}"
-        echo "Done"
-
-        echo -ne "Creating Zserio runtime library GitHub badges..."
-        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
         echo "Done"
 
         echo
@@ -739,7 +762,7 @@ update_web_pages()
         read -n 1 -s -r -p "Press any key to PUSH the 'web-pages' branch..."
         echo
 
-        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages
+        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --force --set-upstream origin web-pages
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"

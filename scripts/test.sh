@@ -246,7 +246,7 @@ test_java()
     echo "Total number of testcases: ${TOTAL_TEST_COUNT}"
 
     if [[ ${SWITCH_CLEAN} != 1 ]] ; then
-        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@] "Java"
+        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/${JAVA_VERSION}" TEST_SUITES[@] "Java"
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"
             return 1
