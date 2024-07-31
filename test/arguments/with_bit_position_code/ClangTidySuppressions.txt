@@ -1,0 +1,12 @@
+bugprone-exception-escape:gen/with_bit_position_code/ItemChoice.cpp
+bugprone-exception-escape:gen/with_bit_position_code/ItemChoice.h
+
+cppcoreguidelines-pro-type-member-init:gen/with_bit_position_code/Item.cpp
+cppcoreguidelines-pro-type-member-init:gen/with_bit_position_code/ItemChoice.cpp
+
+performance-move-const-arg:gen/with_bit_position_code/Item.cpp
+
+readability-make-member-function-const:gen/with_bit_position_code/Item.cpp
+readability-make-member-function-const:gen/with_bit_position_code/ItemChoice.cpp
+
+readability-simplify-boolean-expr:gen/with_bit_position_code/ItemChoice.cpp

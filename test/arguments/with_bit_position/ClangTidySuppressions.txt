@@ -1,1 +1,0 @@
-readability-make-member-function-const:gen/with_bit_position/Item.cpp:334
