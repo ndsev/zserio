@@ -7,11 +7,11 @@
     ${paramName}_<#t>
 </#macro>
 
-<#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
+<#macro compound_parameter_constructor_initializers compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterNamePrefix><#if !compoundParameter.typeInfo.isSimple>&</#if></#local>
-${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
+${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)
     </#list>
 </#macro>
 

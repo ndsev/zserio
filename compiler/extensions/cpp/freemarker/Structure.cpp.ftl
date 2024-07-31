@@ -62,7 +62,7 @@
 </#macro>
 <#macro empty_constructor_field_initialization>
     <#list fieldList as field>
-        <@field_member_name field/>(<@field_default_constructor_arguments field/>)<#if field?has_next>,</#if>
+        <@field_member_name field/>(<@field_default_constructor_arguments field/>)
     </#list>
 </#macro>
 <#if withWriterCode>
@@ -76,7 +76,7 @@
         <#if field.needsAllocator || field.holderNeedsAllocator>
                 , allocator<#t>
         </#if>
-                <#lt>))<#if field?has_next>,</#if>
+                <#lt>))
     </#list>
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>

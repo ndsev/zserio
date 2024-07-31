@@ -1,31 +1,30 @@
-<#-- Macro for outputting a C++ initializer list.
-     Each body item must be on its own line.
+<#--
+Macro for outputting a C++ initializer list.
 
-     Example:
-        <@cpp_initializer_list>
-            m_one(1)
-            m_two(...)
-        </@cpp_initializer_list>
-  -->
+The constructor prototype must end by '<#rt>' and each member item must be on its own line without comma.
+
+Example:
+
+Constructor::Constructor()<#rt>
+    <@cpp_initializer_list>
+        m_one(1)
+        <#if isTwoPresent>
+        m_two(...)
+        </#if>
+        m_three
+    </@cpp_initializer_list>
+-->
 <#macro cpp_initializer_list>
     <#local body><#nested></#local>
     <#if body?trim != ''>
         <#local members = body?split(r'\R', 'r')>
-        <#local indent = '    '>
         <#list members>
             <#lt> :
             <#items as member>
-                <#local member = member?trim>
-                <#if member == ''>
-                    <#continue>
-                </#if>
-                <#lt>${indent}${member?remove_ending(',')}<#rt>
-                <#sep><#lt>,
-                </#sep>
+                <#lt>${member}<#sep>,</#sep>
             </#items>
-            <#t>${'\n'}
         </#list>
     <#else>
-        ${'\n'}<#t>
+
     </#if>
 </#macro>

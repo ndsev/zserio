@@ -24,9 +24,6 @@
 </#macro>
 
 <#macro compound_constructor_definition compoundConstructorsData memberInitializationMacroName="">
-    <#local hasInitializers=needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList) ||
-            memberInitializationMacroName != ""/>
     <#local numExtendedFields=num_extended_fields(compoundConstructorsData.fieldList)/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const allocator_type&<#rt>
@@ -81,10 +78,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName packed=false>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
-    <#local hasInitializers=constructorArgumentTypeList?has_content ||
-            needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList) ||
-            memberInitializationMacroName != ""/>
     <#local wantsBitStreamReader = compoundConstructorsData.fieldList?has_content || withBitPositionCode>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
@@ -101,18 +94,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if withBitPositionCode>
         m_bitPosition(<#if wantsBitStreamReader>in.getBitPosition()<#else>0u</#if>)
     </#if>
-
     <#if constructorArgumentTypeList?has_content>
-        <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2,
-                needs_compound_initialization(compoundConstructorsData)/>
+        <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2/>
     </#if>
-
     <#if needs_compound_initialization(compoundConstructorsData)>
         m_isInitialized(true)
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
         m_areChildrenInitialized(true)
     </#if>
-
     <#if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
             m_numExtendedFields(0)
@@ -179,14 +168,11 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
     </#if>
-
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
     </#if>
-
     <#list compoundConstructorsData.fieldList as field>
-        <#-- hasNext is set to false because joining lines by comma is handled by the cpp_initializer_list macro -->
-        <@compound_copy_constructor_initializer_field field, false, 2/>
+        <@compound_copy_constructor_initializer_field field, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -206,7 +192,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_numExtendedFields(other.m_numExtendedFields)
     </#if>
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
+        <@compound_copy_constructor_initializer_field field, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -317,7 +303,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_numExtendedFields(other.m_numExtendedFields)
     </#if>
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
+        <@compound_move_constructor_initializer_field field, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -335,15 +321,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if withBitPositionCode>
         m_bitPosition(::std::move(other.m_bitPosition))
     </#if>
-
     m_isInitialized(false)
-
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
     </#if>
-
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
+        <@compound_move_constructor_initializer_field field, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -455,19 +438,17 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
     <#local initialization><@compound_copy_initialization compoundConstructorsData/></#local>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT,
-        <#lt>const ${compoundConstructorsData.compoundName}& other,
+        const ${compoundConstructorsData.compoundName}& other, <#rt>
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
     </#if>
-
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
     </#if>
-
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -490,15 +471,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
     </#if>
-
     m_isInitialized(false)
-
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
     </#if>
-
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>

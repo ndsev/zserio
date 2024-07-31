@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "CppUtility.inc.ftl">
 <#include "CompoundConstructor.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
@@ -33,11 +34,10 @@
 <@namespace_begin package.path/>
 
 <#macro empty_constructor_field_initialization>
-        m_choiceTag(UNDEFINED_CHOICE)<#rt>
-        <#if fieldList?has_content>
-        <#lt>,
+        m_choiceTag(UNDEFINED_CHOICE)
+    <#if fieldList?has_content>
         m_objectChoice(allocator)
-        </#if>
+    </#if>
 </#macro>
 <#if withWriterCode>
     <@compound_constructor_definition compoundConstructorsData, "empty_constructor_field_initialization"/>
@@ -45,7 +45,7 @@
 </#if>
 <#macro read_constructor_field_initialization packed>
     <#if fieldList?has_content>
-        m_choiceTag(readChoiceTag(<#if packed>context, </#if>in)),
+        m_choiceTag(readChoiceTag(<#if packed>context, </#if>in))
         m_objectChoice(readObject(<#if packed>context, </#if>in, allocator))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
@@ -58,19 +58,16 @@
 </#if>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-${name}::${name}(const ${name}& other) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
+${name}::${name}(const ${name}& other)<#rt>
+<@cpp_initializer_list>
+        m_choiceTag(other.m_choiceTag)
+    <#list fieldList as field>
+        <@compound_copy_constructor_initializer_field field, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+</@cpp_initializer_list>
 {
     <@compound_copy_initialization compoundConstructorsData/>
 }
@@ -89,19 +86,16 @@ ${name}& ${name}::operator=(const ${name}& other)
     return *this;
 }
 
-${name}::${name}(${name}&& other) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
+${name}::${name}(${name}&& other)<#rt>
+<@cpp_initializer_list>
+        m_choiceTag(other.m_choiceTag)
+    <#list fieldList as field>
+        <@compound_move_constructor_initializer_field field, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+</@cpp_initializer_list>
 {
     <@compound_copy_initialization compoundConstructorsData/>
 }
@@ -122,24 +116,21 @@ ${name}& ${name}::operator=(${name}&& other)
 
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
-${name}::${name}(::zserio::NoInitT, const ${name}& other) :
+${name}::${name}(::zserio::NoInitT, const ${name}& other)<#rt>
+<@cpp_initializer_list>
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false),
+        m_isInitialized(false)
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false),
+        m_areChildrenInitialized(false)
     </#if>
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
+        m_choiceTag(other.m_choiceTag)
+    <#list fieldList as field>
+    <@compound_copy_constructor_initializer_field field, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+</@cpp_initializer_list>
 {
 }
 
@@ -161,24 +152,21 @@ ${name}& ${name}::assign(::zserio::NoInitT, const ${name}& other)
     return *this;
 }
 
-${name}::${name}(::zserio::NoInitT, ${name}&& other) :
+${name}::${name}(::zserio::NoInitT, ${name}&& other)<#rt>
+<@cpp_initializer_list>
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false),
+        m_isInitialized(false)
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false),
+        m_areChildrenInitialized(false)
     </#if>
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
+        m_choiceTag(other.m_choiceTag)
+    <#list fieldList as field>
+        <@compound_move_constructor_initializer_field field, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+</@cpp_initializer_list>
 {
 }
 
@@ -203,19 +191,16 @@ ${name}& ${name}::assign(::zserio::NoInitT, ${name}&& other)
 </#if>
 ${name}::${name}(::zserio::PropagateAllocatorT,
         const ${name}& other, const allocator_type&<#rt>
-        <#lt><#if fieldList?has_content> allocator</#if>) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
+        <#lt><#if fieldList?has_content> allocator</#if>)<#rt>
+<@cpp_initializer_list>
+        m_choiceTag(other.m_choiceTag)
+<#list fieldList as field>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, 2/>
+    <#if field.usesAnyHolder>
+        <#break>
     </#if>
+</#list>
+</@cpp_initializer_list>
 {
     <@compound_copy_initialization compoundConstructorsData/>
 }
@@ -224,19 +209,16 @@ ${name}::${name}(::zserio::PropagateAllocatorT,
 
 ${name}::${name}(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
         const ${name}& other, const allocator_type&<#rt>
-        <#lt><#if fieldList?has_content> allocator</#if>) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
+        <#lt><#if fieldList?has_content> allocator</#if>)<#rt>
+<@cpp_initializer_list>
+        m_choiceTag(other.m_choiceTag)
+    <#list fieldList as field>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+</@cpp_initializer_list>
 {
 }
 </#if>

@@ -904,25 +904,25 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
     </#if>
 </#macro>
 
-<#macro compound_copy_constructor_initializer_field field hasNext indent>
+<#macro compound_copy_constructor_initializer_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
 ${I}m_objectChoice(::zserio::NoInit, other.m_objectChoice)
     <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>(::zserio::NoInit, other.<@field_member_name field/>)<#if hasNext>,</#if>
+${I}<@field_member_name field/>(::zserio::NoInit, other.<@field_member_name field/>)
     <#else>
-${I}<@field_member_name field/>(other.<@field_member_name field/>)<#if hasNext>,</#if>
+${I}<@field_member_name field/>(other.<@field_member_name field/>)
     </#if>
 </#macro>
 
-<#macro compound_move_constructor_initializer_field field hasNext indent>
+<#macro compound_move_constructor_initializer_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
 ${I}m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
     <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>(::zserio::NoInit, ::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
+${I}<@field_member_name field/>(::zserio::NoInit, ::std::move(other.<@field_member_name field/>))
     <#else>
-${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
+${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))
     </#if>
 </#macro>
 
@@ -948,16 +948,16 @@ ${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>)
     </#if>
 </#macro>
 
-<#macro compound_allocator_propagating_copy_constructor_initializer_field field hasNext indent>
+<#macro compound_allocator_propagating_copy_constructor_initializer_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
 ${I}m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
     <#elseif has_field_no_init_tag(field)>
 ${I}<@field_member_name field/>(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(<#rt>
-        <#lt>::zserio::NoInit, other.<@field_member_name field/>, allocator))<#if hasNext>,</#if>
+        <#lt>::zserio::NoInit, other.<@field_member_name field/>, allocator))
     <#else>
 ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
-        <#lt>other.<@field_member_name field/>, allocator))<#if hasNext>,</#if>
+        <#lt>other.<@field_member_name field/>, allocator))
     </#if>
 </#macro>
 
