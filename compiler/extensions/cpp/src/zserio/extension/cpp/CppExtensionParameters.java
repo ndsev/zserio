@@ -174,10 +174,10 @@ public final class CppExtensionParameters
         options.addOptionGroup(sourcesAmalgamationGroup);
 
         final OptionGroup bitPositionGroup = new OptionGroup();
-        bitPositionGroup.addOption(new Option(
-                OptionWithBitPositionCode, false, "enable storage of source region allong compounds"));
-        bitPositionGroup.addOption(new Option(
-                OptionWithoutBitPositionCode, false, "disable storage of source region allong compounds"));
+        bitPositionGroup.addOption(new Option(OptionWithBitPositionCode, false,
+                "enable reader bit position code (experimental, not part of API)"));
+        bitPositionGroup.addOption(
+                new Option(OptionWithoutBitPositionCode, false, "disable reader bit position code (default)"));
         bitPositionGroup.setRequired(false);
         options.addOptionGroup(bitPositionGroup);
     }

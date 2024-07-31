@@ -379,14 +379,20 @@ public:
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
     </#if>
 </#if>
-
 <#if withBitPositionCode>
+
+    <#if withCodeComments>
     /**
-     * Get the source offset and size of the structure in bits.
-     * For objects not loaded from a blob, the offest is 0.
+     * Get the bit position in the parsed blob after reading.
      *
-     * \return Tuple of the objects offset and size in bits.
+     * This feature is experimental and can be removed without any warning!
+     *
+     * \note Note that the returned bit position is valid only directly after read! If the Zserio object
+     *       has been changed after reading, the result is unspecified!
+     *
+     * \return Reader bit position in the parsed blob counted from zero.
      */
+    </#if>
     size_t bitPosition() const;
 </#if>
 
@@ -411,13 +417,12 @@ private:
 
     </#if>
 </#list>
-<#-- The source-position must be the first member to get called first in
-     the constructors initializer list -->
-<#if withBitPositionCode>
-    size_t m_bitPosition = 0;
-</#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
+<#if withBitPositionCode>
+    <#-- Bit position must be before field members in order to get initialized first. -->
+    size_t m_bitPosition;
+</#if>
 <#if (numExtendedFields > 0)>
     uint32_t m_numExtendedFields;
 </#if>

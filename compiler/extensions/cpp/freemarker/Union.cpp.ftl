@@ -60,6 +60,9 @@
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(const ${name}& other)<#rt>
 <@cpp_initializer_list>
+    <#if withBitPositionCode>
+        m_bitPosition(other.m_bitPosition)
+    </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
         <@compound_copy_constructor_initializer_field field, 2/>
@@ -88,6 +91,9 @@ ${name}& ${name}::operator=(const ${name}& other)
 
 ${name}::${name}(${name}&& other)<#rt>
 <@cpp_initializer_list>
+    <#if withBitPositionCode>
+        m_bitPosition(other.m_bitPosition)
+    </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
         <@compound_move_constructor_initializer_field field, 2/>
@@ -122,6 +128,9 @@ ${name}::${name}(::zserio::NoInitT, const ${name}& other)<#rt>
         m_isInitialized(false)
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
         m_areChildrenInitialized(false)
+    </#if>
+    <#if withBitPositionCode>
+        m_bitPosition(other.m_bitPosition)
     </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
@@ -159,6 +168,9 @@ ${name}::${name}(::zserio::NoInitT, ${name}&& other)<#rt>
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
         m_areChildrenInitialized(false)
     </#if>
+    <#if withBitPositionCode>
+        m_bitPosition(other.m_bitPosition)
+    </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
         <@compound_move_constructor_initializer_field field, 2/>
@@ -193,6 +205,9 @@ ${name}::${name}(::zserio::PropagateAllocatorT,
         const ${name}& other, const allocator_type&<#rt>
         <#lt><#if fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
+    <#if withBitPositionCode>
+        m_bitPosition(other.m_bitPosition)
+    </#if>
         m_choiceTag(other.m_choiceTag)
 <#list fieldList as field>
         <@compound_allocator_propagating_copy_constructor_initializer_field field, 2/>
@@ -211,6 +226,9 @@ ${name}::${name}(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
         const ${name}& other, const allocator_type&<#rt>
         <#lt><#if fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
+    <#if withBitPositionCode>
+        m_bitPosition(other.m_bitPosition)
+    </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
         <@compound_allocator_propagating_copy_constructor_initializer_field field, 2/>
@@ -360,12 +378,15 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         }
     </#if>
 
-    <#if withBitPositionCode>
         size_t bitPosition() const override
         {
+    <#if withBitPositionCode>
             return m_object.bitPosition();
-        }
+    <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Bit position code is disabled by '-withoutBitPositionCode' zserio option!";
     </#if>
+        }
 
     private:
         <#if isConst>const </#if>${fullName}& m_object;
@@ -696,6 +717,7 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
     </#if>
 </#if>
 <#if withBitPositionCode>
+
 size_t ${name}::bitPosition() const
 {
     return m_bitPosition;
