@@ -37,6 +37,7 @@ java -jar zserio.jar
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
+    [-withBitPositionCode|-withoutBitPositionCode]
     [-withCodeComments|-withoutCodeComments]
     [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
     [-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck]
@@ -128,6 +129,18 @@ directories as in the Java `CLASSPATH` is not supported.
 **`-v`, `--version`**
 
 Shows the version of the Zserio tool.
+
+**`-withBitPositionCode|-withoutBitPositionCode`**
+
+Enables/disables reader bit position code. The reader bit position code returns the bit position in the parsed
+blob. By default is disabled.
+
+> [!WARNING]
+> Note that the returned bit position is valid only directly after read! If the Zserio object has been changed
+> after reading, the result is unspecified!
+
+> [!CAUTION]
+> Note that this feature is experimental and it is not part of API. It can be removed without any warning!
 
 **`-withCodeComments|-withoutCodeComments`**
 
