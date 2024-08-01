@@ -510,13 +510,16 @@ public:
     /** \} */
 
     /**
-     * Returns the reflectables bit position (blob) in bits.
+     * Returns the bit position in the parsed blob after reading of the reflectable object.
      *
-     * \note The bit position is only stored for code generated using zserios `-withBitPositionCode`
-     *       option and only set for objects read from a blob.
+     * This feature is experimental and can be removed without any warning!
      *
-     * \return The blob offset of the objects in bits
-     * \throw CppRuntimeException If the object was compiled without the source region feature enabled.
+     * \note Note that the returned bit position is valid only directly after read! If the Zserio object
+     *       has been changed after reading, the result is unspecified!
+     * \note The bit position is only stored for code generated using `-withBitPositionCode` option.
+     *
+     * \return The blob offset of the objects in bits.
+     * \throw CppRuntimeException If the object was compiled without the bit position feature enabled.
      */
     virtual size_t bitPosition() const = 0;
 };

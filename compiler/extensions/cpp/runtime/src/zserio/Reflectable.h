@@ -4378,7 +4378,8 @@ string<ALLOC> ReflectableBase<ALLOC>::toString() const
 template <typename ALLOC>
 size_t ReflectableBase<ALLOC>::bitPosition() const
 {
-    throw CppRuntimeException("Bit position unavailable for type '") << getTypeInfo().getSchemaName() << "'!";
+    throw CppRuntimeException("Bit position is not available for type '")
+            << getTypeInfo().getSchemaName() << "'!";
 }
 
 template <typename ALLOC>
