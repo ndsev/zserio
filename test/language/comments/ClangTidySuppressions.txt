@@ -15,6 +15,11 @@ cppcoreguidelines-pro-type-member-init:gen/comments/markdown_doc/struct_comments
 cppcoreguidelines-pro-type-member-init:gen/comments/markdown_doc/union_comments/TestUnion.cpp
 cppcoreguidelines-pro-type-member-init:gen/comments/mixed_doc/struct_comments/DirectionStructure.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:gen/comments/classic_doc/sql_table_comments/VirtualTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/comments/markdown_doc/sql_table_comments/VirtualTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/comments/classic_doc/sql_database_comments/Table.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/comments/markdown_doc/sql_database_comments/Table.cpp
+
 fuchsia-multiple-inheritance:gen/comments/classic_doc/sql_database_comments/Db.h
 fuchsia-multiple-inheritance:gen/comments/markdown_doc/sql_database_comments/Db.h
 

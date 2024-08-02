@@ -21,6 +21,14 @@ cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_with_sam
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_with_same_name/Parameterized1.cpp
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_with_same_name/Parameterized2.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_enum_param/EnumParamTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp
+
 fuchsia-multiple-inheritance:gen/explicit_parameters/ExplicitParametersDb.h
 
 google-explicit-constructor:gen/explicit_parameters/explicit_bitmask_param/TestBitmask.h

@@ -3,6 +3,8 @@ bugprone-reserved-identifier:gen/___/Empty.h
 
 cppcoreguidelines-pro-type-member-init:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+
 fuchsia-multiple-inheritance:gen/with_sources_amalgamation/WorldDb.h
 
 google-explicit-constructor:gen/with_sources_amalgamation/Group.h

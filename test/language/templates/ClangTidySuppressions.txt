@@ -110,6 +110,12 @@ cppcoreguidelines-pro-type-member-init:gen/templates/sql_table_templated_field/T
 cppcoreguidelines-pro-type-member-init:gen/templates/sql_table_templated_field/TemplatedTable_uint32.cpp
 cppcoreguidelines-pro-type-member-init:gen/templates/struct_templated_type_argument/Parameterized_uint32.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:gen/templates/instantiate_sql_table/U32Table.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/templates/instantiate_type_as_sql_database_field/StringTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/templates/instantiate_type_as_sql_table_field/Test32Table.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/templates/sql_table_templated_field/TemplatedTable_Union.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/templates/sql_table_templated_field/TemplatedTable_uint32.cpp
+
 fuchsia-multiple-inheritance:gen/templates/instantiate_type_as_sql_database_field/InstantiateTypeAsSqlDatabaseFieldDb.h
 fuchsia-multiple-inheritance:gen/templates/sql_table_templated_field/SqlTableTemplatedFieldDb.h
 

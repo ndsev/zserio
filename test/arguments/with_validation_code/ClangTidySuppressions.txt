@@ -20,6 +20,19 @@ cppcoreguidelines-pro-type-member-init:gen/with_validation_code/simple_table_val
 cppcoreguidelines-pro-type-member-init:gen/with_validation_code/virtual_table_validation/TestTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_validation_code/virtual_table_validation/VirtualTable.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/blob_table_validation/BlobTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/constraint_table_validation/ConstraintTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/control_validation/Table1.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/control_validation/Table2.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/control_validation/Table3.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/depend_table_validation/DependTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/full_range_table_validation/FullRangeTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/hidden_column_table_validation/HiddenColumnTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/simple_table_validation/SimpleTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/virtual_table_validation/TestTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_validation_code/virtual_table_validation/VirtualTable.cpp
+
 fuchsia-multiple-inheritance:gen/with_validation_code/blob_table_validation/BlobTableValidationDb.h
 fuchsia-multiple-inheritance:gen/with_validation_code/column_type_validation/ColumnTypeDb.h
 fuchsia-multiple-inheritance:gen/with_validation_code/constraint_table_validation/ConstraintTableValidationDb.h
