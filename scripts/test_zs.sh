@@ -89,6 +89,7 @@ generate_ant_file()
         <javac destdir="\${test_zs.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Xlint:-cast"/>
+            <compilerarg value="-Xlint:-deprecation"/>
             <compilerarg value="-Werror"/>
             <classpath>
                 <pathelement location="\${runtime.jar_file}"/>
