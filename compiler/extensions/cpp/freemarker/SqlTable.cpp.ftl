@@ -211,7 +211,7 @@ ${name}::Row ${name}::Reader::next()
     <#else>
         const unsigned char* textValue = sqlite3_column_text(m_stmt.get(), ${field?index});
         row.${field.setterName}(${field.typeInfo.typeFullName}(
-                static_cast<const char*>(static_cast<const void*>(textValue)), get_allocator_ref()));
+                reinterpret_cast<const char*>(textValue), get_allocator_ref()));
     </#if>
     }
 </#list>
@@ -671,7 +671,7 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
                 <#else>
     const unsigned char* textValue = sqlite3_column_text(statement, ${field?index});
     row.${field.setterName}(${field.typeInfo.typeFullName}(
-            static_cast<const char*>(static_cast<const void*>(textValue)), get_allocator_ref()));
+            reinterpret_cast<const char*>(textValue), get_allocator_ref()));
                 </#if>
 
     return true;
@@ -703,13 +703,13 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
     rowKeyValuesHolder.emplace_back("BLOB");
                     <#else>
     const unsigned char* strValue${field.name?cap_first} = sqlite3_column_text(statement, ${field?index});
-    rowKeyValuesHolder.emplace_back(static_cast<const char*>(static_cast<const void*>(strValue${field.name?cap_first})));
+    rowKeyValuesHolder.emplace_back(reinterpret_cast<const char*>(strValue${field.name?cap_first}));
                     </#if>
                 </#if>
             </#list>
         <#else>
     const unsigned char* strValueRowId = sqlite3_column_text(statement, ${fields?size});
-    rowKeyValuesHolder.emplace_back(static_cast<const char*>(static_cast<const void*>(strValueRowId)));
+    rowKeyValuesHolder.emplace_back(reinterpret_cast<const char*>(strValueRowId));
         </#if>
 
     return rowKeyValuesHolder;
