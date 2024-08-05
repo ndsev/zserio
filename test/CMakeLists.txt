@@ -40,6 +40,7 @@ compiler_reset_debug_iterators() # fixes arguments/set_cpp_allocator tests for M
 
 if (SANITIZERS_ENABLED)
     compiler_set_address_sanitizer()
+    compiler_set_undefined_sanitizer()
 endif ()
 
 # add test utility library
@@ -69,9 +70,6 @@ add_subdirectory("${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp" ZserioCppRuntime)
 
 compiler_reset_warnings()
 compiler_set_test_warnings()
-if (SANITIZERS_ENABLED)
-    compiler_set_undefined_sanitizer()
-endif ()
 
 # A function which checks whether the number of warnings produced by zserio compilers is as expected.
 function(check_zserio_warnings ZSERIO_LOG EXPECTED_WARNINGS)
