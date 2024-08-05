@@ -117,6 +117,8 @@ jobs:
             --define sonar.test.inclusions="compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp" \
             --define sonar.scm.exclusions.disabled="true" \
             --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json" \
+            --define sonar.scm.revision="${{ github.event.workflow_run.head_sha }}" \
+            --define sonar.branch.name="${{ github.event.workflow_run.head_branch }}" \
             --define sonar.pullrequest.key="${{ env.PULL_REQUEST_KEY }}" \
             --define sonar.pullrequest.branch="${{ env.PULL_REQUEST_BRANCH }}" \
             --define sonar.pullrequest.base="${{ env.PULL_REQUEST_BASE }}"
