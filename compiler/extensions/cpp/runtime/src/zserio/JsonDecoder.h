@@ -67,7 +67,7 @@ public:
         template <typename T>
         DecoderResult(size_t numRead, T&& decodedValue, bool overflow, const ALLOC& allocator) :
                 numReadChars(numRead),
-                value(createValue(decodedValue, overflow, allocator)),
+                value(createValue(std::forward<T>(decodedValue), overflow, allocator)),
                 integerOverflow(overflow)
         {}
 
