@@ -331,7 +331,7 @@ public:
             // we are aligned to byte
             setBitPosition(beginBitPosition + numBytesToRead * 8);
             Span<const uint8_t>::const_iterator sourceIt = m_context.buffer.begin() + beginBitPosition / 8;
-            std::copy(sourceIt, sourceIt + numBytesToRead, buffer.begin());
+            (void)std::copy(sourceIt, sourceIt + numBytesToRead, buffer.begin());
         }
 
         if (numRestBits > 0)

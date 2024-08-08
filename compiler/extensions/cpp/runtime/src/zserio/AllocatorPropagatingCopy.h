@@ -105,7 +105,7 @@ std::vector<T, ALLOC> allocatorPropagatingCopyVec(
 {
     std::vector<T, ALLOC> result(allocator);
     result.reserve(source.size());
-    std::transform(source.begin(), source.end(), std::back_inserter(result), [&](const T& value) {
+    (void)std::transform(source.begin(), source.end(), std::back_inserter(result), [&](const T& value) {
         return allocatorPropagatingCopy(value, allocator);
     });
     return result;
@@ -118,7 +118,7 @@ std::vector<T, ALLOC> allocatorPropagatingCopyVec(
 {
     std::vector<T, ALLOC> result(allocator);
     result.reserve(source.size());
-    std::transform(source.begin(), source.end(), std::back_inserter(result), [&](const T& value) {
+    (void)std::transform(source.begin(), source.end(), std::back_inserter(result), [&](const T& value) {
         return allocatorPropagatingCopy(NoInit, value, allocator);
     });
     return result;

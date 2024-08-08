@@ -30,9 +30,9 @@ BitBuffer readBufferFromFile(const std::string& fileName)
         throw CppRuntimeException("readBufferFromFile: Cannot open '") << fileName << "' for reading!";
     }
 
-    stream.seekg(0, stream.end);
+    (void)stream.seekg(0, stream.end);
     const std::streampos fileSize = stream.tellg();
-    stream.seekg(0);
+    (void)stream.seekg(0);
 
     if (static_cast<int>(fileSize) == -1)
     {

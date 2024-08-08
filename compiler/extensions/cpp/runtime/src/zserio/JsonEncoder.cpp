@@ -51,54 +51,54 @@ void JsonEncoder::encodeString(std::ostream& stream, StringView value)
 {
     static const std::array<char, 17> HEX = {"0123456789abcdef"};
 
-    stream.put('"');
+    (void)stream.put('"');
     for (char character : value)
     {
         switch (character)
         {
         case '\\':
         case '"':
-            stream.put('\\');
-            stream.put(character);
+            (void)stream.put('\\');
+            (void)stream.put(character);
             break;
         case '\b':
-            stream.put('\\');
-            stream.put('b');
+            (void)stream.put('\\');
+            (void)stream.put('b');
             break;
         case '\f':
-            stream.put('\\');
-            stream.put('f');
+            (void)stream.put('\\');
+            (void)stream.put('f');
             break;
         case '\n':
-            stream.put('\\');
-            stream.put('n');
+            (void)stream.put('\\');
+            (void)stream.put('n');
             break;
         case '\r':
-            stream.put('\\');
-            stream.put('r');
+            (void)stream.put('\\');
+            (void)stream.put('r');
             break;
         case '\t':
-            stream.put('\\');
-            stream.put('t');
+            (void)stream.put('\\');
+            (void)stream.put('t');
             break;
         default:
             if (static_cast<uint8_t>(character) <= 0x1F)
             {
-                stream.put('\\');
-                stream.put('u');
-                stream.put('0');
-                stream.put('0');
-                stream.put(HEX[static_cast<uint8_t>(static_cast<uint8_t>(character) >> 4U) & 0xFU]);
-                stream.put(HEX[static_cast<uint8_t>(character) & 0xFU]);
+                (void)stream.put('\\');
+                (void)stream.put('u');
+                (void)stream.put('0');
+                (void)stream.put('0');
+                (void)stream.put(HEX[static_cast<uint8_t>(static_cast<uint8_t>(character) >> 4U) & 0xFU]);
+                (void)stream.put(HEX[static_cast<uint8_t>(character) & 0xFU]);
             }
             else
             {
-                stream.put(character);
+                (void)stream.put(character);
             }
             break;
         }
     }
-    stream.put('"');
+    (void)stream.put('"');
 }
 
 } // namespace zserio

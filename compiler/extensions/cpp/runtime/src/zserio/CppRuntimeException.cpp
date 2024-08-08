@@ -36,7 +36,7 @@ void CppRuntimeException::appendImpl(Span<const char> message)
 {
     if (message.size() > 0)
     {
-        std::copy(message.begin(), message.end(), m_buffer.begin() + m_len);
+        (void)std::copy(message.begin(), message.end(), m_buffer.begin() + m_len);
         m_len += message.size();
     }
     m_buffer.at(m_len) = 0;

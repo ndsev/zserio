@@ -257,7 +257,7 @@ public:
             setBitPosition(beginBitPosition + numBytesToWrite * 8);
             if (hasWriteBuffer())
             {
-                std::copy(buffer.begin(), buffer.begin() + numBytesToWrite,
+                (void)std::copy(buffer.begin(), buffer.begin() + numBytesToWrite,
                         m_buffer.data() + beginBitPosition / 8);
             }
         }

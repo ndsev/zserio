@@ -487,7 +487,7 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
         {
-            std::copy(data.begin(), data.end(), m_buffer.begin() + beginBitPosition / 8);
+            (void)std::copy(data.begin(), data.end(), m_buffer.begin() + beginBitPosition / 8);
         }
     }
 }
@@ -512,7 +512,7 @@ void BitStreamWriter::writeString(StringView data)
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
         {
-            std::copy(data.begin(), data.begin() + len, m_buffer.data() + beginBitPosition / 8);
+            (void)std::copy(data.begin(), data.begin() + len, m_buffer.data() + beginBitPosition / 8);
         }
     }
 }
