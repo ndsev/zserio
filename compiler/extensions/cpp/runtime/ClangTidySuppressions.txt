@@ -82,11 +82,6 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:869
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:876
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:658
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:668
-# This is necessary for implementation of reading and writing of floats to the binary stream.
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:169
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:176
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:183
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:190
 # This is necessary for implementation of reading and writing to the file.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:19
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:49
