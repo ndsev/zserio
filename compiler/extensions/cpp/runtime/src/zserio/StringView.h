@@ -999,7 +999,7 @@ inline namespace literals
 /**
  * User-defined literal for StringView.
  */
-constexpr ::zserio::StringView operator"" _sv(const char* str, std::size_t len) noexcept
+constexpr ::zserio::StringView operator""_sv(const char* str, std::size_t len) noexcept
 {
     return ::zserio::StringView(str, len);
 }
