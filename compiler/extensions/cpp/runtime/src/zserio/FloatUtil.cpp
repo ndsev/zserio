@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "zserio/FloatUtil.h"
 
 namespace zserio
@@ -166,30 +168,34 @@ uint16_t convertFloatToUInt16(float float32)
 
 float convertUInt32ToFloat(uint32_t float32Value)
 {
-    const float* convertedFloat = reinterpret_cast<const float*>(&float32Value);
+    float convertedFloat = 0.0F;
+    (void)std::memcpy(&convertedFloat, &float32Value, sizeof(uint32_t));
 
-    return *convertedFloat;
+    return convertedFloat;
 }
 
 uint32_t convertFloatToUInt32(float float32)
 {
-    const uint32_t* float32ValuePtr = reinterpret_cast<const uint32_t*>(&float32);
+    uint32_t float32Value = 0;
+    (void)std::memcpy(&float32Value, &float32, sizeof(float));
 
-    return *float32ValuePtr;
+    return float32Value;
 }
 
 double convertUInt64ToDouble(uint64_t float64Value)
 {
-    const double* convertedDouble = reinterpret_cast<const double*>(&float64Value);
+    double convertedDouble = 0.0;
+    (void)std::memcpy(&convertedDouble, &float64Value, sizeof(uint64_t));
 
-    return *convertedDouble;
+    return convertedDouble;
 }
 
 uint64_t convertDoubleToUInt64(double float64)
 {
-    const uint64_t* float64ValuePtr = reinterpret_cast<const uint64_t*>(&float64);
+    uint64_t float64Value = 0;
+    (void)std::memcpy(&float64Value, &float64, sizeof(double));
 
-    return *float64ValuePtr;
+    return float64Value;
 }
 
 } // namespace zserio
