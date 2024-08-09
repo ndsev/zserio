@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 public class ValidationTimerTest
 {
     @Test
-    public void oneSecondTimer() throws InterruptedException
+    public void tenSecondsTimer() throws InterruptedException
     {
         final ValidationTimer validationTimer = new ValidationTimer();
         validationTimer.start();
-        Thread.sleep(1000);
+        Thread.sleep(10000);
         validationTimer.stop();
-        final long minTolerance = 750;
-        final long maxTolerance = 1250;
+        final long minTolerance = 9000;
+        final long maxTolerance = 11000;
         final long duration = validationTimer.getDuration();
         assertTrue(duration >= minTolerance, "Duration '" + duration + "' should be >= '" + minTolerance + "'");
         assertTrue(duration <= maxTolerance, "Duration '" + duration + "' should be <= '" + maxTolerance + "'");
