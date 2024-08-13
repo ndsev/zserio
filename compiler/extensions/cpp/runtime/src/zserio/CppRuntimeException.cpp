@@ -39,7 +39,7 @@ void CppRuntimeException::appendImpl(Span<const char> message)
         (void)std::copy(message.begin(), message.end(), m_buffer.begin() + m_len);
         m_len += message.size();
     }
-    m_buffer.at(m_len) = 0;
+    m_buffer.at(m_len) = '\0';
 }
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, const char* message)

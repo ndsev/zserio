@@ -146,7 +146,7 @@ private:
     DecoderResult decodeString(StringView input);
     static bool decodeUnicodeEscape(
             StringView input, StringView::const_iterator& inputIt, string<ALLOC>& value);
-    static char decodeHex(char character);
+    static int32_t decodeHex(char character);
     size_t checkNumber(StringView input, bool& isDouble, bool& isSigned);
     DecoderResult decodeNumber(StringView input);
     DecoderResult decodeSigned(StringView input);
@@ -277,8 +277,9 @@ bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(
     {
         return false;
     }
-    const char char1 = decodeHex(*inputIt++);
-    if (char1 == -1)
+
+    const int32_t hex1 = decodeHex(*inputIt++);
+    if (hex1 < 0)
     {
         return false;
     }
@@ -287,30 +288,31 @@ bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(
     {
         return false;
     }
-    const char char2 = decodeHex(*inputIt++);
-    if (char2 == -1)
+
+    const int32_t hex2 = decodeHex(*inputIt++);
+    if (hex2 < 0)
     {
         return false;
     }
 
-    value.push_back(static_cast<char>((static_cast<uint32_t>(char1) << 4U) | static_cast<uint32_t>(char2)));
+    value.push_back(static_cast<char>((static_cast<uint32_t>(hex1) << 4U) | static_cast<uint32_t>(hex2)));
     return true;
 }
 
 template <typename ALLOC>
-char BasicJsonDecoder<ALLOC>::decodeHex(char character)
+int32_t BasicJsonDecoder<ALLOC>::decodeHex(char character)
 {
     if (character >= '0' && character <= '9')
     {
-        return static_cast<char>(character - '0');
+        return static_cast<int32_t>(character - '0');
     }
     else if (character >= 'a' && character <= 'f')
     {
-        return static_cast<char>(character - 'a' + 10);
+        return static_cast<int32_t>(character - 'a' + 10);
     }
     else if (character >= 'A' && character <= 'F')
     {
-        return static_cast<char>(character - 'A' + 10);
+        return static_cast<int32_t>(character - 'A' + 10);
     }
 
     return -1;
