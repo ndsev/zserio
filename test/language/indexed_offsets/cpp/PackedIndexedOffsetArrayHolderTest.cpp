@@ -18,10 +18,10 @@ protected:
     {
         auto& offsetArray = autoIndexedOffsetArray.getOffsetArray();
         auto& offsetHolders = offsetArray.getOffsetHolders();
-        offsetHolders.reserve(numElements + 1);
-        for (size_t i = 0; i < numElements + 1; ++i)
+        offsetHolders.reserve(numElements);
+        for (size_t i = 0; i < numElements; ++i)
         {
-            offsetHolders.emplace_back(UINT32_C(0), vector_type<uint32_t>{0}, static_cast<uint32_t>(i));
+            offsetHolders.emplace_back(UINT32_C(0), UINT32_C(0), static_cast<uint32_t>(i));
         }
 
         auto& data1 = autoIndexedOffsetArray.getData1();
@@ -44,10 +44,10 @@ protected:
     size_t getAutoIndexedOffsetArrayBitSize(size_t numElements)
     {
         size_t bitSize = 0;
-        for (size_t i = 0; i < numElements + 1; ++i)
+        for (size_t i = 0; i < numElements; ++i)
         {
-            bitSize += 32; // offset[i]
-            bitSize += 32; // offsets[1]
+            bitSize += 32; // offset1[i]
+            bitSize += 32; // offset2[i]
             bitSize += 32; // value[i]
         }
 
@@ -71,7 +71,7 @@ protected:
 
         const double unpackedBitSize = static_cast<double>(getAutoIndexedOffsetArrayBitSize(numElements));
         const double packedBitSize = static_cast<double>(autoIndexedOffsetArray.bitSizeOf());
-        const double minCompressionRation = 0.82;
+        const double minCompressionRation = 0.83;
         ASSERT_GT(unpackedBitSize * minCompressionRation, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "

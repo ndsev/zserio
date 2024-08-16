@@ -78,7 +78,7 @@ public class PackedIndexedOffsetArrayHolderTest
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(numElements);
         final int unpackedBitsizeOf = calcAutoIndexedOffsetArrayBitSize(numElements);
         final int packedBitsizeOf = autoIndexedOffsetArray.bitSizeOf();
-        final double minCompressionRatio = 0.82;
+        final double minCompressionRatio = 0.83;
 
         assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
                 ()
@@ -116,9 +116,11 @@ public class PackedIndexedOffsetArrayHolderTest
 
     private AutoIndexedOffsetArray createAutoIndexedOffsetArray(int numElements)
     {
-        final OffsetHolder[] offsetHolders = new OffsetHolder[numElements + 1];
-        for (int i = 0; i < numElements + 1; ++i)
-            offsetHolders[i] = new OffsetHolder(0, new long[] {0}, i);
+        final OffsetHolder[] offsetHolders = new OffsetHolder[numElements];
+        for (int i = 0; i < numElements; ++i)
+        {
+            offsetHolders[i] = new OffsetHolder(0, 0, i);
+        }
 
         final int[] data1 = new int[numElements];
         for (int i = 0; i < numElements; ++i)
@@ -138,10 +140,10 @@ public class PackedIndexedOffsetArrayHolderTest
     private int calcAutoIndexedOffsetArrayBitSize(int numElements)
     {
         int bitSize = 0;
-        for (int i = 0; i < numElements + 1; ++i)
+        for (int i = 0; i < numElements; ++i)
         {
-            bitSize += 32; // offset[i]
-            bitSize += 32; // offsets[1]
+            bitSize += 32; // offset1[i]
+            bitSize += 32; // offset2[i]
             bitSize += 32; // value[i]
         }
 

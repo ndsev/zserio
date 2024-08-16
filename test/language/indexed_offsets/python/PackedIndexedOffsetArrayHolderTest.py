@@ -37,7 +37,7 @@ class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(numElements)
         unpackedBitsizeOf = PackedIndexedOffsetArrayHolderTest._calcAutoIndexedOffsetArrayBitSize(numElements)
         packedBitsizeOf = autoIndexedOffsetArray.bitsizeof()
-        minCompressionRatio = 0.82
+        minCompressionRatio = 0.83
         self.assertTrue(
             unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
             "Unpacked array has "
@@ -72,8 +72,8 @@ class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
 
     def _createAutoIndexedOffsetArray(self, numElements):
         offsetHolders = []
-        for i in range(numElements + 1):
-            offsetHolders.append(self.api.OffsetHolder(0, [0], i))
+        for i in range(numElements):
+            offsetHolders.append(self.api.OffsetHolder(0, 0, i))
 
         data1 = []
         for i in range(numElements):
@@ -88,9 +88,9 @@ class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
     @staticmethod
     def _calcAutoIndexedOffsetArrayBitSize(numElements):
         bitSize = 0
-        for _ in range(numElements + 1):
-            bitSize += 32  # offset[i]
-            bitSize += 32  # offsets[1]
+        for _ in range(numElements):
+            bitSize += 32  # offset1[i]
+            bitSize += 32  # offset2[1]
             bitSize += 32  # value[i]
         for _ in range(numElements):
             bitSize += 32  # data1[i]

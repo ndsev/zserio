@@ -24,7 +24,6 @@ add_custom_test(offsets
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalMemberOffsetTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayOffsetTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterOffsetTest.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TernaryOperatorOffsetTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt64OffsetTest.cpp
     GENERATED_SOURCES
         ${GENERATED_SOURCES}

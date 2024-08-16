@@ -7,8 +7,8 @@ struct OffsetArray
 
 struct OffsetHolder
 {
-    uint32 offset;     // this is unpackable because it stores offset
-    uint32 offsets[1]; // this is unpackable because it stores offset
+    uint32 offset1;    // this is unpackable because it stores offset
+    uint32 offset2;    // this is unpackable because it stores offset
     uint32 value;      // this is packable integer
 };
 
@@ -16,9 +16,9 @@ struct AutoIndexedOffsetArray
 {
     OffsetArray offsetArray;
 
-offsetArray.offsetHolders[@index + 1].offset:
+offsetArray.offsetHolders[@index].offset1:
     int32 data1[];
 
-offsetArray.offsetHolders[@index + 1].offsets[0]:
+offsetArray.offsetHolders[@index].offset2:
     int32 data2[];
 };

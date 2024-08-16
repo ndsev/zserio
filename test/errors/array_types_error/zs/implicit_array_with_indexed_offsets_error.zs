@@ -8,14 +8,6 @@ offset:
     implicit uint32 array[];
 };
 
-struct OffsetArrayWithoutIndexIsOk
-{
-    string description;
-    uint32 offset[];
-offset[0]:
-    implicit uint32 array[];
-};
-
 struct ImplicitArrayWithOffsetsError
 {
     uint32 offsets[];

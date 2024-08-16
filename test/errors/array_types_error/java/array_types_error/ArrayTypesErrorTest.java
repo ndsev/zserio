@@ -146,7 +146,7 @@ public class ArrayTypesErrorTest
     @Test
     public void implicitArrayWithIndexedOffsets()
     {
-        final String error = "implicit_array_with_indexed_offsets_error.zs:22:9: "
+        final String error = "implicit_array_with_indexed_offsets_error.zs:14:9: "
                 + "Implicit arrays cannot have indexed offsets!";
         assertTrue(zserioErrors.isPresent(error));
     }

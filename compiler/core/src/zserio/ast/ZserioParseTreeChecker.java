@@ -9,6 +9,9 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
 import zserio.tools.WarningsConfig;
@@ -61,10 +64,10 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     public Void visitFieldOffset(ZserioParser.FieldOffsetContext ctx)
     {
         // index expression in offsets is allowed if we are in array which is not implicit
-        if (isInArrayField && !isInImplicitArrayField)
-            isIndexAllowed = true;
+        isInOffsetExpression = true;
         visitChildren(ctx);
-        isIndexAllowed = false;
+        isInOffsetExpression = false;
+        wasIndexUsedInOffsetExpression = false;
 
         return null;
     }
@@ -144,6 +147,273 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     }
 
     @Override
+    public Void visitParenthesizedExpression(ZserioParser.ParenthesizedExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(ctx, ctx.getStart(), "Parenthesis are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitFunctionCallExpression(ZserioParser.FunctionCallExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.LPAREN().getSymbol(), "Function call is not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitArrayExpression(ZserioParser.ArrayExpressionContext ctx)
+    {
+        if (isInOffsetArrayExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Array expression is not allowed in offset array expressions!");
+        }
+
+        visit(ctx.expression(0));
+
+        if (isInOffsetExpression)
+        {
+            if (isInArrayField && !isInImplicitArrayField)
+                isIndexAllowed = true;
+            isInOffsetArrayExpression = true;
+        }
+
+        visit(ctx.expression(1));
+
+        if (isInOffsetExpression)
+        {
+            isIndexAllowed = false;
+            isInOffsetArrayExpression = false;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Void visitDotExpression(ZserioParser.DotExpressionContext ctx)
+    {
+        if (isInOffsetArrayExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Dot expression is not allowed in offset array expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitIsSetExpression(ZserioParser.IsSetExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.getStart(), "Operator isset is not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitLengthofExpression(ZserioParser.LengthofExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.getStart(), "Operator lengthof is not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitValueofExpression(ZserioParser.ValueofExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.getStart(), "Operator valueof is not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitNumbitsExpression(ZserioParser.NumbitsExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.getStart(), "Operator numbits is not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitUnaryExpression(ZserioParser.UnaryExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.getStart(), "Unary operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitMultiplicativeExpression(ZserioParser.MultiplicativeExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Arithmetic operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitAdditiveExpression(ZserioParser.AdditiveExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Arithmetic operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitShiftExpression(ZserioParser.ShiftExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Shift operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitRelationalExpression(ZserioParser.RelationalExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Relational operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitEqualityExpression(ZserioParser.EqualityExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Relational operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitBitwiseAndExpression(ZserioParser.BitwiseAndExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Bitwise operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitBitwiseXorExpression(ZserioParser.BitwiseXorExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Bitwise operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitBitwiseOrExpression(ZserioParser.BitwiseOrExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Bitwise operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitLogicalAndExpression(ZserioParser.LogicalAndExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Logical operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitLogicalOrExpression(ZserioParser.LogicalOrExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Logical operators are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitTernaryExpression(ZserioParser.TernaryExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.operator, "Ternary operator is not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitLiteralExpression(ZserioParser.LiteralExpressionContext ctx)
+    {
+        if (isInOffsetExpression)
+        {
+            throwForbiddenInOffsets(ctx, ctx.getStart(), "Literals are not allowed in offset expressions!");
+        }
+
+        return visitChildren(ctx);
+    }
+
+    @Override
     public Void visitIndexExpression(ZserioParser.IndexExpressionContext ctx)
     {
         // this check allows index expressions only for arrays in field offsets or parameters
@@ -161,12 +431,28 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             }
         }
 
+        if (isInOffsetExpression)
+        {
+            if (wasIndexUsedInOffsetExpression)
+            {
+                throw new ParserException(
+                        ctx.getStart(), "Index operator can be used only once within an offset expression!");
+            }
+            wasIndexUsedInOffsetExpression = true;
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
     public Void visitId(ZserioParser.IdContext ctx)
     {
+        if (isInOffsetArrayExpression)
+        {
+            throwForbiddenInOffsets(
+                    ctx, ctx.getStart(), "Identifiers are not allowed in offset array expressions!");
+        }
+
         try
         {
             IdentifierValidator.validate(ctx.getText());
@@ -194,6 +480,21 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         isIndexAllowed = false;
 
         return null;
+    }
+
+    private void throwForbiddenInOffsets(ParserRuleContext ctx, Token locationToken, String message)
+    {
+        if (isInOffsetArrayExpression)
+        {
+            final ParserStackedException exception = new ParserStackedException(
+                    new AstLocation(ctx.getStart()), "Only @index is allowed in offset array expressions!");
+            exception.pushMessage(new AstLocation(locationToken), message);
+            throw exception;
+        }
+        else
+        {
+            throw new ParserException(locationToken, message);
+        }
     }
 
     private void checkUtf8Encoding(AstLocation location)
@@ -262,6 +563,9 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     private boolean isInArrayField = false;
     private boolean isInImplicitArrayField = false;
     private boolean isIndexAllowed = false;
+    private boolean isInOffsetExpression = false;
+    private boolean isInOffsetArrayExpression = false;
+    private boolean wasIndexUsedInOffsetExpression = false;
 
     /** Flag used to allow explicit keyword only for SQL tables. */
     private boolean isInSqlTableField = false;

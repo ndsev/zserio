@@ -497,26 +497,6 @@ public final class Expression extends AstNodeBase
     }
 
     /**
-     * Checks if expression contains a ternary operator out of array index.
-     *
-     * @return Returns true if this expression contains a ternary operator out of array index.
-     */
-    public boolean containsTernaryOperatorOutOfArray()
-    {
-        return containsOperandOutOfArray(ZserioParser.QUESTIONMARK);
-    }
-
-    /**
-     * Checks if expression contains a function call out of array index.
-     *
-     * @return Returns true if this expression contain a function call out of array index.
-     */
-    public boolean containsFunctionCallOutOfArray()
-    {
-        return containsOperandOutOfArray(ZserioParser.RPAREN);
-    }
-
-    /**
      * Sets lexical scope for the expression evaluation.
      *
      * This method is called by ZserioAstScopeSetter.
@@ -956,35 +936,6 @@ public final class Expression extends AstNodeBase
 
                 if (operand3 != null)
                     if (operand3.containsOperand(operandTokenType))
-                        return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean containsOperandOutOfArray(int operandTokenType)
-    {
-        return containsOperandOutOfArray(operandTokenType, false);
-    }
-
-    private boolean containsOperandOutOfArray(int operandTokenType, boolean inArray)
-    {
-        if (type == operandTokenType)
-            return true;
-
-        if (operand1 != null)
-        {
-            if (operand1.containsOperandOutOfArray(operandTokenType, inArray))
-                return true;
-
-            if (operand2 != null && type != ZserioParser.LBRACKET)
-            {
-                if (operand2.containsOperandOutOfArray(operandTokenType))
-                    return true;
-
-                if (operand3 != null)
-                    if (operand3.containsOperandOutOfArray(operandTokenType, inArray))
                         return true;
             }
         }

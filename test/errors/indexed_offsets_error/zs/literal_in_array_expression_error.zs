@@ -1,4 +1,4 @@
-package packed_offset_array_error;
+package literal_in_array_expression_error;
 
 struct OffsetArray
 {
