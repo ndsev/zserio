@@ -2,6 +2,7 @@
 #include <array>
 #include <cstring>
 #include <fstream>
+#include <string>
 
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/BitStreamWriter.h"
@@ -503,7 +504,7 @@ void BitStreamWriter::writeString(StringView data)
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
         {
-            writeBits(static_cast<uint8_t>(data[i]), 8);
+            writeBits(static_cast<uint32_t>(std::char_traits<char>::to_int_type(data[i])), 8);
         }
     }
     else

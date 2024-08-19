@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <string>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/RebindAlloc.h"
@@ -281,7 +282,10 @@ public:
             value.reserve(len);
             for (size_t i = 0; i < len; ++i)
             {
-                value.push_back(static_cast<char>(readByte()));
+                using char_traits = std::char_traits<char>;
+                const char readCharacter =
+                        char_traits::to_char_type(static_cast<char_traits::int_type>(readByte()));
+                value.push_back(readCharacter);
             }
             return value;
         }

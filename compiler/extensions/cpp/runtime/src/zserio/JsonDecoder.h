@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <utility>
 
 #include "zserio/AllocatorHolder.h"
@@ -295,7 +296,11 @@ bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(
         return false;
     }
 
-    value.push_back(static_cast<char>((static_cast<uint32_t>(hex1) << 4U) | static_cast<uint32_t>(hex2)));
+    const uint32_t characterInt = (static_cast<uint32_t>(hex1) << 4U) | static_cast<uint32_t>(hex2);
+    using char_traits = std::char_traits<char>;
+    const char character = char_traits::to_char_type(static_cast<char_traits::int_type>(characterInt));
+    value.push_back(character);
+
     return true;
 }
 

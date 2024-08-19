@@ -1,6 +1,7 @@
 #include <array>
 #include <cmath>
 #include <iomanip>
+#include <string>
 
 #include "zserio/JsonEncoder.h"
 
@@ -54,48 +55,53 @@ void JsonEncoder::encodeString(std::ostream& stream, StringView value)
     (void)stream.put('"');
     for (char character : value)
     {
-        switch (character)
+        if (character == '\\' || character == '"')
         {
-        case '\\':
-        case '"':
             (void)stream.put('\\');
             (void)stream.put(character);
-            break;
-        case '\b':
+        }
+        else if (character == '\b')
+        {
             (void)stream.put('\\');
             (void)stream.put('b');
-            break;
-        case '\f':
+        }
+        else if (character == '\f')
+        {
             (void)stream.put('\\');
             (void)stream.put('f');
-            break;
-        case '\n':
+        }
+        else if (character == '\n')
+        {
             (void)stream.put('\\');
             (void)stream.put('n');
-            break;
-        case '\r':
+        }
+        else if (character == '\r')
+        {
             (void)stream.put('\\');
             (void)stream.put('r');
-            break;
-        case '\t':
+        }
+        else if (character == '\t')
+        {
             (void)stream.put('\\');
             (void)stream.put('t');
-            break;
-        default:
-            if (static_cast<uint8_t>(character) <= 0x1F)
+        }
+        else
+        {
+            const unsigned int characterInt =
+                    static_cast<unsigned int>(std::char_traits<char>::to_int_type(character));
+            if (characterInt <= 0x1F)
             {
                 (void)stream.put('\\');
                 (void)stream.put('u');
                 (void)stream.put('0');
                 (void)stream.put('0');
-                (void)stream.put(HEX[static_cast<uint8_t>(static_cast<uint8_t>(character) >> 4U) & 0xFU]);
-                (void)stream.put(HEX[static_cast<uint8_t>(character) & 0xFU]);
+                (void)stream.put(HEX[(characterInt >> 4U) & 0xFU]);
+                (void)stream.put(HEX[characterInt & 0xFU]);
             }
             else
             {
                 (void)stream.put(character);
             }
-            break;
         }
     }
     (void)stream.put('"');

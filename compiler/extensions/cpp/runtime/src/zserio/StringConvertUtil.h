@@ -25,33 +25,34 @@ template <typename T,
         typename std::enable_if<std::is_unsigned<T>::value && !std::is_same<T, bool>::value, int>::type = 0>
 const char* convertIntToString(std::array<char, 24>& buffer, T value, bool isNegative)
 {
-    static const std::array<char, 201> DIGITS = {
+    static const std::array<char, 201> DIGITS_100_10 = {
             "0001020304050607080910111213141516171819"
             "2021222324252627282930313233343536373839"
             "4041424344454647484950515253545556575859"
             "6061626364656667686970717273747576777879"
             "8081828384858687888990919293949596979899"};
+    static const std::array<char, 11> DIGITS_1 = {"0123456789"};
 
     auto bufferEnd = buffer.end();
-    *(--bufferEnd) = 0; // always terminate with '\0'
+    *(--bufferEnd) = '\0'; // always terminate with '\0'
 
     while (value >= 100)
     {
         const unsigned int index = static_cast<unsigned int>((value % 100) * 2);
         value /= 100;
-        *(--bufferEnd) = DIGITS[index + 1];
-        *(--bufferEnd) = DIGITS[index];
+        *(--bufferEnd) = DIGITS_100_10[index + 1];
+        *(--bufferEnd) = DIGITS_100_10[index];
     }
 
     if (value < 10)
     {
-        *(--bufferEnd) = static_cast<char>('0' + value);
+        *(--bufferEnd) = DIGITS_1[static_cast<unsigned int>(value)];
     }
     else
     {
         const unsigned int index = static_cast<unsigned int>(value * 2);
-        *(--bufferEnd) = DIGITS[index + 1];
-        *(--bufferEnd) = DIGITS[index];
+        *(--bufferEnd) = DIGITS_100_10[index + 1];
+        *(--bufferEnd) = DIGITS_100_10[index];
     }
 
     if (isNegative)

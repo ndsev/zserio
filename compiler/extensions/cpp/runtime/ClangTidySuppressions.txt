@@ -42,24 +42,25 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/StringView.h:932
 
 # The following is filtered out because bounds are checked naturally by implementation. Therefore method 'at'
 # would only bring the performance drop.
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:42
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:43
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:53
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:44
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:49
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:54
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:55
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:301
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:315
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:356
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:367
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:378
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:357
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:368
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:379
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:385
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:390
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:380
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:386
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:391
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:397
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:593
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:661
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:91
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:92
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:392
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:398
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:594
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:662
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:98
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:99
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:93
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:106
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1443
