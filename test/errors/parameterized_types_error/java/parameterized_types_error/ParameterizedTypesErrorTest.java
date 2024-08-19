@@ -32,6 +32,30 @@ public class ParameterizedTypesErrorTest
     }
 
     @Test
+    public void parameterUsedAsIndexedOffset()
+    {
+        final String[] errors = {
+                "parameter_used_as_indexed_offset_error.zs:5:12:     Field 'offsets' defined here!",
+                "parameter_used_as_indexed_offset_error.zs:16:1:     Field 'offsets' used as an offset here!",
+                "parameter_used_as_indexed_offset_error.zs:17:19: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void parameterUsedAsOffset()
+    {
+        final String[] errors = {
+                "parameter_used_as_offset_error.zs:5:12:     Field 'offset' defined here!",
+                "parameter_used_as_offset_error.zs:16:1:     Field 'offset' used as an offset here!",
+                "parameter_used_as_offset_error.zs:17:19: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void referencedBuiltInType()
     {
         final String[] errors = {"referenced_builtin_type_error.zs:3:9:     See 'uint32' definition here",

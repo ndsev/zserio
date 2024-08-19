@@ -80,6 +80,8 @@ public final class Function extends DocumentableAstNode implements ScopeSymbol
      */
     void check(WarningsConfig warningsConfig)
     {
+        ExpressionUtil.checkOffsetFields(resultExpression);
+
         // check result expression type
         ExpressionUtil.checkExpressionType(resultExpression, returnTypeReference);
 

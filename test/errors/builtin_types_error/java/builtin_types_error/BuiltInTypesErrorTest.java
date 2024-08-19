@@ -42,6 +42,31 @@ public class BuiltInTypesErrorTest
     }
 
     @Test
+    public void bitfieldLengthFieldUsedAsIndexedOffset()
+    {
+        final String errors[] = {
+                "bitfield_length_field_used_as_indexed_offset_error.zs:5:12:     Field 'offsets' defined here!",
+                "bitfield_length_field_used_as_indexed_offset_error.zs:6:1: "
+                        + "    Field 'offsets' used as an offset here!",
+                "bitfield_length_field_used_as_indexed_offset_error.zs:8:9: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void bitfieldLengthFieldUsedAsOffset()
+    {
+        final String errors[] = {
+                "bitfield_length_field_used_as_offset_error.zs:5:12:     Field 'offset' defined here!",
+                "bitfield_length_field_used_as_offset_error.zs:6:1:     Field 'offset' used as an offset here!",
+                "bitfield_length_field_used_as_offset_error.zs:8:9: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void bitfieldUnknownLength()
     {
         final String error = "bitfield_unknown_length_error.zs:5:9: "

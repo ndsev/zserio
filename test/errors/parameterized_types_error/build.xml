@@ -15,6 +15,10 @@
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="no_parameters_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="parameter_used_as_indexed_offset_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="parameter_used_as_offset_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="referenced_builtin_type_error.zs"
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="referenced_enum_type_error.zs"

@@ -3,6 +3,8 @@ package zserio.ast;
 import java.math.BigInteger;
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * AST node for dynamic bit field type instantiation.
  */
@@ -158,6 +160,12 @@ public final class DynamicBitFieldInstantiation extends TypeInstantiation
 
             isEvaluated = true;
         }
+    }
+
+    @Override
+    void check(WarningsConfig config, ZserioTemplatableType currentTemplateInstantiation)
+    {
+        ExpressionUtil.checkOffsetFields(lengthExpression);
     }
 
     private final Expression lengthExpression;

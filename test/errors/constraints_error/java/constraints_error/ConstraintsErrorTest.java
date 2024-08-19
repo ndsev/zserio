@@ -37,6 +37,29 @@ public class ConstraintsErrorTest
     }
 
     @Test
+    public void fieldUsedAsIndexedOffset()
+    {
+        final String errors[] = {
+                "field_used_as_indexed_offset_error.zs:5:12:     Field 'offsets' defined here!",
+                "field_used_as_indexed_offset_error.zs:6:1:     Field 'offsets' used as an offset here!",
+                "field_used_as_indexed_offset_error.zs:7:23: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void fieldUsedAsOffset()
+    {
+        final String errors[] = {
+                "field_used_as_offset_error.zs:5:12:     Field 'offset' defined here!",
+                "field_used_as_offset_error.zs:6:1:     Field 'offset' used as an offset here!",
+                "field_used_as_offset_error.zs:7:20: Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void noneBooleanExpression()
     {
         final String error = "none_boolean_expression_error.zs:6:35: Constraint expression for field "

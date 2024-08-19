@@ -160,6 +160,8 @@ public final class ArrayInstantiation extends TypeInstantiation
         // check length expression
         if (lengthExpression != null)
         {
+            ExpressionUtil.checkOffsetFields(lengthExpression);
+
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
             {
                 throw new ParserException(

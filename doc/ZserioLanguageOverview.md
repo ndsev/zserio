@@ -812,6 +812,8 @@ byteOffset:
 In the code example above, if the member is optional (`hasOptional == false`) then no offset will be checked
 and the size will be 65 bits.
 
+> Fields which are used as offsets cannot be used in [expressions](#expressions).
+
 ### Indexed Offsets
 
 When all elements in an array should have offsets, a special notation can be used:
@@ -846,6 +848,8 @@ offsets[@index]: // implies align(8) before each data[i]
     bit:5   data[2];
 };
 ```
+
+> Fields which are used as indexed offsets cannot be used in [expressions](#expressions).
 
 [top](#language-guide)
 

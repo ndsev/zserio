@@ -57,7 +57,7 @@ symbolDefinition
 // CONST
 
 constDefinition
-    :   CONST typeInstantiation id ASSIGN expression SEMICOLON
+    :   CONST typeInstantiation id ASSIGN expression SEMICOLON // constant expression
     ;
 
 
@@ -107,7 +107,7 @@ structureFieldDefinition
     ;
 
 fieldAlignment
-    :   ALIGN LPAREN expression RPAREN COLON // integer expression
+    :   ALIGN LPAREN expression RPAREN COLON // constant integer expression
     ;
 
 fieldOffset
@@ -191,7 +191,7 @@ enumDeclaration
     ;
 
 enumItem
-    :   (DEPRECATED | REMOVED)? id (ASSIGN expression)?
+    :   (DEPRECATED | REMOVED)? id (ASSIGN expression)? // constant integer expression
     ;
 
 
@@ -206,7 +206,7 @@ bitmaskDeclaration
     ;
 
 bitmaskValue
-    :    id (ASSIGN expression)?
+    :    id (ASSIGN expression)? // constant integer expression
     ;
 
 

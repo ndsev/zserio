@@ -19,6 +19,10 @@
             ignoreErrors="true"/>
         <testGen testName="optional_members_error" zsFile="field_not_available_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="field_used_as_indexed_offset_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="field_used_as_offset_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="optional_members_error" zsFile="none_boolean_expression_error.zs"
             ignoreErrors="true"/>
     </target>

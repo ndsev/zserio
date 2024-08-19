@@ -26,13 +26,38 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void arrayLengthFieldUsedAsIndexedOffset()
+    {
+        final String errors[] = {
+                "array_length_field_used_as_indexed_offset_error.zs:5:12:     Field 'offsets' defined here!",
+                "array_length_field_used_as_indexed_offset_error.zs:16:1: "
+                        + "    Field 'offsets' used as an offset here!",
+                "array_length_field_used_as_indexed_offset_error.zs:10:18: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void arrayLengthFieldUsedAsOffset()
+    {
+        final String errors[] = {
+                "array_length_field_used_as_offset_error.zs:5:12:     Field 'offset' defined here!",
+                "array_length_field_used_as_offset_error.zs:6:1:     Field 'offset' used as an offset here!",
+                "array_length_field_used_as_offset_error.zs:7:19: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void deprecatedImplicitArray()
     {
         final String errors[] = {
                 "deprecated_implicit_array_error.zs:5:5: For strong compatibility reason, please consider "
                         + "to use command line option '-allowImplicitArrays'.",
-                "deprecated_implicit_array_error.zs:5:5: Implicit arrays are deprecated and will be removed from "
-                        + "the language!"};
+                "deprecated_implicit_array_error.zs:5:5: "
+                        + "Implicit arrays are deprecated and will be removed from the language!"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 

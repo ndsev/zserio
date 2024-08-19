@@ -188,6 +188,8 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
             final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
             if (!argumentExpression.isExplicitVariable())
             {
+                ExpressionUtil.checkOffsetFields(argumentExpression);
+
                 final TypeReference parameterTypeReference =
                         instantiatedParameter.getParameter().getTypeReference();
                 ExpressionUtil.checkExpressionType(argumentExpression, parameterTypeReference);

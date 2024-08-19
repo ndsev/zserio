@@ -230,7 +230,7 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
      */
     public boolean isPackable()
     {
-        if (usedAsOffset)
+        if (usedAsOffsetLocation != null)
             return false;
 
         ZserioType fieldBaseType = typeInstantiation.getBaseType();
@@ -261,7 +261,7 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
                     throw new ParserException(offsetExpr, "Packed array cannot be used as offset array!");
                 }
 
-                referencedField.usedAsOffset = true;
+                referencedField.usedAsOffsetLocation = offsetExpr.getLocation();
             }
         }
     }
@@ -304,6 +304,8 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         // check optional expression type
         if (optionalClauseExpr != null)
         {
+            ExpressionUtil.checkOffsetFields(optionalClauseExpr);
+
             if (optionalClauseExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
                 throw new ParserException(optionalClauseExpr,
                         "Optional expression for field '" + getName() + "' is not boolean!");
@@ -312,6 +314,8 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         // check constraint expression type
         if (constraintExpr != null)
         {
+            ExpressionUtil.checkOffsetFields(constraintExpr);
+
             if (constraintExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
                 throw new ParserException(
                         constraintExpr, "Constraint expression for field '" + getName() + "' is not boolean!");
@@ -319,6 +323,17 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
 
         // check optional references (should be at the end to check correct expression types at first)
         checkOptionalReferences(warningsConfig);
+    }
+
+    /**
+     * Returns location where the field is used as an offset.
+     * Can be called after evaluate phase!
+     *
+     * @return Location where the field is used in an offset expression, null otherwise.
+     */
+    AstLocation getUsedAsOffsetLocation()
+    {
+        return usedAsOffsetLocation;
     }
 
     /**
@@ -584,7 +599,7 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         this.isVirtual = isVirtual;
         this.sqlConstraint = sqlConstraint;
 
-        this.usedAsOffset = false;
+        this.usedAsOffsetLocation = null;
     }
 
     private final boolean isExtended;
@@ -602,5 +617,5 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
 
-    private boolean usedAsOffset;
+    private AstLocation usedAsOffsetLocation;
 }

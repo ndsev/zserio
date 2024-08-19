@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * This class implements various utilities on Expression type.
@@ -39,7 +40,7 @@ final class ExpressionUtil
      * Checks if integer expression is within the range of Zserio type.
      *
      * @param expression    Expression to use for checking.
-     * @param instantiation Type intantiation to use for checking.
+     * @param instantiation Type instantiation to use for checking.
      * @param ownerName     Name of Zserio type which owns the given expression.
      *
      * @throws ParserException Throws if integer expression exceeds the bounds of its type.
@@ -61,6 +62,31 @@ final class ExpressionUtil
                             "Initializer value '" + value.toString() + "' of '" + ownerName +
                                     "' exceeds the bounds of its type '" + type.getName() + "'!");
                 }
+            }
+        }
+    }
+
+    /**
+     * Checks if the expression contains any field which is used as an offset and throws an exception in that
+     * case.
+     *
+     * @param expression Expression to use for checking.
+     * @throws ParserException Throws if the expression contains any field which is used as an offset.
+     */
+    static void checkOffsetFields(Expression expression)
+    {
+        final Set<Field> referencedFields = expression.getReferencedSymbolObjects(Field.class);
+        for (Field referencedField : referencedFields)
+        {
+            if (referencedField.getUsedAsOffsetLocation() != null)
+            {
+                final ParserStackedException exception = new ParserStackedException(
+                        expression.getLocation(), "Fields used as offsets cannot be used in expressions!");
+                exception.pushMessage(referencedField.getUsedAsOffsetLocation(),
+                        "    Field '" + referencedField.getName() + "' used as an offset here!");
+                exception.pushMessage(referencedField.getLocation(),
+                        "    Field '" + referencedField.getName() + "' defined here!");
+                throw exception;
             }
         }
     }

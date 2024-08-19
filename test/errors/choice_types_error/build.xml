@@ -25,6 +25,10 @@
         <testGen testName="choice_types_error" zsFile="non_constant_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="optional_member_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="selector_expression_uses_indexed_offset_field_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="selector_expression_uses_offset_field_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="string_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unreachable_default_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unreachable_default_multicase_error.zs"

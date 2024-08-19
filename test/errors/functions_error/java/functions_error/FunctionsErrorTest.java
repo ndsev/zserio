@@ -44,6 +44,29 @@ public class FunctionsErrorTest
     }
 
     @Test
+    public void fieldUsedAsIndexedOffset()
+    {
+        final String errors[] = {
+                "field_used_as_indexed_offset_error.zs:5:12:     Field 'offsets' defined here!",
+                "field_used_as_indexed_offset_error.zs:16:1:     Field 'offsets' used as an offset here!",
+                "field_used_as_indexed_offset_error.zs:9:16: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void fieldUsedAsOffset()
+    {
+        final String errors[] = {
+                "field_used_as_offset_error.zs:5:12:     Field 'offset' defined here!",
+                "field_used_as_offset_error.zs:16:1:     Field 'offset' used as an offset here!",
+                "field_used_as_offset_error.zs:9:16: Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void functionCallWithArgument()
     {
         final String error = "function_call_with_argument_error.zs:16:48: extraneous input '2' expecting ')'";

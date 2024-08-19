@@ -120,6 +120,32 @@ public class ChoiceTypesErrorTest
     }
 
     @Test
+    public void selectorExpressionUsesIndexedOffsetField()
+    {
+        final String errors[] = {
+                "selector_expression_uses_indexed_offset_field_error.zs:5:12:     Field 'offsets' defined here!",
+                "selector_expression_uses_indexed_offset_field_error.zs:19:1: "
+                        + "    Field 'offsets' used as an offset here!",
+                "selector_expression_uses_indexed_offset_field_error.zs:8:43: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void selectorExpressionUsesOffsetField()
+    {
+        final String errors[] = {
+                "selector_expression_uses_offset_field_error.zs:5:12:     Field 'offset' defined here!",
+                "selector_expression_uses_offset_field_error.zs:19:1: "
+                        + "    Field 'offset' used as an offset here!",
+                "selector_expression_uses_offset_field_error.zs:8:43: "
+                        + "Fields used as offsets cannot be used in expressions!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void stringSelectorError()
     {
         final String error = "string_selector_error.zs:3:8: "

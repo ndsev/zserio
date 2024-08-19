@@ -177,7 +177,7 @@ public final class ChoiceType extends CompoundType
         checkExtendedFields();
 
         isChoiceDefaultUnreachable = checkUnreachableDefault();
-        checkSelectorType();
+        checkSelectorExpression();
         checkCaseTypes();
         checkEnumerationCases(warningsConfig);
         checkBitmaskCases();
@@ -269,8 +269,10 @@ public final class ChoiceType extends CompoundType
         return numCases;
     }
 
-    private void checkSelectorType()
+    private void checkSelectorExpression()
     {
+        ExpressionUtil.checkOffsetFields(selectorExpression);
+
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
         if (selectorExpressionType != Expression.ExpressionType.INTEGER &&
                 selectorExpressionType != Expression.ExpressionType.BOOLEAN &&

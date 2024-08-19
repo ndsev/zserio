@@ -17,6 +17,10 @@
             ignoreErrors="true"/>
         <testGen testName="builtin_types_error" zsFile="bitfield_length_field_not_available_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_length_field_used_as_indexed_offset_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_length_field_used_as_offset_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="builtin_types_error" zsFile="bitfield_unknown_length_error.zs" ignoreErrors="true"/>
         <testGen testName="builtin_types_error" zsFile="bitfield_without_arg_error.zs" ignoreErrors="true"/>
         <testGen testName="builtin_types_error" zsFile="bitfield0_error.zs" ignoreErrors="true"/>
