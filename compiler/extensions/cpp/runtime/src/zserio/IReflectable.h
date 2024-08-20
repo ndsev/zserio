@@ -522,6 +522,20 @@ public:
      * \throw CppRuntimeException If the object was compiled without the bit position feature enabled.
      */
     virtual size_t bitPosition() const = 0;
+
+    /**
+     * Returns the bit size of the parsed blob of the reflectable object.
+     *
+     * This feature is experimental and can be removed without any warning!
+     *
+     * \note Note that the returned bit size is valid only directly after read! If the Zserio object
+     *       has been changed after reading, the result is unspecified!
+     * \note The bit size is only stored for code generated using `-withBitPositionCode` option.
+     *
+     * \return The blob size of the objects in bits.
+     * \throw CppRuntimeException If the object was compiled without the bit position feature enabled.
+     */
+    virtual size_t realBitSizeOf() const = 0;
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */

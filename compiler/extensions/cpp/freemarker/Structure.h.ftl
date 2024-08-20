@@ -394,6 +394,21 @@ public:
      */
     </#if>
     size_t bitPosition() const;
+
+    <#if withCodeComments>
+    /**
+     * Get the bit size of the parsed blob after reading. This size can differ
+     * from the one returned by getBitSizeOf() if compression took place.
+     *
+     * This feature is experimental and can be removed without any warning!
+     *
+     * \note Note that the returned bit size is valid only directly after read! If the Zserio object
+     *       has been changed after reading, the result is unspecified!
+     *
+     * \return Size of the object as it was stored in the blob in bits.
+     */
+    </#if>
+    size_t realBitSizeOf() const;
 </#if>
 
 private:
@@ -421,7 +436,7 @@ private:
     <@compound_constructor_members compoundConstructorsData/>
 <#if withBitPositionCode>
     <#-- Bit position must be before field members in order to get initialized first. -->
-    size_t m_bitPosition;
+    size_t m_bitPosition, m_realBitSize;
 </#if>
 <#if (numExtendedFields > 0)>
     uint32_t m_numExtendedFields;

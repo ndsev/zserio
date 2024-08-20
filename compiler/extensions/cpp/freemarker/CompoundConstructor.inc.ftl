@@ -36,6 +36,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
     <#if withBitPositionCode>
         m_bitPosition(0)
+        m_realBitSize(0)
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (numExtendedFields > 0)>
@@ -102,6 +103,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
     <#if withBitPositionCode>
         m_bitPosition(in.getBitPosition())
+        m_realBitSize(0)
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -111,6 +113,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
 </@cpp_initializer_list>
 {
+    <#-- Determine the real bit size after member initialization took place. -->
+    <#if withBitPositionCode>
+        <#if packed>
+    m_realBitSize = bitSizeOf(context, m_bitPosition);
+        <#else>
+    m_realBitSize = bitSizeOf();
+        </#if>
+    </#if>
 }
 </#macro>
 
@@ -168,6 +178,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -191,6 +202,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_isInitialized(false)
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -237,6 +249,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 {
     <#if withBitPositionCode>
         m_bitPosition = other.m_bitPosition;
+        m_realBitSize = other.m_realBitSize;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -260,6 +273,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
     m_isInitialized = false;
     <#if withBitPositionCode>
         m_bitPosition = other.m_bitPosition;
+        m_realBitSize = other.m_realBitSize;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -306,6 +320,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -329,6 +344,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_isInitialized(false)
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -376,6 +392,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 {
     <#if withBitPositionCode>
     m_bitPosition = other.m_bitPosition;
+    m_realBitSize = other.m_realBitSize;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -399,6 +416,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
     m_isInitialized = false;
     <#if withBitPositionCode>
     m_bitPosition = other.m_bitPosition;
+    m_realBitSize = other.m_realBitSize;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -450,6 +468,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -478,6 +497,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_isInitialized(false)
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)

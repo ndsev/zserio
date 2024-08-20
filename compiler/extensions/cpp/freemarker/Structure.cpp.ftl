@@ -244,6 +244,16 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
     </#if>
         }
 
+        size_t realBitSizeOf() const override
+        {
+    <#if withBitPositionCode>
+            return m_object.realBitSizeOf();
+    <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Bit position code is disabled by '-withoutBitPositionCode' zserio option!";
+    </#if>
+        }
+
     private:
         <#if isConst>const </#if>${fullName}& m_object;
     };
@@ -573,6 +583,11 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 size_t ${name}::bitPosition() const
 {
     return m_bitPosition;
+}
+
+size_t ${name}::realBitSizeOf() const
+{
+    return m_realBitSize;
 }
 </#if>
 <#if fieldList?has_content>
