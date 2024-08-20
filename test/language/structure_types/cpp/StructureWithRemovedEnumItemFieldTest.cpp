@@ -34,8 +34,8 @@ TEST_F(StructureWithRemovedEnumItemFieldTest, fieldConstructor)
 
 TEST_F(StructureWithRemovedEnumItemFieldTest, bitStreamReaderConstructor)
 {
-    zserio::BitBuffer bitBuffer(8);
-    zserio::BitStreamWriter writer(bitBuffer);
+    zserio::BitBuffer smallBitBuffer(8);
+    zserio::BitStreamWriter writer(smallBitBuffer);
     writer.writeBits(0, 8);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());

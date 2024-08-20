@@ -19,8 +19,8 @@ TEST_F(ParameterizedNestedInArrayTest, writeRead)
 {
     Holder holder({{Element{Parameterized{6}}}}, {{Element{Parameterized{6}}}});
 
-    const auto bitBuffer = zserio::serialize(holder);
-    const Holder readHolder = zserio::deserialize<Holder>(bitBuffer);
+    const auto bitBufferHolder = zserio::serialize(holder);
+    const Holder readHolder = zserio::deserialize<Holder>(bitBufferHolder);
 
     ASSERT_EQ(holder, readHolder);
 }

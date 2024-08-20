@@ -8,7 +8,7 @@ endfunction()
 # Prepares warnings setup for current target
 function(compiler_get_warnings_setup VARNAME)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(WARNINGS_SETUP "-Wall -Wextra -pedantic -Wconversion -Wno-long-long")
+        set(WARNINGS_SETUP "-Wall -Wextra -pedantic -Wconversion -Wno-long-long -Wshadow")
         # gcc 7.5 reports Wsign-conversion even on static_cast, reportedly fixed in gcc 9.3
         if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.3.0")
             set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wsign-conversion")
