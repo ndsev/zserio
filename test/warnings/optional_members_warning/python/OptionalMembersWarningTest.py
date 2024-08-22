@@ -7,7 +7,7 @@ class OptionalMembersWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        getZserioApi(__file__, "optional_members_warning.zs", expectedWarnings=24, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "optional_members_warning.zs", expectedWarnings=25, errorOutputDict=cls.warnings)
 
     def testOptionalReferencesInArrayLength(self):
         assertWarningsPresent(
@@ -23,8 +23,8 @@ class OptionalMembersWarningTest(unittest.TestCase):
             self,
             "optional_members_warning.zs",
             [
-                "optional_references_in_array_length.zs:10:20: Field 'array3' is not optional "
-                "and contains reference to optional field 'arrayLength' in array length."
+                "optional_references_in_array_length.zs:10:20: Field 'array3' is optional and contains "
+                "reference to another optional field 'arrayLength' in array length which might not be present."
             ],
         )
 
@@ -42,8 +42,9 @@ class OptionalMembersWarningTest(unittest.TestCase):
             self,
             "optional_members_warning.zs",
             [
-                "optional_references_in_bitfield_length.zs:10:27: Field 'bitfield3' is not optional "
-                "and contains reference to optional field 'numBits' in dynamic bitfield length."
+                "optional_references_in_bitfield_length.zs:10:27: Field 'bitfield3' is optional and contains "
+                "reference to another optional field 'numBits' in dynamic bitfield length which might not be "
+                "present."
             ],
         )
 
@@ -61,8 +62,8 @@ class OptionalMembersWarningTest(unittest.TestCase):
             self,
             "optional_members_warning.zs",
             [
-                "optional_references_in_constraint.zs:10:20: Field 'value4' is not optional "
-                "and contains reference to optional field 'value1' in constraint."
+                "optional_references_in_constraint.zs:10:20: Field 'value4' is optional and contains "
+                "reference to another optional field 'value1' in constraint which might not be present."
             ],
         )
 
@@ -100,6 +101,15 @@ class OptionalMembersWarningTest(unittest.TestCase):
             [
                 "optional_references_in_offset.zs:30:11: Field 'value4' is not optional "
                 "and contains reference to optional field 'offset' in offset."
+            ],
+        )
+
+        assertWarningsPresent(
+            self,
+            "optional_members_warning.zs",
+            [
+                "optional_references_in_offset.zs:38:21: Field 'value6' is optional and contains reference to "
+                "another optional field 'anotherOptionalOffset' in offset which might not be present."
             ],
         )
 
@@ -219,8 +229,9 @@ class OptionalMembersWarningTest(unittest.TestCase):
             self,
             "optional_members_warning.zs",
             [
-                "optional_references_in_type_arguments.zs:47:51: Field 'mixedTones' "
-                "has different optional condition than field 'autoNumBlackTones' referenced in type arguments."
+                "optional_references_in_type_arguments.zs:47:51: Field 'mixedTones' is optional and contains "
+                "reference to another optional field 'autoNumBlackTones' in type arguments which might not "
+                "be present."
             ],
         )
 
@@ -228,7 +239,8 @@ class OptionalMembersWarningTest(unittest.TestCase):
             self,
             "optional_members_warning.zs",
             [
-                "optional_references_in_type_arguments.zs:48:44: Field 'mixedTonesArray' is not optional "
-                "and contains reference to optional field 'autoNumBlackTones' in type arguments."
+                "optional_references_in_type_arguments.zs:48:44: Field 'mixedTonesArray' is optional and "
+                "contains reference to another optional field 'autoNumBlackTones' in type arguments which "
+                "might not be present."
             ],
         )

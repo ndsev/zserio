@@ -28,4 +28,12 @@ offsetHolder.offset:
     OptionalOffsetHolder optionalOffsetHolder;
 optionalOffsetHolder.offset:
     uint8 value4; // warning
+
+    uint32 anotherOffset;
+anotherOffset:
+    optional uint32 value5; // no warning
+
+    optional uint32 anotherOptionalOffset;
+anotherOptionalOffset:
+    optional uint32 value6; // warning
 };

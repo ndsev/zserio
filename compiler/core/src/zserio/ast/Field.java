@@ -540,20 +540,31 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
                 final List<AstNode> referencedDotPrefix = referencedOptionalEntry.getValue().getDotPrefix();
                 if (haveFieldsDifferentOptional(referencedOptionalField, referencedDotPrefix))
                 {
-                    if (optionalClauseExpr == null)
+                    if (isOptional())
+                    {
+                        if (optionalClauseExpr == null || referencedOptionalField.optionalClauseExpr == null)
+                        {
+                            ZserioToolPrinter.printWarning(this,
+                                    "Field '" + name + "' is optional and contains reference to another "
+                                            + "optional field '" + referencedOptionalField.getName() + "' in " +
+                                            exprName + " which might not be present.",
+                                    warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
+                        }
+                        else
+                        {
+                            ZserioToolPrinter.printWarning(this,
+                                    "Field '" + name + "' has different optional "
+                                            + "condition than field '" + referencedOptionalField.getName() +
+                                            "' referenced in " + exprName + ".",
+                                    warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
+                        }
+                    }
+                    else
                     {
                         ZserioToolPrinter.printWarning(this,
                                 "Field '" + name + "' is not optional "
                                         + "and contains reference to optional field '" +
                                         referencedOptionalField.getName() + "' in " + exprName + ".",
-                                warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
-                    }
-                    else
-                    {
-                        ZserioToolPrinter.printWarning(this,
-                                "Field '" + name + "' has different optional "
-                                        + "condition than field '" + referencedOptionalField.getName() +
-                                        "' referenced in " + exprName + ".",
                                 warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                 }
@@ -565,7 +576,7 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
             Field referencedOptionalField, List<AstNode> referencedDotPrefix)
     {
         // check references to itself (could happen for constraints for example)
-        if (equals(referencedOptionalField) && referencedDotPrefix.isEmpty())
+        if (referencedDotPrefix.isEmpty() && equals(referencedOptionalField))
             return false;
 
         // check expressions using comparison formatter

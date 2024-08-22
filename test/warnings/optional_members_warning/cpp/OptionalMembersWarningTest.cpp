@@ -22,8 +22,8 @@ TEST_F(OptionalMembersWarningTest, optionalReferencesInArrayLength)
     ASSERT_TRUE(zserioWarnings.isPresent(warning1));
 
     const std::string warning2 =
-            "optional_references_in_array_length.zs:10:20: Field 'array3' is not optional "
-            "and contains reference to optional field 'arrayLength' in array length.";
+            "optional_references_in_array_length.zs:10:20: Field 'array3' is optional and contains "
+            "reference to another optional field 'arrayLength' in array length which might not be present.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning2));
 }
 
@@ -35,8 +35,9 @@ TEST_F(OptionalMembersWarningTest, optionalReferencesInBitfieldLength)
     ASSERT_TRUE(zserioWarnings.isPresent(warning1));
 
     const std::string warning2 =
-            "optional_references_in_bitfield_length.zs:10:27: Field 'bitfield3' is not optional "
-            "and contains reference to optional field 'numBits' in dynamic bitfield length.";
+            "optional_references_in_bitfield_length.zs:10:27: Field 'bitfield3' is optional and contains "
+            "reference to another optional field 'numBits' in dynamic bitfield length which might not be "
+            "present.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning2));
 }
 
@@ -48,8 +49,8 @@ TEST_F(OptionalMembersWarningTest, optionalReferencesInConstraint)
     ASSERT_TRUE(zserioWarnings.isPresent(warning1));
 
     const std::string warning2 =
-            "optional_references_in_constraint.zs:10:20: Field 'value4' is not optional "
-            "and contains reference to optional field 'value1' in constraint.";
+            "optional_references_in_constraint.zs:10:20: Field 'value4' is optional and contains "
+            "reference to another optional field 'value1' in constraint which might not be present.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning2));
 
     const std::string warning3 =
@@ -74,6 +75,11 @@ TEST_F(OptionalMembersWarningTest, optionalReferencesInOffset)
             "optional_references_in_offset.zs:30:11: Field 'value4' is not optional "
             "and contains reference to optional field 'offset' in offset.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning3));
+
+    const std::string warning4 =
+            "optional_references_in_offset.zs:38:21: Field 'value6' is optional and contains reference to "
+            "another optional field 'anotherOptionalOffset' in offset which might not be present.";
+    ASSERT_TRUE(zserioWarnings.isPresent(warning4));
 }
 
 TEST_F(OptionalMembersWarningTest, optionalReferencesInOptionalClause)
@@ -144,12 +150,14 @@ TEST_F(OptionalMembersWarningTest, optionalReferencesInTypeArguments)
     ASSERT_TRUE(zserioWarnings.isPresent(warning9));
 
     const std::string warning10 =
-            "optional_references_in_type_arguments.zs:47:51: Field 'mixedTones' "
-            "has different optional condition than field 'autoNumBlackTones' referenced in type arguments.";
+            "optional_references_in_type_arguments.zs:47:51: Field 'mixedTones' is optional and contains "
+            "reference to another optional field 'autoNumBlackTones' in type arguments which might not "
+            "be present.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning10));
 
     const std::string warning11 =
-            "optional_references_in_type_arguments.zs:48:44: Field 'mixedTonesArray' is not optional "
-            "and contains reference to optional field 'autoNumBlackTones' in type arguments.";
+            "optional_references_in_type_arguments.zs:48:44: Field 'mixedTonesArray' is optional and "
+            "contains reference to another optional field 'autoNumBlackTones' in type arguments which "
+            "might not be present.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning11));
 }

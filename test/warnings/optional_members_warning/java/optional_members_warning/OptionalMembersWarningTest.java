@@ -24,8 +24,9 @@ public class OptionalMembersWarningTest
                 + "and contains reference to optional field 'arrayLength' in array length.";
         assertTrue(zserioWarnings.isPresent(warning));
 
-        warning = "optional_references_in_array_length.zs:10:20: Field 'array3' is not optional "
-                + "and contains reference to optional field 'arrayLength' in array length.";
+        warning = "optional_references_in_array_length.zs:10:20: Field 'array3' is optional and contains "
+                + "reference to another optional field 'arrayLength' in array length which might not be "
+                + "present.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
@@ -36,8 +37,9 @@ public class OptionalMembersWarningTest
                 + "and contains reference to optional field 'numBits' in dynamic bitfield length.";
         assertTrue(zserioWarnings.isPresent(warning));
 
-        warning = "optional_references_in_bitfield_length.zs:10:27: Field 'bitfield3' is not optional "
-                + "and contains reference to optional field 'numBits' in dynamic bitfield length.";
+        warning = "optional_references_in_bitfield_length.zs:10:27: Field 'bitfield3' is optional and contains "
+                + "reference to another optional field 'numBits' in dynamic bitfield length which might not be "
+                + "present.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
@@ -48,8 +50,8 @@ public class OptionalMembersWarningTest
                 + "and contains reference to optional field 'value1' in constraint.";
         assertTrue(zserioWarnings.isPresent(warning));
 
-        warning = "optional_references_in_constraint.zs:10:20: Field 'value4' is not optional "
-                + "and contains reference to optional field 'value1' in constraint.";
+        warning = "optional_references_in_constraint.zs:10:20: Field 'value4' is optional and contains "
+                + "reference to another optional field 'value1' in constraint which might not be present.";
         assertTrue(zserioWarnings.isPresent(warning));
 
         warning = "optional_references_in_constraint.zs:15:11: Field 'anotherValue' has different optional "
@@ -70,6 +72,10 @@ public class OptionalMembersWarningTest
 
         warning = "optional_references_in_offset.zs:30:11: Field 'value4' is not optional "
                 + "and contains reference to optional field 'offset' in offset.";
+        assertTrue(zserioWarnings.isPresent(warning));
+
+        warning = "optional_references_in_offset.zs:38:21: Field 'value6' is optional and contains reference "
+                + "to another optional field 'anotherOptionalOffset' in offset which might not be present.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
@@ -131,13 +137,14 @@ public class OptionalMembersWarningTest
                 + "has different optional condition than field 'numWhiteTones' referenced in type arguments.";
         assertTrue(zserioWarnings.isPresent(warning));
 
-        warning = "optional_references_in_type_arguments.zs:47:51: Field 'mixedTones' "
-                +
-                "has different optional condition than field 'autoNumBlackTones' referenced in type arguments.";
+        warning = "optional_references_in_type_arguments.zs:47:51: Field 'mixedTones' is optional and contains "
+                + "reference to another optional field 'autoNumBlackTones' in type arguments which might not "
+                + "be present.";
         assertTrue(zserioWarnings.isPresent(warning));
 
-        warning = "optional_references_in_type_arguments.zs:48:44: Field 'mixedTonesArray' is not optional "
-                + "and contains reference to optional field 'autoNumBlackTones' in type arguments.";
+        warning = "optional_references_in_type_arguments.zs:48:44: Field 'mixedTonesArray' is optional and "
+                + "contains reference to another optional field 'autoNumBlackTones' in type arguments which "
+                + "might not be present.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 

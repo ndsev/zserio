@@ -11,7 +11,7 @@ zserio_generate_cpp(
 target_link_libraries(optional_members_warning_zs PUBLIC ZserioCppRuntime)
 if (ZSERIO_LOG)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
-    check_zserio_warnings("${ZSERIO_LOG}" 24)
+    check_zserio_warnings("${ZSERIO_LOG}" 25)
 endif ()
 
 add_custom_test(optional_members_warning
