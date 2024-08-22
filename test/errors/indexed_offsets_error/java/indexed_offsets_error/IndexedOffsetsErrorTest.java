@@ -121,6 +121,26 @@ public class IndexedOffsetsErrorTest
     }
 
     @Test
+    public void duplicatedIndexedOffsetField()
+    {
+        final String[] errors = {
+                "duplicated_indexed_offset_field_error.zs:12:1:     First used here!",
+                "duplicated_indexed_offset_field_error.zs:16:1: Duplicated offset expression!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void duplicatedIndexedOffsetViaParameter()
+    {
+        final String[] errors = {
+                "duplicated_indexed_offset_via_parameter_error.zs:11:1:     First used here!",
+                "duplicated_indexed_offset_via_parameter_error.zs:15:1: Duplicated offset expression!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void enumValueExpression()
     {
         final String error =

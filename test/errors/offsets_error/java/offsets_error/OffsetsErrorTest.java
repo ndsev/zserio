@@ -81,6 +81,26 @@ public class OffsetsErrorTest
     }
 
     @Test
+    public void duplicatedOffsetField()
+    {
+        final String[] errors = {
+                "duplicated_offset_field_error.zs:12:1:     First used here!",
+                "duplicated_offset_field_error.zs:16:1: Duplicated offset expression!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void duplicatedOffsetViaParameter()
+    {
+        final String[] errors = {
+                "duplicated_offset_via_parameter_error.zs:11:1:     First used here!",
+                "duplicated_offset_via_parameter_error.zs:15:1: Duplicated offset expression!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void equalityOperator()
     {
         final String error = "equality_operator_error.zs:6:8: "

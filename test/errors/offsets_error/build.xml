@@ -19,6 +19,9 @@
         <testGen testName="offsets_error" zsFile="bitwise_xor_operator_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="builtin_type_parameter_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="duplicated_offset_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="duplicated_offset_via_parameter_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="equality_operator_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="float_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="function_error.zs" ignoreErrors="true"/>

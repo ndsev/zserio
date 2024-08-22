@@ -69,6 +69,8 @@ public final class StructureType extends CompoundType
         checkExtendedFields();
 
         checkImplicitArrays();
+
+        checkDuplicatedOffsets();
     }
 
     @Override
@@ -154,6 +156,30 @@ public final class StructureType extends CompoundType
                     trackImplicitArray(stackedException);
                     throw stackedException;
                 }
+            }
+        }
+    }
+
+    private void checkDuplicatedOffsets()
+    {
+        final List<Expression> offsetExpressions = new ArrayList<Expression>();
+        for (Field field : getFields())
+        {
+            if (field.getOffsetExpr() != null)
+            {
+                final Expression fieldOffsetExpression = field.getOffsetExpr();
+                for (Expression offsetExpression : offsetExpressions)
+                {
+                    if (ExpressionComparator.equals(offsetExpression, fieldOffsetExpression))
+                    {
+                        final ParserStackedException exception = new ParserStackedException(
+                                fieldOffsetExpression.getLocation(), "Duplicated offset expression!");
+                        exception.pushMessage(offsetExpression.getLocation(), "    First used here!");
+                        throw exception;
+                    }
+                }
+
+                offsetExpressions.add(field.getOffsetExpr());
             }
         }
     }

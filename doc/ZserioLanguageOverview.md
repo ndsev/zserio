@@ -814,6 +814,8 @@ and the size will be 65 bits.
 
 > Fields which are used as offsets cannot be used in [expressions](#expressions).
 
+> Each field can be used only once as an offset.
+
 ### Indexed Offsets
 
 When all elements in an array should have offsets, a special notation can be used:
@@ -850,6 +852,8 @@ offsets[@index]: // implies align(8) before each data[i]
 ```
 
 > Fields which are used as indexed offsets cannot be used in [expressions](#expressions).
+
+> Each field can be used only once as an indexed offset.
 
 [top](#language-guide)
 

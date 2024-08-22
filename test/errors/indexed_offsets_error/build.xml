@@ -30,6 +30,10 @@
             ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="dot_expression_in_array_expression_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="indexed_offsets_error" zsFile="duplicated_indexed_offset_field_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="indexed_offsets_error" zsFile="duplicated_indexed_offset_via_parameter_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="enum_value_expression_error.zs" ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="equality_operator_in_array_expression_error.zs"
             ignoreErrors="true"/>
