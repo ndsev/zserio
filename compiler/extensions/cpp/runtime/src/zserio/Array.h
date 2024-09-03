@@ -91,7 +91,19 @@ void checkOffset(const OWNER_TYPE&, size_t, size_t)
 
 // call the initContext method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
-        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                        !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
+void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
+        const typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    PACKED_ARRAY_TRAITS::initContext(owner, context, element);
+}
+
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                        std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
 void packedArrayTraitsInitContext(
         const OWNER_TYPE& owner, PACKING_CONTEXT& context, typename PACKED_ARRAY_TRAITS::ElementType element)
 {
@@ -99,7 +111,19 @@ void packedArrayTraitsInitContext(
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
-        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                        !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
+void packedArrayTraitsInitContext(
+        const OWNER_TYPE&, PACKING_CONTEXT& context, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    PACKED_ARRAY_TRAITS::initContext(context, element);
+}
+
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                        std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
 void packedArrayTraitsInitContext(
         const OWNER_TYPE&, PACKING_CONTEXT& context, typename PACKED_ARRAY_TRAITS::ElementType element)
 {
