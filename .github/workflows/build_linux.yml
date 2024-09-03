@@ -33,22 +33,22 @@ jobs:
     steps:
     # update when https://github.com/actions/download-artifact/issues/315 is fixed
     - name: "Download Zserio compiler artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: zserio-bin-java8
         path: zserio-bin-java8
     - name: "Download Java runtime release artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: zserio-runtime-java8
         path: zserio-runtime-java8
     - name: "Download C++ runtime release artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: zserio-runtime-cpp
         path: zserio-runtime-cpp
     - name: "Download Python runtime release artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: zserio-runtime-python
         path: zserio-runtime-python
