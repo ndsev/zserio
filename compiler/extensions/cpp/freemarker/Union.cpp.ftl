@@ -62,6 +62,7 @@ ${name}::${name}(const ${name}& other)<#rt>
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
@@ -93,6 +94,7 @@ ${name}::${name}(${name}&& other)<#rt>
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
@@ -131,6 +133,7 @@ ${name}::${name}(::zserio::NoInitT, const ${name}& other)<#rt>
     </#if>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
@@ -170,6 +173,7 @@ ${name}::${name}(::zserio::NoInitT, ${name}&& other)<#rt>
     </#if>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
@@ -207,6 +211,7 @@ ${name}::${name}(::zserio::PropagateAllocatorT,
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
         m_choiceTag(other.m_choiceTag)
 <#list fieldList as field>
@@ -228,6 +233,7 @@ ${name}::${name}(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
 <@cpp_initializer_list>
     <#if withBitPositionCode>
         m_bitPosition(other.m_bitPosition)
+        m_realBitSize(other.m_realBitSize)
     </#if>
         m_choiceTag(other.m_choiceTag)
     <#list fieldList as field>
@@ -382,6 +388,16 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         {
     <#if withBitPositionCode>
             return m_object.bitPosition();
+    <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Bit position code is disabled by '-withoutBitPositionCode' zserio option!";
+    </#if>
+        }
+
+        size_t realBitSizeOf() const override
+        {
+    <#if withBitPositionCode>
+            return m_object.realBitSizeOf();
     <#else>
             throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
                     "Bit position code is disabled by '-withoutBitPositionCode' zserio option!";
@@ -721,6 +737,11 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
 size_t ${name}::bitPosition() const
 {
     return m_bitPosition;
+}
+
+size_t ${name}::realBitSizeOf() const
+{
+    return m_realBitSize;
 }
 </#if>
 <#if fieldList?has_content>
