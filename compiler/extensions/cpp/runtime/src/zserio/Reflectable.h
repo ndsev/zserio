@@ -115,7 +115,6 @@ public:
     string<ALLOC> toString() const override;
 
     size_t bitPosition() const override;
-    size_t realBitSizeOf() const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -3405,11 +3404,6 @@ public:
         return m_reflectable->bitPosition();
     }
 
-    size_t realBitSizeOf() const override
-    {
-        return m_reflectable->realBitSizeOf();
-    }
-
 private:
     T m_object;
     IBasicReflectablePtr<ALLOC> m_reflectable;
@@ -4385,13 +4379,6 @@ template <typename ALLOC>
 size_t ReflectableBase<ALLOC>::bitPosition() const
 {
     throw CppRuntimeException("Bit position is not available for type '")
-            << getTypeInfo().getSchemaName() << "'!";
-}
-
-template <typename ALLOC>
-size_t ReflectableBase<ALLOC>::realBitSizeOf() const
-{
-    throw CppRuntimeException("Real bit size is not available for type '")
             << getTypeInfo().getSchemaName() << "'!";
 }
 
