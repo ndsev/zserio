@@ -102,7 +102,7 @@ function(create_coverage_target)
                     `${LLVM_COV_BIN} report ${cov_test_exectable} \
                     -instr-profile=${cov_binary_dir}/runtime.profdata ${cov_exclude} | grep TOTAL | \
                     tr -s ' ' | cut -d' ' -f 10 | cut -d% -f 1` ${cov_INCOMPLETE_COVERAGE_FAIL}\" | \
-                    awk '{if ($1 >= $2) print 1;}') \
+                    LC_NUMERIC=C awk '{if ($1 >= $2) print 1;}') \
                     ))"
             WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
             VERBATIM
