@@ -42,6 +42,7 @@ varuint16       | `short`                       | `uint16_t`             | `int`
 varuint32       | `int`                         | `uint32_t`             | `int`              |
 varuint64       | `long`                        | `uint64_t`             | `int`              |
 varuint         | `java.math.BigInteger`        | `uint64_t`             | `int`              |
+varsize         | `int`                         | `uint32_t`             | `int`              |
 bool            | `boolean`                     | `bool`                 | `bool`             |
 string          | `String`                      | `std::string`          | `string`           |
 extern          | `zserio.runtime.io.BitBuffer` | `zserio::BitBuffer`    | `zserio.BitBuffer` |
