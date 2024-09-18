@@ -37,10 +37,10 @@ java -jar zserio.jar
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
-    [-withBitPositionCode|-withoutBitPositionCode]
     [-withCodeComments|-withoutCodeComments]
     [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
     [-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck]
+    [-withParsingInfoCode|-withoutParsingInfoCode]
     [-withPubsubCode|-withoutPubsubCode]
     [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withReflectionCode|-withoutReflectionCode]
@@ -130,18 +130,6 @@ directories as in the Java `CLASSPATH` is not supported.
 
 Shows the version of the Zserio tool.
 
-**`-withBitPositionCode|-withoutBitPositionCode`**
-
-Enables/disables reader bit position code. The reader bit position code returns the bit position in the parsed
-blob. By default is disabled.
-
-> [!WARNING]
-> Note that the returned bit position is valid only directly after read! If the Zserio object has been changed
-> after reading, the result is unspecified!
-
-> [!CAUTION]
-> Note that this feature is experimental and it is not part of API. It can be removed without any warning!
-
 **`-withCodeComments|-withoutCodeComments`**
 
 Enables/disables comments in generated code. By default is disabled.
@@ -155,6 +143,18 @@ extensions. By default is enabled to simplify to write portable schemas.
 
 Enables/disables the checking of rule id uniqueness in zserio language between all packages (globally).
 If it is disabled, the rule id uniqueness is checked only within a package. By default is disabled.
+
+**`-withParsingInfoCode|-withoutParsingInfoCode`**
+
+Enables/disables parsing information code. The parsing information returns the bit position in the parsed
+blob and the bit size of the Zserio object. By default is disabled.
+
+> [!WARNING]
+> Note that the returned parsing information is valid only directly after read! If the Zserio object has been
+> changed after reading, the result is undefined!
+
+> [!CAUTION]
+> Note that this feature is experimental and it is not part of API. It can be removed without any warning!
 
 **`-withPubsubCode|-withoutPubsubCode`**
 

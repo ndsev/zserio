@@ -34,8 +34,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
         m_areChildrenInitialized(false)
     </#if>
-    <#if withBitPositionCode>
-        m_bitPosition(0)
+    <#if withParsingInfoCode>
+        m_parsingInfo()
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (numExtendedFields > 0)>
@@ -85,7 +85,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if packed>
         ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
     </#if>
-        ::zserio::BitStreamReader&<#if withBitPositionCode || compoundConstructorsData.fieldList?has_content> in</#if><#t>
+        ::zserio::BitStreamReader&<#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content> in</#if><#t>
     <#if constructorArgumentTypeList?has_content>
         <#lt>,
         ${constructorArgumentTypeList}<#t>
@@ -100,8 +100,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
         m_areChildrenInitialized(true)
     </#if>
-    <#if withBitPositionCode>
-        m_bitPosition(in.getBitPosition())
+    <#if withParsingInfoCode>
+        m_parsingInfo(in.getBitPosition())
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -111,6 +111,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     </#if>
 </@cpp_initializer_list>
 {
+    <#if withParsingInfoCode>
+    m_parsingInfo.initializeBitSize(in.getBitPosition());
+    </#if>
 }
 </#macro>
 
@@ -166,8 +169,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const ${compoundConstructorsData.compoundName}& other)<#rt>
 <@cpp_initializer_list>
-    <#if withBitPositionCode>
-        m_bitPosition(other.m_bitPosition)
+    <#if withParsingInfoCode>
+        m_parsingInfo(other.m_parsingInfo)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -186,11 +189,11 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_copy_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
-        const ${compoundConstructorsData.compoundName}&<#if withBitPositionCode || compoundConstructorsData.fieldList?has_content> other</#if>)<#rt>
+        const ${compoundConstructorsData.compoundName}&<#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content> other</#if>)<#rt>
 <@cpp_initializer_list>
         m_isInitialized(false)
-    <#if withBitPositionCode>
-        m_bitPosition(other.m_bitPosition)
+    <#if withParsingInfoCode>
+        m_parsingInfo(other.m_parsingInfo)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -235,8 +238,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
     <#lt>const ${compoundConstructorsData.compoundName}& other)
 {
-    <#if withBitPositionCode>
-        m_bitPosition = other.m_bitPosition;
+    <#if withParsingInfoCode>
+    m_parsingInfo = other.m_parsingInfo;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -255,11 +258,11 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_assignment_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
-        const ${compoundConstructorsData.compoundName}&<#if withBitPositionCode || compoundConstructorsData.fieldList?has_content> other</#if>)
+        const ${compoundConstructorsData.compoundName}&<#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content> other</#if>)
 {
     m_isInitialized = false;
-    <#if withBitPositionCode>
-        m_bitPosition = other.m_bitPosition;
+    <#if withParsingInfoCode>
+    m_parsingInfo = other.m_parsingInfo;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -304,8 +307,8 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>${compoundConstructorsData.compoundName}&& other)<#rt>
 <@cpp_initializer_list>
-    <#if withBitPositionCode>
-        m_bitPosition(other.m_bitPosition)
+    <#if withParsingInfoCode>
+        m_parsingInfo(other.m_parsingInfo)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -324,11 +327,11 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_move_constructor_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
-        ${compoundConstructorsData.compoundName}&&<#if withBitPositionCode || compoundConstructorsData.fieldList?has_content> other</#if>)<#rt>
+        ${compoundConstructorsData.compoundName}&&<#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content> other</#if>)<#rt>
 <@cpp_initializer_list>
         m_isInitialized(false)
-    <#if withBitPositionCode>
-        m_bitPosition(other.m_bitPosition)
+    <#if withParsingInfoCode>
+        m_parsingInfo(other.m_parsingInfo)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -374,8 +377,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
         <#lt>${compoundConstructorsData.compoundName}&& other)
 {
-    <#if withBitPositionCode>
-    m_bitPosition = other.m_bitPosition;
+    <#if withParsingInfoCode>
+    m_parsingInfo = other.m_parsingInfo;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -394,11 +397,11 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_move_assignment_no_init_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
-        ${compoundConstructorsData.compoundName}&&<#if withBitPositionCode || compoundConstructorsData.fieldList?has_content> other</#if>)
+        ${compoundConstructorsData.compoundName}&&<#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content> other</#if>)
 {
     m_isInitialized = false;
-    <#if withBitPositionCode>
-    m_bitPosition = other.m_bitPosition;
+    <#if withParsingInfoCode>
+    m_parsingInfo = other.m_parsingInfo;
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -445,11 +448,11 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT,
         const ${compoundConstructorsData.compoundName}&<#rt>
-        <#lt><#if withBitPositionCode || compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>, <#rt>
+        <#lt><#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>, <#rt>
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
-    <#if withBitPositionCode>
-        m_bitPosition(other.m_bitPosition)
+    <#if withParsingInfoCode>
+        m_parsingInfo(other.m_parsingInfo)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)
@@ -472,12 +475,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT, ::zserio::NoInitT,
         const ${compoundConstructorsData.compoundName}&<#rt>
-        <#lt><#if withBitPositionCode || compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>, <#rt>
+        <#lt><#if withParsingInfoCode || compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>, <#rt>
         <#lt>const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
 <@cpp_initializer_list>
         m_isInitialized(false)
-    <#if withBitPositionCode>
-        m_bitPosition(other.m_bitPosition)
+    <#if withParsingInfoCode>
+        m_parsingInfo(other.m_parsingInfo)
     </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields)

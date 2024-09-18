@@ -114,7 +114,7 @@ public:
     string<ALLOC> toString(const ALLOC& allocator) const override;
     string<ALLOC> toString() const override;
 
-    size_t bitPosition() const override;
+    const ParsingInfo& parsingInfo() const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -3399,9 +3399,9 @@ public:
         return toString(ALLOC());
     }
 
-    size_t bitPosition() const override
+    const ParsingInfo& parsingInfo() const override
     {
-        return m_reflectable->bitPosition();
+        return m_reflectable->parsingInfo();
     }
 
 private:
@@ -4376,9 +4376,9 @@ string<ALLOC> ReflectableBase<ALLOC>::toString() const
 }
 
 template <typename ALLOC>
-size_t ReflectableBase<ALLOC>::bitPosition() const
+const ParsingInfo& ReflectableBase<ALLOC>::parsingInfo() const
 {
-    throw CppRuntimeException("Bit position is not available for type '")
+    throw CppRuntimeException("Parsing information is not available for type '")
             << getTypeInfo().getSchemaName() << "'!";
 }
 

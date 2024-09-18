@@ -84,6 +84,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/NoInit.h
     zserio/OptionalHolder.h
     zserio/DeltaContext.h
+    zserio/ParsingInfo.h
     zserio/PubsubException.h
     zserio/Reflectable.h
     zserio/SerializeUtil.h

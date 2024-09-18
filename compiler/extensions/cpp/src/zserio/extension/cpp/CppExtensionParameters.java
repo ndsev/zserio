@@ -30,7 +30,7 @@ public final class CppExtensionParameters
         withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
         withSourcesAmalgamation = !parameters.argumentExists(OptionWithoutSourcesAmalgamation);
         withCodeComments = parameters.getWithCodeComments();
-        withBitPositionCode = parameters.argumentExists(OptionWithBitPositionCode);
+        withParsingInfoCode = parameters.argumentExists(OptionWithParsingInfoCode);
 
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator == null || cppAllocator.equals(StdAllocator))
@@ -59,8 +59,8 @@ public final class CppExtensionParameters
             description.add("sourcesAmalgamation");
         if (withCodeComments)
             description.add("codeComments");
-        if (withBitPositionCode)
-            description.add("bitPosition");
+        if (withParsingInfoCode)
+            description.add("parsingInfoCode");
         addAllocatorDescription(description);
         parametersDescription = description.toString();
 
@@ -122,9 +122,9 @@ public final class CppExtensionParameters
         return withCodeComments;
     }
 
-    public boolean getWithBitPositionCode()
+    public boolean getWithParsingInfoCode()
     {
-        return withBitPositionCode;
+        return withParsingInfoCode;
     }
 
     public TypesContext.AllocatorDefinition getAllocatorDefinition()
@@ -174,10 +174,10 @@ public final class CppExtensionParameters
         options.addOptionGroup(sourcesAmalgamationGroup);
 
         final OptionGroup bitPositionGroup = new OptionGroup();
-        bitPositionGroup.addOption(new Option(OptionWithBitPositionCode, false,
-                "enable reader bit position code (experimental, not part of API)"));
+        bitPositionGroup.addOption(new Option(
+                OptionWithParsingInfoCode, false, "enable parsing info code (experimental, not part of API)"));
         bitPositionGroup.addOption(
-                new Option(OptionWithoutBitPositionCode, false, "disable reader bit position code (default)"));
+                new Option(OptionWithoutParsingInfoCode, false, "disable parsing info code (default)"));
         bitPositionGroup.setRequired(false);
         options.addOptionGroup(bitPositionGroup);
     }
@@ -231,8 +231,8 @@ public final class CppExtensionParameters
     private static final String OptionWithReflectionCode = "withReflectionCode";
     private static final String OptionWithSourcesAmalgamation = "withSourcesAmalgamation";
     private static final String OptionWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
-    private static final String OptionWithBitPositionCode = "withBitPositionCode";
-    private static final String OptionWithoutBitPositionCode = "withoutBitPositionCode";
+    private static final String OptionWithParsingInfoCode = "withParsingInfoCode";
+    private static final String OptionWithoutParsingInfoCode = "withoutParsingInfoCode";
 
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
@@ -248,7 +248,7 @@ public final class CppExtensionParameters
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;
     private final boolean withCodeComments;
-    private final boolean withBitPositionCode;
+    private final boolean withParsingInfoCode;
     private final TypesContext.AllocatorDefinition allocatorDefinition;
     private final String parametersDescription;
     private final String zserioVersion;

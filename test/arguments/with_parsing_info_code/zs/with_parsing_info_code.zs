@@ -1,4 +1,4 @@
-package with_bit_position_code;
+package with_parsing_info_code;
 
 struct Item(bool needsExtra)
 {
@@ -33,4 +33,5 @@ struct Main
     ValueUnion valueUnion;
     SimpleStruct simpleStruct;
     Item(false) item;
+    packed Item(true) items[];
 };

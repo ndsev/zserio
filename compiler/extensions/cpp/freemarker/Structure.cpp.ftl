@@ -234,13 +234,13 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         }
     </#if>
 
-        size_t bitPosition() const override
+        const ::zserio::ParsingInfo& parsingInfo() const override
         {
-    <#if withBitPositionCode>
-            return m_object.bitPosition();
+    <#if withParsingInfoCode>
+            return m_object.parsingInfo();
     <#else>
             throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
-                    "Bit position code is disabled by '-withoutBitPositionCode' zserio option!";
+                    "Parsing information code is disabled by '-withoutParsingInfoCode' zserio option!";
     </#if>
         }
 
@@ -568,11 +568,11 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 }
     </#if>
 </#if>
-<#if withBitPositionCode>
+<#if withParsingInfoCode>
 
-size_t ${name}::bitPosition() const
+const ::zserio::ParsingInfo& ${name}::parsingInfo() const
 {
-    return m_bitPosition;
+    return m_parsingInfo;
 }
 </#if>
 <#if fieldList?has_content>

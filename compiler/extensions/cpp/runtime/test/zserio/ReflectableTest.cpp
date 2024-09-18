@@ -1901,7 +1901,7 @@ TEST_F(ReflectableTest, defaultUnimplementedMethods)
     const Reflectable& constReflectableRef = reflectable;
     ASSERT_THROW(constReflectableRef.getAnyValue(), CppRuntimeException);
 
-    ASSERT_THROW(reflectable.bitPosition(), CppRuntimeException);
+    ASSERT_THROW(reflectable.parsingInfo(), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, reflectableOwner)
@@ -1980,8 +1980,9 @@ TEST_F(ReflectableTest, reflectableOwner)
     reflectable->write(writer);
     ASSERT_EQ(bitSizeOfValue, writer.getBitPosition());
 
-    const size_t bitPosition = reflectable->bitPosition();
-    ASSERT_EQ(0, bitPosition);
+    const ParsingInfo& parsingInfo = reflectable->parsingInfo();
+    ASSERT_THROW(parsingInfo.getBitPosition(), CppRuntimeException);
+    ASSERT_THROW(parsingInfo.getBitSize(), CppRuntimeException);
 }
 
 } // namespace zserio

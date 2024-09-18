@@ -6,6 +6,7 @@
 #include "zserio/AnyHolder.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/BitStreamWriter.h"
+#include "zserio/ParsingInfo.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/Span.h"
 #include "zserio/String.h"
@@ -510,18 +511,18 @@ public:
     /** \} */
 
     /**
-     * Returns the bit position in the parsed blob after reading of the reflectable object.
+     * Returns the parsing information after reading of the reflectable object.
      *
      * This feature is experimental and can be removed without any warning!
      *
-     * \note Note that the returned bit position is valid only directly after read! If the Zserio object
-     *       has been changed after reading, the result is unspecified!
-     * \note The bit position is only stored for code generated using `-withBitPositionCode` option.
+     * \note Note that the returned parsing information is valid only directly after read! If the Zserio object
+     *       has been changed after reading, the result is undefined!
+     * \note The parsing information is available only for code generated using `-withParsingInfo` option.
      *
-     * \return The blob offset of the objects in bits.
-     * \throw CppRuntimeException If the object was compiled without the bit position feature enabled.
+     * \return The parsing information of the reflectable object.
+     * \throw CppRuntimeException If the object was compiled without the parsing info feature enabled.
      */
-    virtual size_t bitPosition() const = 0;
+    virtual const ParsingInfo& parsingInfo() const = 0;
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */

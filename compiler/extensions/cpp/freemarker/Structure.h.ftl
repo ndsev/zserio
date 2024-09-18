@@ -22,6 +22,9 @@
 <#if isPackable && usedInPackedArray>
 #include <zserio/DeltaContext.h>
 </#if>
+<#if withParsingInfoCode>
+#include <zserio/ParsingInfo.h>
+</#if>
 <#if withTypeInfoCode>
 <@type_includes types.typeInfo/>
     <#if withReflectionCode>
@@ -379,21 +382,21 @@ public:
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
     </#if>
 </#if>
-<#if withBitPositionCode>
+<#if withParsingInfoCode>
 
     <#if withCodeComments>
     /**
-     * Get the bit position in the parsed blob after reading.
+     * Returns the parsing information after reading.
      *
      * This feature is experimental and can be removed without any warning!
      *
-     * \note Note that the returned bit position is valid only directly after read! If the Zserio object
-     *       has been changed after reading, the result is unspecified!
+     * \note Note that the returned parsing information is valid only directly after read! If the Zserio object
+     *       has been changed after reading, the result is undefined!
      *
-     * \return Reader bit position in the parsed blob counted from zero.
+     * \return The parsing information of the object.
      */
     </#if>
-    size_t bitPosition() const;
+    const ::zserio::ParsingInfo& parsingInfo() const;
 </#if>
 
 private:
@@ -419,9 +422,9 @@ private:
 </#list>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
-<#if withBitPositionCode>
-    <#-- Bit position must be before field members in order to get initialized first. -->
-    size_t m_bitPosition;
+<#if withParsingInfoCode>
+    <#-- Parsing information must be before field members in order to get initialized first. -->
+    ::zserio::ParsingInfo m_parsingInfo;
 </#if>
 <#if (numExtendedFields > 0)>
     uint32_t m_numExtendedFields;

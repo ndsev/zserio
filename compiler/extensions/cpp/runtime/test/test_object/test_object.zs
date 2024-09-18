@@ -2,9 +2,9 @@
  * Compiled twice from the 'test' directory using the following command line options:
  *
  * 1. -src test_object test_object.zs -cpp . -withTypeInfoCode -withReflectionCode -withoutSourcesAmalgamation
- *    -withBitPositionCode -setCppAllocator std -setTopLevelPackage test_object.std_allocator
+ *    -withParsingInfoCode -setCppAllocator std -setTopLevelPackage test_object.std_allocator
  * 2. -src test_object test_object.zs -cpp . -withTypeInfoCode -withReflectionCode -withoutSourcesAmalgamation
- *    -withBitPositionCode -setCppAllocator polymorphic -setTopLevelPackage test_object.polymorphic_allocator
+ *    -withParsingInfoCode -setCppAllocator polymorphic -setTopLevelPackage test_object.polymorphic_allocator
  */
 
 enum int8 CreatorEnum

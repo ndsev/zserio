@@ -135,7 +135,7 @@ jobs:
 
     - name: Run Zserio tests with extra arguments
       run: |
-        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withBitPositionCode"
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
         scripts/test.sh -p -i arguments/without_writer_code cpp-${PACKAGE}
 
         export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
