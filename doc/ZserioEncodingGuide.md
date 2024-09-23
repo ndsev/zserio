@@ -751,7 +751,7 @@ Offset   00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
 00000010 2c a0
 ```
 
-Bit position | Value | Value (hex, `bin`) | Description
+Bit position | Value | Value (hex, bin)   | Description
 ------------ | ----- | ------------------ | -----------
 0            | 1     | `1`                | `PackingDescriptor.isPacked` for `value` - packed, max delta is `10`
 1-6          | 4     | 4                  | `PackingDescriptor.maxBitNumber` for `value` - maximum delta `10` defines maximum bit number as `4`
