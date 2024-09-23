@@ -314,8 +314,10 @@ In the example above, `EXECUTABLE` is auto-assigned to 1, `READABLE` is manually
 `WRITABLE` is assigned by finding the first unused bit to value 4.
 
 A bitmask type provides its own lexical scope. The value names must be unique within each bitmask type.
+
 In expressions outside of the defining type, bitmask values must always be prefixed by the type name and a dot,
-e.g. `Permission.WRITABLE`.
+e.g. `Permission.WRITABLE`. The [isset](#isset-operator) operator is the exception to this rule where
+its type name with a dot can be omitted.
 
 Bitmasks support all basic bit operations:
 * `&` bitwise and,
@@ -984,7 +986,7 @@ The postfix operators include `[]` (array index), `()` (instantiation with argum
 
 #### isset Operator
 
-Operator `isset` accepts bitmask and bitmask value. It return true if bitmask contains given bitmask
+Operator `isset` accepts bitmask and bitmask value. It returns true if bitmask contains given bitmask
 value, i.e. if bitwise and (`&`) of bitmask and bitmask value is equal to bitmask value.
 
 **Example**
@@ -1041,6 +1043,12 @@ struct IsSetOperator
     }
 };
 ```
+
+> Note that the bitmask type used in the `isset` operator can be deduced, so it's allowed to discard
+the type name and a dot, e.g. `isset(testBitmask, INT)` instead of
+`isset(testBitmask, TestBitmask.INT)`.
+
+> Since `2.8.0`
 
 ### Ternary Operators
 
