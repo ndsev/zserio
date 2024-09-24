@@ -1,12 +1,14 @@
 # Documentation Generator for Zserio
 
-Zserio extension which generates HTML documentation from the Zserio schema.
+Zserio extension generates HTML documentation from the Zserio schema.
 
 The documentation contains all entities defined in the schema together with well formatted comments,
 provides easy navigation via cross references and implements a simple quick search. Single HTML page per each
 package is generated.
 
 It can also generate collaboration diagrams as SVG images.
+
+The main entry point of the generated HTML documentation is `index.html`.
 
 ## Documentation comments
 

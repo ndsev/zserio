@@ -1,7 +1,7 @@
 # C++ Generator for Zserio
 
-Zserio extension which generates C++ [serialization API](serialization-api) from the Zserio schema
-together with [additional API](#additional-api).
+Zserio extension generates C++ [serialization API](#serialization-api) from the Zserio schema together
+with [additional API](#additional-api).
 
 The generated code must be always linked with [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp)
 which provides functionality common for all generated code.
@@ -200,7 +200,7 @@ choices and unions:
 - Export to the JSON string
   (method [`zserio::toJsonString()`](https://zserio.org/doc/runtime/latest/cpp/DebugStringUtil_8h.html)).
 - Import from the JSON string
-  (method [`zserio::toJsonString()`](https://zserio.org/doc/runtime/latest/cpp/DebugStringUtil_8h.html)).
+  (method [`zserio::fromJsonString()`](https://zserio.org/doc/runtime/latest/cpp/DebugStringUtil_8h.html)).
 
 > Note that this feature is available only if type information and reflections are enabled!
 
