@@ -32,5 +32,6 @@ GENERATE_LATEX         = NO
 
 CLASS_DIAGRAMS         = YES
 HAVE_DOT               = YES
+DOT_NUM_THREADS        = 1
 INCLUDED_BY_GRAPH      = NO
 INCLUDE_GRAPH          = NO
