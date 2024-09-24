@@ -30,7 +30,7 @@ GENERATE_TREEVIEW      = YES
 
 GENERATE_LATEX         = NO
 
-CLASS_DIAGRAMS         = YES
+CLASS_GRAPH            = YES
 HAVE_DOT               = YES
 DOT_NUM_THREADS        = 1
 INCLUDED_BY_GRAPH      = NO
