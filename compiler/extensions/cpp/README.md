@@ -42,6 +42,8 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 [Compatibility Check](#compatibility-check)
 
+[Optimizations](#optimizations)
+
 ## Supported C++ Standards
 
 Zserio C++ generator supports the C++11 standard which was published as ISO/IEC 14882:2011.
@@ -409,6 +411,7 @@ a `zserio::CppRuntimeException` during parsing of binary data:
 | Generated Sources | Bitmask constructor | "Value for bitmask [NAME] out of bounds: [VALUE]!" | Throws if value stored in stream is bigger than bitmask upper bound. This could happen only in case of data inconsistency when bitmask value stored in the stream is wrong. |
 | Generated Sources | `valueToEnum` | "Unknown value for enumeration [NAME]: [VALUE]!" | Throws in case of unknown enumeration value. This could happen only in case of data inconsistency when enumeration value stored in the stream is wrong. |
 
+
 ## Compatibility Check
 
 C++ generator honors the `zserio_compatibility_version` specified in the schema. However note that only
@@ -418,3 +421,16 @@ compatibility version and fires an error when it detects any problem.
 
 > Note: Binary encoding of packed arrays has been changed in version `2.5.0` and thus versions `2.4.x` are
 binary incompatible with later versions.
+
+## Optimizations
+
+The C++ generator provides the following optimizations of the generated code:
+
+- If any Zserio structure, choice or union type is not used in the packed array, no packing interface methods
+  will be generated for them
+  (e.g. `write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out)`).
+
+Such optimizations can be done because Zserio relays on the fact that the entire schema is known during the
+generation. Therefore, splitting schema into two parts and generating them independently cannot guarantee
+correct functionality. This can lead to a problem especially for templates, if a template is defined
+in one part and instantiated in the other.

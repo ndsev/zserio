@@ -33,6 +33,8 @@ For a **quick start** see the [Python Tutorial](https://github.com/ndsev/zserio-
 
 [Compatibility Check](#compatibility-check)
 
+[Optimizations](#optimizations)
+
 ## Supported Python Versions
 
 Zserio Python generator supports the Python 3.8, 3.9, 3.10, 3.11 and 3.12.
@@ -170,3 +172,15 @@ language features used in the schema are still encoded in a binary compatible wa
 compatibility version and fires an error when it detects any problem.
 
 > Note: Binary encoding of packed arrays has been changed in version `2.5.0`.
+
+## Optimizations
+
+The Python generator provides the following optimizations of the generated code:
+
+- If any Zserio structure, choice or union type is not used in the packed array, no packing interface methods
+  will be generated for them (e.g. `write_packed(self, zserio_context, zserio_writer)`).
+
+Such optimizations can be done because Zserio relays on the fact that the entire schema is known during the
+generation. Therefore, splitting schema into two parts and generating them independently cannot guarantee
+correct functionality. This can lead to a problem especially for templates, if a template is defined
+in one part and instantiated in the other.

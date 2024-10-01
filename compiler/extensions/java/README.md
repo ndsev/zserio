@@ -30,6 +30,8 @@ For a **quick start** see the [Java Tutorial](https://github.com/ndsev/zserio-tu
 
 [Compatibility Check](#compatibility-check)
 
+[Optimizations](#optimizations)
+
 ## Supported Java Versions
 
 Zserio Java generator supports the Java SE 8 (LTS), the Java SE 11 (LTS) and the Java SE 17 (LTS).
@@ -133,3 +135,16 @@ compatibility version and fires an error when it detects any problem.
 
 > Note: Binary encoding of packed arrays has been changed in version `2.5.0` and thus versions `2.4.x` are
 binary incompatible with later versions.
+
+## Optimizations
+
+The Java generator provides the following optimizations of the generated code:
+
+- If any Zserio structure, choice or union type is not used in the packed array, no packing interface methods
+  will be generated for them
+  (e.g. `write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)`).
+
+Such optimizations can be done because Zserio relays on the fact that the entire schema is known during the
+generation. Therefore, splitting schema into two parts and generating them independently cannot guarantee
+correct functionality. This can lead to a problem especially for templates, if a template is defined
+in one part and instantiated in the other.
