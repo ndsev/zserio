@@ -23,7 +23,7 @@ public class CppExtensionParametersTest
         final boolean withTypeInfoCode = false;
         final TestExtensionParameters extensionParameters = new TestExtensionParameters(
                 setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
-        assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
+        assertThrows(ZserioExtensionException.class, () -> new CppExtensionParameters(extensionParameters));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class CppExtensionParametersTest
         final boolean withTypeInfoCode = false;
         final TestExtensionParameters extensionParameters = new TestExtensionParameters(
                 setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
-        assertDoesNotThrow(() -> CppExtensionParameters.check(extensionParameters));
+        assertDoesNotThrow(() -> new CppExtensionParameters(extensionParameters));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class CppExtensionParametersTest
         final boolean withTypeInfoCode = false;
         final TestExtensionParameters extensionParameters = new TestExtensionParameters(
                 setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
-        assertDoesNotThrow(() -> CppExtensionParameters.check(extensionParameters));
+        assertDoesNotThrow(() -> new CppExtensionParameters(extensionParameters));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CppExtensionParametersTest
         final boolean withTypeInfoCode = true;
         final TestExtensionParameters extensionParameters = new TestExtensionParameters(
                 setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
-        assertDoesNotThrow(() -> CppExtensionParameters.check(extensionParameters));
+        assertDoesNotThrow(() -> new CppExtensionParameters(extensionParameters));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CppExtensionParametersTest
         final boolean withTypeInfoCode = false;
         final TestExtensionParameters extensionParameters = new TestExtensionParameters(
                 setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
-        assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
+        assertThrows(ZserioExtensionException.class, () -> new CppExtensionParameters(extensionParameters));
     }
 
     private static class TestExtensionParameters implements ExtensionParameters
@@ -94,8 +94,12 @@ public class CppExtensionParametersTest
                 return withWriterCode;
             if (argumentName.equals("withTypeInfoCode"))
                 return withTypeInfoCode;
+            if (argumentName.equals("withoutSourcesAmalgamation"))
+                return false;
+            if (argumentName.equals("withParsingInfoCode"))
+                return false;
 
-            fail("TestExtensionParameters: argumentExists failure!");
+            fail("TestExtensionParameters: argumentExists failure for '" + argumentName + "'!");
 
             return false;
         }
@@ -105,8 +109,10 @@ public class CppExtensionParametersTest
         {
             if (argumentName.equals("setCppAllocator"))
                 return setCppAllocator;
+            if (argumentName.equals("cpp"))
+                return null;
 
-            fail("TestExtensionParameters: getCommandLineArg failure!");
+            fail("TestExtensionParameters: getCommandLineArg failure for '" + argumentName + "'!");
 
             return null;
         }

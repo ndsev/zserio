@@ -54,8 +54,6 @@ public final class CppExtension implements Extension
     @Override
     public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
-        CppExtensionParameters.check(parameters);
-
         final CompatibilityChecker compatibilityChecker = new CompatibilityChecker();
         rootNode.walk(compatibilityChecker);
 

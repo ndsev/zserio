@@ -17,8 +17,10 @@ import zserio.tools.ExtensionParameters;
  */
 public final class CppExtensionParameters
 {
-    public CppExtensionParameters(ExtensionParameters parameters)
+    public CppExtensionParameters(ExtensionParameters parameters) throws ZserioExtensionException
     {
+        check(parameters);
+
         outputDir = parameters.getCommandLineArg(OptionCpp);
         withWriterCode = parameters.getWithWriterCode();
         withPubsubCode = parameters.getWithPubsubCode();
@@ -187,7 +189,7 @@ public final class CppExtensionParameters
         return parameters.argumentExists(OptionCpp);
     }
 
-    static void check(ExtensionParameters parameters) throws ZserioExtensionException
+    private static void check(ExtensionParameters parameters) throws ZserioExtensionException
     {
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator != null && !cppAllocator.equals(StdAllocator) &&
