@@ -1,7 +1,7 @@
-add_library(with_sources_amalgamation_zs STATIC zs/with_sources_amalgamation.zs)
+add_library(with_sources_amalgamation_zs STATIC ${TEST_ZS_ROOT}/with_sources_amalgamation.zs)
 zserio_generate_cpp(
     TARGET with_sources_amalgamation_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
@@ -16,10 +16,10 @@ if (ZSERIO_LOG_WITH_SOURCES_AMALGAMATION)
     check_zserio_warnings("${ZSERIO_LOG_WITH_SOURCES_AMALGAMATION}" 0)
 endif ()
 
-add_library(default_package_amalgamation_zs STATIC zs/default_package_amalgamation.zs)
+add_library(default_package_amalgamation_zs STATIC ${TEST_ZS_ROOT}/default_package_amalgamation.zs)
 zserio_generate_cpp(
     TARGET default_package_amalgamation_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package
     EXTRA_ARGS -withSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_DEFAULT_PACKAGE

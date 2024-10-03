@@ -1,7 +1,7 @@
-add_library(gif_zs STATIC zs/gif.zs)
+add_library(gif_zs STATIC ${TEST_ZS_ROOT}/gif.zs)
 zserio_generate_cpp(
     TARGET gif_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
@@ -15,7 +15,7 @@ if (ZSERIO_LOG)
 endif ()
 
 add_custom_command(OUTPUT gif_data_copy
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/others/gif
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_ZS_ROOT}/../data
                            ${CMAKE_CURRENT_BINARY_DIR}/data
                    DEPENDS ${CMAKE_SOURCE_DIR}/data/others/gif
                    COMMENT "Copying data directory for gif test")

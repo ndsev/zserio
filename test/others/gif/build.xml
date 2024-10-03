@@ -34,7 +34,7 @@
         <testRun testName="gif">
             <resources>
                 <copy todir="${gif.run_dir}/data">
-                    <fileset dir="${zserio_java_test.base_dir}/data/others/gif"/>
+                    <fileset dir="${zserio_java_test.data_root_dir}/others/gif/data"/>
                 </copy>
             </resources>
         </testRun>

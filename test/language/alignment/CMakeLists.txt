@@ -1,7 +1,7 @@
-add_library(alignment_zs STATIC zs/alignment.zs)
+add_library(alignment_zs STATIC ${TEST_ZS_ROOT}/alignment.zs)
 zserio_generate_cpp(
     TARGET alignment_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

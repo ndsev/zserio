@@ -49,7 +49,7 @@ test_gen()
     local TEST_ZS_DIR="${TEST_OUT_DIR}/gif"
     local TEST_ZS_MAIN="gif.zs"
     rm -rf "${TEST_ZS_DIR}"
-    cp -r "${ZSERIO_PROJECT_ROOT}/test/others/gif/zs" "${TEST_ZS_DIR}"
+    cp -r "${ZSERIO_PROJECT_ROOT}/test/data/others/gif/zs" "${TEST_ZS_DIR}"
 
     local SWITCH_WERROR=1
 

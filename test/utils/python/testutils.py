@@ -64,7 +64,7 @@ def getZserioApi(
     :returns: Generated python API if available, None otherwise.
     """
     testDir = os.path.dirname(testFile)  # current test directory
-    zsDir = os.path.join(testDir, "..", "zs")  # directory where test zs files are located
+    zsDir = getZsDir(testDir)  # directory where test zs files are located
     apiDir = getApiDir(testDir)
 
     zsDef = (zsDir, mainZsFile)
@@ -92,6 +92,19 @@ def getZserioApi(
         return _importModule(apiDir, apiModule)
     else:
         return None
+
+
+def getZsDir(testDir):
+    """
+    Gets directory where the Zserio schema for is current test suite is located.
+
+    :param testDir: Current test directory.
+    :returns: Directory where the Zserio schema for the current test suite is located.
+    """
+
+    testDataDir = TestConfig["test_data_dir"]  # test data root directory
+    testSuiteName = getTestSuiteName(testDir)
+    return os.path.join(testDataDir, testSuiteName, "zs")
 
 
 def getApiDir(testDir):
@@ -174,9 +187,9 @@ def compileErroneousZserio(testFile, mainZsFile, errorOutputDict, extraArgs=None
     """
 
     testDir = os.path.dirname(testFile)  # current test directory
-    zsDir = os.path.join(testDir, "..", "zs")  # directory where test zs files are located
-    zsDef = (zsDir, mainZsFile)
+    zsDir = getZsDir(testDir)  # directory where test zs files are located
     apiDir = getApiDir(testDir)
+    zsDef = (zsDir, mainZsFile)
     try:
         _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
     except ZserioCompilerError as zserioCompilerError:

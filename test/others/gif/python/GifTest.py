@@ -30,7 +30,15 @@ class GifTest(unittest.TestCase):
         self.assertEqual(self.GIF_SCREEN_BITS_PER_PIXEL, screenDescriptor.bits_per_pixel)
 
     ONE_PIX_GIF_FILE_NAME = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "..", "..", "data", "others", "gif", "1pix.gif"
+        os.path.dirname(os.path.realpath(__file__)),
+        "..",
+        "..",
+        "..",
+        "data",
+        "others",
+        "gif",
+        "data",
+        "1pix.gif",
     )
 
     GIF_FILE_FORMAT = "GIF"

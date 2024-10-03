@@ -149,8 +149,8 @@ jobs:
       shell: bash
       run: |
         scripts/test_perf.sh cpp-${PACKAGE} \
-            --source-dir test/others/gif/zs --source gif.zs \
-            --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
+            --source-dir test/data/others/gif/zs --source gif.zs \
+            --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
     - name: Run Zserio benchmarks

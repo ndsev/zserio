@@ -7,6 +7,7 @@ The following properties can be set:
 zserio.release_dir              - Directory where to find Zserio release to test. Default is "../distr".
 zserio_java_test.build_root_dir - Build directory where to put generated files.
                                   Default is "../build/test/java".
+zserio_java_test.data_root_dir  - Test data root directory with schemas. Default is "./data".
 zserio_java_test.test_suites    - Test suites. Default is "**".
 clang_format.exec_file          - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
@@ -30,6 +31,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <property name="zserio_java_test.build_root_dir" location="${zserio.root_dir}/build/test/java"/>
     <property name="zserio_java_test.build_dir"
             location="${zserio_java_test.build_root_dir}/${ant.java.version}"/>
+    <property name="zserio_java_test.data_root_dir" location="${zserio.root_dir}/test/data"/>
     <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>
     <property name="zserio_java_test.test_suites" value="**"/>
 
@@ -74,9 +76,15 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         <attribute name="testName"/>
         <sequential>
             <dirname property="@{testName}.base_dir" file="${ant.file.@{testName}}"/>
+            <condition property="hasOwnSchema">
+                <available file="${@{testName}.base_dir}/zs" type="dir"/>
+            </condition>
 
             <property name="@{testName}.build_dir" location="${zserio_java_test.build_dir}/@{testPath}"/>
-            <property name="@{testName}.zs.in_dir" location="${@{testName}.base_dir}/zs"/>
+            <condition property="@{testName}.zs.in_dir" value="${@{testName}.base_dir}/zs"
+                else="${zserio_java_test.data_root_dir}/@{testPath}/zs">
+                <isset property="hasOwnSchema"/>
+            </condition>
             <property name="@{testName}.zs.out_dir" location="${@{testName}.build_dir}/gen"/>
             <property name="@{testName}.zs.log_file" location="${@{testName}.build_dir}/zserio_log.txt"/>
             <property name="@{testName}.run_dir" location="${@{testName}.build_dir}/run"/>

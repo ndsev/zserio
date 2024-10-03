@@ -1,8 +1,0 @@
-package optional_members_warning;
-
-import optional_members_warning.optional_references_in_array_length.*;
-import optional_members_warning.optional_references_in_bitfield_length.*;
-import optional_members_warning.optional_references_in_constraint.*;
-import optional_members_warning.optional_references_in_offset.*;
-import optional_members_warning.optional_references_in_optional_clause.*;
-import optional_members_warning.optional_references_in_type_arguments.*;

@@ -1,7 +1,7 @@
-add_library(extended_members_zs STATIC zs/extended_members.zs)
+add_library(extended_members_zs STATIC ${TEST_ZS_ROOT}/extended_members.zs)
 zserio_generate_cpp(
     TARGET extended_members_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

@@ -1,7 +1,7 @@
-add_library(comments_warning_zs STATIC zs/comments_warning.zs)
+add_library(comments_warning_zs STATIC ${TEST_ZS_ROOT}/comments_warning.zs)
 zserio_generate_cpp(
     TARGET comments_warning_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_comments
     EXTRA_ARGS -withWarnings unused -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_COMMENTS
@@ -15,10 +15,10 @@ if (ZSERIO_LOG_COMMENTS)
     check_zserio_warnings("${ZSERIO_LOG_COMMENTS}" 24)
 endif ()
 
-add_library(doc_comment_missing_warning_zs STATIC zs/doc_comment_missing_warning.zs)
+add_library(doc_comment_missing_warning_zs STATIC ${TEST_ZS_ROOT}/doc_comment_missing_warning.zs)
 zserio_generate_cpp(
     TARGET doc_comment_missing_warning_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_doc_comment_missing
     EXTRA_ARGS -withWarnings "doc-comment-missing" -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_DOC_COMMENT_MISSING

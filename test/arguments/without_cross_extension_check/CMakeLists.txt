@@ -1,7 +1,7 @@
-add_library(invalid_in_java_zs STATIC zs/invalid_in_java.zs)
+add_library(invalid_in_java_zs STATIC ${TEST_ZS_ROOT}/invalid_in_java.zs)
 zserio_generate_cpp(
     TARGET invalid_in_java_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_java
     EXTRA_ARGS -withoutSourcesAmalgamation -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_JAVA
@@ -14,10 +14,10 @@ if (ZSERIO_LOG_INVALID_IN_JAVA)
     check_zserio_warnings("${ZSERIO_LOG_INVALID_IN_JAVA}" 0)
 endif ()
 
-add_library(invalid_in_python_zs STATIC zs/invalid_in_python.zs)
+add_library(invalid_in_python_zs STATIC ${TEST_ZS_ROOT}/invalid_in_python.zs)
 zserio_generate_cpp(
     TARGET invalid_in_python_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_python
     EXTRA_ARGS -withoutSourcesAmalgamation -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_PYTHON

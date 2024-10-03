@@ -1,3 +1,0 @@
-package sql_without_rowid_tables_warning;
-
-import sql_without_rowid_tables_warning.integer_primary_key_warning.*;

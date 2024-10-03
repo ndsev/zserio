@@ -21,6 +21,7 @@ def main():
     argParser = argparse.ArgumentParser()
     argParser.add_argument("--build_dir")
     argParser.add_argument("--release_dir")
+    argParser.add_argument("--test_data_dir")
     argParser.add_argument("--java")
     argParser.add_argument("--verbosity", type=int)
     argParser.add_argument("--filter", help="comma separated list of filters")
@@ -83,7 +84,7 @@ def main():
 
 def _initTestConfig(args):
     configDict = {}
-    configDict["zserio_root_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..")
+    configDict["zserio_root_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
 
     if args.build_dir:
         configDict["build_dir"] = args.build_dir
@@ -94,6 +95,11 @@ def _initTestConfig(args):
         configDict["release_dir"] = args.release_dir
     else:
         configDict["release_dir"] = os.path.join(configDict["zserio_root_dir"], "distr")
+
+    if args.test_data_dir:
+        configDict["test_data_dir"] = args.test_data_dir
+    else:
+        configDict["test_data_dir"] = os.path.join(configDict["zserio_root_dir"], "test", "data")
 
     if args.java:
         configDict["java"] = args.java

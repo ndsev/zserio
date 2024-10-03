@@ -1,7 +1,7 @@
-add_library(sql_types_zs STATIC zs/sql_types.zs)
+add_library(sql_types_zs STATIC ${TEST_ZS_ROOT}/sql_types.zs)
 zserio_generate_cpp(
     TARGET sql_types_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

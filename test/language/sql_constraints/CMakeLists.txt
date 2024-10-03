@@ -1,7 +1,7 @@
-add_library(sql_constraints_zs STATIC zs/sql_constraints.zs)
+add_library(sql_constraints_zs STATIC ${TEST_ZS_ROOT}/sql_constraints.zs)
 zserio_generate_cpp(
     TARGET sql_constraints_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

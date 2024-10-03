@@ -1,7 +1,7 @@
-add_library(set_top_level_package_zs STATIC zs/set_top_level_package.zs)
+add_library(set_top_level_package_zs STATIC ${TEST_ZS_ROOT}/set_top_level_package.zs)
 zserio_generate_cpp(
     TARGET set_top_level_package_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation -setTopLevelPackage company.appl ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

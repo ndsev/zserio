@@ -1,7 +1,7 @@
-add_library(complex_allocation_zs STATIC zs/complex_allocation.zs)
+add_library(complex_allocation_zs STATIC ${TEST_ZS_ROOT}/complex_allocation.zs)
 zserio_generate_cpp(
     TARGET complex_allocation_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_complex_allocation
     EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_COMPLEX_ALLOCATION
@@ -14,10 +14,10 @@ if (ZSERIO_LOG_COMPLEX_ALLOCATION)
     check_zserio_warnings("${ZSERIO_LOG_COMPLEX_ALLOCATION}" 0)
 endif ()
 
-add_library(pubsub_allocation_zs STATIC zs/pubsub_allocation.zs)
+add_library(pubsub_allocation_zs STATIC ${TEST_ZS_ROOT}/pubsub_allocation.zs)
 zserio_generate_cpp(
     TARGET pubsub_allocation_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_pubsub_allocation
     EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_PUBSUB_ALLOCATION
@@ -30,10 +30,10 @@ if (ZSERIO_LOG_PUBSUB_ALLOCATION)
     check_zserio_warnings("${ZSERIO_LOG_PUBSUB_ALLOCATION}" 0)
 endif ()
 
-add_library(service_allocation_zs STATIC zs/service_allocation.zs)
+add_library(service_allocation_zs STATIC ${TEST_ZS_ROOT}/service_allocation.zs)
 zserio_generate_cpp(
     TARGET service_allocation_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_service_allocation
     EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_SERVICE_ALLOCATION
@@ -46,10 +46,10 @@ if (ZSERIO_LOG_SERVICE_ALLOCATION)
     check_zserio_warnings("${ZSERIO_LOG_SERVICE_ALLOCATION}" 0)
 endif ()
 
-add_library(sql_allocation_zs STATIC zs/sql_allocation.zs)
+add_library(sql_allocation_zs STATIC ${TEST_ZS_ROOT}/sql_allocation.zs)
 zserio_generate_cpp(
     TARGET sql_allocation_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_sql_allocation
     EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic -withValidationCode ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

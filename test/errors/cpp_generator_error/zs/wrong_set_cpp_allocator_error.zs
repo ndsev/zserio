@@ -1,1 +1,0 @@
-package wrong_set_cpp_allocator_error;

@@ -1,7 +1,7 @@
-add_library(with_parsing_info_code_zs STATIC zs/with_parsing_info_code.zs)
+add_library(with_parsing_info_code_zs STATIC ${TEST_ZS_ROOT}/with_parsing_info_code.zs)
 zserio_generate_cpp(
     TARGET with_parsing_info_code_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation -withParsingInfoCode ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

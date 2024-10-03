@@ -1,7 +1,7 @@
-add_library(allow_implicit_arrays_zs STATIC zs/allow_implicit_arrays.zs)
+add_library(allow_implicit_arrays_zs STATIC ${TEST_ZS_ROOT}/allow_implicit_arrays.zs)
 zserio_generate_cpp(
     TARGET allow_implicit_arrays_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation -allowImplicitArrays ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

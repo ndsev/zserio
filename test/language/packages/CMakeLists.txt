@@ -1,7 +1,7 @@
-add_library(default_package_zs STATIC zs/default_package.zs)
+add_library(default_package_zs STATIC ${TEST_ZS_ROOT}/default_package.zs)
 zserio_generate_cpp(
     TARGET default_package_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_DEFAULT_PACKAGE
@@ -17,7 +17,7 @@ endif ()
 add_library(empty_file_zs INTERFACE)
 zserio_generate_cpp(
     TARGET empty_file_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     MAIN_ZS empty_file.zs
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_empty_file
     OUTPUT_VAR ZSERIO_LOG_EMPTY_FILE
@@ -28,10 +28,10 @@ if (ZSERIO_LOG_EMPTY_FILE)
     check_zserio_warnings("${ZSERIO_LOG_EMPTY_FILE}" 0)
 endif ()
 
-add_library(index_zs STATIC zs/index.zs)
+add_library(index_zs STATIC ${TEST_ZS_ROOT}/index.zs)
 zserio_generate_cpp(
     TARGET index_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_index
     # we must use 'index_workaround' to prevent clash with global function 'index' which is included
     # via gtest.h -> ... -> strings.h
@@ -46,10 +46,10 @@ if (ZSERIO_LOG_INDEX)
     check_zserio_warnings("${ZSERIO_LOG_INDEX}" 0)
 endif ()
 
-add_library(package_name_conflict_zs STATIC zs/package_name_conflict.zs)
+add_library(package_name_conflict_zs STATIC ${TEST_ZS_ROOT}/package_name_conflict.zs)
 zserio_generate_cpp(
     TARGET package_name_conflict_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_package_name_conflict
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES_PACKAGE_NAME_CONFLICT
@@ -63,10 +63,10 @@ if (ZSERIO_LOG_PACKAGE_NAME_CONFLICT)
     check_zserio_warnings("${ZSERIO_LOG_PACKAGE_NAME_CONFLICT}" 0)
 endif ()
 
-add_library(packages_zs STATIC zs/packages.zs)
+add_library(packages_zs STATIC ${TEST_ZS_ROOT}/packages.zs)
 zserio_generate_cpp(
     TARGET packages_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_packages
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES
@@ -79,10 +79,10 @@ if (ZSERIO_LOG_PACKAGES)
     check_zserio_warnings("${ZSERIO_LOG_PACKAGES}" 0)
 endif ()
 
-add_library(reader_zs STATIC zs/reader.zs)
+add_library(reader_zs STATIC ${TEST_ZS_ROOT}/reader.zs)
 zserio_generate_cpp(
     TARGET reader_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_reader
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

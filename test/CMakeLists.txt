@@ -17,6 +17,7 @@ set(CLANG_FORMAT_BIN "" CACHE STRING "Name of clang-format binary. If empty, cla
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
+set(ZSERIO_TEST_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/data" CACHE PATH "Root directory of Zserio test data.")
 set(ZSERIO_USE_BUNDLE ON CACHE BOOL "Generate code using zserio.jar instead of core+cpp.jar directly.")
 set(ZSERIO_TEST_SUITES "**" CACHE STRING "List of test suites to run. Default is '**'.")
 
@@ -130,6 +131,7 @@ foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
     foreach (subproject ${SUBPROJECTS})
         if (NOT "${subproject}" MATCHES "utils/.*" AND NOT "${subproject}" MATCHES "data/.*")
             get_filename_component(subdirectory ${subproject} DIRECTORY)
+            set(TEST_ZS_ROOT "${ZSERIO_TEST_DATA_ROOT}/${TEST_SUITE}/zs")
             add_subdirectory(${subdirectory})
         endif ()
     endforeach ()

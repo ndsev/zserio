@@ -1,7 +1,7 @@
-add_library(default_values_zs STATIC zs/default_values.zs)
+add_library(default_values_zs STATIC ${TEST_ZS_ROOT}/default_values.zs)
 zserio_generate_cpp(
     TARGET default_values_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

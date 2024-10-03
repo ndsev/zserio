@@ -1,7 +1,7 @@
-add_library(service_types_zs STATIC zs/service_types.zs)
+add_library(service_types_zs STATIC ${TEST_ZS_ROOT}/service_types.zs)
 zserio_generate_cpp(
     TARGET service_types_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

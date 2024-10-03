@@ -1,7 +1,7 @@
-add_library(templates_warning_zs STATIC zs/templates_warning.zs)
+add_library(templates_warning_zs STATIC ${TEST_ZS_ROOT}/templates_warning.zs)
 zserio_generate_cpp(
     TARGET templates_warning_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
     EXTRA_ARGS -withWarnings "default-instantiation" -withoutSourcesAmalgamation ${ZSERIO_EXTRA_ARGS}
     GENERATED_SOURCES_VAR GENERATED_SOURCES

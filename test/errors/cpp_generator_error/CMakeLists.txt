@@ -1,9 +1,9 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
-add_library(wrong_set_cpp_allocator_error_zs INTERFACE zs/wrong_set_cpp_allocator_error.zs)
+add_library(wrong_set_cpp_allocator_error_zs INTERFACE ${TEST_ZS_ROOT}/wrong_set_cpp_allocator_error.zs)
 zserio_generate_cpp(
     TARGET wrong_set_cpp_allocator_error_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${ZSERIO_GEN_DIR}
     EXTRA_ARGS -withoutCrossExtensionCheck -setCppAllocator wrong ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_WRONG_SET_CPP_ALLOCATOR
@@ -18,10 +18,10 @@ if (ZSERIO_LOG_WRONG_SET_CPP_ALLOCATOR)
     endif ()
 endif ()
 
-add_library(bitmask_values_class_clash_error_zs INTERFACE zs/bitmask_values_class_clash_error.zs)
+add_library(bitmask_values_class_clash_error_zs INTERFACE ${TEST_ZS_ROOT}/bitmask_values_class_clash_error.zs)
 zserio_generate_cpp(
     TARGET bitmask_values_class_clash_error_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${ZSERIO_GEN_DIR}
     EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_BITMASK_VALUES_CLASS_CLASH
@@ -39,7 +39,7 @@ endif ()
 add_library(sql_table_provider_class_clash_error_zs INTERFACE)
 zserio_generate_cpp(
     TARGET sql_table_provider_class_clash_error_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     MAIN_ZS sql_table_provider_class_clash_error.zs
     GEN_DIR ${ZSERIO_GEN_DIR}
     EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
@@ -55,10 +55,11 @@ if (ZSERIO_LOG_SQL_TABLE_PROVIDER_CLASS_CLASH)
     endif ()
 endif ()
 
-add_library(sql_table_reader_class_clash_error_zs INTERFACE zs/sql_table_reader_class_clash_error.zs)
+add_library(sql_table_reader_class_clash_error_zs
+    INTERFACE ${TEST_ZS_ROOT}/sql_table_reader_class_clash_error.zs)
 zserio_generate_cpp(
     TARGET sql_table_reader_class_clash_error_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${ZSERIO_GEN_DIR}
     EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_SQL_TABLE_READER_CLASS_CLASH
@@ -73,10 +74,10 @@ if (ZSERIO_LOG_SQL_TABLE_READER_CLASS_CLASH)
     endif ()
 endif ()
 
-add_library(sql_table_row_class_clash_error_zs INTERFACE zs/sql_table_row_class_clash_error.zs)
+add_library(sql_table_row_class_clash_error_zs INTERFACE ${TEST_ZS_ROOT}/sql_table_row_class_clash_error.zs)
 zserio_generate_cpp(
     TARGET sql_table_row_class_clash_error_zs
-    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    SRC_DIR ${TEST_ZS_ROOT}
     GEN_DIR ${ZSERIO_GEN_DIR}
     EXTRA_ARGS -withoutCrossExtensionCheck ${ZSERIO_EXTRA_ARGS}
     OUTPUT_VAR ZSERIO_LOG_SQL_TABLE_ROW_CLASS_CLASH

@@ -65,7 +65,7 @@ compare_test_data()
     local TOTAL_BLOBS=0
     local TOTAL_JSONS=0
     for TEST_SUITE in "${TEST_SUITES[@]}"; do
-        local TEST_DATA_DIR="${TEST_SRC_DIR}/data/${TEST_SUITE}"
+        local TEST_DATA_DIR="${TEST_SRC_DIR}/data/${TEST_SUITE}/data"
         local TEST_SUITE_DIR="${TEST_OUT_DIR}/${TEST_SUITE}"
 
         # check if test suite exists for this platform
@@ -369,14 +369,16 @@ test_xml()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_XML_OUT_DIR}"
     else
+        local TEST_DATA_ROOT_DIR="${TEST_SRC_DIR}/data"
         local TOTAL_NUMBER_OF_TESTS=0
         for TEST_SUITE in "${TEST_SUITES[@]}" ; do
-            local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}/${TEST_SUITE}" -path '*/zs' ! -path '*errors*'`
+            local TEST_ZS_DIRS=`"${FIND}" "${TEST_DATA_ROOT_DIR}/${TEST_SUITE}" \
+                -path '*/zs' ! -path '*errors*' >>/dev/null 2>&1`
             for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
                 local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
                 for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
                     local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
-                    local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
+                    local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_DATA_ROOT_DIR}/}"
                     local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
                     local TEST_XML_OUT_ZS_DIR="${TEST_XML_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
 
@@ -443,14 +445,16 @@ test_doc()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_DOC_OUT_DIR}"
     else
+        local TEST_DATA_ROOT_DIR="${TEST_SRC_DIR}/data"
         local TOTAL_NUMBER_OF_TESTS=0
         for TEST_SUITE in "${TEST_SUITES[@]}" ; do
-            local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}/${TEST_SUITE}" -path '*/zs' ! -path '*errors*'`
+            local TEST_ZS_DIRS=`"${FIND}" "${TEST_DATA_ROOT_DIR}/${TEST_SUITE}" \
+                -path '*/zs' ! -path '*errors*' >>/dev/null 2>&1`
             for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
                 local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
                 for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
                     local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
-                    local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
+                    local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_DATA_ROOT_DIR}/}"
                     local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
                     local TEST_DOC_OUT_ZS_DIR="${TEST_DOC_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
 
