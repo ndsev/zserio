@@ -347,8 +347,8 @@ test_zs()
             return 1
         fi
 
-        local PYLINT_RCFILE="${ZSERIO_PROJECT_ROOT}/test/pylintrc.txt"
-        local MYPY_CONFIG_FILE="${ZSERIO_PROJECT_ROOT}/test/mypy.ini"
+        local PYLINT_RCFILE="${ZSERIO_PROJECT_ROOT}/test/extensions/pylintrc.txt"
+        local MYPY_CONFIG_FILE="${ZSERIO_PROJECT_ROOT}/test/extensions/mypy.ini"
         local GEN_PYTHON_DIR="${TEST_OUT_DIR}/python/gen"
         local PYTHON_RUNTIME_ROOT="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 

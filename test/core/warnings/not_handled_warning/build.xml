@@ -1,0 +1,39 @@
+<project name="not_handled_warning" basedir="." default="run">
+    <testProperties testPath="warnings/not_handled_warning" testName="not_handled_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="not_handled_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="not_handled_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="not_handled_warning.zs.gen_is_uptodate">
+        <testGen testName="not_handled_warning" zsFile="not_handled_warning.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="not_handled_warning" expectedWarnings="2"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="not_handled_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="not_handled_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="not_handled_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="not_handled_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="not_handled_warning"/>
+    </target>
+</project>

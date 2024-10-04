@@ -1,0 +1,38 @@
+<project name="subtypes_error" basedir="." default="run">
+    <testProperties testPath="errors/subtypes_error" testName="subtypes_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="subtypes_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="subtypes_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="subtypes_error.zs.gen_is_uptodate">
+        <testGen testName="subtypes_error" zsFile="database_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="subtypes_error" zsFile="parameterized_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="subtypes_error" zsFile="simple_cyclic_dependency_error.zs" ignoreErrors="true"/>
+        <testGen testName="subtypes_error" zsFile="transitive_cyclic_dependency_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="subtypes_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="subtypes_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="subtypes_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="subtypes_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="subtypes_error"/>
+    </target>
+</project>

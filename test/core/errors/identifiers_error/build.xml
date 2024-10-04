@@ -1,0 +1,114 @@
+<project name="identifiers_error" basedir="." default="run">
+    <testProperties testPath="errors/identifiers_error" testName="identifiers_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="identifiers_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="identifiers_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="identifiers_error.zs.gen_is_uptodate">
+        <testGen testName="identifiers_error" zsFile="zserio.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="zserio_prefix_package_name_error.zs" ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="clashing_identifiers/choice_choice_name_conflict_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/choice_structure_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="clashing_identifiers/choice_union_name_conflict_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_choice_param_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_identifiers_within_package_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_pubsub_message_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_service_method_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_sql_database_table_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_sql_table_column_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_structure_field_and_param_names_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_structure_field_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_structure_function_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_type_names_within_package_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="clashing_identifiers/clashing_union_field_names_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/const_const_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/const_service_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/const_structure_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/const_subtype_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/service_service_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/structure_enum_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/structure_name_first_lower_case_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/structure_param_structure_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/structure_service_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/structure_structure_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/structure_union_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/subtype_structure_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/subtype_subtype_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="clashing_identifiers/union_union_name_conflict_error.zs"
+            ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="invalid_name/const_name_error.zs" ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/array_field_name_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/choice_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/const_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/function_name_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/parameter_name_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/struct_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/subtype_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/union_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/zserio_subpackage_name_error.zs"
+            ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/zserio_keyword_field_name_error.zs"
+            ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="identifiers_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="identifiers_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="identifiers_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="identifiers_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="identifiers_error"/>
+    </target>
+</project>

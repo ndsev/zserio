@@ -1,0 +1,66 @@
+<project name="expressions_error" basedir="." default="run">
+    <testProperties testPath="errors/expressions_error" testName="expressions_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="expressions_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="expressions_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="expressions_error.zs.gen_is_uptodate">
+        <testGen testName="expressions_error" zsFile="isset_operators/array_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="isset_operators/enum_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="isset_operators/integer_type_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="isset_operators/wrong_bitmask_type_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="valueof_operators/array_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="valueof_operators/enum_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="valueof_operators/integer_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="bitmask_shift_operator_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="non_constant_string_concatenation_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="string_integer_concatenation_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_bitmask_types_in_argument_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_bitmask_types_in_constraint_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_compound_types_in_argument_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_compound_types_in_constraint_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_enum_types_in_argument_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_enum_types_in_optional_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="wrong_full_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="wrong_lengthof_syntax_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="expressions_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="expressions_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="expressions_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="expressions_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="expressions_error"/>
+    </target>
+</project>

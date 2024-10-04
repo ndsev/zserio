@@ -1,0 +1,36 @@
+<project name="sql_virtual_tables_error" basedir="." default="run">
+    <testProperties testPath="errors/sql_virtual_tables_error" testName="sql_virtual_tables_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="sql_virtual_tables_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_virtual_tables_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="sql_virtual_tables_error.zs.gen_is_uptodate">
+        <testGen testName="sql_virtual_tables_error" zsFile="no_fields_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_virtual_tables_error" zsFile="without_rowid_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="sql_virtual_tables_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="sql_virtual_tables_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="sql_virtual_tables_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="sql_virtual_tables_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="sql_virtual_tables_error"/>
+    </target>
+</project>

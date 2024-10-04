@@ -1,0 +1,44 @@
+<project name="default_values_error" basedir="." default="run">
+    <testProperties testPath="errors/default_values_error" testName="default_values_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="default_values_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="default_values_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="default_values_error.zs.gen_is_uptodate">
+        <testGen testName="default_values_error" zsFile="array_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="field_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="range_decimal_initializer_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_bool_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_decimal_initializer_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_float_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_string_initializer_error.zs"
+            ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="default_values_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="default_values_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="default_values_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="default_values_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="default_values_error"/>
+    </target>
+</project>

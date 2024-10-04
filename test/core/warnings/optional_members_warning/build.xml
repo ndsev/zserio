@@ -1,0 +1,39 @@
+<project name="optional_members_warning" basedir="." default="run">
+    <testProperties testPath="warnings/optional_members_warning" testName="optional_members_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="optional_members_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="optional_members_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="optional_members_warning.zs.gen_is_uptodate">
+        <testGen testName="optional_members_warning" zsFile="optional_members_warning.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="optional_members_warning" expectedWarnings="25"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="optional_members_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="optional_members_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="optional_members_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="optional_members_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="optional_members_warning"/>
+    </target>
+</project>

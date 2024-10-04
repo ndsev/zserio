@@ -1,0 +1,52 @@
+<project name="builtin_types_error" basedir="." default="run">
+    <testProperties testPath="errors/builtin_types_error" testName="builtin_types_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="builtin_types_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="builtin_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="builtin_types_error.zs.gen_is_uptodate">
+        <testGen testName="builtin_types_error" zsFile="bitfield_cyclic_definition_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_invalid_length_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_length_field_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_length_field_used_as_indexed_offset_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_length_field_used_as_offset_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_unknown_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_without_arg_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield0_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield65_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bool_with_bitfield_arg_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="intfield_without_arg_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="intfield0_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="intfield65_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="builtin_types_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="builtin_types_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="builtin_types_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="builtin_types_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="builtin_types_error"/>
+    </target>
+</project>

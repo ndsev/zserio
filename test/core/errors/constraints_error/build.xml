@@ -1,0 +1,41 @@
+<project name="constraints_error" basedir="." default="run">
+    <testProperties testPath="errors/constraints_error" testName="constraints_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="constraints_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="constraints_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="constraints_error.zs.gen_is_uptodate">
+        <testGen testName="constraints_error" zsFile="field_in_function_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constraints_error" zsFile="field_not_available_error.zs" ignoreErrors="true"/>
+        <testGen testName="constraints_error" zsFile="field_used_as_indexed_offset_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constraints_error" zsFile="field_used_as_offset_error.zs" ignoreErrors="true"/>
+        <testGen testName="constraints_error" zsFile="none_boolean_expression_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="constraints_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="constraints_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="constraints_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="constraints_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="constraints_error"/>
+    </target>
+</project>

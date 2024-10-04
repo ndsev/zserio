@@ -1,0 +1,41 @@
+<project name="unused_type_warning" basedir="." default="run">
+    <testProperties testPath="warnings/unused_type_warning" testName="unused_type_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="unused_type_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="unused_type_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="unused_type_warning.zs.gen_is_uptodate">
+        <testGen testName="unused_type_warning" zsFile="unused_type_warning.zs">
+            <arg name="withWarnings" value="unused"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="unused_type_warning" expectedWarnings="6"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="unused_type_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="unused_type_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="unused_type_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="unused_type_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="unused_type_warning"/>
+    </target>
+</project>

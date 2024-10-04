@@ -1,0 +1,40 @@
+<project name="file_encoding_warning" basedir="." default="run">
+    <testProperties testPath="warnings/file_encoding_warning" testName="file_encoding_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="file_encoding_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="file_encoding_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="file_encoding_warning.zs.gen_is_uptodate">
+        <testGen testName="file_encoding_warning" zsFile="file_encoding_warning.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="file_encoding_warning" expectedWarnings="3"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="file_encoding_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="file_encoding_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="file_encoding_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="file_encoding_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="file_encoding_warning"/>
+    </target>
+</project>
+

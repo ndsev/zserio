@@ -1,0 +1,40 @@
+<project name="sql_without_rowid_tables_warning" basedir="." default="run">
+    <testProperties testPath="warnings/sql_without_rowid_tables_warning"
+        testName="sql_without_rowid_tables_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="sql_without_rowid_tables_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_without_rowid_tables_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="sql_without_rowid_tables_warning.zs.gen_is_uptodate">
+        <testGen testName="sql_without_rowid_tables_warning" zsFile="sql_without_rowid_tables_warning.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="sql_without_rowid_tables_warning" expectedWarnings="1"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="sql_without_rowid_tables_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="sql_without_rowid_tables_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="sql_without_rowid_tables_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="sql_without_rowid_tables_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="sql_without_rowid_tables_warning"/>
+    </target>
+</project>

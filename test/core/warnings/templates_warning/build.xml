@@ -1,0 +1,41 @@
+<project name="templates_warning" basedir="." default="run">
+    <testProperties testPath="warnings/templates_warning" testName="templates_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="templates_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="templates_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="templates_warning.zs.gen_is_uptodate">
+        <testGen testName="templates_warning" zsFile="templates_warning.zs">
+            <arg name="withWarnings" value="default-instantiation"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="templates_warning" expectedWarnings="5"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="templates_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="templates_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="templates_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="templates_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="templates_warning"/>
+    </target>
+</project>

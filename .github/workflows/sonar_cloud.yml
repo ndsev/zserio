@@ -110,7 +110,7 @@ jobs:
             --define sonar.projectKey="ndsev_zserio" \
             --define sonar.organization="ndsev" \
             --define sonar.sourceEncoding="UTF-8" \
-            --define sonar.sources="compiler/extensions/cpp/runtime/src,build/test/cpp/linux64-gcc/release" \
+            --define sonar.sources="compiler/extensions/cpp/runtime/src,build/test/extensions/cpp/linux64-gcc/release" \
             --define sonar.inclusions="**/*.h,**/*.cpp" \
             --define sonar.exclusions="**/CMakeFiles/**/*" \
             --define sonar.tests="compiler/extensions/cpp/runtime/test,test" \

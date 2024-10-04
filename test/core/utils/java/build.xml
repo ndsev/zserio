@@ -1,0 +1,95 @@
+<!--
+
+Ant build.xml for Zserio Java utils library which is used by Java test examples.
+
+The following properties can be set:
+
+test_utils.build_dir    - Directory where to put generated files.
+                          Default is "../../../../build/test/java/${ant.java.version}/utils".
+clang_format.exec_file  - Clang-format executable file. If not set, clang-format is not run.
+spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
+
+-->
+<project name="test_utils" basedir="." default="jar">
+    <dirname property="test_utils.base_dir" file="${ant.file.test_utils}"/>
+
+    <property name="zserio.root_dir" location="${test_utils.base_dir}/../../../.."/>
+
+    <property name="test_utils.build_dir"
+            location="${zserio.root_dir}/build/test/java/${ant.java.version}/utils"/>
+    <property name="test_utils.src_dir" location="${test_utils.base_dir}/src"/>
+    <property name="test_utils.classes_dir" location="${test_utils.build_dir}/classes"/>
+
+    <property name="test_utils.jar_file" value="${test_utils.build_dir}/jar/test_utils.jar"/>
+
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+    <property name="3rdparty.junit.jar_file"
+        location="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
+
+    <target name="prepare">
+        <mkdir dir="${test_utils.build_dir}/classes"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <depend srcDir="${test_utils.src_dir}" destDir="${test_utils.classes_dir}"
+            cache="${test_utils.build_dir}/depend-cache"/>
+        <javac destdir="${test_utils.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
+            <classpath>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </classpath>
+            <src location="${test_utils.src_dir}"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${test_utils.jar_file}">
+            <fileset dir="${test_utils.classes_dir}">
+                <include name="test_utils/**"/>
+            </fileset>
+            <fileset dir="${test_utils.src_dir}">
+                <include name="test_utils/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${test_utils.build_dir}"/>
+    </target>
+
+    <target name="clang_format" depends="jar" if="clang_format.exec_file">
+        <echo>
+Command hints to reformat source manually using clang-format tool (in case of format errors):
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+        </echo>
+        <apply executable="${clang_format.exec_file}" failonerror="true">
+            <arg value="--style=file"/>
+            <arg value="--dry-run"/>
+            <arg value="--Werror"/>
+            <srcfile/>
+            <fileset dir="${test_utils.src_dir}" includes="**/*.java"/>
+        </apply>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
+            output="html"
+            outputFile="${test_utils.build_dir}/spotbugs.html"
+            reportLevel="low"
+            errorProperty="test_utils.is_failed"
+            warningsProperty="test_utils.is_failed">
+            <sourcePath>
+                <dirset dir="${test_utils.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${test_utils.classes_dir}"/>
+            <auxClasspath>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </auxClasspath>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="test_utils.is_failed"/>
+    </target>
+</project>

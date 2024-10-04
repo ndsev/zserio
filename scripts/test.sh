@@ -6,12 +6,12 @@ source "${SCRIPT_DIR}/common_test_tools.sh"
 # Gets test suites matching the provided patterns.
 get_test_suites()
 {
-    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local TEST_DATA_ROOT="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local PATTERNS=("${MSYS_WORKAROUND_TEMP[@]}")
     local TEST_SUITES_OUT="$1"; shift
 
-    local STARTING_POINT="${ZSERIO_PROJECT_ROOT}/test"
+    local STARTING_POINT="${TEST_DATA_ROOT}"
     local FIND_EXPRESSION=("!" "-ipath" "${STARTING_POINT}/utils/*")
     for i in ${!PATTERNS[@]} ; do
         FIND_EXPRESSION+=("(")
@@ -65,7 +65,7 @@ compare_test_data()
     local TOTAL_BLOBS=0
     local TOTAL_JSONS=0
     for TEST_SUITE in "${TEST_SUITES[@]}"; do
-        local TEST_DATA_DIR="${TEST_SRC_DIR}/data/${TEST_SUITE}/data"
+        local TEST_DATA_DIR="${TEST_SRC_DIR}/../data/${TEST_SUITE}/data"
         local TEST_SUITE_DIR="${TEST_OUT_DIR}/${TEST_SUITE}"
 
         # check if test suite exists for this platform
@@ -369,11 +369,11 @@ test_xml()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_XML_OUT_DIR}"
     else
-        local TEST_DATA_ROOT_DIR="${TEST_SRC_DIR}/data"
+        local TEST_DATA_ROOT_DIR="${TEST_SRC_DIR}/../data"
         local TOTAL_NUMBER_OF_TESTS=0
         for TEST_SUITE in "${TEST_SUITES[@]}" ; do
             local TEST_ZS_DIRS=`"${FIND}" "${TEST_DATA_ROOT_DIR}/${TEST_SUITE}" \
-                -path '*/zs' ! -path '*errors*' >>/dev/null 2>&1`
+                -path '*/zs' ! -path '*errors*'`
             for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
                 local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
                 for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
@@ -445,11 +445,11 @@ test_doc()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_DOC_OUT_DIR}"
     else
-        local TEST_DATA_ROOT_DIR="${TEST_SRC_DIR}/data"
+        local TEST_DATA_ROOT_DIR="${TEST_SRC_DIR}/../data"
         local TOTAL_NUMBER_OF_TESTS=0
         for TEST_SUITE in "${TEST_SUITES[@]}" ; do
             local TEST_ZS_DIRS=`"${FIND}" "${TEST_DATA_ROOT_DIR}/${TEST_SUITE}" \
-                -path '*/zs' ! -path '*errors*' >>/dev/null 2>&1`
+                -path '*/zs' ! -path '*errors*'`
             for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
                 local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
                 for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
@@ -503,10 +503,10 @@ test_doc()
     return 0
 }
 
-# Run Zserio tests.
-test()
+# Run Zserio extensions tests.
+test_extensions()
 {
-    exit_if_argc_ne $# 11
+    exit_if_argc_ne $# 10
     local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
@@ -518,10 +518,20 @@ test()
     local PARAM_XML="$1"; shift
     local PARAM_DOC="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
-    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
-    local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test"
+    local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test/extensions"
+
+    # get test suites to run
+    local TEST_SUITES=()
+    get_test_suites "${ZSERIO_PROJECT_ROOT}/test/data" SWITCH_TEST_PATTERN_ARRAY[@] TEST_SUITES
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    if [ ${#TEST_SUITES[@]} -eq 0 ] ; then
+        echo "No test suites for extensions found."
+        return 0
+    fi
 
     # run Zserio C++ tests
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
@@ -571,6 +581,79 @@ test()
     return 0
 }
 
+# Run Zserio core tests.
+test_core()
+{
+    exit_if_argc_ne $# 5
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local TEST_OUT_DIR="$1"; shift
+    local PARAM_CORE="$1"; shift
+    local SWITCH_CLEAN="$1"; shift
+
+    local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test/core"
+
+    # get test suites to run
+    local TEST_SUITES=()
+    get_test_suites "${TEST_SRC_DIR}" SWITCH_TEST_PATTERN_ARRAY[@] TEST_SUITES
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    if [ ${#TEST_SUITES[@]} -eq 0 ] ; then
+        echo "No test suites for core found."
+        return 0
+    fi
+
+    # run Zserio core tests
+    if [[ ${PARAM_CORE} != 0 ]] ; then
+        local TEST_FILTER=""
+        local IS_FIRST=1
+        for TEST_SUITE in "${TEST_SUITES[@]}" ; do
+            if [ ${IS_FIRST} -eq 0 ] ; then
+                TEST_FILTER+=","
+            else
+                IS_FIRST=0
+            fi
+            TEST_FILTER+="${TEST_SUITE}"
+        done
+
+        local MESSAGE="Zserio Core tests"
+        echo "STARTING - ${MESSAGE}"
+        local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                        "-Dzserio_core_test.build_root_dir=${TEST_OUT_DIR}/java"
+                        "-Dzserio_core_test.test_suites=${TEST_FILTER}")
+        if [[ ${SWITCH_CLEAN} == 1 ]] ; then
+            local JAVA_TARGET="clean"
+        else
+            local JAVA_TARGET="run"
+        fi
+        compile_java "${TEST_SRC_DIR}/build.xml" ANT_ARGS[@] "${JAVA_TARGET}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "${MESSAGE} failed!"
+            return 1
+        fi
+
+        # calculate number of all run tests from ant output log file
+        local JAVA_VERSION=`${ANT} -diagnostics | grep ant.java.version | cut -d' ' -f2`
+        local ANT_LOG_FILE="${TEST_OUT_DIR}/java/${JAVA_VERSION}/test_log.txt"
+        if [ ! -f "${ANT_LOG_FILE}" ] ; then
+            stderr_echo "Ant output file '${ANT_LOG_FILE}' does not exist!"
+            return 1
+        fi
+        local TEST_COUNTS=(`grep '.*tests found.*' "${ANT_LOG_FILE}" | tr -s ' ' | cut -d' ' -f4`)
+        local INDEX
+        for INDEX in ${!TEST_COUNTS[@]} ; do
+            TOTAL_TEST_COUNT=$((${TOTAL_TEST_COUNT} + ${TEST_COUNTS[INDEX]}))
+        done
+        echo "Total number of testcases: ${TOTAL_TEST_COUNT}"
+
+        echo -e "FINISHED - ${MESSAGE}\n"
+    fi
+
+    return 0
+}
+
 # Print help message.
 print_help()
 {
@@ -595,22 +678,23 @@ Arguments:
     package               Specify the package to test.
 
 Package can be a combination of:
-    cpp-linux32-gcc       Zserio C++ tests for linux32 target using gcc compiler.
-    cpp-linux64-gcc       Zserio C++ tests for linux64 target using gcc compiler.
-    cpp-linux32-clang     Zserio C++ tests for linux32 target using using Clang compiler.
-    cpp-linux64-clang     Zserio C++ tests for linux64 target using Clang compiler.
+    cpp-linux32-gcc       Zserio C++ tests for linux32 target (gcc).
+    cpp-linux64-gcc       Zserio C++ tests for linux64 target (gcc).
+    cpp-linux32-clang     Zserio C++ tests for linux32 target (Clang).
+    cpp-linux64-clang     Zserio C++ tests for linux64 target (Clang).
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
     python                Zserio Python tests.
     xml                   Zserio XML tests.
     doc                   Zserio documentation tests.
-    all-linux32-gcc       Zserio tests - all available linux32 packages (gcc).
-    all-linux64-gcc       Zserio tests - all available linux64 packages (gcc).
-    all-linux32-clang     Zserio tests - all available linux32 packages (Clang).
-    all-linux64-clang     Zserio tests - all available linux64 packages (Clang).
-    all-windows64-mingw   Zserio tests - all available windows64 packages (MinGW64).
-    all-windows64-msvc    Zserio tests - all available windows64 packages (MSVC).
+    core                  Zserio core tests.
+    all-linux32-gcc       Zserio all tests with C++ for linux32 target (gcc).
+    all-linux64-gcc       Zserio all tests with C++ for linux64 target (gcc).
+    all-linux32-clang     Zserio all tests with C++ for linux32 target (Clang).
+    all-linux64-clang     Zserio all tests with C++ for linux64 target (Clang).
+    all-windows64-mingw   Zserio all tests with C++ for windows64 target (MinGW64).
+    all-windows64-msvc    Zserio all tests with C++ for windows64 target (MSVC).
 
 Examples:
     $0 java cpp-linux64-gcc
@@ -631,12 +715,13 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 9
+    exit_if_argc_lt $# 10
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
     local PARAM_XML_OUT="$1"; shift
     local PARAM_DOC_OUT="$1"; shift
+    local PARAM_CORE_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
@@ -646,6 +731,7 @@ parse_arguments()
     eval ${PARAM_PYTHON_OUT}=0
     eval ${PARAM_XML_OUT}=0
     eval ${PARAM_DOC_OUT}=0
+    eval ${PARAM_CORE_OUT}=0
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
 
@@ -745,12 +831,17 @@ parse_arguments()
                 eval ${PARAM_DOC_OUT}=1
                 ;;
 
+            "core")
+                eval ${PARAM_CORE_OUT}=1
+                ;;
+
             "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
                 eval ${PARAM_XML_OUT}=1
                 eval ${PARAM_DOC_OUT}=1
+                eval ${PARAM_CORE_OUT}=1
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
 
@@ -766,6 +857,7 @@ parse_arguments()
           ${!PARAM_PYTHON_OUT} == 0 &&
           ${!PARAM_XML_OUT} == 0 &&
           ${!PARAM_DOC_OUT} == 0 &&
+          ${!PARAM_CORE_OUT} == 0 &&
           ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         stderr_echo "Package to test is not specified!"
         echo
@@ -787,13 +879,14 @@ main()
     local PARAM_PYTHON
     local PARAM_XML
     local PARAM_DOC
+    local PARAM_CORE
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
     local SWITCH_TEST_PATTERN_ARRAY=()
     # note that "$@" must have qoutes to prevent expansion of include/exclude patterns
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_OUT_DIR \
-                    SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_PATTERN_ARRAY "$@"
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_CORE \
+        PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_PATTERN_ARRAY "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -827,7 +920,7 @@ main()
         fi
     fi
 
-    if [[ ${PARAM_JAVA} != 0 ]] ; then
+    if [[ ${PARAM_JAVA} != 0 || ${PARAM_CORE} != 0 ]] ; then
         set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
@@ -863,7 +956,8 @@ main()
               ${PARAM_JAVA} == 0 &&
               ${PARAM_PYTHON} == 0 &&
               ${PARAM_XML} == 0 &&
-              ${PARAM_DOC} == 0 ]] ; then
+              ${PARAM_DOC} == 0 &&
+              ${PARAM_CORE} == 0 ]] ; then
             return 0 # purge only
         fi
     fi
@@ -889,22 +983,17 @@ main()
         return 1
     fi
 
-    # get test suites to run
-    local TEST_SUITES=()
-    get_test_suites "${ZSERIO_PROJECT_ROOT}" SWITCH_TEST_PATTERN_ARRAY[@] TEST_SUITES
+    # run extensions tests
+    test_extensions "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
+        "${TEST_OUT_DIR}/extensions" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} \
+        ${PARAM_DOC} ${SWITCH_CLEAN}
     if [ $? -ne 0 ] ; then
         return 1
     fi
 
-    if [ ${#TEST_SUITES[@]} -eq 0 ] ; then
-        echo "No test suites found."
-        return 0
-    fi
-
-    # run test
-    test "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${TEST_OUT_DIR}" \
-         PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
-         ${SWITCH_CLEAN} TEST_SUITES[@]
+    # run core tests
+    test_core "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/core" \
+        ${PARAM_CORE} ${SWITCH_CLEAN}
     if [ $? -ne 0 ] ; then
         return 1
     fi

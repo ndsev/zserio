@@ -1,0 +1,44 @@
+<project name="comments_warning" basedir="." default="run">
+    <testProperties testPath="warnings/comments_warning" testName="comments_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="comments_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="comments_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="comments_warning.zs.gen_is_uptodate">
+        <testGen testName="comments_warning" zsFile="comments_warning.zs">
+            <arg name="withWarnings" value="unused"/>
+        </testGen>
+        <testGen testName="comments_warning" zsFile="doc_comment_missing_warning.zs">
+            <arg name="withWarnings" value="doc-comment-missing"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="comments_warning" expectedWarnings="56"/><!-- 24 + 32 -->
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="comments_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="comments_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="comments_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="comments_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="comments_warning"/>
+    </target>
+</project>

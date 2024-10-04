@@ -1,0 +1,297 @@
+<!--
+
+Ant build.xml for Zserio core tests.
+
+The following properties can be set:
+
+zserio.release_dir              - Directory where to find Zserio release to test. Default is "../distr".
+zserio_core_test.build_root_dir - Build directory where to put generated files.
+                                  Default is "../build/test/core/java".
+zserio_core_test.data_root_dir  - Test data root directory with schemas. Default is "./data".
+zserio_core_test.test_suites    - Test suites. Default is "**".
+clang_format.exec_file          - Clang-format executable file. If not set, clang-format is not run.
+spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
+
+-->
+<project name="zserio_core_test" basedir="." default="run" xmlns:if="ant:if" xmlns:unless="ant:unless">
+    <dirname property="zserio_core_test.base_dir" file="${ant.file.zserio_core_test}"/>
+
+    <property name="zserio.root_dir" location="${zserio_core_test.base_dir}/../.."/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
+
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+    <property name="3rdparty.junit.jar_file"
+        location="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
+
+    <property name="zserio_core_test.build_root_dir" location="${zserio.root_dir}/build/core/java"/>
+    <property name="zserio_core_test.build_dir"
+            location="${zserio_core_test.build_root_dir}/${ant.java.version}"/>
+    <property name="zserio_core_test.data_root_dir" location="${zserio.root_dir}/test/data"/>
+    <property name="zserio_core_test.log_file" location="${zserio_core_test.build_dir}/test_log.txt"/>
+    <property name="zserio_core_test.test_suites" value="**"/>
+
+    <loadresource property="zserio_core_test.test_suites_filter">
+        <propertyresource name="zserio_core_test.test_suites"/>
+        <filterchain>
+            <replacestring from="," to="/**/build.xml,"/>
+            <suffixlines suffix="/**/build.xml"/>
+        </filterchain>
+    </loadresource>
+
+    <property environment="env"/>
+    <condition property="zserio.extra_args" value="${env.ZSERIO_EXTRA_ARGS}" else="">
+        <isset property="env.ZSERIO_EXTRA_ARGS"/>
+    </condition>
+
+    <condition property="spotbugs.classpath" value="${spotbugs.home_dir}/lib/spotbugs-ant.jar">
+        <isset property="spotbugs.home_dir"/>
+    </condition>
+    <condition property="spotbugs.resource" value="edu/umd/cs/findbugs/anttask/tasks.properties">
+        <isset property="spotbugs.home_dir"/>
+    </condition>
+
+    <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
+    <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
+        <condition>
+            <not><antversion atleast="1.9.1"/></not>
+        </condition>
+    </fail>
+
+    <!-- Test common utilities needed for some tests. -->
+    <property name="test_utils.build_dir" location="${zserio_core_test.build_dir}/utils"/>
+    <include file="${zserio_core_test.base_dir}/utils/java/build.xml"/>
+
+    <!-- Zserio ant task -->
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar"
+        classname="zserio.ant.ZserioTask"/>
+
+    <!-- targets commons -->
+    <macrodef name="testProperties">
+        <attribute name="testPath"/>
+        <attribute name="testName"/>
+        <sequential>
+            <dirname property="@{testName}.base_dir" file="${ant.file.@{testName}}"/>
+            <condition property="hasOwnSchema">
+                <available file="${@{testName}.base_dir}/zs" type="dir"/>
+            </condition>
+
+            <property name="@{testName}.build_dir" location="${zserio_core_test.build_dir}/@{testPath}"/>
+            <condition property="@{testName}.zs.in_dir" value="${@{testName}.base_dir}/zs"
+                else="${zserio_core_test.data_root_dir}/@{testPath}/zs">
+                <isset property="hasOwnSchema"/>
+            </condition>
+            <property name="@{testName}.zs.log_file" location="${@{testName}.build_dir}/zserio_log.txt"/>
+            <property name="@{testName}.run_dir" location="${@{testName}.build_dir}/run"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testPrepare">
+        <attribute name="testName"/>
+        <sequential>
+            <mkdir dir="${@{testName}.build_dir}/classes"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testGenCheck">
+        <attribute name="testName"/>
+        <sequential>
+            <dependset>
+                <srcfileset dir="${@{testName}.zs.in_dir}">
+                    <include name="**/*.zs"/>
+                </srcfileset>
+                <srcfileset dir="${zserio.jar_dir}">
+                    <include name="*.jar"/>
+                </srcfileset>
+                <srcfileset file="${ant.file.@{testName}}"/> <!-- current test ant file -->
+                <srcfileset file="${ant.file.zserio_core_test}"/> <!-- main test ant file -->
+                <targetfileset file="${@{testName}.zs.log_file}"/>
+            </dependset>
+            <available file="${@{testName}.zs.log_file}"
+                property="@{testName}.zs.gen_is_uptodate"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testGen">
+        <attribute name="testName"/>
+        <attribute name="zsFile"/>
+        <attribute name="ignoreErrors" default="false"/>
+        <element name="args" implicit="yes" optional="true"/>
+        <sequential>
+            <record name="${@{testName}.zs.log_file}" action="start" loglevel="warn"/>
+
+            <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}" ignoreError="@{ignoreErrors}"
+                    extraArgs="${zserio.extra_args}">
+                <classpath>
+                    <fileset dir="${zserio.jar_dir}">
+                        <include name="*.jar"/>
+                    </fileset>
+                </classpath>
+                <args/>
+            </zserio>
+
+            <record name="${@{testName}.zs.log_file}" action="stop"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testGenCheckWarnings">
+        <attribute name="testName"/>
+        <attribute name="expectedWarnings" default="0"/>
+        <sequential>
+            <!-- get number of warnings in the log file -->
+            <resourcecount property="@{testName}.num_warnings">
+                <tokens>
+                    <concat>
+                        <filterchain>
+                            <linecontainsregexp>
+                                <regexp pattern="\[WARNING\]"/>
+                            </linecontainsregexp>
+                        </filterchain>
+                        <fileset file="${@{testName}.zs.log_file}"/>
+                    </concat>
+                </tokens>
+            </resourcecount>
+            <local name="fail_message1"/>
+            <local name="fail_message2"/>
+            <property name="fail_message1"
+                value="[ERROR] Zserio tool produced ${@{testName}.num_warnings} warnings "/>
+            <property name="fail_message2" value="(expected @{expectedWarnings})!"/>
+            <fail message="${fail_message1}${fail_message2}${line.separator}See ${@{testName}.zs.log_file}!">
+                <condition>
+                    <not><equals arg1="@{expectedWarnings}" arg2="${@{testName}.num_warnings}"/></not>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testCompile">
+        <attribute name="testName"/>
+        <attribute name="srcPath" default="${@{testName}.base_dir}/java"/>
+        <attribute name="ignoreZserioWarnings" default="false"/>
+        <sequential>
+            <depend srcDir="@{srcPath}"
+                destDir="${@{testName}.build_dir}/classes"
+                cache="${@{testName}.build_dir}/depend-cache"/>
+            <javac destdir="${@{testName}.build_dir}/classes" debug="on" encoding="utf8"
+                includeAntRuntime="false">
+                <compilerarg value="-Xlint:all"/>
+                <compilerarg value="-Xlint:-cast"/>
+                <compilerarg value="-Werror"/>
+                <classpath>
+                    <pathelement location="${3rdparty.junit.jar_file}"/>
+                    <pathelement location="${test_utils.jar_file}"/>
+                </classpath>
+                <src path="@{srcPath}"/>
+            </javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testClangFormat">
+        <attribute name="testName"/>
+        <attribute name="srcPath" default="${@{testName}.base_dir}/java"/>
+        <sequential>
+            <condition property="src_path.exists">
+                <available file="@{srcPath}" type="dir"/>
+            </condition>
+            <echo if:set="src_path.exists">
+Command hints to reformat source manually using clang-format tool (in case of format errors):
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+            </echo>
+            <apply if:set="src_path.exists" executable="${clang_format.exec_file}" failonerror="true">
+                <arg value="--style=file"/>
+                <arg value="--dry-run"/>
+                <arg value="--Werror"/>
+                <srcfile/>
+                <fileset dir="@{srcPath}" includes="**/*.java"/>
+            </apply>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testSpotBugs">
+        <attribute name="testName"/>
+        <attribute name="srcPath" default="${@{testName}.base_dir}/java"/>
+        <sequential>
+            <property name="spotbugs.gen_classes.jar_file"
+                location="${@{testName}.build_dir}/jar/gen_classes.jar"/>
+            <jar destfile="${spotbugs.gen_classes.jar_file}">
+                <fileset dir="${@{testName}.build_dir}/classes"/>
+            </jar>
+            <taskdef classpath="${spotbugs.classpath}" resource="${spotbugs.resource}"/>
+            <property name="spotbugs.exclude_filter.file_name" value="spotbugs_filter.xml"/>
+            <condition property="spotbugs.exclude_filter.dir" value="${@{testName}.base_dir}"
+                else="${zserio_core_test.base_dir}">
+                <available file="${@{testName}.base_dir}/${spotbugs.exclude_filter.file_name}"/>
+            </condition>
+            <spotbugs home="${spotbugs.home_dir}"
+                output="html"
+                outputFile="${@{testName}.build_dir}/spotbugs.html"
+                excludeFilter="${spotbugs.exclude_filter.dir}/${spotbugs.exclude_filter.file_name}"
+                reportLevel="low"
+                errorProperty="@{testName}.is_failed"
+                warningsProperty="@{testName}.is_failed">
+                <sourcePath path="@{srcPath}"/>
+                <class location="${spotbugs.gen_classes.jar_file}"/>
+                <auxClasspath>
+                    <pathelement location="${3rdparty.junit.jar_file}"/>
+                    <pathelement location="${test_utils.jar_file}"/>
+                </auxClasspath>
+            </spotbugs>
+            <fail message="SpotBugs found some issues!" if="@{testName}.is_failed"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testRun">
+        <attribute name="testName"/>
+        <element name="resources" optional="true"/>
+        <sequential>
+            <delete dir="${@{testName}.run_dir}"/>
+            <mkdir dir="${@{testName}.run_dir}"/>
+            <copy file="${@{testName}.zs.log_file}" todir="${@{testName}.run_dir}"/>
+            <resources/>
+            <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="true"
+                dir="${@{testName}.run_dir}">
+                <classpath>
+                    <pathelement location="${@{testName}.build_dir}/classes"/>
+                    <pathelement location="${3rdparty.junit.jar_file}"/>
+                    <pathelement location="${test_utils.jar_file}"/>
+                </classpath>
+                <arg line="--disable-banner"/>
+                <arg line="--scan-classpath"/>
+                <arg line="--fail-if-no-tests"/>
+                <arg line="--details tree"/>
+                <arg line="--exclude-engine junit-vintage"/>
+                <arg line="--reports-dir ${@{testName}.run_dir}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testClean">
+        <attribute name="testName"/>
+        <sequential>
+            <delete dir="${@{testName}.build_dir}"/>
+        </sequential>
+    </macrodef>
+
+    <target name="clean" depends="test_utils.clean">
+        <subant target="clean" inheritall="true">
+            <fileset dir="." includes="${zserio_core_test.test_suites_filter}" excludes="build.xml,utils/**"/>
+        </subant>
+    </target>
+
+    <target name="gen">
+        <subant target="gen" inheritall="true">
+            <fileset dir="." includes="${zserio_core_test.test_suites_filter}" excludes="build.xml,utils/**"/>
+        </subant>
+    </target>
+
+    <target name="run" depends="test_utils.spotbugs">
+        <record name="${zserio_core_test.log_file}" action="start"/>
+
+        <subant target="run" inheritall="true">
+            <fileset dir="." includes="${zserio_core_test.test_suites_filter}" excludes="build.xml,utils/**"/>
+        </subant>
+
+        <record name="${zserio_core_test.log_file}" action="stop"/>
+    </target>
+</project>

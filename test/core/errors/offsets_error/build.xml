@@ -1,0 +1,66 @@
+<project name="offsets_error" basedir="." default="run">
+    <testProperties testPath="errors/offsets_error" testName="offsets_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="offsets_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="offsets_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="offsets_error.zs.gen_is_uptodate">
+        <testGen testName="offsets_error" zsFile="arithmetic_add_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="arithmetic_mult_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="array_no_index_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="bitwise_and_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="bitwise_or_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="bitwise_xor_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="builtin_type_parameter_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="duplicated_offset_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="duplicated_offset_via_parameter_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="equality_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="float_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="function_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="index_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="isset_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="lengthof_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="literal_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="logical_and_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="logical_or_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="numbits_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="parenthesis_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="relational_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="shift_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="signed_bitfield_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="signed_integer_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="string_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="ternary_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="unary_operator_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="valueof_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="varint_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="varuint_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="offsets_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="offsets_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="offsets_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="offsets_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="offsets_error"/>
+    </target>
+</project>

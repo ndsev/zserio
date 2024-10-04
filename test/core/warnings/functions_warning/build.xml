@@ -1,0 +1,39 @@
+<project name="functions_warning" basedir="." default="run">
+    <testProperties testPath="warnings/functions_warning" testName="functions_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="functions_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="functions_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="functions_warning.zs.gen_is_uptodate">
+        <testGen testName="functions_warning" zsFile="functions_warning.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="functions_warning" expectedWarnings="2"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="functions_warning"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="functions_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="functions_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="functions_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="functions_warning"/>
+    </target>
+</project>

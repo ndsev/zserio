@@ -1,0 +1,88 @@
+<project name="templates_error" basedir="." default="run">
+    <testProperties testPath="errors/templates_error" testName="templates_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="templates_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="templates_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="templates_error.zs.gen_is_uptodate">
+        <testGen testName="templates_error" zsFile="constant_used_as_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="constraint_expression_expects_constant_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="duplicated_field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="enum_not_a_template_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="field_not_available_in_function_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="hashed_template_name_clash_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_via_import_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_via_instantiate_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_missing_template_arguments_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_with_single_import_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_with_template_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_with_type_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_no_template_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_cycle_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_full_name_cycle_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_imported_cycle_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_in_instantiate_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_is_sql_table_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_transitive_cycle_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiation_via_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="missing_template_arguments_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="missing_type_parameters_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="parameterized_builtin_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="parameterized_compound_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="symbol_with_template_parameter_clash_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="symbol_with_type_name_clash_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="templatable_not_a_template_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="templated_template_parameter_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="too_few_arguments_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="too_many_arguments_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="unresolved_reference_in_template_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="unresolved_template_instantiation_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="unresolved_template_instantiation_in_template_error.zs"
+                ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="templates_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="templates_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="templates_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="templates_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="templates_error"/>
+    </target>
+</project>

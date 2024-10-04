@@ -1,0 +1,49 @@
+<project name="constants_error" basedir="." default="run">
+    <testProperties testPath="errors/constants_error" testName="constants_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="constants_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="constants_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="constants_error.zs.gen_is_uptodate">
+        <testGen testName="constants_error" zsFile="choice_type_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="constant_0x8000_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="constant_0xffff_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="cyclic_definition_using_constant_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="cyclic_definition_using_enum_value_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="invalid_constant_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="structure_type_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="subtyped_compound_type_constant_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_bool_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_decimal_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_float_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_string_constant_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="constants_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="constants_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="constants_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="constants_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="constants_error"/>
+    </target>
+</project>

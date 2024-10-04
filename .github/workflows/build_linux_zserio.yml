@@ -85,6 +85,10 @@ jobs:
       run: |
         scripts/release.sh -p zserio
 
+    - name: Run Zserio core tests
+      run: |
+        scripts/test.sh core
+
     - name: Archive Zserio compiler artifacts
       # update when https://github.com/actions/upload-artifact/issues/543 is fixed
       uses: actions/upload-artifact@v3

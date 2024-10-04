@@ -1,0 +1,41 @@
+<project name="rules_error" basedir="." default="run">
+    <testProperties testPath="errors/rules_error" testName="rules_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="rules_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="rules_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="rules_error.zs.gen_is_uptodate">
+        <testGen testName="rules_error" zsFile="duplicated_id_between_packages_error.zs" ignoreErrors="true">
+            <arg name="withGlobalRuleIdCheck"/>
+        </testGen>
+        <testGen testName="rules_error" zsFile="duplicated_id_within_group_error.zs" ignoreErrors="true"/>
+        <testGen testName="rules_error" zsFile="duplicated_id_within_package_error.zs" ignoreErrors="true"/>
+        <testGen testName="rules_error" zsFile="id_invalid_expression_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="rules_error" zsFile="invalid_id_format_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="rules_error"/>
+    </target>
+
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="rules_error"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="rules_error"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="rules_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="rules_error"/>
+    </target>
+</project>
