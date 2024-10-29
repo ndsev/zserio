@@ -13,7 +13,7 @@ public final class CppExtensionVersion
     public static final String CPP_EXTENSION_VERSION_STRING = "1.0.2";
 
     /** Expected Zserio core version string. */
-    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.14.1";
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.15.0";
 
     /** Zserio BIN version string. */
     public static final String BIN_VERSION_STRING = "1.0";
