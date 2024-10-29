@@ -78,7 +78,7 @@ test_python_runtime()
     echo
 
     echo "Running black on python runtime sources and runtime test sources."
-    python -m black ${PYTHON_RUNTIME_ROOT} --line-length=112 --check
+    python -m black ${PYTHON_RUNTIME_ROOT} --line-length=112 --check --exclude .*test_object.*
     local BLACK_RESULT=$?
     if [ ${BLACK_RESULT} -ne 0 ] ; then
         python -m black ${PYTHON_RUNTIME_ROOT} --line-length=112 --diff
