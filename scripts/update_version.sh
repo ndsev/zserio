@@ -3,14 +3,48 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 
+# Set and check global variables.
+set_update_version_global_variables()
+{
+    # bash command find to use, defaults to "/usr/bin/find" if not set
+    # (bash command find makes trouble under MinGW because it clashes with Windows find command)
+    FIND="${FIND:-/usr/bin/find}"
+    if [ ! -f "`which "${FIND}"`" ] ; then
+        stderr_echo "Cannot find bash command find! Set FIND environment variable."
+        return 1
+    fi
+
+    # GIT to use, defaults to "git" if not set
+    GIT="${GIT:-git}"
+    if [ ! -f "`which "${GIT}"`" ] ; then
+        stderr_echo "Cannot find git! Set GIT environment variable."
+        return 1
+    fi
+
+    return 0
+}
+
+# Print help on the environment variables used for this script.
+print_update_version_help_env()
+{
+    cat << EOF
+Uses the following environment variables:
+    GIT      Git executable to use. Default is "git".
+
+    Either set these directly, or create 'scripts/build-env.sh' that sets these.
+    It's sourced automatically if it exists.
+
+EOF
+}
+
 # Update version number in a single file.
 update_version_number_in_file()
 {
     exit_if_argc_ne $# 4
-    local VERSION_FILE="${1}"; shift
-    local VERSION_DESC="${1}"; shift
-    local OLD_VERSION_STRING="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
+    local VERSION_FILE="$1"; shift
+    local VERSION_DESC="$1"; shift
+    local OLD_VERSION_STRING="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
 
     # calculate version numbers from string
     local OLD_VERSION_ARRAY=(${OLD_VERSION_STRING//./ })
@@ -29,10 +63,10 @@ update_version_number_in_file()
 update_version_string_in_doc_file()
 {
     exit_if_argc_ne $# 4
-    local VERSION_FILE="${1}"; shift
-    local VERSION_DESC="${1}"; shift
-    local OLD_VERSION_STRING="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
+    local VERSION_FILE="$1"; shift
+    local VERSION_DESC="$1"; shift
+    local OLD_VERSION_STRING="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
 
     local SED_COMMAND="s|${VERSION_DESC} ${OLD_VERSION_STRING}|${VERSION_DESC} ${NEW_VERSION_STRING}|"
     update_version_string_in_file "${VERSION_FILE}" "${SED_COMMAND}" "${OLD_VERSION_STRING}" \
@@ -43,10 +77,10 @@ update_version_string_in_doc_file()
 update_version_string_in_src_file()
 {
     exit_if_argc_ne $# 4
-    local VERSION_FILE="${1}"; shift
-    local VERSION_DESC="${1}"; shift
-    local OLD_VERSION_STRING="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
+    local VERSION_FILE="$1"; shift
+    local VERSION_DESC="$1"; shift
+    local OLD_VERSION_STRING="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
 
     local SED_COMMAND="s|${VERSION_DESC} = \"${OLD_VERSION_STRING}\"|${VERSION_DESC} = \"${NEW_VERSION_STRING}\"|"
     update_version_string_in_file "${VERSION_FILE}" "${SED_COMMAND}" "${OLD_VERSION_STRING}" \
@@ -57,10 +91,10 @@ update_version_string_in_src_file()
 update_version_string_in_file()
 {
     exit_if_argc_ne $# 4
-    local VERSION_FILE="${1}"; shift
-    local SED_COMMAND="${1}"; shift
-    local OLD_VERSION_STRING="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
+    local VERSION_FILE="$1"; shift
+    local SED_COMMAND="$1"; shift
+    local OLD_VERSION_STRING="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
 
     echo -ne "Updating version from ${OLD_VERSION_STRING} to ${NEW_VERSION_STRING} in '${VERSION_FILE}'..."
     sed -i -e "${SED_COMMAND}" "${VERSION_FILE}"
@@ -74,13 +108,40 @@ update_version_string_in_file()
     return 0
 }
 
+# Commit updated files into the Git repository.
+commit_updated_files()
+{
+    exit_if_argc_ne $# 4
+    local VERSION_FILES="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local VERSION_DESC="$1"; shift
+
+    if [[ ${SWITCH_COMMIT} == 1 ]] ; then
+        "${GIT}" diff --exit-code ${VERSION_FILES} > /dev/null
+        if [ $? -ne 0 ] ; then
+            echo -ne "Committing updated version files..."
+            "${GIT}" commit -m "Update ${VERSION_DESC} version to ${NEW_VERSION_STRING}" -q ${VERSION_FILES}
+            local GIT_RESULT=$?
+            if [ ${GIT_RESULT} -ne 0 ] ; then
+                stderr_echo "Git failed with return code ${GIT_RESULT}!"
+                return 1
+            fi
+            echo "Done"
+        fi
+    fi
+
+    return 0
+}
+
 # Update Zserio core version in local copy of Git repository.
 update_core_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local ZSERIO_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/core/src/zserio/tools/ZserioVersion.java"
@@ -107,6 +168,12 @@ update_core_version()
         NUM_FILES=$((NUM_FILES+1))
     done
 
+    # commit updated version files if it is requested
+    commit_updated_files "${VERSION_FILES}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} "core"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="'${NUM_FILES}'"
 
     return 0
@@ -115,10 +182,11 @@ update_core_version()
 # Update Zserio BIN version in local copy of Git repository.
 update_bin_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local ENCODING_GUIDE_DOC="${ZSERIO_PROJECT_ROOT}/doc/ZserioEncodingGuide.md"
@@ -153,6 +221,12 @@ update_bin_version()
         NUM_FILES=$((NUM_FILES+1))
     done
 
+    # commit updated version files if it is requested
+    commit_updated_files "${VERSION_FILES}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} "BIN"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="'${NUM_FILES}'"
 
     return 0
@@ -161,10 +235,11 @@ update_bin_version()
 # Update Zserio JSON version in local copy of Git repository.
 update_json_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local JSON_GUIDE_DOC="${ZSERIO_PROJECT_ROOT}/doc/ZserioJsonGuide.md"
@@ -199,6 +274,12 @@ update_json_version()
         NUM_FILES=$((NUM_FILES+1))
     done
 
+    # commit updated version files if it is requested
+    commit_updated_files "${VERSION_FILES}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} "JSON"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="'${NUM_FILES}'"
 
     return 0
@@ -207,10 +288,11 @@ update_json_version()
 # Update C++ extension version in local copy of Git repository.
 update_cpp_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local CPP_EXTENSION_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/src/zserio/extension/cpp/CppExtensionVersion.java"
@@ -246,6 +328,13 @@ update_cpp_version()
         return 1
     fi
 
+    # commit updated version files if it is requested
+    commit_updated_files "${CPP_EXTENSION_VERSION_FILE} ${CPP_RUNTIME_VERSION}" "${NEW_VERSION_STRING}" \
+            ${SWITCH_COMMIT} "C++ extension"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="2"
 
     return 0
@@ -254,10 +343,11 @@ update_cpp_version()
 # Update Java extension version in local copy of Git repository.
 update_java_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local JAVA_EXTENSION_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/src/zserio/extension/java/JavaExtensionVersion.java"
@@ -283,6 +373,13 @@ update_java_version()
         return 1
     fi
 
+    # commit updated version files if it is requested
+    commit_updated_files "${JAVA_EXTENSION_VERSION_FILE} ${JAVA_RUNTIME_VERSION}" "${NEW_VERSION_STRING}" \
+            ${SWITCH_COMMIT} "Java extension"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="2"
 
     return 0
@@ -291,10 +388,11 @@ update_java_version()
 # Update Python extension version in local copy of Git repository.
 update_python_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local PYTHON_EXTENSION_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/src/zserio/extension/python/PythonExtensionVersion.java"
@@ -320,6 +418,13 @@ update_python_version()
         return 1
     fi
 
+    # commit updated version files if it is requested
+    commit_updated_files "${PYTHON_EXTENSION_VERSION_FILE} ${PYTHON_RUNTIME_VERSION}" "${NEW_VERSION_STRING}" \
+            ${SWITCH_COMMIT} "Python extension"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="2"
 
     return 0
@@ -328,10 +433,11 @@ update_python_version()
 # Update documentation extension version in local copy of Git repository.
 update_doc_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local DOC_EXTENSION_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/doc/src/zserio/extension/doc/DocExtensionVersion.java"
@@ -351,6 +457,13 @@ update_doc_version()
         return 1
     fi
 
+    # commit updated version files if it is requested
+    commit_updated_files "${DOC_EXTENSION_VERSION_FILE}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+            "Doc extension"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="1"
 
     return 0
@@ -359,10 +472,11 @@ update_doc_version()
 # Update documentation extension version in local copy of Git repository.
 update_xml_version()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local NEW_VERSION_STRING="${1}"; shift
-    local NUM_UPDATED_FILES_OUT="${1}"; shift
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+    local SWITCH_COMMIT="$1" ; shift
+    local NUM_UPDATED_FILES_OUT="$1"; shift
 
     # find all files with version
     local XML_EXTENSION_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/xml/src/zserio/extension/xml/XmlExtensionVersion.java"
@@ -382,6 +496,13 @@ update_xml_version()
         return 1
     fi
 
+    # commit updated version files if it is requested
+    commit_updated_files "${XML_EXTENSION_VERSION_FILE}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+            "Xml extension"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     eval ${NUM_UPDATED_FILES_OUT}="1"
 
     return 0
@@ -395,22 +516,24 @@ Description:
     Updates Zserio version files in local copy of Git repository.
 
 Usage:
-    $0 [-h] version_type new_version
+    $0 [-h] [-e] [-m] version_type new_version
 
 Arguments:
-    -h, --help   Show this help.
-    version_type Type of the version to update.
-    new_version  New version to use for updating.
+    -h, --help     Show this help.
+    -e, --help-env Show help for enviroment variables.
+    -m, --commit   Commit updated version into the Git repository. 
+    version_type   Type of the version to update.
+    new_version    New version to use for updating.
 
 Type of the version can be one of:
-    core         Zserio core version.
-    bin          Zserio BIN version.
-    json         Zserio JSON version.
-    cpp          Zserio C++ generator version.
-    java         Zserio Java generator version.
-    python       Zserio Python generator version.
-    doc          Zserio documentation generator version.
-    xml          Zserio XML generator version.
+    core           Zserio core version.
+    bin            Zserio BIN version.
+    json           Zserio JSON version.
+    cpp            Zserio C++ generator version.
+    java           Zserio Java generator version.
+    python         Zserio Python generator version.
+    doc            Zserio documentation generator version.
+    xml            Zserio XML generator version.
 
 Examples:
     $0 core 2.1.0
@@ -427,9 +550,12 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 2
-    local VERSION_TYPE_OUT="${1}"; shift
-    local NEW_VERSION_STRING_OUT="${1}"; shift
+    exit_if_argc_lt $# 3
+    local VERSION_TYPE_OUT="$1"; shift
+    local NEW_VERSION_STRING_OUT="$1"; shift
+    local SWITCH_COMMIT_OUT="$1"; shift
+
+    eval ${SWITCH_COMMIT_OUT}=0
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=();
@@ -438,6 +564,15 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-e" | "--help-env")
+                return 3
+                ;;
+
+            "-m" | "--commit")
+                eval ${SWITCH_COMMIT_OUT}=1
+                shift
                 ;;
 
             "-"*)
@@ -471,15 +606,23 @@ parse_arguments()
 main()
 {
     # parse command line arguments
-    local VERSION_TYPE NEW_VERSION_STRING
-    parse_arguments VERSION_TYPE NEW_VERSION_STRING "$@"
-    if [ $? -ne 0 ] ; then
+    local VERSION_TYPE
+    local NEW_VERSION_STRING
+    local SWITCH_COMMIT
+    parse_arguments VERSION_TYPE NEW_VERSION_STRING SWITCH_COMMIT "$@"
+    local PARSE_RESULT=$?
+    if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
+        return 0
+    elif [ ${PARSE_RESULT} -eq 3 ] ; then
+        print_update_version_help_env
+        return 0
+    elif [ ${PARSE_RESULT} -ne 0 ] ; then
         return 1
     fi
 
     # set global variables if needed
-    set_global_common_variables
+    set_update_version_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -491,35 +634,43 @@ main()
     local NUM_UPDATED_FILES=0
     case "${VERSION_TYPE}" in
         "core")
-            update_core_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_core_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "bin")
-            update_bin_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_bin_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "json")
-            update_json_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_json_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "cpp")
-            update_cpp_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_cpp_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "java")
-            update_java_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_java_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "python")
-            update_python_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_python_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "doc")
-            update_doc_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_doc_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         "xml")
-            update_xml_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" NUM_UPDATED_FILES
+            update_xml_version "${ZSERIO_PROJECT_ROOT}" "${NEW_VERSION_STRING}" ${SWITCH_COMMIT} \
+                    NUM_UPDATED_FILES
             ;;
 
         *)

@@ -4,6 +4,32 @@ SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 source "${SCRIPT_DIR}/common_test_tools.sh"
 
+# Set and check global variables.
+set_test_objects_global_variables()
+{
+    # GIT to use, defaults to "git" if not set
+    GIT="${GIT:-git}"
+    if [ ! -f "`which "${GIT}"`" ] ; then
+        stderr_echo "Cannot find git! Set GIT environment variable."
+        return 1
+    fi
+
+    return 0
+}
+
+# Print help on the environment variables used for this script.
+print_test_objects_help_env()
+{
+    cat << EOF
+Uses the following environment variables:
+    GIT      Git executable to use. Default is "git".
+
+    Either set these directly, or create 'scripts/build-env.sh' that sets these.
+    It's sourced automatically if it exists.
+
+EOF
+}
+
 # Update C++ test objects.
 update_cpp_test_objects()
 {
@@ -114,6 +140,30 @@ update_python_test_objects()
     return 0
 }
 
+# Commit all updated files into the Git repository.
+commit_updated_files()
+{
+    exit_if_argc_ne $# 1
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+
+    local TEST_OBJECTS_DIRS="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime/test/test_object \
+            ${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/runtime/test/test_object \
+            ${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/tests/test_object"
+    "${GIT}" diff --exit-code ${TEST_OBJECTS_DIRS} > /dev/null
+    if [ $? -ne 0 ] ; then
+        echo "STARTING - Committing all updated generated files"
+        "${GIT}" commit -m "Update all generated sources in the runtime tests" ${TEST_OBJECTS_DIRS}
+        local GIT_RESULT=$?
+        if [ ${GIT_RESULT} -ne 0 ] ; then
+            stderr_echo "Git failed with return code ${GIT_RESULT}!"
+            return 1
+        fi
+        echo "FINISHED - Committing all updated generated files"
+    fi
+
+    return 0
+}
+
 # Print help message.
 print_help()
 {
@@ -122,21 +172,22 @@ Description:
     Update test objects in the runtime libraries.
 
 Usage:
-    $0 [-h] [-e] [-p] [-o <dir>] generator...
+    $0 [-h] [-e] [-p] [-m] [-o <dir>] generator...
 
 Arguments:
-    -h, --help          Show this help.
-    -e, --help-env      Show help for enviroment variables.
-    -p, --purge         Purge test objects together with output directory before update.
+    -h, --help      Show this help.
+    -e, --help-env  Show help for enviroment variables.
+    -p, --purge     Purge test objects together with output directory before update.
+    -m, --commit    Commit updated version into the Git repository. 
     -o <dir>, --output-directory <dir>
-                        Output directory for updating.
-    generator           Specify the generator to test.
+                    Output directory for updating.
+    generator       Specify the generator to test.
 
 Generator can be:
-    cpp                 Update test objects in C++ runtime library.
-    java                Update test objects in Java runtime library.
-    python              Update test objects in Python runtime library.
-    all                 Update test objects in all runtime libraries.
+    cpp             Update test objects in C++ runtime library.
+    java            Update test objects in Java runtime library.
+    python          Update test objects in Python runtime library.
+    all             Update test objects in all runtime libraries.
 
 Examples:
     $0 cpp java python
@@ -154,17 +205,19 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 5
+    exit_if_argc_lt $# 6
     local PARAM_CPP_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
+    local SWITCH_COMMIT_OUT="$1"; shift
 
     eval ${PARAM_CPP_OUT}=0
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
+    eval ${SWITCH_COMMIT_OUT}=0
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=()
@@ -181,6 +234,11 @@ parse_arguments()
 
             "-p" | "--purge")
                 eval ${SWITCH_PURGE_OUT}=1
+                shift
+                ;;
+
+            "-m" | "--commit")
+                eval ${SWITCH_COMMIT_OUT}=1
                 shift
                 ;;
 
@@ -258,7 +316,8 @@ main()
     local PARAM_PYTHON
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_PURGE
-    parse_arguments PARAM_CPP PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR SWITCH_PURGE "$@"
+    local SWITCH_COMMIT
+    parse_arguments PARAM_CPP PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR SWITCH_PURGE SWITCH_COMMIT "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -266,6 +325,7 @@ main()
     elif [ ${PARSE_RESULT} -eq 3 ] ; then
         print_test_help_env
         print_help_env
+        print_test_objects_help_env
         return 0
     elif [ ${PARSE_RESULT} -ne 0 ] ; then
         return 1
@@ -281,6 +341,11 @@ main()
     fi
 
     set_test_global_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    set_test_objects_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -375,6 +440,14 @@ main()
         fi
         echo "FINISHED - ${MESSAGE}"
         echo
+    fi
+
+    # commit all updated files 
+    if [[ ${SWITCH_COMMIT} != 0 ]] ; then
+        commit_updated_files "${ZSERIO_PROJECT_ROOT}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     return 0
