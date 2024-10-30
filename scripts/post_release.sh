@@ -384,7 +384,7 @@ EOF
         fi
 
         echo $'\e[1;33m'"Don't forget to check the Zserio Conan Center Index repository!"$'\e[0m'
-        echo $'\e[1;33m'"Run: 'conan create zserio/recipes/all/conanfile.py --version ${ZSERIO_VERSION}'"$'\e[0m'
+        echo $'\e[1;33m'"Run: 'conan create recipes/zserio/all/conanfile.py --version ${ZSERIO_VERSION}'"$'\e[0m'
         echo $'\e[1;33m'"If it is ok, push changes to origin and make a pull request to upstream!"$'\e[0m'
         read -n 1 -s -r -p "Press any key to continue..."
         echo

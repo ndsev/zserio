@@ -277,12 +277,12 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         </condition>
         <echo message="Deploying zserio version '${zserio.deploy.version}' to '${zserio.deploy.repo_url}'"/>
 
-        <input message="Please enter repository user name: "
+        <input message="Please enter repository token name: "
                 addproperty="zserio.deploy.user_name">
             <handler classname="org.apache.tools.ant.input.DefaultInputHandler"/>
         </input>
 
-        <input message="Please enter repository password: "
+        <input message="Please enter repository token password: "
                 addproperty="zserio.deploy.password">
             <handler classname="org.apache.tools.ant.input.SecureInputHandler"/>
         </input>
