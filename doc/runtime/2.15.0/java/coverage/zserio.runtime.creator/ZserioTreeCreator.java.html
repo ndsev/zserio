@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ZserioTreeCreator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.creator</a> &gt; <span class="el_source">ZserioTreeCreator.java</span></div><h1>ZserioTreeCreator.java</h1><pre class="source lang-java linenums">package zserio.runtime.creator;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.function.BiFunction;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.ParameterInfo;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.typeinfo.TypeInfoUtil;
+
+/**
+ * Creator for zserio objects.
+ *
+ * It allows to build zserio object tree defined by the given type info (see -withTypeInfoCode).
+ */
+public final class ZserioTreeCreator
+{
+    /**
+     * Constructor.
+     *
+     * @param typeInfo Type info defining the tree.
+     * @param arguments Arguments of type which defines the tree.
+     */
+    public ZserioTreeCreator(TypeInfo typeInfo, Object... arguments)
+<span class="fc" id="L34">    {</span>
+<span class="fc" id="L35">        this.rootTypeInfo = typeInfo;</span>
+<span class="fc" id="L36">        this.rootArguments = arguments;</span>
+<span class="fc" id="L37">        fieldInfoStack = new Stack&lt;FieldInfo&gt;();</span>
+<span class="fc" id="L38">        valueStack = new Stack&lt;Object&gt;();</span>
+<span class="fc" id="L39">        this.state = State.BEFORE_ROOT;</span>
+<span class="fc" id="L40">    }</span>
+
+    /**
+     * Creates the top level compound element and move to state of building its children.
+     */
+    public void beginRoot()
+    {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (state != State.BEFORE_ROOT)</span>
+<span class="fc" id="L48">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot begin root in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L50">        final Object root = createObject(rootTypeInfo, rootArguments);</span>
+<span class="fc" id="L51">        valueStack.push(root);</span>
+<span class="fc" id="L52">        state = State.IN_COMPOUND;</span>
+<span class="fc" id="L53">    }</span>
+
+    /**
+     * Finishes building and returns the created tree.
+     *
+     * @return Zserio object tree.
+     */
+    public Object endRoot()
+    {
+<span class="fc bfc" id="L62" title="All 4 branches covered.">        if (state != State.IN_COMPOUND || valueStack.size() != 1)</span>
+<span class="fc" id="L63">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot end root in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L65">        state = State.BEFORE_ROOT;</span>
+<span class="fc" id="L66">        return valueStack.pop();</span>
+    }
+
+    /**
+     * Creates an array field within the current compound.
+     *
+     * @param name Name of the array field.
+     */
+    public void beginArray(String name)
+    {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (state != State.IN_COMPOUND)</span>
+<span class="fc" id="L77">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot begin array in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L79">        final TypeInfo parentTypeInfo = getTypeInfo();</span>
+<span class="fc" id="L80">        final FieldInfo fieldInfo = findFieldInfo(parentTypeInfo, name);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (!fieldInfo.isArray())</span>
+        {
+<span class="fc" id="L83">            throw new ZserioError(</span>
+<span class="fc" id="L84">                    &quot;ZserioTreeCreator: Member '&quot; + fieldInfo.getSchemaName() + &quot;' is not an array!&quot;);</span>
+        }
+
+<span class="fc" id="L87">        fieldInfoStack.push(fieldInfo);</span>
+<span class="fc" id="L88">        valueStack.push(new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L89">        state = State.IN_ARRAY;</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Finishes the array field.
+     */
+    public void endArray()
+    {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (state != State.IN_ARRAY)</span>
+<span class="fc" id="L98">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot end array in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L100">        final FieldInfo fieldInfo = fieldInfoStack.pop();</span>
+<span class="fc" id="L101">        final List&lt;?&gt; list = (List&lt;?&gt;)valueStack.pop();</span>
+<span class="fc" id="L102">        final Object array = createArray(fieldInfo, list);</span>
+
+<span class="fc" id="L104">        final TypeInfo parentTypeInfo = getTypeInfo();</span>
+<span class="fc" id="L105">        final Object parent = valueStack.peek();</span>
+<span class="fc" id="L106">        setField(parentTypeInfo, parent, fieldInfo, array);</span>
+<span class="fc" id="L107">        state = State.IN_COMPOUND;</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Creates a compound field within the current compound.
+     *
+     * @param name Name of the compound field.
+     */
+    public void beginCompound(String name)
+    {
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (state != State.IN_COMPOUND)</span>
+<span class="fc" id="L118">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot begin compound in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L120">        final TypeInfo parentTypeInfo = getTypeInfo();</span>
+<span class="fc" id="L121">        final FieldInfo fieldInfo = findFieldInfo(parentTypeInfo, name);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (fieldInfo.isArray())</span>
+<span class="fc" id="L123">            throw new ZserioError(&quot;ZserioTreeCreator: Member '&quot; + fieldInfo.getSchemaName() + &quot;' is an array!&quot;);</span>
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (!TypeInfoUtil.isCompound(fieldInfo.getTypeInfo().getSchemaType()))</span>
+        {
+<span class="fc" id="L127">            throw new ZserioError(</span>
+<span class="fc" id="L128">                    &quot;ZserioTreeCreator: Member '&quot; + fieldInfo.getSchemaName() + &quot;' is not a compound!&quot;);</span>
+        }
+
+<span class="fc" id="L131">        final Object compound = createObject(fieldInfo, valueStack.peek());</span>
+<span class="fc" id="L132">        fieldInfoStack.push(fieldInfo);</span>
+<span class="fc" id="L133">        valueStack.push(compound);</span>
+<span class="fc" id="L134">        state = State.IN_COMPOUND;</span>
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Finishes the compound.
+     */
+    public void endCompound()
+    {
+<span class="fc bfc" id="L142" title="All 4 branches covered.">        if (state != State.IN_COMPOUND || fieldInfoStack.isEmpty())</span>
+<span class="fc" id="L143">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot end compound in state '&quot; + state + &quot;'&quot; +</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                    (fieldInfoStack.isEmpty() ? &quot; (expecting endRoot)!&quot; : &quot;!&quot;));</span>
+
+<span class="fc" id="L146">        final FieldInfo fieldInfo = fieldInfoStack.pop();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (fieldInfo.isArray())</span>
+<span class="fc" id="L148">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot end compound, it's an array element!&quot;);</span>
+
+<span class="fc" id="L150">        final Object compound = valueStack.pop();</span>
+<span class="fc" id="L151">        final TypeInfo parentTypeInfo = getTypeInfo();</span>
+<span class="fc" id="L152">        final Object parent = valueStack.peek();</span>
+<span class="fc" id="L153">        setField(parentTypeInfo, parent, fieldInfo, compound);</span>
+<span class="fc" id="L154">    }</span>
+
+    /**
+     * Sets field value within the current compound.
+     *
+     * @param name Name of the field.
+     * @param value Value to set.
+     */
+    public void setValue(String name, Object value)
+    {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (state != State.IN_COMPOUND)</span>
+<span class="fc" id="L165">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot set value in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L167">        final FieldInfo fieldInfo = findFieldInfo(getTypeInfo(), name);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (value != null)</span>
+        {
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            if (fieldInfo.isArray())</span>
+            {
+<span class="fc" id="L172">                throw new ZserioError(</span>
+<span class="fc" id="L173">                        &quot;ZserioTreeCreator: Expecting array in field '&quot; + fieldInfo.getSchemaName() + &quot;!&quot;);</span>
+            }
+
+<span class="fc" id="L176">            final TypeInfo typeInfo = fieldInfo.getTypeInfo();</span>
+<span class="fc" id="L177">            final Class&lt;?&gt; boxedFieldClass = toBoxedClass(typeInfo.getJavaClass());</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">            if (!boxedFieldClass.isInstance(value))</span>
+<span class="fc" id="L179">                throw new ZserioError(&quot;ZserioTreeCreator: Unexpected value type '&quot; + value.getClass() + &quot;', &quot;</span>
+<span class="fc" id="L180">                        + &quot;expecting '&quot; + typeInfo.getJavaClass() + &quot;'!&quot;);</span>
+        }
+
+<span class="fc" id="L183">        final TypeInfo parentTypeInfo = getTypeInfo();</span>
+<span class="fc" id="L184">        final Object parent = valueStack.peek();</span>
+<span class="fc" id="L185">        setField(parentTypeInfo, parent, fieldInfo, value);</span>
+<span class="fc" id="L186">    }</span>
+
+    /**
+     * Gets type info of the expected field.
+     *
+     * @param name Field name.
+     *
+     * @return Type info of the expected field.
+     */
+    public TypeInfo getFieldType(String name)
+    {
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (state != State.IN_COMPOUND)</span>
+<span class="fc" id="L198">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot get field type in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L200">        final FieldInfo fieldInfo = findFieldInfo(getTypeInfo(), name);</span>
+<span class="fc" id="L201">        return fieldInfo.getTypeInfo();</span>
+    }
+
+    /**
+     * Creates compound array element within the current array.
+     */
+    public void beginCompoundElement()
+    {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (state != State.IN_ARRAY)</span>
+<span class="fc" id="L210">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot begin compound element in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L212">        final FieldInfo fieldInfo = fieldInfoStack.peek();</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        if (!TypeInfoUtil.isCompound(fieldInfo.getTypeInfo().getSchemaType()))</span>
+        {
+<span class="fc" id="L215">            throw new ZserioError(</span>
+<span class="fc" id="L216">                    &quot;ZserioTreeCreator: Member '&quot; + fieldInfo.getSchemaName() + &quot;' is not a compound!&quot;);</span>
+        }
+
+<span class="fc" id="L219">        final List&lt;?&gt; list = (List&lt;?&gt;)valueStack.peek();</span>
+<span class="fc" id="L220">        final Object parent = valueStack.get(valueStack.size() - 2);</span>
+<span class="fc" id="L221">        final Object compound = createObject(fieldInfo, parent, list.size());</span>
+<span class="fc" id="L222">        valueStack.push(compound);</span>
+<span class="fc" id="L223">        state = State.IN_COMPOUND;</span>
+<span class="fc" id="L224">    }</span>
+
+    /**
+     * Finishes the compound element.
+     */
+    public void endCompoundElement()
+    {
+<span class="fc bfc" id="L231" title="All 4 branches covered.">        if (state != State.IN_COMPOUND || fieldInfoStack.empty())</span>
+        {
+<span class="fc" id="L233">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot end compound element in state '&quot; + state + &quot;'&quot; +</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">                    (fieldInfoStack.empty() ? &quot;(expecting endRoot)!&quot; : &quot;!&quot;));</span>
+        }
+
+<span class="fc" id="L237">        final FieldInfo fieldInfo = fieldInfoStack.peek();</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        if (!fieldInfo.isArray())</span>
+<span class="fc" id="L239">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot end compound element, not in array!&quot;);</span>
+
+<span class="fc" id="L241">        final Object compound = valueStack.pop();</span>
+        @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L243">        final List&lt;Object&gt; list = (List&lt;Object&gt;)valueStack.peek();</span>
+<span class="fc" id="L244">        list.add(compound);</span>
+<span class="fc" id="L245">        state = State.IN_ARRAY;</span>
+<span class="fc" id="L246">    }</span>
+
+    /**
+     * Adds the value to the array.
+     *
+     * @param value Value to add.
+     */
+    public void addValueElement(Object value)
+    {
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (state != State.IN_ARRAY)</span>
+<span class="fc" id="L256">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot add value element in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">        if (value != null)</span>
+        {
+<span class="fc" id="L260">            final TypeInfo elementTypeInfo = fieldInfoStack.peek().getTypeInfo();</span>
+<span class="fc" id="L261">            final Class&lt;?&gt; boxedElementClass = toBoxedClass(elementTypeInfo.getJavaClass());</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            if (!boxedElementClass.isInstance(value))</span>
+            {
+<span class="fc" id="L264">                throw new ZserioError(&quot;ZserioTreeCreator: Unexpected value type '&quot; + value.getClass() +</span>
+<span class="fc" id="L265">                        &quot;', expecting '&quot; + elementTypeInfo.getJavaClass() + &quot;'!&quot;);</span>
+            }
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L270">        final List&lt;Object&gt; list = (List&lt;Object&gt;)valueStack.peek();</span>
+<span class="fc" id="L271">        list.add(value);</span>
+<span class="fc" id="L272">    }</span>
+
+    /**
+     * Gets type info of the expected array element.
+     *
+     * @return Type info of the expected array element.
+     */
+    public TypeInfo getElementType()
+    {
+<span class="fc bfc" id="L281" title="All 2 branches covered.">        if (state != State.IN_ARRAY)</span>
+<span class="fc" id="L282">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot get element type in state '&quot; + state + &quot;'!&quot;);</span>
+
+<span class="fc" id="L284">        final FieldInfo fieldInfo = fieldInfoStack.peek();</span>
+<span class="fc" id="L285">        return fieldInfo.getTypeInfo();</span>
+    }
+
+    private TypeInfo getTypeInfo()
+    {
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        return fieldInfoStack.empty() ? rootTypeInfo : fieldInfoStack.peek().getTypeInfo();</span>
+    }
+
+    private static FieldInfo findFieldInfo(TypeInfo typeInfo, String fieldName)
+    {
+<span class="fc" id="L295">        final List&lt;FieldInfo&gt; fields = typeInfo.getFields();</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">        for (FieldInfo field : fields)</span>
+        {
+<span class="fc bfc" id="L298" title="All 2 branches covered.">            if (field.getSchemaName().equals(fieldName))</span>
+<span class="fc" id="L299">                return field;</span>
+<span class="fc" id="L300">        }</span>
+
+<span class="fc" id="L302">        throw new ZserioError(&quot;ZserioTreeCreator: Field '&quot; + fieldName + &quot;' not found in '&quot; +</span>
+<span class="fc" id="L303">                typeInfo.getSchemaName() + &quot;'!&quot;);</span>
+    }
+
+    private static Object createObject(TypeInfo typeInfo, Object[] arguments)
+    {
+<span class="fc" id="L308">        final List&lt;ParameterInfo&gt; parameters = typeInfo.getParameters();</span>
+<span class="fc" id="L309">        final Class&lt;?&gt;[] parametersTypes = new Class&lt;?&gt;[parameters.size()];</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (int i = 0; i &lt; parameters.size(); ++i)</span>
+<span class="fc" id="L311">            parametersTypes[i] = parameters.get(i).getTypeInfo().getJavaClass();</span>
+
+        try
+        {
+<span class="fc" id="L315">            final Constructor&lt;?&gt; constructor = typeInfo.getJavaClass().getConstructor(parametersTypes);</span>
+<span class="fc" id="L316">            return constructor.newInstance(arguments);</span>
+        }
+<span class="nc" id="L318">        catch (InstantiationException | IllegalAccessException | NoSuchMethodException |</span>
+                InvocationTargetException excpt)
+        {
+<span class="nc" id="L321">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot call constructor of Zserio object '&quot; +</span>
+<span class="nc" id="L322">                            typeInfo.getSchemaName() + &quot;'!&quot;,</span>
+                    excpt);
+        }
+    }
+
+    private static Object createObject(FieldInfo fieldInfo, Object parent)
+    {
+<span class="fc" id="L329">        return createObject(fieldInfo, parent, null);</span>
+    }
+
+    private static Object createObject(FieldInfo fieldInfo, Object parent, Integer elementIndex)
+    {
+<span class="fc" id="L334">        final List&lt;BiFunction&lt;Object, Integer, Object&gt;&gt; typeArguments = fieldInfo.getTypeArguments();</span>
+<span class="fc" id="L335">        final Object[] arguments = new Object[typeArguments.size()];</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">        for (int i = 0; i &lt; typeArguments.size(); ++i)</span>
+<span class="fc" id="L337">            arguments[i] = typeArguments.get(i).apply(parent, elementIndex);</span>
+<span class="fc" id="L338">        final TypeInfo typeInfo = fieldInfo.getTypeInfo();</span>
+
+<span class="fc" id="L340">        return createObject(typeInfo, arguments);</span>
+    }
+
+    private static Object createArray(FieldInfo fieldInfo, List&lt;?&gt; list)
+    {
+<span class="fc" id="L345">        final Class&lt;?&gt; arrayClass = fieldInfo.getTypeInfo().getJavaClass();</span>
+<span class="fc" id="L346">        final Object array = Array.newInstance(arrayClass, list.size());</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        for (int i = 0; i &lt; list.size(); ++i)</span>
+<span class="fc" id="L348">            Array.set(array, i, list.get(i));</span>
+
+<span class="fc" id="L350">        return array;</span>
+    }
+
+    private static void setField(TypeInfo parentTypeInfo, Object parent, FieldInfo fieldInfo, Object value)
+    {
+<span class="fc" id="L355">        final String setterName = fieldInfo.getSetterName();</span>
+        try
+        {
+<span class="fc" id="L358">            Class&lt;?&gt; fieldClass = fieldInfo.getTypeInfo().getJavaClass();</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">            if (fieldInfo.isArray())</span>
+            {
+                // arrays have stored in Type Info Java class for element not for an array
+<span class="fc" id="L362">                fieldClass = Array.newInstance(fieldClass, 0).getClass();</span>
+            }
+<span class="fc bfc" id="L364" title="All 2 branches covered.">            else if (fieldInfo.isOptional())</span>
+            {
+                // optionals have stored in Type Info Java class for unboxed element not for a boxed element
+<span class="fc" id="L367">                fieldClass = toBoxedClass(fieldClass);</span>
+            }
+<span class="fc" id="L369">            final Method setter = parentTypeInfo.getJavaClass().getMethod(setterName, fieldClass);</span>
+<span class="fc" id="L370">            setter.invoke(parent, value);</span>
+        }
+<span class="nc" id="L372">        catch (SecurityException | IllegalAccessException | IllegalArgumentException |</span>
+                InvocationTargetException | NoSuchMethodException excpt)
+        {
+<span class="nc" id="L375">            throw new ZserioError(&quot;ZserioTreeCreator: Cannot set field '&quot; + fieldInfo.getSchemaName() +</span>
+<span class="nc" id="L376">                            &quot;' in Zserio object '&quot; + parentTypeInfo.getSchemaName() + &quot;'!&quot;,</span>
+                    excpt);
+<span class="fc" id="L378">        }</span>
+<span class="fc" id="L379">    }</span>
+
+    private static Class&lt;?&gt; toBoxedClass(Class&lt;?&gt; clazz)
+    {
+<span class="fc" id="L383">        final Class&lt;?&gt; boxedClazz = unboxedToBoxedClassMap.get(clazz);</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        return (boxedClazz == null) ? clazz : boxedClazz;</span>
+    }
+
+<span class="fc" id="L387">    private enum State</span>
+    {
+<span class="fc" id="L389">        BEFORE_ROOT,</span>
+<span class="fc" id="L390">        IN_COMPOUND,</span>
+<span class="fc" id="L391">        IN_ARRAY,</span>
+<span class="fc" id="L392">        DONE</span>
+    }
+
+<span class="fc" id="L395">    private static final Map&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt; unboxedToBoxedClassMap = new HashMap&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt;();</span>
+    static
+    {
+<span class="fc" id="L398">        unboxedToBoxedClassMap.put(boolean.class, Boolean.class);</span>
+<span class="fc" id="L399">        unboxedToBoxedClassMap.put(byte.class, Byte.class);</span>
+<span class="fc" id="L400">        unboxedToBoxedClassMap.put(short.class, Short.class);</span>
+<span class="fc" id="L401">        unboxedToBoxedClassMap.put(char.class, Character.class);</span>
+<span class="fc" id="L402">        unboxedToBoxedClassMap.put(int.class, Integer.class);</span>
+<span class="fc" id="L403">        unboxedToBoxedClassMap.put(long.class, Long.class);</span>
+<span class="fc" id="L404">        unboxedToBoxedClassMap.put(float.class, Float.class);</span>
+<span class="fc" id="L405">        unboxedToBoxedClassMap.put(double.class, Double.class);</span>
+<span class="fc" id="L406">    }</span>
+
+    private final TypeInfo rootTypeInfo;
+    private final Object[] rootArguments;
+    private final Stack&lt;FieldInfo&gt; fieldInfoStack;
+    private final Stack&lt;Object&gt; valueStack;
+
+    private State state;
+};
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
