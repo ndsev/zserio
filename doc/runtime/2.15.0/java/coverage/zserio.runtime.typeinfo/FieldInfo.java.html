@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FieldInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">FieldInfo.java</span></div><h1>FieldInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.IntSupplier;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+
+/**
+ * Type information for compound type field.
+ */
+public final class FieldInfo
+{
+    /**
+     * Constructor.
+     *
+     * @param schemaName Field schema name.
+     * @param getterName Field getter name.
+     * @param setterName Field setter name.
+     * @param typeInfo Field type info.
+     * @param typeArguments Field type arguments.
+     * @param isExtended Flag whether the field is extended.
+     * @param alignment Field alignment or null in case of no alignment.
+     * @param offset Field offset or null in case of no offset.
+     * @param initializer Field initializer or null in case of no initializer.
+     * @param isOptional Flag whether the field is optional.
+     * @param optionalCondition Field optional condition or null if field is not optional.
+     * @param isUsedIndicatorName Field &quot;is used&quot; indicator name.
+     * @param isSetIndicatorName Field &quot;is set&quot; indicator name.
+     * @param constraint Field constraint or null if the field has no constraint.
+     * @param isArray Flag whether the field is an array.
+     * @param arrayLength Array length or null if the field is not an array or is auto/implicit array.
+     * @param isPacked Flag whether the field is a packed array.
+     * @param isImplicit Flag whether the field is an implicit array.
+     */
+    public FieldInfo(String schemaName, String getterName, String setterName, TypeInfo typeInfo,
+            List&lt;BiFunction&lt;Object, Integer, Object&gt;&gt; typeArguments, boolean isExtended, IntSupplier alignment,
+            BiFunction&lt;Object, Integer, Object&gt; offset, Supplier&lt;Object&gt; initializer, boolean isOptional,
+            Predicate&lt;Object&gt; optionalCondition, String isUsedIndicatorName, String isSetIndicatorName,
+            Predicate&lt;Object&gt; constraint, boolean isArray, ToIntFunction&lt;Object&gt; arrayLength, boolean isPacked,
+            boolean isImplicit)
+<span class="fc" id="L44">    {</span>
+<span class="fc" id="L45">        this.schemaName = schemaName;</span>
+<span class="fc" id="L46">        this.getterName = getterName;</span>
+<span class="fc" id="L47">        this.setterName = setterName;</span>
+<span class="fc" id="L48">        this.typeInfo = typeInfo;</span>
+<span class="fc" id="L49">        this.typeArguments = typeArguments;</span>
+<span class="fc" id="L50">        this.isExtended = isExtended;</span>
+<span class="fc" id="L51">        this.alignment = alignment;</span>
+<span class="fc" id="L52">        this.offset = offset;</span>
+<span class="fc" id="L53">        this.initializer = initializer;</span>
+<span class="fc" id="L54">        this.isOptional = isOptional;</span>
+<span class="fc" id="L55">        this.optionalCondition = optionalCondition;</span>
+<span class="fc" id="L56">        this.isUsedIndicatorName = isUsedIndicatorName;</span>
+<span class="fc" id="L57">        this.isSetIndicatorName = isSetIndicatorName;</span>
+<span class="fc" id="L58">        this.constraint = constraint;</span>
+<span class="fc" id="L59">        this.isArray = isArray;</span>
+<span class="fc" id="L60">        this.arrayLength = arrayLength;</span>
+<span class="fc" id="L61">        this.isPacked = isPacked;</span>
+<span class="fc" id="L62">        this.isImplicit = isImplicit;</span>
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * Gets field schema name.
+     *
+     * @return Name of the field as is defined in zserio schema.
+     */
+    public String getSchemaName()
+    {
+<span class="fc" id="L72">        return schemaName;</span>
+    }
+
+    /**
+     * Gets field getter name.
+     *
+     * @return Name of the field getter as is in generated code.
+     */
+    public String getGetterName()
+    {
+<span class="fc" id="L82">        return getterName;</span>
+    }
+
+    /**
+     * Gets field setter name.
+     *
+     * @return Name of the field setter as is in generated code.
+     */
+    public String getSetterName()
+    {
+<span class="fc" id="L92">        return setterName;</span>
+    }
+
+    /**
+     * Gets type information for the field.
+     *
+     * @return Field type info.
+     */
+    public TypeInfo getTypeInfo()
+    {
+<span class="fc" id="L102">        return typeInfo;</span>
+    }
+
+    /**
+     * Gets sequence of field type arguments.
+     *
+     * @return Unmodifiable list of type arguments.
+     */
+    public List&lt;BiFunction&lt;Object, Integer, Object&gt;&gt; getTypeArguments()
+    {
+<span class="fc" id="L112">        return Collections.unmodifiableList(typeArguments);</span>
+    }
+
+    /**
+     * Gets whether the field is extended.
+     *
+     * @return True if the field is extended, false otherwise.
+     */
+    public boolean isExtended()
+    {
+<span class="nc" id="L122">        return isExtended;</span>
+    }
+
+    /**
+     * Gets field alignment expression.
+     *
+     * @return Field alignment or null in case of no alignment.
+     */
+    public IntSupplier getAlignment()
+    {
+<span class="nc" id="L132">        return alignment;</span>
+    }
+
+    /**
+     * Gets field offset expression.
+     *
+     * @return Field offset or null in case of no offset.
+     */
+    public BiFunction&lt;Object, Integer, Object&gt; getOffset()
+    {
+<span class="nc" id="L142">        return offset;</span>
+    }
+
+    /**
+     * Gets field initializer expression.
+     *
+     * @return Field initializer or null in case of no initializer.
+     */
+    public Supplier&lt;Object&gt; getInitializer()
+    {
+<span class="nc" id="L152">        return initializer;</span>
+    }
+
+    /**
+     * Gets whether the field is optional.
+     *
+     * @return True if the field is optional, false otherwise.
+     */
+    public boolean isOptional()
+    {
+<span class="fc" id="L162">        return isOptional;</span>
+    }
+
+    /**
+     * Gets field optional condition expression.
+     *
+     * @return Optional condition or null if the field is not optional.
+     */
+    public Predicate&lt;Object&gt; getOptionalCondition()
+    {
+<span class="nc" id="L172">        return optionalCondition;</span>
+    }
+
+    /**
+     * Gets field &quot;is used&quot; indicator name.
+     *
+     * @return Name of the field &quot;is used&quot; indicator as is in generated code.
+     */
+    public String getIsUsedIndicatorName()
+    {
+<span class="nc" id="L182">        return isUsedIndicatorName;</span>
+    }
+
+    /**
+     * Gets field &quot;is set&quot; indicator name.
+     *
+     * @return Name of the field &quot;is set&quot; indicator as is in generated code.
+     */
+    public String getIsSetIndicatorName()
+    {
+<span class="nc" id="L192">        return isSetIndicatorName;</span>
+    }
+
+    /**
+     * Gets field constraint expression.
+     *
+     * @return Constraint or null if the field does not have constraint.
+     */
+    public Predicate&lt;Object&gt; getConstraint()
+    {
+<span class="nc" id="L202">        return constraint;</span>
+    }
+
+    /**
+     * Gets whether the field is an array.
+     *
+     * @return True if field is array, false otherwise.
+     */
+    public boolean isArray()
+    {
+<span class="fc" id="L212">        return isArray;</span>
+    }
+
+    /**
+     * Gets array field length expression.
+     *
+     * @return Array length or null if the field is not array or is auto/implicit array.
+     */
+    public ToIntFunction&lt;Object&gt; getArrayLength()
+    {
+<span class="nc" id="L222">        return arrayLength;</span>
+    }
+
+    /**
+     * Gets whether the field is a packed array.
+     *
+     * @return True if the field is array and packed, false otherwise.
+     */
+    public boolean isPacked()
+    {
+<span class="nc" id="L232">        return isPacked;</span>
+    }
+
+    /**
+     * Gets whether the field is an implicit array.
+     *
+     * @return True if the field is array and implicit.
+     */
+    public boolean isImplicit()
+    {
+<span class="nc" id="L242">        return isImplicit;</span>
+    }
+
+    private final String schemaName;
+    private final String getterName;
+    private final String setterName;
+    private final TypeInfo typeInfo;
+    private final List&lt;BiFunction&lt;Object, Integer, Object&gt;&gt; typeArguments;
+    private final boolean isExtended;
+    private final IntSupplier alignment;
+    private final BiFunction&lt;Object, Integer, Object&gt; offset;
+    private final Supplier&lt;Object&gt; initializer;
+    private final boolean isOptional;
+    private final Predicate&lt;Object&gt; optionalCondition;
+    private final String isUsedIndicatorName;
+    private final String isSetIndicatorName;
+    private final Predicate&lt;Object&gt; constraint;
+    private final boolean isArray;
+    private final ToIntFunction&lt;Object&gt; arrayLength;
+    private final boolean isPacked;
+    private final boolean isImplicit;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
