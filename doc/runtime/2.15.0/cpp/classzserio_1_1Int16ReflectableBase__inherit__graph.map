@@ -1,0 +1,12 @@
+<map id="zserio::Int16ReflectableBase&lt; ALLOC &gt;" name="zserio::Int16ReflectableBase&lt; ALLOC &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="1196,119,1371,161"/>
+<area shape="rect" id="node7" href="$classzserio_1_1DynamicSignedBitFieldReflectable_3_01ALLOC_00_01int16__t_01_4.html" title=" " alt="" coords="1434,5,1623,61"/>
+<area shape="rect" id="node8" href="$classzserio_1_1FixedSignedBitFieldReflectable_3_01ALLOC_00_01int16__t_01_4.html" title=" " alt="" coords="1419,86,1639,127"/>
+<area shape="rect" id="node9" href="$classzserio_1_1Int16Reflectable.html" title=" " alt="" coords="1441,151,1616,193"/>
+<area shape="rect" id="node10" href="$classzserio_1_1VarInt16Reflectable.html" title=" " alt="" coords="1431,217,1627,258"/>
+<area shape="rect" id="node2" href="$classzserio_1_1SignedReflectableBase.html" title=" " alt="" coords="961,119,1148,161"/>
+<area shape="rect" id="node3" href="$classzserio_1_1IntegralReflectableBase.html" title=" " alt="" coords="721,119,913,161"/>
+<area shape="rect" id="node4" href="$classzserio_1_1BuiltinReflectableBase.html" title=" " alt="" coords="457,119,673,161"/>
+<area shape="rect" id="node5" href="$classzserio_1_1ReflectableBase.html" title=" " alt="" coords="235,119,409,161"/>
+<area shape="rect" id="node6" href="$classzserio_1_1IBasicReflectable.html" title=" " alt="" coords="5,119,187,161"/>
+</map>
