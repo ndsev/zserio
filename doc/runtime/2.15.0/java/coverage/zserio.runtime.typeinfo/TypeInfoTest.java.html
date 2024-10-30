@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeInfoTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">TypeInfoTest.java</span></div><h1>TypeInfoTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.ChoiceTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.PubsubTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.RecursiveTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.ServiceTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.SqlDatabaseTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.SqlTableTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.StructTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.UnionTypeInfo;
+
+<span class="fc" id="L29">public class TypeInfoTest</span>
+{
+    @Test
+    public void builtinTypeInfo()
+    {
+<span class="fc" id="L34">        checkBuiltinTypeInfo(BuiltinTypeInfo.getBool(), &quot;bool&quot;, SchemaType.BOOL, JavaType.BOOLEAN, 1);</span>
+
+<span class="fc" id="L36">        checkBuiltinTypeInfo(BuiltinTypeInfo.getInt8(), &quot;int8&quot;, SchemaType.INT8, JavaType.BYTE, 8);</span>
+<span class="fc" id="L37">        checkBuiltinTypeInfo(BuiltinTypeInfo.getInt16(), &quot;int16&quot;, SchemaType.INT16, JavaType.SHORT, 16);</span>
+<span class="fc" id="L38">        checkBuiltinTypeInfo(BuiltinTypeInfo.getInt32(), &quot;int32&quot;, SchemaType.INT32, JavaType.INT, 32);</span>
+<span class="fc" id="L39">        checkBuiltinTypeInfo(BuiltinTypeInfo.getInt64(), &quot;int64&quot;, SchemaType.INT64, JavaType.LONG, 64);</span>
+
+<span class="fc" id="L41">        checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt8(), &quot;uint8&quot;, SchemaType.UINT8, JavaType.SHORT, 8);</span>
+<span class="fc" id="L42">        checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt16(), &quot;uint16&quot;, SchemaType.UINT16, JavaType.INT, 16);</span>
+<span class="fc" id="L43">        checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt32(), &quot;uint32&quot;, SchemaType.UINT32, JavaType.LONG, 32);</span>
+<span class="fc" id="L44">        checkBuiltinTypeInfo(</span>
+<span class="fc" id="L45">                BuiltinTypeInfo.getUInt64(), &quot;uint64&quot;, SchemaType.UINT64, JavaType.BIG_INTEGER, 64);</span>
+
+<span class="fc" id="L47">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt16(), &quot;varint16&quot;, SchemaType.VARINT16, JavaType.SHORT);</span>
+<span class="fc" id="L48">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt32(), &quot;varint32&quot;, SchemaType.VARINT32, JavaType.INT);</span>
+<span class="fc" id="L49">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt64(), &quot;varint64&quot;, SchemaType.VARINT64, JavaType.LONG);</span>
+<span class="fc" id="L50">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt(), &quot;varint&quot;, SchemaType.VARINT, JavaType.LONG);</span>
+<span class="fc" id="L51">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt16(), &quot;varuint16&quot;, SchemaType.VARUINT16, JavaType.SHORT);</span>
+<span class="fc" id="L52">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt32(), &quot;varuint32&quot;, SchemaType.VARUINT32, JavaType.INT);</span>
+<span class="fc" id="L53">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt64(), &quot;varuint64&quot;, SchemaType.VARUINT64, JavaType.LONG);</span>
+<span class="fc" id="L54">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt(), &quot;varuint&quot;, SchemaType.VARUINT, JavaType.BIG_INTEGER);</span>
+<span class="fc" id="L55">        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarSize(), &quot;varsize&quot;, SchemaType.VARSIZE, JavaType.INT);</span>
+
+<span class="fc" id="L57">        checkBuiltinTypeInfo(BuiltinTypeInfo.getFloat16(), &quot;float16&quot;, SchemaType.FLOAT16, JavaType.FLOAT, 16);</span>
+<span class="fc" id="L58">        checkBuiltinTypeInfo(BuiltinTypeInfo.getFloat32(), &quot;float32&quot;, SchemaType.FLOAT32, JavaType.FLOAT, 32);</span>
+<span class="fc" id="L59">        checkBuiltinTypeInfo(BuiltinTypeInfo.getFloat64(), &quot;float64&quot;, SchemaType.FLOAT64, JavaType.DOUBLE, 64);</span>
+
+<span class="fc" id="L61">        checkBuiltinTypeInfo(BuiltinTypeInfo.getString(), &quot;string&quot;, SchemaType.STRING, JavaType.STRING);</span>
+
+<span class="fc" id="L63">        checkBuiltinTypeInfo(BuiltinTypeInfo.getBitBuffer(), &quot;extern&quot;, SchemaType.EXTERN, JavaType.BIT_BUFFER);</span>
+
+        // fixed signed bit fields
+<span class="pc" id="L66">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getFixedSignedBitField((byte)0));</span>
+<span class="fc" id="L67">        short bitSize = 1;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (; bitSize &lt;= 8; ++bitSize)</span>
+        {
+<span class="fc" id="L70">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedSignedBitField((byte)bitSize), &quot;int:&quot; + bitSize,</span>
+                    SchemaType.FIXED_SIGNED_BITFIELD, JavaType.BYTE, bitSize);
+        }
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (; bitSize &lt;= 16; ++bitSize)</span>
+        {
+<span class="fc" id="L75">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedSignedBitField((byte)bitSize), &quot;int:&quot; + bitSize,</span>
+                    SchemaType.FIXED_SIGNED_BITFIELD, JavaType.SHORT, bitSize);
+        }
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (; bitSize &lt;= 32; ++bitSize)</span>
+        {
+<span class="fc" id="L80">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedSignedBitField((byte)bitSize), &quot;int:&quot; + bitSize,</span>
+                    SchemaType.FIXED_SIGNED_BITFIELD, JavaType.INT, bitSize);
+        }
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (; bitSize &lt;= 64; ++bitSize)</span>
+        {
+<span class="fc" id="L85">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedSignedBitField((byte)bitSize), &quot;int:&quot; + bitSize,</span>
+                    SchemaType.FIXED_SIGNED_BITFIELD, JavaType.LONG, bitSize);
+        }
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (; bitSize &lt; 255; ++bitSize)</span>
+        {
+<span class="fc" id="L90">            final byte bitSizeArg = (byte)bitSize;</span>
+<span class="pc" id="L91">            assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getFixedSignedBitField(bitSizeArg));</span>
+        }
+<span class="pc" id="L93">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getFixedSignedBitField((byte)255));</span>
+
+        // fixed unsigned bit fields
+<span class="pc" id="L96">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getFixedUnsignedBitField((byte)0));</span>
+<span class="fc" id="L97">        bitSize = 0;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (++bitSize; bitSize &lt; 8; ++bitSize)</span>
+        {
+<span class="fc" id="L100">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedUnsignedBitField((byte)bitSize), &quot;bit:&quot; + bitSize,</span>
+                    SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BYTE, bitSize);
+        }
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (; bitSize &lt; 16; ++bitSize)</span>
+        {
+<span class="fc" id="L105">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedUnsignedBitField((byte)bitSize), &quot;bit:&quot; + bitSize,</span>
+                    SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.SHORT, bitSize);
+        }
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (; bitSize &lt; 32; ++bitSize)</span>
+        {
+<span class="fc" id="L110">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedUnsignedBitField((byte)bitSize), &quot;bit:&quot; + bitSize,</span>
+                    SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.INT, bitSize);
+        }
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (; bitSize &lt; 64; ++bitSize)</span>
+        {
+<span class="fc" id="L115">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedUnsignedBitField((byte)bitSize), &quot;bit:&quot; + bitSize,</span>
+                    SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.LONG, bitSize);
+        }
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (; bitSize == 64; ++bitSize)</span>
+        {
+<span class="fc" id="L120">            checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedUnsignedBitField((byte)bitSize), &quot;bit:&quot; + bitSize,</span>
+                    SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER, bitSize);
+        }
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (; bitSize &lt; 255; ++bitSize)</span>
+        {
+<span class="fc" id="L125">            byte bitSizeArg = (byte)bitSize;</span>
+<span class="pc" id="L126">            assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getFixedUnsignedBitField(bitSizeArg));</span>
+        }
+<span class="pc" id="L128">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getFixedUnsignedBitField((byte)255));</span>
+
+        // dynamic signed bit fields
+<span class="pc" id="L131">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getDynamicSignedBitField((byte)0));</span>
+<span class="fc" id="L132">        short maxBitSize = 1;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        for (; maxBitSize &lt;= 8; ++maxBitSize)</span>
+        {
+<span class="fc" id="L135">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicSignedBitField((byte)maxBitSize), &quot;int&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.BYTE);
+        }
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (; maxBitSize &lt;= 16; ++maxBitSize)</span>
+        {
+<span class="fc" id="L140">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicSignedBitField((byte)maxBitSize), &quot;int&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.SHORT);
+        }
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (; maxBitSize &lt;= 32; ++maxBitSize)</span>
+        {
+<span class="fc" id="L145">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicSignedBitField((byte)maxBitSize), &quot;int&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.INT);
+        }
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (; maxBitSize &lt;= 64; ++maxBitSize)</span>
+        {
+<span class="fc" id="L150">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicSignedBitField((byte)maxBitSize), &quot;int&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.LONG);
+        }
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (; maxBitSize &lt; 255; ++maxBitSize)</span>
+        {
+<span class="fc" id="L155">            final byte maxBitSizeArg = (byte)maxBitSize;</span>
+<span class="pc" id="L156">            assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getDynamicSignedBitField(maxBitSizeArg));</span>
+        }
+<span class="pc" id="L158">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getDynamicSignedBitField((byte)255));</span>
+
+        // dynamic unsigned bit fields
+<span class="pc" id="L161">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getDynamicUnsignedBitField((byte)0));</span>
+<span class="fc" id="L162">        maxBitSize = 1;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (; maxBitSize &lt; 8; ++maxBitSize)</span>
+        {
+<span class="fc" id="L165">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicUnsignedBitField((byte)maxBitSize), &quot;bit&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BYTE);
+        }
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (; maxBitSize &lt; 16; ++maxBitSize)</span>
+        {
+<span class="fc" id="L170">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicUnsignedBitField((byte)maxBitSize), &quot;bit&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.SHORT);
+        }
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (; maxBitSize &lt; 32; ++maxBitSize)</span>
+        {
+<span class="fc" id="L175">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicUnsignedBitField((byte)maxBitSize), &quot;bit&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.INT);
+        }
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (; maxBitSize &lt; 64; ++maxBitSize)</span>
+        {
+<span class="fc" id="L180">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicUnsignedBitField((byte)maxBitSize), &quot;bit&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.LONG);
+        }
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (; maxBitSize == 64; ++maxBitSize)</span>
+        {
+<span class="fc" id="L185">            checkBuiltinTypeInfo(BuiltinTypeInfo.getDynamicUnsignedBitField((byte)maxBitSize), &quot;bit&lt;&gt;&quot;,</span>
+                    SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER);
+        }
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        for (; maxBitSize &lt; 255; ++maxBitSize)</span>
+        {
+<span class="fc" id="L190">            final byte maxBitSizeArg = (byte)maxBitSize;</span>
+<span class="pc" id="L191">            assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getDynamicUnsignedBitField(maxBitSizeArg));</span>
+        }
+<span class="pc" id="L193">        assertThrows(ZserioError.class, () -&gt; BuiltinTypeInfo.getDynamicUnsignedBitField((byte)255));</span>
+<span class="fc" id="L194">    }</span>
+
+    @Test
+    public void structTypeInfo()
+    {
+<span class="fc" id="L199">        final StructTypeInfo structTypeInfo = new StructTypeInfo(&quot;&quot;, null, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(),</span>
+                new ArrayList&lt;FieldInfo&gt;(), new ArrayList&lt;ParameterInfo&gt;(), new ArrayList&lt;FunctionInfo&gt;());
+<span class="fc" id="L201">        assertEquals(&quot;&quot;, structTypeInfo.getSchemaName());</span>
+<span class="fc" id="L202">        assertEquals(SchemaType.STRUCT, structTypeInfo.getSchemaType());</span>
+<span class="fc" id="L203">        assertEquals(JavaType.STRUCT, structTypeInfo.getJavaType());</span>
+<span class="fc" id="L204">        assertNull(structTypeInfo.getJavaClass());</span>
+<span class="pc" id="L205">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getBitSize());</span>
+
+<span class="fc" id="L207">        assertEquals(0, structTypeInfo.getFields().size());</span>
+<span class="fc" id="L208">        assertEquals(0, structTypeInfo.getParameters().size());</span>
+<span class="fc" id="L209">        assertEquals(0, structTypeInfo.getFunctions().size());</span>
+
+<span class="pc" id="L211">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getSelector());</span>
+<span class="pc" id="L212">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getCases());</span>
+
+<span class="pc" id="L214">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L215">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L216">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getEnumItems());</span>
+<span class="pc" id="L217">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L219">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getColumns());</span>
+<span class="pc" id="L220">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L221">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L222">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L224">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getTables());</span>
+
+<span class="fc" id="L226">        assertEquals(&quot;&quot;, structTypeInfo.getTemplateName());</span>
+<span class="fc" id="L227">        assertEquals(0, structTypeInfo.getTemplateArguments().size());</span>
+
+<span class="pc" id="L229">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getMessages());</span>
+
+<span class="pc" id="L231">        assertThrows(ZserioError.class, () -&gt; structTypeInfo.getMethods());</span>
+<span class="fc" id="L232">    }</span>
+
+    @Test
+    public void unionTypeInfo()
+    {
+<span class="fc" id="L237">        final UnionTypeInfo unionTypeInfo = new UnionTypeInfo(&quot;&quot;, null, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(),</span>
+                new ArrayList&lt;FieldInfo&gt;(), new ArrayList&lt;ParameterInfo&gt;(), new ArrayList&lt;FunctionInfo&gt;());
+<span class="fc" id="L239">        assertEquals(&quot;&quot;, unionTypeInfo.getSchemaName());</span>
+<span class="fc" id="L240">        assertEquals(SchemaType.UNION, unionTypeInfo.getSchemaType());</span>
+<span class="fc" id="L241">        assertEquals(JavaType.UNION, unionTypeInfo.getJavaType());</span>
+<span class="fc" id="L242">        assertNull(unionTypeInfo.getJavaClass());</span>
+<span class="pc" id="L243">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getBitSize());</span>
+
+<span class="fc" id="L245">        assertEquals(0, unionTypeInfo.getFields().size());</span>
+<span class="fc" id="L246">        assertEquals(0, unionTypeInfo.getParameters().size());</span>
+<span class="fc" id="L247">        assertEquals(0, unionTypeInfo.getFunctions().size());</span>
+
+<span class="pc" id="L249">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getSelector());</span>
+<span class="pc" id="L250">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getCases());</span>
+
+<span class="pc" id="L252">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L253">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L254">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getEnumItems());</span>
+<span class="pc" id="L255">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L257">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getColumns());</span>
+<span class="pc" id="L258">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L259">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L260">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L262">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getTables());</span>
+
+<span class="fc" id="L264">        assertEquals(&quot;&quot;, unionTypeInfo.getTemplateName());</span>
+<span class="fc" id="L265">        assertEquals(0, unionTypeInfo.getTemplateArguments().size());</span>
+
+<span class="pc" id="L267">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getMessages());</span>
+
+<span class="pc" id="L269">        assertThrows(ZserioError.class, () -&gt; unionTypeInfo.getMethods());</span>
+<span class="fc" id="L270">    }</span>
+
+    @Test
+    public void choiceTypeInfo()
+    {
+<span class="fc" id="L275">        final ChoiceTypeInfo choiceTypeInfo = new ChoiceTypeInfo(&quot;&quot;, null, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(),</span>
+                new ArrayList&lt;FieldInfo&gt;(), new ArrayList&lt;ParameterInfo&gt;(), new ArrayList&lt;FunctionInfo&gt;(), &quot;&quot;,
+                new ArrayList&lt;CaseInfo&gt;());
+<span class="fc" id="L278">        assertEquals(&quot;&quot;, choiceTypeInfo.getSchemaName());</span>
+<span class="fc" id="L279">        assertEquals(SchemaType.CHOICE, choiceTypeInfo.getSchemaType());</span>
+<span class="fc" id="L280">        assertEquals(JavaType.CHOICE, choiceTypeInfo.getJavaType());</span>
+<span class="fc" id="L281">        assertNull(choiceTypeInfo.getJavaClass());</span>
+<span class="pc" id="L282">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getBitSize());</span>
+
+<span class="fc" id="L284">        assertEquals(0, choiceTypeInfo.getFields().size());</span>
+<span class="fc" id="L285">        assertEquals(0, choiceTypeInfo.getParameters().size());</span>
+<span class="fc" id="L286">        assertEquals(0, choiceTypeInfo.getFunctions().size());</span>
+
+<span class="fc" id="L288">        assertEquals(&quot;&quot;, choiceTypeInfo.getSelector());</span>
+<span class="fc" id="L289">        assertEquals(0, choiceTypeInfo.getCases().size());</span>
+
+<span class="pc" id="L291">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L292">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L293">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getEnumItems());</span>
+<span class="pc" id="L294">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L296">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getColumns());</span>
+<span class="pc" id="L297">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L298">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L299">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L301">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getTables());</span>
+
+<span class="fc" id="L303">        assertEquals(&quot;&quot;, choiceTypeInfo.getTemplateName());</span>
+<span class="fc" id="L304">        assertEquals(0, choiceTypeInfo.getTemplateArguments().size());</span>
+
+<span class="pc" id="L306">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getMessages());</span>
+
+<span class="pc" id="L308">        assertThrows(ZserioError.class, () -&gt; choiceTypeInfo.getMethods());</span>
+<span class="fc" id="L309">    }</span>
+
+    @Test
+    public void sqlTableTypeInfo()
+    {
+<span class="fc" id="L314">        final SqlTableTypeInfo sqlTableTypeInfo = new SqlTableTypeInfo(</span>
+                &quot;&quot;, null, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(), new ArrayList&lt;ColumnInfo&gt;(), &quot;&quot;, &quot;&quot;, false);
+<span class="fc" id="L316">        assertEquals(&quot;&quot;, sqlTableTypeInfo.getSchemaName());</span>
+<span class="fc" id="L317">        assertEquals(SchemaType.SQL_TABLE, sqlTableTypeInfo.getSchemaType());</span>
+<span class="fc" id="L318">        assertEquals(JavaType.SQL_TABLE, sqlTableTypeInfo.getJavaType());</span>
+<span class="fc" id="L319">        assertNull(sqlTableTypeInfo.getJavaClass());</span>
+<span class="pc" id="L320">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getBitSize());</span>
+
+<span class="pc" id="L322">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getFields());</span>
+<span class="pc" id="L323">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getParameters());</span>
+<span class="pc" id="L324">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getFunctions());</span>
+
+<span class="pc" id="L326">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getSelector());</span>
+<span class="pc" id="L327">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getCases());</span>
+
+<span class="pc" id="L329">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L330">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L331">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getEnumItems());</span>
+<span class="pc" id="L332">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getBitmaskValues());</span>
+
+<span class="fc" id="L334">        assertEquals(0, sqlTableTypeInfo.getColumns().size());</span>
+<span class="fc" id="L335">        assertEquals(&quot;&quot;, sqlTableTypeInfo.getSqlConstraint());</span>
+<span class="fc" id="L336">        assertEquals(&quot;&quot;, sqlTableTypeInfo.getVirtualTableUsing());</span>
+<span class="fc" id="L337">        assertEquals(false, sqlTableTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L339">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getTables());</span>
+
+<span class="fc" id="L341">        assertEquals(&quot;&quot;, sqlTableTypeInfo.getTemplateName());</span>
+<span class="fc" id="L342">        assertEquals(0, sqlTableTypeInfo.getTemplateArguments().size());</span>
+
+<span class="pc" id="L344">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getMessages());</span>
+
+<span class="pc" id="L346">        assertThrows(ZserioError.class, () -&gt; sqlTableTypeInfo.getMethods());</span>
+<span class="fc" id="L347">    }</span>
+
+    @Test
+    public void sqlDatabaseTypeInfo()
+    {
+<span class="fc" id="L352">        final SqlDatabaseTypeInfo sqlDatabaseTypeInfo =</span>
+                new SqlDatabaseTypeInfo(&quot;&quot;, null, new ArrayList&lt;TableInfo&gt;());
+<span class="fc" id="L354">        assertEquals(&quot;&quot;, sqlDatabaseTypeInfo.getSchemaName());</span>
+<span class="fc" id="L355">        assertEquals(SchemaType.SQL_DATABASE, sqlDatabaseTypeInfo.getSchemaType());</span>
+<span class="fc" id="L356">        assertEquals(JavaType.SQL_DATABASE, sqlDatabaseTypeInfo.getJavaType());</span>
+<span class="fc" id="L357">        assertNull(sqlDatabaseTypeInfo.getJavaClass());</span>
+<span class="pc" id="L358">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getBitSize());</span>
+
+<span class="pc" id="L360">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getFields());</span>
+<span class="pc" id="L361">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getParameters());</span>
+<span class="pc" id="L362">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getFunctions());</span>
+
+<span class="pc" id="L364">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getSelector());</span>
+<span class="pc" id="L365">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getCases());</span>
+
+<span class="pc" id="L367">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L368">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L369">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getEnumItems());</span>
+<span class="pc" id="L370">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L372">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getColumns());</span>
+<span class="pc" id="L373">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L374">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L375">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.isWithoutRowId());</span>
+
+<span class="fc" id="L377">        assertEquals(0, sqlDatabaseTypeInfo.getTables().size());</span>
+
+<span class="pc" id="L379">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getTemplateName());</span>
+<span class="pc" id="L380">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getTemplateArguments());</span>
+
+<span class="pc" id="L382">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getMessages());</span>
+
+<span class="pc" id="L384">        assertThrows(ZserioError.class, () -&gt; sqlDatabaseTypeInfo.getMethods());</span>
+<span class="fc" id="L385">    }</span>
+
+    @Test
+    public void enumTypeInfo()
+    {
+<span class="fc" id="L390">        final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();</span>
+<span class="fc" id="L391">        final EnumTypeInfo enumTypeInfo = new EnumTypeInfo(&quot;&quot;, null, underlyingTypeInfo,</span>
+                new ArrayList&lt;Supplier&lt;Object&gt;&gt;(),
+<span class="fc" id="L393">                Arrays.asList(new ItemInfo(&quot;ONE&quot;, BigInteger.ONE, false, false)));</span>
+<span class="fc" id="L394">        assertEquals(&quot;&quot;, enumTypeInfo.getSchemaName());</span>
+<span class="fc" id="L395">        assertEquals(SchemaType.ENUM, enumTypeInfo.getSchemaType());</span>
+<span class="fc" id="L396">        assertEquals(JavaType.ENUM, enumTypeInfo.getJavaType());</span>
+<span class="fc" id="L397">        assertNull(enumTypeInfo.getJavaClass());</span>
+<span class="pc" id="L398">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getBitSize());</span>
+
+<span class="pc" id="L400">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getFields());</span>
+<span class="pc" id="L401">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getParameters());</span>
+<span class="pc" id="L402">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getFunctions());</span>
+
+<span class="pc" id="L404">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getSelector());</span>
+<span class="pc" id="L405">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getCases());</span>
+
+<span class="fc" id="L407">        assertEquals(underlyingTypeInfo, enumTypeInfo.getUnderlyingType());</span>
+<span class="fc" id="L408">        assertEquals(0, enumTypeInfo.getUnderlyingTypeArguments().size());</span>
+<span class="fc" id="L409">        assertEquals(1, enumTypeInfo.getEnumItems().size());</span>
+<span class="fc" id="L410">        assertEquals(&quot;ONE&quot;, enumTypeInfo.getEnumItems().get(0).getSchemaName());</span>
+<span class="fc" id="L411">        assertEquals(BigInteger.ONE, enumTypeInfo.getEnumItems().get(0).getValue());</span>
+<span class="fc" id="L412">        assertEquals(false, enumTypeInfo.getEnumItems().get(0).isDeprecated());</span>
+<span class="fc" id="L413">        assertEquals(false, enumTypeInfo.getEnumItems().get(0).isRemoved());</span>
+<span class="pc" id="L414">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L416">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getColumns());</span>
+<span class="pc" id="L417">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L418">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L419">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L421">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getTables());</span>
+
+<span class="pc" id="L423">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getTemplateName());</span>
+<span class="pc" id="L424">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getTemplateArguments());</span>
+
+<span class="pc" id="L426">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getMessages());</span>
+
+<span class="pc" id="L428">        assertThrows(ZserioError.class, () -&gt; enumTypeInfo.getMethods());</span>
+<span class="fc" id="L429">    }</span>
+
+    @Test
+    public void bitmaskTypeInfo()
+    {
+<span class="fc" id="L434">        final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();</span>
+<span class="fc" id="L435">        final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo(&quot;&quot;, null, underlyingTypeInfo,</span>
+                new ArrayList&lt;Supplier&lt;Object&gt;&gt;(),
+<span class="fc" id="L437">                Arrays.asList(new ItemInfo(&quot;FIRST_BIT&quot;, BigInteger.ONE, false, false)));</span>
+<span class="fc" id="L438">        assertEquals(&quot;&quot;, bitmaskTypeInfo.getSchemaName());</span>
+<span class="fc" id="L439">        assertEquals(SchemaType.BITMASK, bitmaskTypeInfo.getSchemaType());</span>
+<span class="fc" id="L440">        assertEquals(JavaType.BITMASK, bitmaskTypeInfo.getJavaType());</span>
+<span class="fc" id="L441">        assertNull(bitmaskTypeInfo.getJavaClass());</span>
+<span class="pc" id="L442">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getBitSize());</span>
+
+<span class="pc" id="L444">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getFields());</span>
+<span class="pc" id="L445">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getParameters());</span>
+<span class="pc" id="L446">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getFunctions());</span>
+
+<span class="pc" id="L448">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getSelector());</span>
+<span class="pc" id="L449">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getCases());</span>
+
+<span class="fc" id="L451">        assertEquals(underlyingTypeInfo, bitmaskTypeInfo.getUnderlyingType());</span>
+<span class="fc" id="L452">        assertEquals(0, bitmaskTypeInfo.getUnderlyingTypeArguments().size());</span>
+<span class="pc" id="L453">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getEnumItems());</span>
+<span class="fc" id="L454">        assertEquals(1, bitmaskTypeInfo.getBitmaskValues().size());</span>
+<span class="fc" id="L455">        assertEquals(&quot;FIRST_BIT&quot;, bitmaskTypeInfo.getBitmaskValues().get(0).getSchemaName());</span>
+<span class="fc" id="L456">        assertEquals(BigInteger.ONE, bitmaskTypeInfo.getBitmaskValues().get(0).getValue());</span>
+<span class="fc" id="L457">        assertEquals(false, bitmaskTypeInfo.getBitmaskValues().get(0).isDeprecated());</span>
+<span class="fc" id="L458">        assertEquals(false, bitmaskTypeInfo.getBitmaskValues().get(0).isRemoved());</span>
+
+<span class="pc" id="L460">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getColumns());</span>
+<span class="pc" id="L461">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L462">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L463">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L465">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getTables());</span>
+
+<span class="pc" id="L467">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getTemplateName());</span>
+<span class="pc" id="L468">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getTemplateArguments());</span>
+
+<span class="pc" id="L470">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getMessages());</span>
+
+<span class="pc" id="L472">        assertThrows(ZserioError.class, () -&gt; bitmaskTypeInfo.getMethods());</span>
+<span class="fc" id="L473">    }</span>
+
+    @Test
+    public void pubsubTypeInfo()
+    {
+<span class="fc" id="L478">        final PubsubTypeInfo pubsubTypeInfo = new PubsubTypeInfo(&quot;&quot;, null, new ArrayList&lt;MessageInfo&gt;());</span>
+<span class="fc" id="L479">        assertEquals(&quot;&quot;, pubsubTypeInfo.getSchemaName());</span>
+<span class="fc" id="L480">        assertEquals(SchemaType.PUBSUB, pubsubTypeInfo.getSchemaType());</span>
+<span class="fc" id="L481">        assertEquals(JavaType.PUBSUB, pubsubTypeInfo.getJavaType());</span>
+<span class="fc" id="L482">        assertNull(pubsubTypeInfo.getJavaClass());</span>
+<span class="pc" id="L483">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getBitSize());</span>
+
+<span class="pc" id="L485">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getFields());</span>
+<span class="pc" id="L486">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getParameters());</span>
+<span class="pc" id="L487">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getFunctions());</span>
+
+<span class="pc" id="L489">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getSelector());</span>
+<span class="pc" id="L490">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getCases());</span>
+
+<span class="pc" id="L492">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L493">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L494">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getEnumItems());</span>
+<span class="pc" id="L495">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L497">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getColumns());</span>
+<span class="pc" id="L498">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L499">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L500">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L502">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getTables());</span>
+
+<span class="pc" id="L504">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getTemplateName());</span>
+<span class="pc" id="L505">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getTemplateArguments());</span>
+
+<span class="fc" id="L507">        assertEquals(0, pubsubTypeInfo.getMessages().size());</span>
+
+<span class="pc" id="L509">        assertThrows(ZserioError.class, () -&gt; pubsubTypeInfo.getMethods());</span>
+<span class="fc" id="L510">    }</span>
+
+    @Test
+    public void serviceTypeInfo()
+    {
+<span class="fc" id="L515">        final ServiceTypeInfo serviceTypeInfo = new ServiceTypeInfo(&quot;&quot;, null, new ArrayList&lt;MethodInfo&gt;());</span>
+<span class="fc" id="L516">        assertEquals(&quot;&quot;, serviceTypeInfo.getSchemaName());</span>
+<span class="fc" id="L517">        assertEquals(SchemaType.SERVICE, serviceTypeInfo.getSchemaType());</span>
+<span class="fc" id="L518">        assertEquals(JavaType.SERVICE, serviceTypeInfo.getJavaType());</span>
+<span class="fc" id="L519">        assertNull(serviceTypeInfo.getJavaClass());</span>
+<span class="pc" id="L520">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getBitSize());</span>
+
+<span class="pc" id="L522">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getFields());</span>
+<span class="pc" id="L523">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getParameters());</span>
+<span class="pc" id="L524">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getFunctions());</span>
+
+<span class="pc" id="L526">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getSelector());</span>
+<span class="pc" id="L527">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getCases());</span>
+
+<span class="pc" id="L529">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L530">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L531">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getEnumItems());</span>
+<span class="pc" id="L532">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L534">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getColumns());</span>
+<span class="pc" id="L535">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L536">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L537">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L539">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getTables());</span>
+
+<span class="pc" id="L541">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getTemplateName());</span>
+<span class="pc" id="L542">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getTemplateArguments());</span>
+
+<span class="pc" id="L544">        assertThrows(ZserioError.class, () -&gt; serviceTypeInfo.getMessages());</span>
+
+<span class="fc" id="L546">        assertEquals(0, serviceTypeInfo.getMethods().size());</span>
+<span class="fc" id="L547">    }</span>
+
+    @Test
+    public void recursiveTypeInfo()
+    {
+<span class="fc" id="L552">        final TypeInfo typeInfo = RecursiveObject.typeInfo();</span>
+<span class="fc" id="L553">        final TypeInfo recursiveTypeInfo = typeInfo.getFields().get(0).getTypeInfo();</span>
+
+<span class="fc" id="L555">        assertEquals(typeInfo.getSchemaName(), recursiveTypeInfo.getSchemaName());</span>
+<span class="fc" id="L556">        assertEquals(typeInfo.getSchemaType(), recursiveTypeInfo.getSchemaType());</span>
+<span class="fc" id="L557">        assertEquals(typeInfo.getJavaType(), recursiveTypeInfo.getJavaType());</span>
+<span class="pc" id="L558">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getBitSize());</span>
+
+<span class="fc" id="L560">        assertEquals(typeInfo.getFields().size(), recursiveTypeInfo.getFields().size());</span>
+<span class="fc" id="L561">        assertEquals(0, recursiveTypeInfo.getParameters().size());</span>
+<span class="fc" id="L562">        assertEquals(0, recursiveTypeInfo.getFunctions().size());</span>
+
+<span class="pc" id="L564">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getSelector());</span>
+<span class="pc" id="L565">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getCases());</span>
+
+<span class="pc" id="L567">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getUnderlyingType());</span>
+<span class="pc" id="L568">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L569">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getEnumItems());</span>
+<span class="pc" id="L570">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L572">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getColumns());</span>
+<span class="pc" id="L573">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getSqlConstraint());</span>
+<span class="pc" id="L574">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L575">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L577">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getTables());</span>
+
+<span class="fc" id="L579">        assertEquals(typeInfo.getTemplateName(), recursiveTypeInfo.getTemplateName());</span>
+<span class="fc" id="L580">        assertEquals(0, recursiveTypeInfo.getTemplateArguments().size());</span>
+
+<span class="pc" id="L582">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getMessages());</span>
+
+<span class="pc" id="L584">        assertThrows(ZserioError.class, () -&gt; recursiveTypeInfo.getMethods());</span>
+<span class="fc" id="L585">    }</span>
+
+    private void checkBuiltinTypeInfo(
+            TypeInfo typeInfo, String schemaName, SchemaType schemaType, JavaType javaType)
+    {
+<span class="fc" id="L590">        checkBuiltinTypeInfo(typeInfo, schemaName, schemaType, javaType, 0);</span>
+<span class="fc" id="L591">    }</span>
+
+    private void checkBuiltinTypeInfo(
+            TypeInfo typeInfo, String schemaName, SchemaType schemaType, JavaType javaType, int bitSize)
+    {
+<span class="fc" id="L596">        assertEquals(schemaName, typeInfo.getSchemaName());</span>
+<span class="fc" id="L597">        assertEquals(schemaType, typeInfo.getSchemaType());</span>
+<span class="fc" id="L598">        assertEquals(javaType, typeInfo.getJavaType());</span>
+<span class="fc bfc" id="L599" title="All 2 branches covered.">        if (bitSize &gt; 0)</span>
+<span class="fc" id="L600">            assertEquals((byte)bitSize, typeInfo.getBitSize());</span>
+        else
+<span class="pc" id="L602">            assertThrows(ZserioError.class, () -&gt; typeInfo.getBitSize());</span>
+
+<span class="pc" id="L604">        assertThrows(ZserioError.class, () -&gt; typeInfo.getFields());</span>
+<span class="pc" id="L605">        assertThrows(ZserioError.class, () -&gt; typeInfo.getParameters());</span>
+<span class="pc" id="L606">        assertThrows(ZserioError.class, () -&gt; typeInfo.getFunctions());</span>
+
+<span class="pc" id="L608">        assertThrows(ZserioError.class, () -&gt; typeInfo.getSelector());</span>
+<span class="pc" id="L609">        assertThrows(ZserioError.class, () -&gt; typeInfo.getCases());</span>
+
+<span class="pc" id="L611">        assertThrows(ZserioError.class, () -&gt; typeInfo.getUnderlyingType());</span>
+<span class="pc" id="L612">        assertThrows(ZserioError.class, () -&gt; typeInfo.getUnderlyingTypeArguments());</span>
+<span class="pc" id="L613">        assertThrows(ZserioError.class, () -&gt; typeInfo.getEnumItems());</span>
+<span class="pc" id="L614">        assertThrows(ZserioError.class, () -&gt; typeInfo.getBitmaskValues());</span>
+
+<span class="pc" id="L616">        assertThrows(ZserioError.class, () -&gt; typeInfo.getColumns());</span>
+<span class="pc" id="L617">        assertThrows(ZserioError.class, () -&gt; typeInfo.getSqlConstraint());</span>
+<span class="pc" id="L618">        assertThrows(ZserioError.class, () -&gt; typeInfo.getVirtualTableUsing());</span>
+<span class="pc" id="L619">        assertThrows(ZserioError.class, () -&gt; typeInfo.isWithoutRowId());</span>
+
+<span class="pc" id="L621">        assertThrows(ZserioError.class, () -&gt; typeInfo.getTables());</span>
+
+<span class="pc" id="L623">        assertThrows(ZserioError.class, () -&gt; typeInfo.getTemplateName());</span>
+<span class="pc" id="L624">        assertThrows(ZserioError.class, () -&gt; typeInfo.getTemplateArguments());</span>
+
+<span class="pc" id="L626">        assertThrows(ZserioError.class, () -&gt; typeInfo.getMessages());</span>
+
+<span class="pc" id="L628">        assertThrows(ZserioError.class, () -&gt; typeInfo.getMethods());</span>
+<span class="fc" id="L629">    }</span>
+
+    private static class RecursiveObject
+    {
+        public static TypeInfo typeInfo()
+        {
+<span class="fc" id="L635">            class RecursiveTypeInfoGetter implements RecursiveTypeInfo.TypeInfoGetter</span>
+            {
+                @Override
+                public TypeInfo get()
+                {
+<span class="fc" id="L640">                    return RecursiveObject.typeInfo();</span>
+                }
+            }
+
+<span class="fc" id="L644">            final List&lt;FieldInfo&gt; fields = Arrays.asList(new FieldInfo(&quot;recursive&quot;, // schemaName</span>
+                    &quot;getRecursive&quot;, // getterName
+                    &quot;setRecursive&quot;, // setterName
+                    new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
+                    new ArrayList&lt;BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+                    false, // isExtended
+                    null, // alignment
+                    null, // offset
+                    null, // initializer
+                    true, // isOptional
+                    null, // optionalCondition
+                    &quot;isRecursiveUsed&quot;, // isUsedindicatorName
+                    &quot;isRecursiveSet&quot;, // isSetindicatorName
+                    null, // constraint
+                    false, // isArray
+                    null, // arrayLength
+                    false, // isPacked
+                    false // isImplicit
+                    ));
+
+<span class="fc" id="L664">            return new StructTypeInfo(&quot;RecursiveObject&quot;, null, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(), fields,</span>
+                    new ArrayList&lt;ParameterInfo&gt;(), new ArrayList&lt;FunctionInfo&gt;());
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

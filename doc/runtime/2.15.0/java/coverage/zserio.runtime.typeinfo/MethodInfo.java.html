@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MethodInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">MethodInfo.java</span></div><h1>MethodInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+/**
+ * Type information for service method.
+ */
+public final class MethodInfo
+{
+    /**
+     * Constructor.
+     *
+     * @param schemaName Method schema name.
+     * @param responseTypeInfo Response type info.
+     * @param requestTypeInfo Request type info.
+     */
+    public MethodInfo(String schemaName, TypeInfo responseTypeInfo, TypeInfo requestTypeInfo)
+<span class="nc" id="L16">    {</span>
+<span class="nc" id="L17">        this.schemaName = schemaName;</span>
+<span class="nc" id="L18">        this.responseTypeInfo = responseTypeInfo;</span>
+<span class="nc" id="L19">        this.requestTypeInfo = requestTypeInfo;</span>
+<span class="nc" id="L20">    }</span>
+
+    /**
+     * Gets name of the method as is defined in zserio schema.
+     *
+     * @return Service schema name.
+     */
+    public String getSchemaName()
+    {
+<span class="nc" id="L29">        return schemaName;</span>
+    }
+
+    /**
+     * Gets type information for the method response type.
+     *
+     * @return Response type info.
+     */
+    public TypeInfo getResponseTypeInfo()
+    {
+<span class="nc" id="L39">        return responseTypeInfo;</span>
+    }
+
+    /**
+     * Gets type information for the method request type.
+     *
+     * @return Request type info.
+     */
+    public TypeInfo getRequestTypeInfo()
+    {
+<span class="nc" id="L49">        return requestTypeInfo;</span>
+    }
+
+    private final String schemaName;
+    private final TypeInfo responseTypeInfo;
+    private final TypeInfo requestTypeInfo;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
