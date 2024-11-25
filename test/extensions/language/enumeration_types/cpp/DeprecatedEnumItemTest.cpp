@@ -1,6 +1,6 @@
 #include <fstream>
 
-#include "enumeration_types/deprecated_enum_item/AllocatorType.h"
+#include "enumeration_types/deprecated_enum_item/Dummy.h"
 #include "enumeration_types/deprecated_enum_item/Traffic.h"
 #include "gtest/gtest.h"
 #include "test_utils/Assertions.h"
@@ -15,7 +15,7 @@ namespace enumeration_types
 namespace deprecated_enum_item
 {
 
-using allocator_type = AllocatorType::allocator_type;
+using allocator_type = Dummy::allocator_type;
 
 class DeprecatedEnumItemTest : public ::testing::Test
 {

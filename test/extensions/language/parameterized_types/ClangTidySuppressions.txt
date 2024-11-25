@@ -1,8 +1,9 @@
 bugprone-exception-escape:gen/parameterized_types/grand_child_param/ItemChoice.cpp
 bugprone-exception-escape:gen/parameterized_types/grand_child_param/ItemChoice.h
 
-bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param/Block.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional/ExtraValue.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param/Block.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/multiple_params/Data13.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/nested_parameterized_field/TopLevel.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/param_with_optional/ExtraValue.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.h
@@ -25,23 +26,25 @@ cert-err58-cpp:cpp/NestedParameterizedFieldTest.cpp
 cert-err58-cpp:cpp/PackedArrayElementParamTest.cpp
 cert-err58-cpp:cpp/ParamWithOptionalTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param/Block.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional/Value.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param/Block.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/bytes_param/Parameterized.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/extern_param/Parameterized.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/grand_child_param/ItemChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/grand_child_param/Item.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/grand_child_param/ItemChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/multiple_params/Data13.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/multiple_params/TestStructure.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/nested_parameterized_field/Param.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/packed_array_element_param/Block.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/param_with_optional/ExtraValue.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/param_with_optional/Value.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_nested_in_array/Parameterized.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/Param.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/simple_param/Item.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
 
@@ -51,13 +54,14 @@ hicpp-signed-bitwise:gen/parameterized_types/fixed_and_variable_param/Access.h
 
 performance-move-const-arg:gen/parameterized_types/array_element_param/Database.cpp
 performance-move-const-arg:gen/parameterized_types/bytes_param/Parameterized.cpp
-performance-move-const-arg:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp
 performance-move-const-arg:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
+performance-move-const-arg:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp
 performance-move-const-arg:gen/parameterized_types/extern_param/Parameterized.cpp
 performance-move-const-arg:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
 performance-move-const-arg:gen/parameterized_types/fixed_and_variable_param/FixedAndVariableParam.cpp
-performance-move-const-arg:gen/parameterized_types/grand_child_param/ItemChoiceHolder.cpp
 performance-move-const-arg:gen/parameterized_types/grand_child_param/Item.cpp
+performance-move-const-arg:gen/parameterized_types/grand_child_param/ItemChoiceHolder.cpp
+performance-move-const-arg:gen/parameterized_types/multiple_params/TestStructure.cpp
 performance-move-const-arg:gen/parameterized_types/nested_parameterized_field/Param.cpp
 performance-move-const-arg:gen/parameterized_types/nested_parameterized_field/ParamHolder.cpp
 performance-move-const-arg:gen/parameterized_types/packed_array_element_param/Block.cpp
@@ -67,24 +71,26 @@ performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_c
 performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_nested_in_array/Parameterized.cpp
-performance-move-const-arg:gen/parameterized_types/parameterized_param/ParameterizedParamHolder.cpp
-performance-move-const-arg:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_param/Param.cpp
+performance-move-const-arg:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
+performance-move-const-arg:gen/parameterized_types/parameterized_param/ParameterizedParamHolder.cpp
 performance-move-const-arg:gen/parameterized_types/simple_param/Item.cpp
 performance-move-const-arg:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
 
-readability-make-member-function-const:gen/parameterized_types/array_element_param/BlockHeader.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional/Param.cpp
+readability-make-member-function-const:gen/parameterized_types/array_element_param/BlockHeader.cpp
 readability-make-member-function-const:gen/parameterized_types/bytes_param/Parameterized.cpp
-readability-make-member-function-const:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
+readability-make-member-function-const:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/extern_param/Parameterized.cpp
 readability-make-member-function-const:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/fixed_and_variable_param/LimitHolder.cpp
-readability-make-member-function-const:gen/parameterized_types/grand_child_param/ItemChoiceHolder.cpp
-readability-make-member-function-const:gen/parameterized_types/grand_child_param/ItemChoice.cpp
 readability-make-member-function-const:gen/parameterized_types/grand_child_param/Item.cpp
+readability-make-member-function-const:gen/parameterized_types/grand_child_param/ItemChoice.cpp
+readability-make-member-function-const:gen/parameterized_types/grand_child_param/ItemChoiceHolder.cpp
+readability-make-member-function-const:gen/parameterized_types/multiple_params/Data13.cpp
+readability-make-member-function-const:gen/parameterized_types/multiple_params/TestStructure.cpp
 readability-make-member-function-const:gen/parameterized_types/nested_parameterized_field/Param.cpp
 readability-make-member-function-const:gen/parameterized_types/nested_parameterized_field/ParamHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/packed_array_element_param/BlockHeader.cpp
@@ -93,8 +99,8 @@ readability-make-member-function-const:gen/parameterized_types/param_with_option
 readability-make-member-function-const:gen/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_nested_in_array/Parameterized.cpp
-readability-make-member-function-const:gen/parameterized_types/parameterized_param/ParameterizedParamHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_param/Param.cpp
+readability-make-member-function-const:gen/parameterized_types/parameterized_param/ParameterizedParamHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/simple_param/Item.cpp
 readability-make-member-function-const:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
 

@@ -1,4 +1,4 @@
-#include "enumeration_types/multiple_removed_enum_items/AllocatorType.h"
+#include "enumeration_types/multiple_removed_enum_items/Dummy.h"
 #include "enumeration_types/multiple_removed_enum_items/Traffic.h"
 #include "gtest/gtest.h"
 #include "zserio/BitStreamReader.h"
@@ -12,7 +12,7 @@ namespace enumeration_types
 namespace multiple_removed_enum_items
 {
 
-using allocator_type = AllocatorType::allocator_type;
+using allocator_type = Dummy::allocator_type;
 
 class MultipleRemovedEnumItemsTest : public ::testing::Test
 {

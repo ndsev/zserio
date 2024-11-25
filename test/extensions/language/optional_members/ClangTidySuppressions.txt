@@ -5,6 +5,10 @@ cert-err58-cpp:cpp/OptionalArrayRecursionTest.cpp
 cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp
 cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp
 
+google-explicit-constructor:gen/optional_members/optional_complex_expression/Permission.h
+
+hicpp-signed-bitwise:gen/optional_members/optional_complex_expression/Permission.h
+
 hicpp-multiway-paths-covered:gen/optional_members/optional_expression_with_removed_enum_item/Numbers.cpp
 
 misc-no-recursion # reports also tested_release and some system headers
@@ -15,7 +19,8 @@ performance-move-const-arg:gen/optional_members/optional_recursion/Block.cpp
 readability-make-member-function-const:gen/optional_members/auto_optional/Container.cpp
 readability-make-member-function-const:gen/optional_members/optional_array/Data8.cpp
 readability-make-member-function-const:gen/optional_members/optional_array/TestStruct.cpp
+readability-make-member-function-const:gen/optional_members/optional_complex_expression/Container.cpp
+readability-make-member-function-const:gen/optional_members/optional_expression_with_removed_enum_item/Compound.cpp
 readability-make-member-function-const:gen/optional_members/optional_expression/BlackColor.cpp
 readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp
-readability-make-member-function-const:gen/optional_members/optional_expression_with_removed_enum_item/Compound.cpp
 readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp

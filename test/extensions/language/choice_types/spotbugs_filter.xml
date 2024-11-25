@@ -2,7 +2,10 @@
     <Match>
         <!-- Method uses the same code for two switch clauses. -->
         <Bug code="DB"/>
-        <Class name="choice_types.choice_with_array.TestChoice"/>
+        <Or>
+            <Class name="choice_types.choice_with_array.TestChoice"/>
+            <Class name="choice_types.multiple_param_choice.TestChoice"/>
+        </Or>
         <Or>
             <Method name="hashCode"/>
             <Method name="bitSizeOf"/>

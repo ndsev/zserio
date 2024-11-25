@@ -5,6 +5,7 @@
         <Or>
             <Class name="union_types.simple_union.SimpleUnion"/>
             <Class name="union_types.union_with_array.TestUnion"/>
+            <Class name="union_types.union_with_multiple_parameters.TestUnion"/>
         </Or>
         <Or>
             <Method name="hashCode"/>
