@@ -125,6 +125,8 @@ final class DocCommentManager
         docComments.addAll(findDocComments(ctx.fieldAlignment()));
         // before field offset
         docComments.addAll(findDocComments(ctx.fieldOffset()));
+        // before extend keyword
+        docComments.addAll(findDocComments(ctx.EXTEND()));
         // before optional keyword
         docComments.addAll(findDocComments(ctx.OPTIONAL()));
         // before field type

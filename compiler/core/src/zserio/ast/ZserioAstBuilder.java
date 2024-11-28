@@ -269,11 +269,11 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public Field visitStructureFieldDefinition(ZserioParser.StructureFieldDefinitionContext ctx)
     {
-        final boolean isExtended = ctx.EXTEND() != null;
-        final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
-        final boolean isAutoOptional = ctx.OPTIONAL() != null;
         final Expression alignmentExpr = visitFieldAlignment(ctx.fieldAlignment());
         final Expression offsetExpr = visitFieldOffset(ctx.fieldOffset());
+        final boolean isExtended = ctx.EXTEND() != null;
+        final boolean isAutoOptional = ctx.OPTIONAL() != null;
+        final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
         final Expression initializerExpr = visitFieldInitializer(ctx.fieldInitializer());
         final Expression optionalClauseExpr = visitFieldOptionalClause(ctx.fieldOptionalClause());
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
