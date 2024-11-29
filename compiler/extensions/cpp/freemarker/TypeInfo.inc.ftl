@@ -83,7 +83,7 @@ ${I}};
 ${I}static const <@info_array_type "::zserio::StringView", (bitSize?has_content && bitSize.isDynamicBitField)?then(1, 0)/> ${varName}<#rt>
     <#if bitSize?has_content && bitSize.isDynamicBitField>
         <#lt> = {
-        ::zserio::makeStringView("${bitSize.value}")
+        ::zserio::makeStringView("${bitSize.value?j_string}")
 ${I}};
     <#else>
         <#lt>;
@@ -121,17 +121,17 @@ ${I}    <@field_info_type_arguments_var_name field/>, // typeArguments
 ${I}    {}, // typeArguments
     </#if>
 ${I}    <#if field.isExtended>true<#else>false</#if>, // isExtended
-${I}    <#if field.alignmentValue??>::zserio::makeStringView("${field.alignmentValue}")<#else>{}</#if>, // alignment
-${I}    <#if field.offset??>::zserio::makeStringView("${field.offset.getter}")<#else>{}</#if>, // offset
+${I}    <#if field.alignmentValue??>::zserio::makeStringView("${field.alignmentValue?j_string}")<#else>{}</#if>, // alignment
+${I}    <#if field.offset??>::zserio::makeStringView("${field.offset.getter?j_string}")<#else>{}</#if>, // offset
 <#-- We need to use j_string builtin here because initializer can be string literal with quotes. -->
 ${I}    <#if field.initializer??>::zserio::makeStringView("${field.initializer?j_string}")<#else>{}</#if>, // initializer
 ${I}    <#if field.optional??>true<#else>false</#if>, // isOptional
 ${I}    <#if field.optional?? && field.optional.clause??><#rt>
-                <#lt>::zserio::makeStringView("${field.optional.clause}")<#else>{}</#if>, // optionalClause
-${I}    <#if field.constraint??>::zserio::makeStringView("${field.constraint.writeConstraint}")<#else>{}</#if>, // constraint
+                <#lt>::zserio::makeStringView("${field.optional.clause?j_string}")<#else>{}</#if>, // optionalClause
+${I}    <#if field.constraint??>::zserio::makeStringView("${field.constraint.writeConstraint?j_string}")<#else>{}</#if>, // constraint
 ${I}    <#if field.array??>true<#else>false</#if>, // isArray
 ${I}    <#if field.array?? && field.array.length??><#rt>
-                <#lt>::zserio::makeStringView("${field.array.length}")<#else>{}</#if>, // arrayLength
+                <#lt>::zserio::makeStringView("${field.array.length?j_string}")<#else>{}</#if>, // arrayLength
 ${I}    <#if field.array?? && field.array.isPacked>true<#else>false</#if>, // isPacked
 ${I}    <#if field.array?? && field.array.isImplicit>true<#else>false</#if> // isImplicit
 ${I}}<#if comma>,</#if>
@@ -178,12 +178,12 @@ ${I}}<#if comma>,</#if>
             <#if field.array.elementCompound??>
         <@field_info_compound_type_arguments field.array.elementCompound.instantiatedParameters/>
             <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
-        ::zserio::makeStringView("${field.array.elementBitSize.value}")
+        ::zserio::makeStringView("${field.array.elementBitSize.value?j_string}")
             </#if>
         <#elseif field.compound??>
         <@field_info_compound_type_arguments field.compound.instantiatedParameters/>
         <#elseif field.bitSize?? && field.bitSize.isDynamicBitField>
-        ::zserio::makeStringView("${field.bitSize.value}")
+        ::zserio::makeStringView("${field.bitSize.value?j_string}")
         </#if>
     };
     </#if>
@@ -221,7 +221,7 @@ ${I}}<#if comma>,</#if>
 ${I}static const std::array<::zserio::StringView, ${caseMember.expressionList?size}> <#rt>
             <#lt><@case_info_case_expressions_var_name index/> = {
     <#list caseMember.expressionList as caseExpression>
-${I}    ::zserio::makeStringView("${caseExpression}")<#if caseExpression?has_next>,</#if>
+${I}    ::zserio::makeStringView("${caseExpression?j_string}")<#if caseExpression?has_next>,</#if>
     </#list>
 ${I}};
 </#macro>
@@ -279,7 +279,7 @@ ${I}}<#if comma>,</#if>
     <#if count != 0>
 ${I}static const ::std::array<::zserio::StringView, ${count}> <@field_info_type_arguments_var_name field/> = {
         <#if field.bitSize?? && field.bitSize.isDynamicBitField>
-${I}    ::zserio::makeStringView("${field.bitSize.value}")
+${I}    ::zserio::makeStringView("${field.bitSize.value?j_string}")
         <#else>
         <@column_info_compound_type_arguments field.typeParameters, indent+1/>
         </#if>
@@ -290,7 +290,7 @@ ${I}};
 <#macro column_info_compound_type_arguments parameters indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list parameters as parameter>
-${I}    ::zserio::makeStringView("<#if parameter.isExplicit>explicit </#if>${parameter.expression}")<#if parameter?has_next>, </#if>
+${I}    ::zserio::makeStringView("<#if parameter.isExplicit>explicit </#if>${parameter.expression?j_string}")<#if parameter?has_next>, </#if>
     </#list>
 </#macro>
 

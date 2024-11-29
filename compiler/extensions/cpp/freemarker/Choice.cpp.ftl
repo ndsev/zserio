@@ -165,7 +165,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         nullptr,
     </#if>
         templateName, templateArguments,
-        fields, parameters, functions, ::zserio::makeStringView("${selectorExpression}"), cases
+        fields, parameters, functions, ::zserio::makeStringView("${selectorExpression?j_string}"), cases
     };
 
     return typeInfo;
