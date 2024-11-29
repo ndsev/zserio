@@ -81,7 +81,7 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         <attribute name="package" default="zserio.antlr"/>
         <sequential>
             <echo message="Generating ANTLR 4 grammar: @{target}"/>
-            <java classname="org.antlr.v4.Tool" failonerror="true">
+            <java classname="org.antlr.v4.Tool" failonerror="true" fork="true">
                 <classpath>
                     <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr4.jar_file_name}"/>
                 </classpath>

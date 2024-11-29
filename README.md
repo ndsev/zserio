@@ -155,7 +155,8 @@ not generate anything.
 Each Zserio extension should be packed in a single jar file.
 
 All Zserio extensions which are available on the Java classpath are automatically loaded during Zserio compiler
-startup.
+startup. Extensions which are located in the directory from which the Zserio jar executable has been run and
+which are named with the prefix `zserio_` are automatically loaded as well.
 
 More information how to implement a new Zserio extension can be found in the
 [Zserio extension sample](https://github.com/ndsev/zserio-extension-sample#zserio-extension-sample).

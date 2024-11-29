@@ -1,5 +1,6 @@
 package zserio.ant;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -40,25 +41,16 @@ public final class ToolWrapper
             String [] files = p.list();
             for (String f : files)
             {
-                String u = null;
                 try
                 {
-                    if (f.endsWith(".jar"))
-                    {
-                        u = "jar:file:"+f+"!/";
-                    }
-                    else
-                    {
-                        u = "file:"+f+"/";
-                    }
-
-                    System.out.println("Adding " + u + " to classpath");
-                    urls.add(new URL(u));
+                    final URL pathUrl = new File(f).toURI().toURL();
+                    System.out.println("Adding " + pathUrl + " to classpath");
+                    urls.add(pathUrl);
 
                 }
-                catch (MalformedURLException e)
+                catch (MalformedURLException | RuntimeException e)
                 {
-                    throw new BuildException("Malformed URL: " + u);
+                    throw new BuildException("Malformed URL from file: " + f + " (" + e + ")");
                 }
             }
         }

@@ -138,9 +138,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
             <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}" ignoreError="@{ignoreErrors}"
                     extraArgs="${zserio.extra_args}">
                 <classpath>
-                    <fileset dir="${zserio.jar_dir}">
-                        <include name="*.jar"/>
-                    </fileset>
+                    <file name="${zserio.jar_dir}/zserio_core.jar"/>
                 </classpath>
                 <arg name="java" value="${@{testName}.zs.out_dir}"/>
                 <args/>

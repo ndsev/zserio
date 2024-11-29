@@ -1,13 +1,23 @@
 package zserio.tools;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import zserio.ast.Root;
 import zserio.extension.common.ZserioExtensionException;
@@ -26,7 +36,7 @@ final class ExtensionManager
     {
         extensions = new ArrayList<Extension>();
         this.commandLineArguments = commandLineArguments;
-        ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, getClass().getClassLoader());
+        final ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, getClassLoader());
         Iterator<Extension> it = loader.iterator();
         while (it.hasNext())
         {
@@ -92,6 +102,108 @@ final class ExtensionManager
                 }
             }
         }
+    }
+
+    private ClassLoader getClassLoader()
+    {
+        final ClassLoader currentClassLoader = getClass().getClassLoader();
+        final File workingDirectory = getWorkingDirectory();
+        if (workingDirectory == null)
+            return currentClassLoader;
+
+        final File[] fileList = workingDirectory.listFiles();
+        if (fileList == null)
+            return currentClassLoader;
+
+        final ArrayList<URL> urlArray = new ArrayList<URL>();
+        try
+        {
+            for (File file : fileList)
+            {
+                if (isFileZserioExtension(file))
+                {
+                    urlArray.add(file.toURI().toURL());
+                    urlArray.addAll(getDependentJarsFromManifest(file));
+                }
+            }
+        }
+        catch (MalformedURLException excpt)
+        {
+            return currentClassLoader;
+        }
+
+        final URLClassLoader urlClassLoader =
+                new URLClassLoader(urlArray.toArray(new URL[urlArray.size()]), currentClassLoader);
+
+        return urlClassLoader;
+    }
+
+    private File getWorkingDirectory()
+    {
+        try
+        {
+            final URI execUri = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
+            final Path execPath = Paths.get(execUri);
+            final Path execParentPath = execPath.getParent();
+
+            return (execParentPath == null) ? null : execParentPath.toFile();
+        }
+        catch (SecurityException | URISyntaxException excpt)
+        {
+            return null;
+        }
+    }
+
+    private boolean isFileZserioExtension(File file)
+    {
+        if (!file.isFile())
+            return false;
+
+        final String fileName = file.getName();
+        if (!fileName.endsWith(".jar"))
+            return false;
+
+        if (!fileName.startsWith("zserio_"))
+            return false;
+
+        if (fileName.equals("zserio_core.jar"))
+            return false;
+
+        if (fileName.endsWith("_javadocs.jar"))
+            return false;
+
+        if (fileName.endsWith("_sources.jar"))
+            return false;
+
+        return true;
+    }
+
+    private List<URL> getDependentJarsFromManifest(File file)
+    {
+        final ArrayList<URL> dependentJars = new ArrayList<URL>();
+        try (JarFile jarFile = new JarFile(file))
+        {
+            final Manifest manifest = jarFile.getManifest();
+            if (manifest != null)
+            {
+                final String classPaths = manifest.getMainAttributes().getValue("class-path");
+                if (classPaths != null)
+                {
+                    final File parentFile = file.getParentFile();
+                    for (String classPath : classPaths.split("\\s+"))
+                    {
+                        final File dependentJarFile = new File(parentFile, classPath);
+                        dependentJars.add(dependentJarFile.toURI().toURL());
+                    }
+                }
+            }
+        }
+        catch (IOException excpt)
+        {
+            // silently ignored
+        }
+
+        return dependentJars;
     }
 
     private static void check(Root rootNode, Extension extension, ExtensionParameters parameters)
