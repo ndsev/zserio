@@ -1,6 +1,7 @@
 package zserio.ast;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1156,17 +1157,45 @@ public final class Expression extends AstNodeBase
 
     private void evaluateLengthOfOperator()
     {
-        if (!(operand1.symbolInstantiation instanceof ArrayInstantiation))
-            throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
-
         expressionType = ExpressionType.INTEGER;
 
-        final Expression lengthExpr = ((ArrayInstantiation)operand1.symbolInstantiation).getLengthExpression();
-        if (lengthExpr != null && lengthExpr.getIntegerValue() != null)
-            expressionIntegerValue = new ExpressionIntegerValue(lengthExpr.getIntegerValue());
-        else
+        if (operand1.symbolInstantiation instanceof ArrayInstantiation)
+        {
+            final Expression lengthExpr =
+                    ((ArrayInstantiation)operand1.symbolInstantiation).getLengthExpression();
+            if (lengthExpr != null && lengthExpr.getIntegerValue() != null)
+            {
+                expressionIntegerValue = new ExpressionIntegerValue(lengthExpr.getIntegerValue());
+            }
+            else
+            {
+                expressionIntegerValue = new ExpressionIntegerValue(
+                        VarIntegerType.VARSIZE_LOWER_BOUND, VarIntegerType.VARSIZE_UPPER_BOUND);
+            }
+        }
+        else if (operand1.expressionType == ExpressionType.STRING)
+        {
+            if (operand1.expressionStringValue != null)
+            {
+                expressionIntegerValue = new ExpressionIntegerValue(BigInteger.valueOf(
+                        operand1.expressionStringValue.getBytes(StandardCharsets.UTF_8).length));
+            }
+            else
+            {
+                expressionIntegerValue = new ExpressionIntegerValue(
+                        VarIntegerType.VARSIZE_LOWER_BOUND, VarIntegerType.VARSIZE_UPPER_BOUND);
+            }
+        }
+        else if (operand1.expressionType == ExpressionType.BYTES)
+        {
             expressionIntegerValue = new ExpressionIntegerValue(
                     VarIntegerType.VARSIZE_LOWER_BOUND, VarIntegerType.VARSIZE_UPPER_BOUND);
+        }
+        else
+        {
+            throw new ParserException(
+                    operand1, "'" + operand1.text + "' is not supported by lengthof operator!");
+        }
     }
 
     private void evaluateValueOfOperator()

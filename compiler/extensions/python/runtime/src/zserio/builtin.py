@@ -35,3 +35,14 @@ def numbits(num_values: int) -> int:
         return 1
 
     return (num_values - 1).bit_length()
+
+
+def lengthof_string(string: str) -> int:
+    """
+    Gets length of the given string in UTF-8 bytes.
+
+    :param string: String value.
+    :returns: Number of bytes needed to encode given string in UTF-8.
+    """
+
+    return len(string.encode("utf-8"))

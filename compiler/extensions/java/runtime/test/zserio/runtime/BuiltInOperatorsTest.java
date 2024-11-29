@@ -80,4 +80,14 @@ public class BuiltInOperatorsTest
         assertEquals(63, BuiltInOperators.numBits(BigInteger.ONE.shiftLeft(63)));
         assertEquals(64, BuiltInOperators.numBits(BigInteger.ONE.shiftLeft(63).add(BigInteger.ONE)));
     }
+
+    @Test
+    void lengthOf()
+    {
+        assertEquals(0, BuiltInOperators.lengthOf(""));
+        assertEquals(3, BuiltInOperators.lengthOf("abc"));
+        assertEquals(3, BuiltInOperators.lengthOf("€"));
+        assertEquals(1, BuiltInOperators.lengthOf("$"));
+        assertEquals(4, BuiltInOperators.lengthOf("€$"));
+    }
 }

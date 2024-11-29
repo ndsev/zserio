@@ -1,6 +1,6 @@
 import unittest
 
-from zserio.builtin import isset, numbits
+from zserio.builtin import isset, numbits, lengthof_string
 
 
 class BuiltinOperatorsTest(unittest.TestCase):
@@ -76,3 +76,10 @@ class BuiltinOperatorsTest(unittest.TestCase):
         self.assertEqual(33, numbits((1 << 32) + 1))
         self.assertEqual(63, numbits(1 << 63))
         self.assertEqual(64, numbits((1 << 63) + 1))
+
+    def test_lengthof_string(self):
+        self.assertEqual(0, lengthof_string(""))
+        self.assertEqual(3, lengthof_string("abc"))
+        self.assertEqual(3, lengthof_string("€"))
+        self.assertEqual(1, lengthof_string("$"))
+        self.assertEqual(4, lengthof_string("€$"))

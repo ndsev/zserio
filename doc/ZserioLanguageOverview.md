@@ -882,20 +882,23 @@ The bitwise complement `~` is defined for integer and bitmask expressions.
 
 #### lengthof Operator
 
-The `lengthof` operator may be applied to an array member and returns the actual length (i.e. number
-of elements of an array. Thus, given `int32 a[5]`, the expression `lengthof` a evaluates to `5`. This is not
-particularly useful for fixed or variable length arrays, but it is the only way to refer to the length of an
-implicit length array.
+The `lengthof` operator may be applied to array members, bytes types or strings and returns the actual length
+(i.e. number of elements of an array). Thus, given `int32 a[5]`, the expression `lengthof` a evaluates to `5`.
+This is not particularly useful for fixed or variable length arrays, but it is the only way to refer to
+the length of an auto length array.
+
+> The `lengthof` function returns the number of bytes in a string, encoded using UTF-8.
+> For example, the length of the string "€" is `3`, because it is encoded as three bytes in UTF-8.
 
 **Example**
 ```
 struct LengthOfOperator
 {
-    implicit uint8 implicitArray[];
+    uint8 autoArray[];
 
-    function uint32 getLengthOfImplicitArray()
+    function uint32 getLengthOfAutoArray()
     {
-        return lengthof(implicitArray);
+        return lengthof(autoArray);
     }
 };
 ```

@@ -6,6 +6,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
+import zserio.ast.Expression.ExpressionType;
 import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Package;
@@ -175,7 +176,15 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     @Override
     public UnaryExpressionFormatting getLengthOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("len(", ")");
+        if (expr.op1().getExprType() == ExpressionType.STRING)
+        {
+            importCollector.importPackage("zserio");
+            return new UnaryExpressionFormatting("zserio.builtin.lengthof_string(", ")");
+        }
+        else
+        {
+            return new UnaryExpressionFormatting("len(", ")");
+        }
     }
 
     @Override

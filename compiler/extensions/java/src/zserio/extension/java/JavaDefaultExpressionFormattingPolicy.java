@@ -9,6 +9,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
+import zserio.ast.Expression.ExpressionType;
 import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Package;
@@ -229,7 +230,14 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public UnaryExpressionFormatting getLengthOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("", ".length");
+        if (expr.op1().getExprType() == ExpressionType.STRING)
+        {
+            return new UnaryExpressionFormatting("zserio.runtime.BuiltInOperators.lengthOf(", ")");
+        }
+        else
+        {
+            return new UnaryExpressionFormatting("", ".length");
+        }
     }
 
     @Override
