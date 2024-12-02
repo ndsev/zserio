@@ -13,7 +13,8 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-constexpr ${typeInfo.typeFullName} ${name} = ${value};
+constexpr ${typeInfo.typeFullName} ${name} = <#if typeInfo.isSimple>static_cast<${typeInfo.typeFullName}>(</#if><#rt>
+        <#lt>${value}<#if typeInfo.isSimple>)</#if>;
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>
