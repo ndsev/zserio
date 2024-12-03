@@ -32,6 +32,7 @@ add_custom_test(expressions
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FunctionTypeTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/IndexOperatorTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/IsSetOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/LeftShiftOperatorTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/LengthOfOperatorTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ModuloOperatorTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NegationOperatorTest.cpp
