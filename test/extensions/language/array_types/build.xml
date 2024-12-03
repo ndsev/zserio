@@ -12,6 +12,9 @@
     <target name="gen" depends="gen.check" unless="array_types.zs.gen_is_uptodate">
         <testGenClean testName="array_types"/>
         <testGen testName="array_types" zsFile="array_types.zs"/>
+        <testGen testName="array_types" zsFile="choice_tag_clash.zs">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
     </target>
 
     <target name="gen.checkWarnings" depends="gen">

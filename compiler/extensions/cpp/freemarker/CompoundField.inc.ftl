@@ -1108,7 +1108,7 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
     <#if hasChoiceTag || uses_packing_context(fieldList)>
     public:
         <#if hasChoiceTag>
-        ::zserio::DeltaContext& getChoiceTag()
+        ::zserio::DeltaContext& choiceTag()
         {
             return m_choiceTag;
         }

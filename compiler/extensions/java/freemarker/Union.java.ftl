@@ -135,7 +135,7 @@ public class ${name} implements <#rt>
     public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
         final ZserioPackingContext zserioContext = context.cast();
-        zserioContext.getChoiceTag().init(
+        zserioContext.choiceTag().init(
                 new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
@@ -190,7 +190,7 @@ public class ${name} implements <#rt>
         final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += zserioContext.getChoiceTag().bitSizeOf(
+        endBitPosition += zserioContext.choiceTag().bitSizeOf(
                 new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
@@ -370,7 +370,7 @@ public class ${name} implements <#rt>
     {
         final ZserioPackingContext zserioContext = context.cast();
         choiceTag = ((${choiceTagArrayElement})
-                zserioContext.getChoiceTag().read(
+                zserioContext.choiceTag().read(
                         new ${choiceTagArrayTraits}(), in)).get();
 
         switch (choiceTag)
@@ -426,7 +426,7 @@ public class ${name} implements <#rt>
         final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += zserioContext.getChoiceTag().bitSizeOf(
+        endBitPosition += zserioContext.choiceTag().bitSizeOf(
                 new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
@@ -471,7 +471,7 @@ public class ${name} implements <#rt>
             throws java.io.IOException
     {
         final ZserioPackingContext zserioContext = context.cast();
-        zserioContext.getChoiceTag().write(
+        zserioContext.choiceTag().write(
                 new ${choiceTagArrayTraits}(), out,
                 new ${choiceTagArrayElement}(choiceTag));
 

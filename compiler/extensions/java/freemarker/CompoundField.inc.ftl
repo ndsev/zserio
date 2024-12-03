@@ -620,7 +620,7 @@ ${I}<@compound_get_field field/>.initPackingContext(zserioContext.${field.getter
         }
 
         <#if hasChoiceTag>
-        public zserio.runtime.array.DeltaContext getChoiceTag()
+        public zserio.runtime.array.DeltaContext choiceTag()
         {
             return choiceTag;
         }

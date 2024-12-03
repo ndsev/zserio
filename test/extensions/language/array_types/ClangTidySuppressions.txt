@@ -53,6 +53,7 @@ cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimiz
 cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
+cppcoreguidelines-pro-type-member-init:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
 
 google-explicit-constructor:gen/array_types/arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_arrays_mapping/TestBitmask.h
@@ -99,9 +100,11 @@ readability-make-member-function-const:gen/array_types/packing_interface_optimiz
 readability-make-member-function-const:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
 readability-make-member-function-const:gen/array_types/packing_interface_optimization/UnpackedColorStruct.cpp
 readability-make-member-function-const:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
+readability-make-member-function-const:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
 
 readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
 readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyUnion.cpp
 readability-simplify-boolean-expr:gen/array_types/packing_interface_optimization/MixedColorChoice.cpp
 readability-simplify-boolean-expr:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
 readability-simplify-boolean-expr:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
+readability-simplify-boolean-expr:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
