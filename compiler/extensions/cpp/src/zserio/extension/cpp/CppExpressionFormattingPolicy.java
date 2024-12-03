@@ -252,7 +252,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         }
         else
         {
-            return new BinaryExpressionFormatting("(", ") * (1 << (", "))");
+            return new BinaryExpressionFormatting("(", ") * (1U << (", "))");
         }
     }
 
