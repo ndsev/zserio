@@ -8,6 +8,7 @@ namespace choice_tag_clash
 using allocator_type = ChoiceTagClash::allocator_type;
 template <typename T>
 using vector_type = zserio::vector<T, allocator_type>;
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
 class ChoiceTagClashTest : public ::testing::Test
 {
@@ -64,7 +65,7 @@ TEST_F(ChoiceTagClashTest, writeRead)
 {
     ChoiceTagClash choiceTagClash = createChoiceTagClash();
 
-    zserio::BitBuffer bitBuffer = zserio::serialize(choiceTagClash);
+    BitBuffer bitBuffer = zserio::serialize(choiceTagClash);
     ChoiceTagClash readChoiceTagClash = zserio::deserialize<ChoiceTagClash>(bitBuffer);
 
     ASSERT_EQ(choiceTagClash, readChoiceTagClash);
