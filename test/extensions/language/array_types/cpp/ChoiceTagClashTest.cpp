@@ -31,7 +31,7 @@ protected:
             }
             else
             {
-                choices.back().setStringField("text " + zserio::toString(i));
+                choices.back().setStringField("text " + zserio::toString<allocator_type>(i));
             }
         }
     }
@@ -47,7 +47,7 @@ protected:
             }
             else
             {
-                unions.back().setStringField("text " + zserio::toString(i));
+                unions.back().setStringField("text " + zserio::toString<allocator_type>(i));
             }
         }
     }
