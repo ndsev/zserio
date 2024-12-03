@@ -242,6 +242,20 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         return new BinaryExpressionFormatting("::zserio::builtin::isSet(", ", ", ")");
     }
 
+    @Override
+    public BinaryExpressionFormatting getLeftShift(Expression expr)
+    {
+        if (expr.op1().getIntegerValue() != null &&
+                expr.op1().getIntegerValue().compareTo(BigInteger.ZERO) >= 0)
+        {
+            return new BinaryExpressionFormatting("(", ") << (", ")");
+        }
+        else
+        {
+            return new BinaryExpressionFormatting("(", ") * (1 << (", "))");
+        }
+    }
+
     protected String getAccessPrefixForCompoundType()
     {
         return "";
