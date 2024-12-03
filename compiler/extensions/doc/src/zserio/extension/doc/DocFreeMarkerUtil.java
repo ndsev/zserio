@@ -16,13 +16,15 @@ final class DocFreeMarkerUtil
     public static void processTemplate(String templateName, Object templateData, File outputFile)
             throws ZserioExtensionException
     {
-        FreeMarkerUtil.processTemplate(DOC_TEMPLATE_LOCATION + templateName, templateData, outputFile);
+        FreeMarkerUtil.processTemplate(
+                DOC_TEMPLATE_LOCATION + templateName, templateData, outputFile, DocFreeMarkerUtil.class);
     }
 
     public static void processTemplate(String templateName, Object templateData, Writer outputWriter)
             throws ZserioExtensionException
     {
-        FreeMarkerUtil.processTemplate(DOC_TEMPLATE_LOCATION + templateName, templateData, outputWriter);
+        FreeMarkerUtil.processTemplate(
+                DOC_TEMPLATE_LOCATION + templateName, templateData, outputWriter, DocFreeMarkerUtil.class);
     }
 
     public static final String DOC_TEMPLATE_LOCATION = "doc/";

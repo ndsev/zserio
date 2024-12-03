@@ -94,7 +94,7 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
         if (generate)
         {
             FreeMarkerUtil.processTemplate(
-                    JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile, false);
+                    JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile, JavaDefaultEmitter.class);
         }
 
         outputFileManager.registerOutputFile(outputFile, generate);

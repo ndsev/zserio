@@ -81,8 +81,8 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
                 !outputFileManager.checkTimestamps(outputFile) || !checkGeneratorDescription(outputFile);
         if (generate)
         {
-            FreeMarkerUtil.processTemplate(
-                    PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile, false);
+            FreeMarkerUtil.processTemplate(PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile,
+                    PythonDefaultEmitter.class);
         }
 
         outputFileManager.registerOutputFile(outputFile, generate);
@@ -90,7 +90,8 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
 
     protected static List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
     {
-        return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
+        return FreeMarkerUtil.readFreemarkerTemplate(
+                PYTHON_TEMPLATE_LOCATION + templateName, PythonDefaultEmitter.class);
     }
 
     static String getOutputFileName(String outFileNameRoot)

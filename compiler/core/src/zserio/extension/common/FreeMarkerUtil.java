@@ -27,19 +27,20 @@ public final class FreeMarkerUtil
     /**
      * Processes FreeMarker template with the provided data model and generates output.
      *
-     * @param templateName      The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
+     * @param templateName The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
      * @param templateDataModel The template data model to apply.
-     * @param outputWriter      The writer to use for generated output.
+     * @param outputWriter The writer to use for generated output.
+     * @param classForTemplateLoading The class which is used to get class loader for templates.
      *
      * @throws ZserioExtensionException In case of any template error.
      */
-    public static void processTemplate(String templateName, Object templateDataModel, Writer outputWriter)
-            throws ZserioExtensionException
+    public static void processTemplate(String templateName, Object templateDataModel, Writer outputWriter,
+            Class<?> classForTemplateLoading) throws ZserioExtensionException
     {
         if (freeMarkerConfig == null)
         {
             final Configuration newFreeMarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
-            newFreeMarkerConfig.setClassForTemplateLoading(FreeMarkerUtil.class, '/' + FREEMARKER_LOCATION);
+            newFreeMarkerConfig.setClassForTemplateLoading(classForTemplateLoading, '/' + FREEMARKER_LOCATION);
             newFreeMarkerConfig.setOutputEncoding("UTF-8");
 
             freeMarkerConfig = newFreeMarkerConfig;
@@ -63,30 +64,32 @@ public final class FreeMarkerUtil
     /**
      * Processes FreeMarker template with the provided data model and generates output.
      *
-     * @param templateName      The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
+     * @param templateName The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
      * @param templateDataModel The template data model to apply.
-     * @param outputFile        The output to be generated.
+     * @param outputFile The output to be generated.
+     * @param classForTemplateLoading The class which is used to get class loader for templates.
      *
      * @throws ZserioExtensionException In case of any template error.
      */
-    public static void processTemplate(String templateName, Object templateDataModel, File outputFile)
-            throws ZserioExtensionException
+    public static void processTemplate(String templateName, Object templateDataModel, File outputFile,
+            Class<?> classForTemplateLoading) throws ZserioExtensionException
     {
-        processTemplate(templateName, templateDataModel, outputFile, false);
+        processTemplate(templateName, templateDataModel, outputFile, classForTemplateLoading, false);
     }
 
     /**
      * Processes FreeMarker template with the provided data model and generates output.
      *
-     * @param templateName      The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
+     * @param templateName The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
      * @param templateDataModel The template data model to apply.
-     * @param outputFile        The output to be generated.
-     * @param amalgamate        True if the generated output will be amalgamated to the output file.
+     * @param outputFile The output to be generated.
+     * @param amalgamate True if the generated output will be amalgamated to the output file.
+     * @param classForTemplateLoading The class which is used to get class loader for templates.
      *
      * @throws ZserioExtensionException In case of any template error.
      */
     public static void processTemplate(String templateName, Object templateDataModel, File outputFile,
-            boolean amalgamate) throws ZserioExtensionException
+            Class<?> classForTemplateLoading, boolean amalgamate) throws ZserioExtensionException
     {
         FileUtil.createOutputDirectory(outputFile);
 
@@ -108,7 +111,7 @@ public final class FreeMarkerUtil
 
             if (append)
                 bufferedWriter.newLine();
-            processTemplate(templateName, templateDataModel, bufferedWriter);
+            processTemplate(templateName, templateDataModel, bufferedWriter, classForTemplateLoading);
         }
         catch (IOException exception)
         {
@@ -122,14 +125,17 @@ public final class FreeMarkerUtil
      * @param templateName Name of the FreeMarker template to read.
      *
      * @return List of lines read from FreeMarker template.
+     * @param classForTemplateLoading The class which is used to get class loader for templates.
      *
      * @throws ZserioExtensionException When the template is not available.
      */
-    public static List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
+    public static List<String> readFreemarkerTemplate(String templateName, Class<?> classForTemplateLoading)
+            throws ZserioExtensionException
     {
         final String fullTemplateName = FREEMARKER_LOCATION + templateName;
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                     getFreemarkerTemplateStream(fullTemplateName), StandardCharsets.UTF_8)))
+                     getFreemarkerTemplateStream(fullTemplateName, classForTemplateLoading),
+                     StandardCharsets.UTF_8)))
         {
             final List<String> lines = new ArrayList<String>();
             while (reader.ready())
@@ -143,13 +149,13 @@ public final class FreeMarkerUtil
         }
     }
 
-    private static InputStream getFreemarkerTemplateStream(String templateName) throws ZserioExtensionException
+    private static InputStream getFreemarkerTemplateStream(
+            String templateName, Class<?> classForTemplateLoading) throws ZserioExtensionException
     {
         InputStream resourceStream = null;
         try
         {
-            final ClassLoader classLoader = FreeMarkerUtil.class.getClassLoader();
-            resourceStream = classLoader.getResourceAsStream(templateName);
+            resourceStream = classForTemplateLoading.getClassLoader().getResourceAsStream(templateName);
         }
         catch (Exception e)
         {
