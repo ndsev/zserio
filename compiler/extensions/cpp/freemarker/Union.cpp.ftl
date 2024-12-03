@@ -466,7 +466,7 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 
 void ${name}::initPackingContext(${name}::ZserioPackingContext& context) const
 {
-    context.getChoiceTag().init<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
+    context.choiceTag().init<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -510,7 +510,7 @@ size_t ${name}::bitSizeOf(${name}::ZserioPackingContext& context, size_t bitPosi
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.choiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -557,7 +557,7 @@ size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.choiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -701,7 +701,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 
 void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    context.getChoiceTag().write<${choiceTagArrayTraits}>(out, static_cast<uint32_t>(m_choiceTag));
+    context.choiceTag().write<${choiceTagArrayTraits}>(out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -734,7 +734,7 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 
 ${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
+    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.choiceTag().read<${choiceTagArrayTraits}>(in)));
 }
 </#if>
 
