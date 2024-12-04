@@ -23,7 +23,7 @@
 <#if underlyingTypeInfo.arrayTraits.isTemplated && underlyingTypeInfo.arrayTraits.requiresElementDynamicBitSize>
 uint8_t ${name}::ZserioElementBitSize::get()
 {
-    return ${bitSize.value};
+    return static_cast<uint8_t>(${bitSize.value});
 }
 
 </#if>

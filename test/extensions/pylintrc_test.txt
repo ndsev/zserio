@@ -11,7 +11,8 @@
 # --disable=W".
 disable=no-else-return,
         protected-access,
-        wrong-import-order
+        wrong-import-order,
+        consider-using-f-string
 
 [FORMAT]
 

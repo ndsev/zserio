@@ -330,7 +330,7 @@ ${I}self.<@field_member_name field/>.write(zserio_writer)
 ${I}# check offset
 ${I}if ${bitPositionName} != zserio.bitposition.bytes_to_bits(${field.offset.getter}):
 ${I}    raise zserio.PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: "
-${I}                                        f"{${bitPositionName}} != {zserio.bitposition.bytes_to_bits(${field.offset.getter})}!")
+${I}                                        "{0} != {1}!".format({${bitPositionName}}, zserio.bitposition.bytes_to_bits(${field.offset.getter})))
     </#if>
 </#macro>
 
@@ -349,7 +349,7 @@ ${I}    raise zserio.PythonRuntimeException("Constraint violated for field ${com
 ${I}# check array length
 ${I}if len(self.<@field_member_name field/>) != (${field.array.length}):
 ${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: "
-${I}                                        f"{len(self.<@field_member_name field/>)} != {${field.array.length}}!")
+${I}                                        "{0} != {1}!".format(len(self.<@field_member_name field/>), ${field.array.length}))
     </#if>
 </#macro>
 
@@ -362,7 +362,7 @@ ${I}# check parameters
             <#local compareOperator><#if parameter.typeInfo.isBuiltin>!=<#else>is not</#if><#t></#local>
 ${I}if self.<@field_member_name field/>.${parameter.propertyName} ${compareOperator} (${instantiatedParameter.expression}):
 ${I}    raise zserio.PythonRuntimeException("Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: "
-${I}                                        f"{self.<@field_member_name field/>.${parameter.propertyName}} != {${instantiatedParameter.expression}}!")
+${I}                                        "{0} != {1}!".format(self.<@field_member_name field/>.${parameter.propertyName}, ${instantiatedParameter.expression}))
         </#list>
     </#if>
 </#macro>

@@ -33,7 +33,7 @@ class ${name}:
 
 </#if>
         if value < ${lowerBound} or value > ${upperBound}:
-            raise zserio.PythonRuntimeException(f"Value for bitmask '${name}' out of bounds: {value}!")
+            raise zserio.PythonRuntimeException("Value for bitmask '${name}' out of bounds: {0}!".format(value))
 
         instance = cls()
         instance._value = value

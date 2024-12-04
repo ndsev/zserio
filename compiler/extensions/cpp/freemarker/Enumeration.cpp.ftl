@@ -33,7 +33,7 @@ constexpr const char* EnumTraits<${fullName}>::enumName;
 
 uint8_t EnumTraits<${fullName}>::ZserioElementBitSize::get()
 {
-    return ${bitSize.value};
+    return static_cast<uint8_t>(${bitSize.value});
 }
 </#if>
 <#if withTypeInfoCode>

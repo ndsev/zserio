@@ -1,6 +1,9 @@
+bugprone-exception-escape:gen_string_expressions/type_info_string_expressions/TestChoice.cpp
+bugprone-exception-escape:gen_string_expressions/type_info_string_expressions/TestChoice.h
 bugprone-exception-escape:gen/with_type_info_code/RecursiveChoice.cpp
 bugprone-exception-escape:gen/with_type_info_code/RecursiveChoice.h
 
+bugprone-forwarding-reference-overload:gen_string_expressions/type_info_string_expressions/TypeInfoStringExpressions.h
 bugprone-forwarding-reference-overload:gen/with_type_info_code/ParameterizedStruct.h
 bugprone-forwarding-reference-overload:gen/with_type_info_code/TemplatedParameterizedStruct_TS32.h
 
@@ -13,6 +16,8 @@ bugprone-unhandled-self-assignment:gen/with_type_info_code/TemplatedParameterize
 cert-err58-cpp:cpp/DebugStringTest.cpp
 cert-err58-cpp:cpp/WithTypeInfoCodeTest.cpp
 
+cppcoreguidelines-pro-type-member-init:gen_string_expressions/type_info_string_expressions/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen_string_expressions/type_info_string_expressions/TestStruct.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/Fts4Table.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/ParameterizedStruct.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/RecursiveChoice.cpp
@@ -32,18 +37,24 @@ cppcoreguidelines-pro-type-reinterpret-cast:gen/with_type_info_code/WithoutRowId
 fuchsia-multiple-inheritance:gen/with_type_info_code/SqlDatabase.h
 
 google-build-using-namespace:cpp/DebugStringTest.cpp
+google-build-using-namespace:cpp/TypeInfoStringExpressionsTest.cpp
 google-build-using-namespace:cpp/WithTypeInfoCodeCreator.cpp
 google-build-using-namespace:cpp/WithTypeInfoCodeTest.cpp
 
+google-explicit-constructor:gen_string_expressions/type_info_string_expressions/TestBitmask.h
 google-explicit-constructor:gen/with_type_info_code/TestBitmask.h
 
+hicpp-signed-bitwise:gen_string_expressions/type_info_string_expressions/TestBitmask.h
 hicpp-signed-bitwise:gen/with_type_info_code/TestBitmask.h
 
 misc-no-recursion # reports also tested_release and some system headers
 
+performance-move-const-arg:gen_string_expressions/type_info_string_expressions/TestStruct.cpp
 performance-move-const-arg:gen/with_type_info_code/ComplexStruct.cpp
 performance-move-const-arg:gen/with_type_info_code/WithTypeInfoCode.cpp
 
+readability-make-member-function-const:gen_string_expressions/type_info_string_expressions/TestChoice.cpp
+readability-make-member-function-const:gen_string_expressions/type_info_string_expressions/TestStruct.cpp
 readability-make-member-function-const:gen/with_type_info_code/ComplexStruct.cpp
 readability-make-member-function-const:gen/with_type_info_code/SimpleChoice.cpp
 readability-make-member-function-const:gen/with_type_info_code/SimpleStruct.cpp

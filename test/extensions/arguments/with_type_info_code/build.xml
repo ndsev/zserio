@@ -15,6 +15,9 @@
             <arg name="withTypeInfoCode"/>
             <arg name="allowImplicitArrays"/>
         </testGen>
+        <testGen testName="with_type_info_code" zsFile="type_info_string_expressions.zs">
+            <arg name="withTypeInfoCode"/>
+        </testGen>
     </target>
 
     <target name="gen.checkWarnings" depends="gen">
