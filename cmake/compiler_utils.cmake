@@ -10,8 +10,7 @@ function(compiler_get_warnings_setup VARNAME)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(WARNINGS_SETUP "-Wall -Wextra -pedantic -Wconversion -Wno-long-long -Wshadow -Wold-style-cast")
         # gcc 7.5 reports Wsign-conversion even on static_cast, reportedly fixed in gcc 9.3
-        # gcc 9.4 still reports Wsign-conversion where other compilers are silent
-        if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0.0")
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.3.0")
             set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wsign-conversion")
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
