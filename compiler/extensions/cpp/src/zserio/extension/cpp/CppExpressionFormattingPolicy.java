@@ -245,14 +245,23 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public BinaryExpressionFormatting getLeftShift(Expression expr)
     {
-        if (expr.op1().getIntegerValue() != null &&
-                expr.op1().getIntegerValue().compareTo(BigInteger.ZERO) >= 0)
+        if (expr.op1().getIntegerLowerBound() != null &&
+                expr.op1().getIntegerLowerBound().compareTo(BigInteger.ZERO) >= 0)
         {
             return new BinaryExpressionFormatting("(", ") << (", ")");
         }
         else
         {
-            return new BinaryExpressionFormatting("(", ") * (1 << (", "))");
+            // we know that left operand is a signed type
+            if (expr.op2().getIntegerUpperBound() != null &&
+                    expr.op2().getIntegerUpperBound().compareTo(BigInteger.valueOf(32)) < 0)
+            {
+                return new BinaryExpressionFormatting("(", ") * (INT32_C(1) << (", "))");
+            }
+            else
+            {
+                return new BinaryExpressionFormatting("(", ") * (INT64_C(1) << (", "))");
+            }
         }
     }
 
