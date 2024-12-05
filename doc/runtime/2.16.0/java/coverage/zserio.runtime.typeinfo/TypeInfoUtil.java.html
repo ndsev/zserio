@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeInfoUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">TypeInfoUtil.java</span></div><h1>TypeInfoUtil.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+/**
+ * The type information helper utilities to check zserio schema.
+ */
+<span class="nc" id="L6">public final class TypeInfoUtil</span>
+{
+    /**
+     * Checks if zserio type is a compound type.
+     *
+     * @param schemaType Schema type to check.
+     *
+     * @return true if zserio type is a compound type, otherwise false.
+     */
+    public static boolean isCompound(SchemaType schemaType)
+    {
+<span class="fc bfc" id="L17" title="All 2 branches covered.">        switch (schemaType)</span>
+        {
+        case STRUCT:
+        case CHOICE:
+        case UNION:
+<span class="fc" id="L22">            return true;</span>
+        default:
+<span class="fc" id="L24">            return false;</span>
+        }
+    }
+
+    /**
+     * Checks if zserio type is a choice or union type.
+     *
+     * @param schemaType Schema type to check.
+     *
+     * @return true if zserio type is a choice or union type, otherwise false.
+     */
+    public static boolean hasChoice(SchemaType schemaType)
+    {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        switch (schemaType)</span>
+        {
+        case CHOICE:
+        case UNION:
+<span class="fc" id="L41">            return true;</span>
+        default:
+<span class="fc" id="L43">            return false;</span>
+        }
+    }
+
+    /**
+     * Checks if zserio type is a fixed sized type.
+     *
+     * @param schemaType Schema type to check.
+     *
+     * @return true if zserio type is a fixed sized type, otherwise false.
+     */
+    public static boolean isFixedSize(SchemaType schemaType)
+    {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        switch (schemaType)</span>
+        {
+        case BOOL:
+        case INT8:
+        case INT16:
+        case INT32:
+        case INT64:
+        case UINT8:
+        case UINT16:
+        case UINT32:
+        case UINT64:
+        case FIXED_SIGNED_BITFIELD:
+        case FIXED_UNSIGNED_BITFIELD:
+        case FLOAT16:
+        case FLOAT32:
+        case FLOAT64:
+<span class="fc" id="L72">            return true;</span>
+        default:
+<span class="fc" id="L74">            return false;</span>
+        }
+    }
+
+    /**
+     * Checks if zserio type is a integral type.
+     *
+     * @param schemaType Schema type to check.
+     *
+     * @return true if zserio type is a integral type, otherwise false.
+     */
+    public static boolean isIntegral(SchemaType schemaType)
+    {
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        switch (schemaType)</span>
+        {
+        case BOOL:
+        case INT8:
+        case INT16:
+        case INT32:
+        case INT64:
+        case UINT8:
+        case UINT16:
+        case UINT32:
+        case UINT64:
+        case VARINT16:
+        case VARINT32:
+        case VARINT64:
+        case VARINT:
+        case VARUINT16:
+        case VARUINT32:
+        case VARUINT64:
+        case VARUINT:
+        case VARSIZE:
+        case FIXED_SIGNED_BITFIELD:
+        case FIXED_UNSIGNED_BITFIELD:
+        case DYNAMIC_SIGNED_BITFIELD:
+        case DYNAMIC_UNSIGNED_BITFIELD:
+<span class="fc" id="L111">            return true;</span>
+        default:
+<span class="fc" id="L113">            return false;</span>
+        }
+    }
+
+    /**
+     * Checks if zserio type is a signed type.
+     *
+     * @param schemaType Schema type to check.
+     *
+     * @return true if zserio type is a signed type, otherwise false.
+     */
+    public static boolean isSigned(SchemaType schemaType)
+    {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        switch (schemaType)</span>
+        {
+        case INT8:
+        case INT16:
+        case INT32:
+        case INT64:
+        case VARINT16:
+        case VARINT32:
+        case VARINT64:
+        case VARINT:
+        case FIXED_SIGNED_BITFIELD:
+        case DYNAMIC_SIGNED_BITFIELD:
+        case FLOAT16:
+        case FLOAT32:
+        case FLOAT64:
+<span class="fc" id="L141">            return true;</span>
+        default:
+<span class="fc" id="L143">            return false;</span>
+        }
+    }
+
+    /**
+     * Checks if zserio type is a floating point type.
+     *
+     * @param schemaType Schema type to check.
+     *
+     * @return true if zserio type is a floating point type, otherwise false.
+     */
+    public static boolean isFloatingPoint(SchemaType schemaType)
+    {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        switch (schemaType)</span>
+        {
+        case FLOAT16:
+        case FLOAT32:
+        case FLOAT64:
+<span class="fc" id="L161">            return true;</span>
+        default:
+<span class="fc" id="L163">            return false;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

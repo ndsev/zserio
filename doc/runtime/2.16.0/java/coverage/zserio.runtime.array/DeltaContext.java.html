@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DeltaContext.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">DeltaContext.java</span></div><h1>DeltaContext.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import zserio.runtime.array.ArrayElement.IntegralArrayElement;
+import zserio.runtime.array.ArrayTraits.IntegralArrayTraits;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.BitStreamWriter;
+
+/**
+ * Context for delta packing created for each packable field.
+ *
+ * Contexts are always newly created for each array operation (bitSizeOfPacked, initializeOffsetsPacked,
+ * readPacked, writePacked). They must be initialized at first via calling the init method for each packable
+ * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
+ * can be repeatedly called for exactly the same sequence of packable elements.
+ */
+<span class="fc" id="L19">public final class DeltaContext extends PackingContext</span>
+{
+    /**
+     * Calls the initialization step for a single element.
+     *
+     * @param arrayTraits Standard array traits.
+     * @param element Current element.
+     */
+    public void init(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
+    {
+<span class="fc" id="L29">        numElements++;</span>
+<span class="fc" id="L30">        unpackedBitSize += bitSizeOfUnpacked(arrayTraits, element);</span>
+
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (previousElement == null)</span>
+        {
+<span class="fc" id="L34">            previousElement = element.toBigInteger();</span>
+<span class="fc" id="L35">            firstElementBitSize = (byte)unpackedBitSize;</span>
+        }
+        else
+        {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (maxBitNumber &lt;= MAX_BIT_NUMBER_LIMIT)</span>
+            {
+<span class="fc" id="L41">                isPacked = true;</span>
+<span class="fc" id="L42">                final BigInteger bigElement = element.toBigInteger();</span>
+<span class="fc" id="L43">                final BigInteger delta = bigElement.subtract(previousElement);</span>
+<span class="fc" id="L44">                final byte maxBitNumber = bitLength(delta);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                if (maxBitNumber &gt; this.maxBitNumber)</span>
+                {
+<span class="fc" id="L47">                    this.maxBitNumber = maxBitNumber;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">                    if (maxBitNumber &gt; MAX_BIT_NUMBER_LIMIT)</span>
+<span class="fc" id="L49">                        isPacked = false;</span>
+                }
+<span class="fc" id="L51">                previousElement = bigElement;</span>
+            }
+        }
+<span class="fc" id="L54">    }</span>
+
+    /**
+     * Returns length of the packed element stored in the bit stream in bits.
+     *
+     * @param arrayTraits Standard array traits.
+     * @param element Value of the current element.
+     *
+     * @return Length of the packed element stored in the bit stream in bits.
+     */
+    public int bitSizeOf(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
+    {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (!processingStarted)</span>
+        {
+<span class="fc" id="L68">            processingStarted = true;</span>
+<span class="fc" id="L69">            finishInit();</span>
+
+<span class="fc" id="L71">            return bitSizeOfDescriptor() + bitSizeOfUnpacked(arrayTraits, element);</span>
+        }
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        else if (!isPacked)</span>
+        {
+<span class="fc" id="L75">            return bitSizeOfUnpacked(arrayTraits, element);</span>
+        }
+        else
+        {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            return maxBitNumber + (maxBitNumber &gt; 0 ? 1 : 0);</span>
+        }
+    }
+
+    /**
+     * Reads a packed element from the bit stream.
+     *
+     * @param arrayTraits Standard array traits.
+     * @param reader Bit stream reader.
+     *
+     * @return Packed element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public IntegralArrayElement read(IntegralArrayTraits arrayTraits, BitStreamReader reader) throws IOException
+    {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (!processingStarted)</span>
+        {
+<span class="fc" id="L97">            processingStarted = true;</span>
+<span class="fc" id="L98">            readDescriptor(reader);</span>
+
+<span class="fc" id="L100">            return readUnpacked(arrayTraits, reader);</span>
+        }
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        else if (!isPacked)</span>
+        {
+<span class="fc" id="L104">            return readUnpacked(arrayTraits, reader);</span>
+        }
+        else
+        {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (maxBitNumber &gt; 0)</span>
+            {
+<span class="fc" id="L110">                final BigInteger delta = BigInteger.valueOf(reader.readSignedBits(maxBitNumber + 1));</span>
+<span class="fc" id="L111">                previousElement = previousElement.add(delta);</span>
+            }
+
+<span class="fc" id="L114">            return arrayTraits.fromBigInteger(previousElement);</span>
+        }
+    }
+
+    /**
+     * Writes the packed element to the bit stream.
+     *
+     * @param arrayTraits Standard array traits.
+     * @param writer Bit stream writer.
+     * @param element Current element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void write(IntegralArrayTraits arrayTraits, BitStreamWriter writer, IntegralArrayElement element)
+            throws IOException
+    {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (!processingStarted)</span>
+        {
+<span class="fc" id="L132">            processingStarted = true;</span>
+<span class="fc" id="L133">            finishInit();</span>
+<span class="fc" id="L134">            writeDescriptor(writer);</span>
+
+<span class="fc" id="L136">            writeUnpacked(arrayTraits, writer, element);</span>
+        }
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        else if (!isPacked)</span>
+        {
+<span class="fc" id="L140">            writeUnpacked(arrayTraits, writer, element);</span>
+        }
+        else
+        {
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            if (maxBitNumber &gt; 0)</span>
+            {
+<span class="fc" id="L146">                final BigInteger bigElement = element.toBigInteger();</span>
+<span class="fc" id="L147">                final BigInteger delta = bigElement.subtract(previousElement);</span>
+<span class="fc" id="L148">                writer.writeSignedBits(delta.longValue(), maxBitNumber + 1);</span>
+<span class="fc" id="L149">                previousElement = bigElement;</span>
+            }
+        }
+<span class="fc" id="L152">    }</span>
+
+    private void finishInit()
+    {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (isPacked)</span>
+        {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            final int deltaBitSize = maxBitNumber + (maxBitNumber &gt; 0 ? 1 : 0);</span>
+<span class="fc" id="L159">            final int packedBitSizeWithDescriptor = 1 + MAX_BIT_NUMBER_BITS + // descriptor</span>
+                    firstElementBitSize + (numElements - 1) * deltaBitSize;
+<span class="fc" id="L161">            final int unpackedBitSizeWithDescriptor = 1 + unpackedBitSize;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">            if (packedBitSizeWithDescriptor &gt;= unpackedBitSizeWithDescriptor)</span>
+<span class="fc" id="L163">                isPacked = false;</span>
+        }
+<span class="fc" id="L165">    }</span>
+
+    private int bitSizeOfDescriptor()
+    {
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        return isPacked ? 1 + MAX_BIT_NUMBER_BITS : 1;</span>
+    }
+
+    private static int bitSizeOfUnpacked(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
+    {
+<span class="fc" id="L174">        return arrayTraits.bitSizeOf(element);</span>
+    }
+
+    private void readDescriptor(BitStreamReader reader) throws IOException
+    {
+<span class="fc" id="L179">        isPacked = reader.readBool();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (isPacked)</span>
+<span class="fc" id="L181">            maxBitNumber = (byte)reader.readBits(MAX_BIT_NUMBER_BITS);</span>
+<span class="fc" id="L182">    }</span>
+
+    private IntegralArrayElement readUnpacked(IntegralArrayTraits arrayTraits, BitStreamReader reader)
+            throws IOException
+    {
+<span class="fc" id="L187">        final IntegralArrayElement element = arrayTraits.read(reader);</span>
+<span class="fc" id="L188">        previousElement = element.toBigInteger();</span>
+<span class="fc" id="L189">        return element;</span>
+    }
+
+    private void writeDescriptor(BitStreamWriter writer) throws IOException
+    {
+<span class="fc" id="L194">        writer.writeBool(isPacked);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (isPacked)</span>
+<span class="fc" id="L196">            writer.writeBits(maxBitNumber, MAX_BIT_NUMBER_BITS);</span>
+<span class="fc" id="L197">    }</span>
+
+    private void writeUnpacked(IntegralArrayTraits arrayTraits, BitStreamWriter writer,
+            IntegralArrayElement element) throws IOException
+    {
+<span class="fc" id="L202">        previousElement = element.toBigInteger();</span>
+<span class="fc" id="L203">        arrayTraits.write(writer, element);</span>
+<span class="fc" id="L204">    }</span>
+
+    private static byte bitLength(BigInteger element)
+    {
+        // need to call abs() first to get the same behavior as in Python and C++
+<span class="fc" id="L209">        return (byte)element.abs().bitLength();</span>
+    }
+
+    private static final byte MAX_BIT_NUMBER_BITS = 6;
+    private static final byte MAX_BIT_NUMBER_LIMIT = 62;
+
+    private BigInteger previousElement; // BigInteger covers all integral array element values
+<span class="fc" id="L216">    private byte maxBitNumber = 0;</span>
+<span class="fc" id="L217">    private boolean isPacked = false;</span>
+<span class="fc" id="L218">    private boolean processingStarted = false;</span>
+
+<span class="fc" id="L220">    private byte firstElementBitSize = 0;</span>
+<span class="fc" id="L221">    private int numElements = 0;</span>
+<span class="fc" id="L222">    private int unpackedBitSize = 0;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

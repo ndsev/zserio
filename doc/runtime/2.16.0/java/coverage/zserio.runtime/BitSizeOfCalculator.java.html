@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitSizeOfCalculator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">BitSizeOfCalculator.java</span></div><h1>BitSizeOfCalculator.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import zserio.runtime.io.BitBuffer;
+
+/**
+ * The class provides common methods to calculate bit size of an variable stored in the bit stream.
+ */
+<span class="nc" id="L11">public final class BitSizeOfCalculator</span>
+{
+    /**
+     * Gets the bit size of varint16 value which is stored in bit stream.
+     *
+     * @param value varint16 value for calculation.
+     *
+     * @return Length of varint16 value in bits.
+     */
+    public static int getBitSizeOfVarInt16(short value)
+    {
+<span class="fc" id="L22">        final short absoluteValue = (short)Math.abs(value);</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (absoluteValue &gt;= (short)(1 &lt;&lt; (6 + 8)))</span>
+<span class="fc" id="L24">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varint16!&quot;);</span>
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        return (absoluteValue &lt; (short)1 &lt;&lt; 6) ? 8 : 16;</span>
+    }
+
+    /**
+     * Gets the bit size of varint32 value which is stored in bit stream.
+     *
+     * @param value varint32 value for calculation.
+     *
+     * @return Length of varint32 value in bits.
+     */
+    public static int getBitSizeOfVarInt32(int value)
+    {
+<span class="fc" id="L38">        final int absoluteValue = Math.abs(value);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (absoluteValue &gt;= (1 &lt;&lt; (6 + 7 + 7 + 8)))</span>
+<span class="fc" id="L40">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varint32!&quot;);</span>
+
+<span class="fc" id="L42">        int bitSize = 0;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (absoluteValue &lt; 1 &lt;&lt; 6)</span>
+        {
+<span class="fc" id="L45">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        else if (absoluteValue &lt; 1 &lt;&lt; 13)</span>
+        {
+<span class="fc" id="L49">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        else if (absoluteValue &lt; 1 &lt;&lt; 20)</span>
+        {
+<span class="fc" id="L53">            bitSize = 24;</span>
+        }
+        else
+        {
+<span class="fc" id="L57">            bitSize = 32;</span>
+        }
+
+<span class="fc" id="L60">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of varint64 value which is stored in bit stream.
+     *
+     * @param value varint64 value for calculation.
+     *
+     * @return Length of varint64 value in bits.
+     */
+    public static int getBitSizeOfVarInt64(long value)
+    {
+<span class="fc" id="L72">        final long absoluteValue = Math.abs(value);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (absoluteValue &gt;= (1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)))</span>
+<span class="fc" id="L74">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varint64!&quot;);</span>
+
+<span class="fc" id="L76">        int bitSize = 0;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (absoluteValue &lt; (1L &lt;&lt; 6))</span>
+        {
+<span class="fc" id="L79">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 13))</span>
+        {
+<span class="fc" id="L83">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 20))</span>
+        {
+<span class="fc" id="L87">            bitSize = 24;</span>
+        }
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 27))</span>
+        {
+<span class="fc" id="L91">            bitSize = 32;</span>
+        }
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 34))</span>
+        {
+<span class="fc" id="L95">            bitSize = 40;</span>
+        }
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 41))</span>
+        {
+<span class="fc" id="L99">            bitSize = 48;</span>
+        }
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 48))</span>
+        {
+<span class="fc" id="L103">            bitSize = 56;</span>
+        }
+        else
+        {
+<span class="fc" id="L107">            bitSize = 64;</span>
+        }
+
+<span class="fc" id="L110">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of varuint16 value which is stored in bit stream.
+     *
+     * @param value varuint16 value for calculation.
+     *
+     * @return Length of varuint16 value in bits.
+     */
+    public static int getBitSizeOfVarUInt16(short value)
+    {
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (value &lt; 0)</span>
+<span class="fc" id="L123">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varuint16!&quot;);</span>
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        return (value &lt; (1 &lt;&lt; 7)) ? 8 : 16;</span>
+    }
+
+    /**
+     * Gets the bit size of varuint32 value which is stored in bit stream.
+     *
+     * @param value varuint32 value for calculation.
+     *
+     * @return Length of varuint32 value in bits.
+     */
+    public static int getBitSizeOfVarUInt32(int value)
+    {
+<span class="fc bfc" id="L137" title="All 4 branches covered.">        if (value &lt; 0 || value &gt;= (1 &lt;&lt; (7 + 7 + 7 + 8)))</span>
+<span class="fc" id="L138">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varuint32!&quot;);</span>
+
+<span class="fc" id="L140">        int bitSize = 0;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (value &lt; (1 &lt;&lt; 7))</span>
+        {
+<span class="fc" id="L143">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        else if (value &lt; (1 &lt;&lt; 14))</span>
+        {
+<span class="fc" id="L147">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        else if (value &lt; (1 &lt;&lt; 21))</span>
+        {
+<span class="fc" id="L151">            bitSize = 24;</span>
+        }
+        else
+        {
+<span class="fc" id="L155">            bitSize = 32;</span>
+        }
+
+<span class="fc" id="L158">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of varuint64 value which is stored in bit stream.
+     *
+     * @param value varuint64 value for calculation.
+     *
+     * @return Length of varuint64 value in bits.
+     */
+    public static int getBitSizeOfVarUInt64(long value)
+    {
+<span class="fc bfc" id="L170" title="All 4 branches covered.">        if (value &lt; 0 || value &gt;= (1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)))</span>
+<span class="fc" id="L171">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varuint64!&quot;);</span>
+
+<span class="fc" id="L173">        int bitSize = 0;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (value &lt; (1L &lt;&lt; 7))</span>
+        {
+<span class="fc" id="L176">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        else if (value &lt; (1L &lt;&lt; 14))</span>
+        {
+<span class="fc" id="L180">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        else if (value &lt; (1L &lt;&lt; 21))</span>
+        {
+<span class="fc" id="L184">            bitSize = 24;</span>
+        }
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        else if (value &lt; (1L &lt;&lt; 28))</span>
+        {
+<span class="fc" id="L188">            bitSize = 32;</span>
+        }
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        else if (value &lt; (1L &lt;&lt; 35))</span>
+        {
+<span class="fc" id="L192">            bitSize = 40;</span>
+        }
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        else if (value &lt; (1L &lt;&lt; 42))</span>
+        {
+<span class="fc" id="L196">            bitSize = 48;</span>
+        }
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        else if (value &lt; (1L &lt;&lt; 49))</span>
+        {
+<span class="fc" id="L200">            bitSize = 56;</span>
+        }
+        else
+        {
+<span class="fc" id="L204">            bitSize = 64;</span>
+        }
+
+<span class="fc" id="L207">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of varint value which is stored in bit stream.
+     *
+     * @param value varint value for calculation.
+     *
+     * @return Length of varint value in bits.
+     */
+    public static int getBitSizeOfVarInt(long value)
+    {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if (value == Long.MIN_VALUE)</span>
+<span class="fc" id="L220">            return 8; // Long.MIN_VALUE is stored as -0</span>
+
+<span class="fc" id="L222">        long absoluteValue = Math.abs(value);</span>
+
+<span class="fc" id="L224">        int bitSize = 0;</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (absoluteValue &lt; (1L &lt;&lt; 6))</span>
+        {
+<span class="fc" id="L227">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 13))</span>
+        {
+<span class="fc" id="L231">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 20))</span>
+        {
+<span class="fc" id="L235">            bitSize = 24;</span>
+        }
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 27))</span>
+        {
+<span class="fc" id="L239">            bitSize = 32;</span>
+        }
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 34))</span>
+        {
+<span class="fc" id="L243">            bitSize = 40;</span>
+        }
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 41))</span>
+        {
+<span class="fc" id="L247">            bitSize = 48;</span>
+        }
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 48))</span>
+        {
+<span class="fc" id="L251">            bitSize = 56;</span>
+        }
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        else if (absoluteValue &lt; (1L &lt;&lt; 55))</span>
+        {
+<span class="fc" id="L255">            bitSize = 64;</span>
+        }
+        else
+        {
+<span class="fc" id="L259">            bitSize = 72;</span>
+        }
+
+<span class="fc" id="L262">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of varuint value which is stored in bit stream.
+     *
+     * @param value varuint value for calculation.
+     *
+     * @return Length of varuint value in bits.
+     */
+    public static int getBitSizeOfVarUInt(BigInteger value)
+    {
+<span class="fc bfc" id="L274" title="All 4 branches covered.">        if (value.compareTo(BigInteger.ZERO) == -1 || value.compareTo(VARUINT_MAX) == 1)</span>
+<span class="fc" id="L275">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varuint!&quot;);</span>
+
+<span class="fc" id="L277">        int bitSize = 0;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 7)) == -1)</span>
+        {
+<span class="fc" id="L280">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L282" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 14)) == -1)</span>
+        {
+<span class="fc" id="L284">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 21)) == -1)</span>
+        {
+<span class="fc" id="L288">            bitSize = 24;</span>
+        }
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 28)) == -1)</span>
+        {
+<span class="fc" id="L292">            bitSize = 32;</span>
+        }
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 35)) == -1)</span>
+        {
+<span class="fc" id="L296">            bitSize = 40;</span>
+        }
+<span class="fc bfc" id="L298" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 42)) == -1)</span>
+        {
+<span class="fc" id="L300">            bitSize = 48;</span>
+        }
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 49)) == -1)</span>
+        {
+<span class="fc" id="L304">            bitSize = 56;</span>
+        }
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        else if (value.compareTo(BigInteger.valueOf(1L &lt;&lt; 56)) == -1)</span>
+        {
+<span class="fc" id="L308">            bitSize = 64;</span>
+        }
+        else
+        {
+<span class="fc" id="L312">            bitSize = 72;</span>
+        }
+
+<span class="fc" id="L315">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of varsize value which is stored in bit stream.
+     *
+     * @param value varsize value for calculation.
+     *
+     * @return Length of varsize value in bits.
+     */
+    public static int getBitSizeOfVarSize(int value)
+    {
+<span class="fc bfc" id="L327" title="All 2 branches covered.">        if (value &lt; 0)</span>
+<span class="fc" id="L328">            throw new ZserioError(&quot;BitSizeOfCalculator: Value '&quot; + value + &quot;' is out of range for varsize!&quot;);</span>
+
+<span class="fc" id="L330">        int bitSize = 0;</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        if (value &lt; (1 &lt;&lt; 7))</span>
+        {
+<span class="fc" id="L333">            bitSize = 8;</span>
+        }
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        else if (value &lt; (1 &lt;&lt; 14))</span>
+        {
+<span class="fc" id="L337">            bitSize = 16;</span>
+        }
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        else if (value &lt; (1 &lt;&lt; 21))</span>
+        {
+<span class="fc" id="L341">            bitSize = 24;</span>
+        }
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        else if (value &lt; (1 &lt;&lt; 28))</span>
+        {
+<span class="fc" id="L345">            bitSize = 32;</span>
+        }
+        else
+        {
+<span class="fc" id="L349">            bitSize = 40;</span>
+        }
+
+<span class="fc" id="L352">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the bit size of Zserio bytes value which is stored in bit stream.
+     *
+     * @param value Zserio bytes value for calculation.
+     *
+     * @return Length of Zserio bytes value in bits.
+     */
+    public static int getBitSizeOfBytes(byte[] value)
+    {
+<span class="fc" id="L364">        final int bytesSize = value.length;</span>
+
+        // the bytes consists of varsize for size followed by the bytes
+<span class="fc" id="L367">        return getBitSizeOfVarSize(bytesSize) + (int)BitPositionUtil.bytesToBits(bytesSize);</span>
+    }
+
+    /**
+     * Gets the bit size of Zserio string value which is stored in bit stream.
+     *
+     * @param value Zserio string value for calculation.
+     *
+     * @return Length of Zserio string value in bits.
+     */
+    public static int getBitSizeOfString(String value)
+    {
+<span class="fc" id="L379">        final int stringBytes = sizeOfString(value);</span>
+
+        // the string consists of varsize for size followed by the UTF-8 encoded string
+<span class="fc" id="L382">        return getBitSizeOfVarSize(stringBytes) + (int)BitPositionUtil.bytesToBits(stringBytes);</span>
+    }
+
+    /**
+     * Gets the bit size of bit buffer which is stored in bit stream.
+     *
+     * @param bitBuffer Bit buffer for calculation.
+     *
+     * @return Length of bit buffer in bits.
+     */
+    public static int getBitSizeOfBitBuffer(BitBuffer bitBuffer)
+    {
+<span class="fc" id="L394">        final long bitBufferSize = bitBuffer.getBitSize();</span>
+
+        // bit buffer consists of varsize for bit size followed by the bits
+<span class="fc" id="L397">        return getBitSizeOfVarSize(VarSizeUtil.convertBitBufferSizeToInt(bitBufferSize)) + (int)bitBufferSize;</span>
+    }
+
+    private static int sizeOfString(final String str)
+    {
+<span class="fc" id="L402">        int size = 0;</span>
+        try
+        {
+<span class="fc" id="L405">            size = str.getBytes(&quot;UTF-8&quot;).length;</span>
+        }
+<span class="nc" id="L407">        catch (IOException e)</span>
+<span class="fc" id="L408">        {}</span>
+
+<span class="fc" id="L410">        return size;</span>
+    }
+
+<span class="fc" id="L413">    private static final BigInteger VARUINT_MAX = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
