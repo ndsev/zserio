@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonWriterTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonWriterTest.java</span></div><h1>JsonWriterTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioBitmask;
+import zserio.runtime.ZserioEnum;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.FunctionInfo;
+import zserio.runtime.typeinfo.ItemInfo;
+import zserio.runtime.typeinfo.ParameterInfo;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.StructTypeInfo;
+import zserio.runtime.walker.WalkObserver;
+import zserio.runtime.walker.WalkerConst;
+
+<span class="fc" id="L27">public class JsonWriterTest</span>
+{
+    @Test
+    public void empty()
+    {
+<span class="fc" id="L32">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L33">        final JsonWriter jsonWriter = new JsonWriter(stringWriter);</span>
+<span class="fc" id="L34">        jsonWriter.close();</span>
+
+<span class="fc" id="L36">        assertJsonEquals(&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L37">    }</span>
+
+    @Test
+    public void nullValue()
+    {
+<span class="fc" id="L42">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L43">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L45">            jsonWriter.visitValue(null, TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L48">            assertJsonEquals(&quot;\&quot;text\&quot;: null&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L50">    }</span>
+
+    @Test
+    public void textValue()
+    {
+<span class="fc" id="L55">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L56">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L58">            jsonWriter.visitValue(&quot;test&quot;, TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L61">            assertJsonEquals(&quot;\&quot;text\&quot;: \&quot;test\&quot;&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L63">    }</span>
+
+    @Test
+    public void boolValue()
+    {
+<span class="fc" id="L68">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L69">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L71">            jsonWriter.visitValue(true, BOOL_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L74">            assertJsonEquals(&quot;\&quot;boolField\&quot;: true&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L76">    }</span>
+
+    @Test
+    public void int32Value()
+    {
+<span class="fc" id="L81">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L82">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L84">            jsonWriter.visitValue(Integer.MIN_VALUE, INT32_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L87">            assertJsonEquals(&quot;\&quot;int32Field\&quot;: &quot; + Integer.toString(Integer.MIN_VALUE), stringWriter.toString());</span>
+        }
+<span class="fc" id="L89">    }</span>
+
+    @Test
+    public void uint64Value()
+    {
+        // test BigInteger
+<span class="fc" id="L95">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L96">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L98">            final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);</span>
+<span class="fc" id="L99">            jsonWriter.visitValue(uint64Max, UINT64_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L102">            assertJsonEquals(&quot;\&quot;uint64Field\&quot;: &quot; + uint64Max.toString(), stringWriter.toString());</span>
+        }
+<span class="fc" id="L104">    }</span>
+
+    @Test
+    public void floatValue()
+    {
+<span class="fc" id="L109">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L110">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L112">            jsonWriter.visitValue(3.5f, FLOAT_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L115">            assertJsonEquals(&quot;\&quot;floatField\&quot;: 3.5&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L117">    }</span>
+
+    @Test
+    public void doubleValue()
+    {
+<span class="fc" id="L122">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L123">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L125">            jsonWriter.visitValue(9.875, DOUBLE_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+            // note that this is not valid json
+<span class="fc" id="L128">            assertJsonEquals(&quot;\&quot;doubleField\&quot;: 9.875&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L130">    }</span>
+
+    @Test
+    public void enumValue()
+    {
+        class DummyEnum implements ZserioEnum
+        {
+            public DummyEnum(byte value)
+<span class="fc" id="L138">            {</span>
+<span class="fc" id="L139">                this.value = value;</span>
+<span class="fc" id="L140">            }</span>
+
+            @Override
+            public Number getGenericValue()
+            {
+<span class="fc" id="L145">                return value;</span>
+            }
+
+            private final byte value;
+        }
+
+        {
+<span class="fc" id="L152">            final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L153">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L155">                jsonWriter.visitValue(new DummyEnum((byte)0), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L156">                jsonWriter.visitValue(new DummyEnum((byte)1), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L157">                jsonWriter.visitValue(new DummyEnum((byte)2), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L158">                jsonWriter.visitValue(new DummyEnum((byte)-1), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+                // note that this is not valid json
+<span class="fc" id="L161">                assertJsonEquals(&quot;\&quot;enumField\&quot;: \&quot;ZERO\&quot;, &quot;</span>
+                                + &quot;\&quot;enumField\&quot;: \&quot;One\&quot;, &quot;
+                                + &quot;\&quot;enumField\&quot;: \&quot;2 /* no match */\&quot;, &quot;
+                                + &quot;\&quot;enumField\&quot;: \&quot;MINUS_ONE\&quot;&quot;,
+<span class="fc" id="L165">                        stringWriter.toString());</span>
+            }
+        }
+
+        {
+<span class="fc" id="L170">            final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L171">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L173">                jsonWriter.setEnumerableFormat(JsonWriter.EnumerableFormat.NUMBER);</span>
+<span class="fc" id="L174">                jsonWriter.visitValue(new DummyEnum((byte)0), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L175">                jsonWriter.visitValue(new DummyEnum((byte)2), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L176">                jsonWriter.visitValue(new DummyEnum((byte)-1), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+                // note that this is not valid json
+<span class="fc" id="L179">                assertJsonEquals(</span>
+<span class="fc" id="L180">                        &quot;\&quot;enumField\&quot;: 0, \&quot;enumField\&quot;: 2, \&quot;enumField\&quot;: -1&quot;, stringWriter.toString());</span>
+            }
+        }
+<span class="fc" id="L183">    }</span>
+
+    @Test
+    public void enum64Value()
+    {
+<span class="fc" id="L188">        final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);</span>
+
+<span class="fc" id="L190">        class UInt64MaxDummyEnum implements ZserioEnum</span>
+        {
+            @Override
+            public Number getGenericValue()
+            {
+<span class="fc" id="L195">                return uint64Max;</span>
+            }
+        }
+
+        // test BigInteger
+        {
+<span class="fc" id="L201">            StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L202">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L204">                jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+                // note that this is not valid json
+<span class="fc" id="L207">                assertJsonEquals(&quot;\&quot;enum64Field\&quot;: \&quot;UINT64_MAX\&quot;&quot;, stringWriter.toString());</span>
+            }
+        }
+
+        {
+<span class="fc" id="L212">            StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L213">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L215">                jsonWriter.setEnumerableFormat(JsonWriter.EnumerableFormat.NUMBER);</span>
+<span class="fc" id="L216">                jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+                // note that this is not valid json
+<span class="fc" id="L219">                assertJsonEquals(&quot;\&quot;enum64Field\&quot;: &quot; + uint64Max.toString(), stringWriter.toString());</span>
+            }
+        }
+<span class="fc" id="L222">    }</span>
+
+    @Test
+    public void bitmaskValue()
+    {
+        class DummyBitmask implements ZserioBitmask
+        {
+            public DummyBitmask(short value)
+<span class="fc" id="L230">            {</span>
+<span class="fc" id="L231">                this.value = value;</span>
+<span class="fc" id="L232">            }</span>
+
+            @Override
+            public Number getGenericValue()
+            {
+<span class="fc" id="L237">                return value;</span>
+            }
+
+            private final short value;
+        }
+
+        {
+<span class="fc" id="L244">            StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L245">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L247">                jsonWriter.visitValue(new DummyBitmask((short)0), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L248">                jsonWriter.visitValue(new DummyBitmask((short)2), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L249">                jsonWriter.visitValue(new DummyBitmask((short)3), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L250">                jsonWriter.visitValue(new DummyBitmask((short)4), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L251">                jsonWriter.visitValue(new DummyBitmask((short)7), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+                // note that this is not valid json
+<span class="fc" id="L254">                assertJsonEquals(&quot;\&quot;bitmaskField\&quot;: \&quot;ZERO\&quot;, &quot;</span>
+                                + &quot;\&quot;bitmaskField\&quot;: \&quot;TWO\&quot;, &quot;
+                                + &quot;\&quot;bitmaskField\&quot;: \&quot;One | TWO\&quot;, &quot;
+                                + &quot;\&quot;bitmaskField\&quot;: \&quot;4 /* no match */\&quot;, &quot;
+                                + &quot;\&quot;bitmaskField\&quot;: \&quot;7 /* partial match: One | TWO */\&quot;&quot;,
+<span class="fc" id="L259">                        stringWriter.toString());</span>
+            }
+        }
+
+        {
+<span class="fc" id="L264">            StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L265">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L267">                jsonWriter.setEnumerableFormat(JsonWriter.EnumerableFormat.NUMBER);</span>
+<span class="fc" id="L268">                jsonWriter.visitValue(new DummyBitmask((short)0), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L269">                jsonWriter.visitValue(new DummyBitmask((short)7), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+
+                // note that this is not valid json
+<span class="fc" id="L272">                assertJsonEquals(&quot;\&quot;bitmaskField\&quot;: 0, \&quot;bitmaskField\&quot;: 7&quot;, stringWriter.toString());</span>
+            }
+        }
+<span class="fc" id="L275">    }</span>
+
+    @Test
+    public void bitmask64Value()
+    {
+<span class="fc" id="L280">        final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);</span>
+
+<span class="fc" id="L282">        class UInt64MaxDummyBitmask implements ZserioBitmask</span>
+        {
+            @Override
+            public Number getGenericValue()
+            {
+<span class="fc" id="L287">                return uint64Max;</span>
+            }
+        }
+
+        {
+<span class="fc" id="L292">            StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L293">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L295">                jsonWriter.visitValue(</span>
+                        new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+
+                // note that this is not valid json
+<span class="fc" id="L299">                assertJsonEquals(&quot;\&quot;bitmask64Field\&quot;: \&quot;UINT64_MAX\&quot;&quot;, stringWriter.toString());</span>
+            }
+        }
+
+        {
+<span class="fc" id="L304">            StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L305">            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+            {
+<span class="fc" id="L307">                jsonWriter.setEnumerableFormat(JsonWriter.EnumerableFormat.NUMBER);</span>
+<span class="fc" id="L308">                jsonWriter.visitValue(</span>
+                        new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+
+                // note that this is not valid json
+<span class="fc" id="L312">                assertJsonEquals(&quot;\&quot;bitmask64Field\&quot;: &quot; + uint64Max.toString(), stringWriter.toString());</span>
+            }
+        }
+<span class="fc" id="L315">    }</span>
+
+    @Test
+    public void compound()
+    {
+<span class="fc" id="L320">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L321">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L323">            jsonWriter.beginRoot(null);</span>
+<span class="fc" id="L324">            jsonWriter.visitValue(13, IDENTIFIER_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L325">            jsonWriter.visitValue(&quot;test&quot;, TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L326">            jsonWriter.visitValue(new BitBuffer(new byte[] {(byte)0xFF, 0x1F}, (long)13), DATA_FIELD_INFO,</span>
+                    WalkerConst.NOT_ELEMENT);
+<span class="fc" id="L328">            jsonWriter.visitValue(</span>
+                    new byte[] {(byte)0xCA, (byte)0xFE}, BYTES_DATA_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+<span class="fc" id="L330">            jsonWriter.endRoot(null);</span>
+
+<span class="fc" id="L332">            assertJsonEquals(&quot;{\&quot;identifier\&quot;: 13, \&quot;text\&quot;: \&quot;test\&quot;, &quot;</span>
+                            + &quot;\&quot;data\&quot;: {\&quot;buffer\&quot;: [255, 31], \&quot;bitSize\&quot;: 13}, &quot;
+                            + &quot;\&quot;bytesData\&quot;: {\&quot;buffer\&quot;: [202, 254]}}&quot;,
+<span class="fc" id="L335">                    stringWriter.toString());</span>
+        }
+<span class="fc" id="L337">    }</span>
+
+    @Test
+    public void nestedCompound()
+    {
+<span class="fc" id="L342">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L343">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L345">            walkNested(jsonWriter);</span>
+
+<span class="fc" id="L347">            assertJsonEquals(&quot;{\&quot;identifier\&quot;: 13, \&quot;nested\&quot;: {\&quot;text\&quot;: \&quot;test\&quot;}}&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L349">    }</span>
+
+    @Test
+    public void array()
+    {
+<span class="fc" id="L354">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L355">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L357">            walkArray(jsonWriter);</span>
+
+<span class="fc" id="L359">            assertJsonEquals(&quot;{\&quot;array\&quot;: [1, 2]}&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L361">    }</span>
+
+    @Test
+    public void arrayWithIndent()
+    {
+<span class="fc" id="L366">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L367">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter, 2))</span>
+        {
+<span class="fc" id="L369">            walkArray(jsonWriter);</span>
+
+<span class="fc" id="L371">            assertJsonEquals(&quot;{\n  \&quot;array\&quot;: [\n    1,\n    2\n  ]\n}&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L373">    }</span>
+
+    @Test
+    public void emptyIndent()
+    {
+<span class="fc" id="L378">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L379">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter, &quot;&quot;))</span>
+        {
+<span class="fc" id="L381">            walkNested(jsonWriter);</span>
+
+<span class="fc" id="L383">            assertJsonEquals(</span>
+<span class="fc" id="L384">                    &quot;{\n\&quot;identifier\&quot;: 13,\n\&quot;nested\&quot;: {\n\&quot;text\&quot;: \&quot;test\&quot;\n}\n}&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L386">    }</span>
+
+    @Test
+    public void strIndent()
+    {
+<span class="fc" id="L391">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L392">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter, &quot;  &quot;))</span>
+        {
+<span class="fc" id="L394">            walkNested(jsonWriter);</span>
+
+<span class="fc" id="L396">            assertJsonEquals(&quot;{\n  \&quot;identifier\&quot;: 13,\n  \&quot;nested\&quot;: {\n    \&quot;text\&quot;: \&quot;test\&quot;\n  }\n}&quot;,</span>
+<span class="fc" id="L397">                    stringWriter.toString());</span>
+        }
+<span class="fc" id="L399">    }</span>
+
+    @Test
+    public void intIndent()
+    {
+<span class="fc" id="L404">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L405">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter, 2))</span>
+        {
+<span class="fc" id="L407">            walkNested(jsonWriter);</span>
+
+<span class="fc" id="L409">            assertJsonEquals(&quot;{\n  \&quot;identifier\&quot;: 13,\n  \&quot;nested\&quot;: {\n    \&quot;text\&quot;: \&quot;test\&quot;\n  }\n}&quot;,</span>
+<span class="fc" id="L410">                    stringWriter.toString());</span>
+        }
+<span class="fc" id="L412">    }</span>
+
+    @Test
+    public void compactSeparators()
+    {
+<span class="fc" id="L417">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L418">        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))</span>
+        {
+<span class="fc" id="L420">            jsonWriter.setItemSeparator(&quot;,&quot;);</span>
+<span class="fc" id="L421">            jsonWriter.setKeySeparator(&quot;:&quot;);</span>
+
+<span class="fc" id="L423">            walkNested(jsonWriter);</span>
+
+<span class="fc" id="L425">            assertJsonEquals(&quot;{\&quot;identifier\&quot;:13,\&quot;nested\&quot;:{\&quot;text\&quot;:\&quot;test\&quot;}}&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L427">    }</span>
+
+    private void assertJsonEquals(String expectedJson, String providedJson)
+    {
+<span class="fc" id="L431">        assertEquals(expectedJson.replaceAll(&quot;\n&quot;, System.lineSeparator()), providedJson);</span>
+<span class="fc" id="L432">    }</span>
+
+    private void walkNested(WalkObserver observer)
+    {
+<span class="fc" id="L436">        observer.beginRoot(null);</span>
+<span class="fc" id="L437">        observer.visitValue(13, IDENTIFIER_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L438">        observer.beginCompound(null, NESTED_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L439">        observer.visitValue(&quot;test&quot;, TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L440">        observer.endCompound(null, NESTED_FIELD_INFO, WalkerConst.NOT_ELEMENT);</span>
+<span class="fc" id="L441">        observer.endRoot(null);</span>
+<span class="fc" id="L442">    }</span>
+
+    private void walkArray(WalkObserver observer)
+    {
+<span class="fc" id="L446">        observer.beginRoot(null);</span>
+<span class="fc" id="L447">        observer.beginArray(null, ARRAY_FIELD_INFO);</span>
+<span class="fc" id="L448">        observer.visitValue(1, ARRAY_FIELD_INFO, 0);</span>
+<span class="fc" id="L449">        observer.visitValue(2, ARRAY_FIELD_INFO, 1);</span>
+<span class="fc" id="L450">        observer.endArray(null, ARRAY_FIELD_INFO);</span>
+<span class="fc" id="L451">        observer.endRoot(null);</span>
+<span class="fc" id="L452">    }</span>
+
+<span class="fc" id="L454">    private static final FieldInfo TEXT_FIELD_INFO = new FieldInfo(&quot;text&quot;, // schemaName</span>
+            &quot;getText&quot;, // getterName
+            &quot;setText&quot;, // setterName
+<span class="fc" id="L457">            BuiltinTypeInfo.getString(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L474">    private static final FieldInfo BOOL_FIELD_INFO = new FieldInfo(&quot;boolField&quot;, // schemaName</span>
+            &quot;getBoolField&quot;, // getterName
+            &quot;setBoolField&quot;, // setterName
+<span class="fc" id="L477">            BuiltinTypeInfo.getBool(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L494">    private static final FieldInfo INT32_FIELD_INFO = new FieldInfo(&quot;int32Field&quot;, // schemaName</span>
+            &quot;getInt32Field&quot;, // getterName
+            &quot;setInt32Field&quot;, // setterName
+<span class="fc" id="L497">            BuiltinTypeInfo.getInt32(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L514">    private static final FieldInfo UINT64_FIELD_INFO = new FieldInfo(&quot;uint64Field&quot;, // schemaName</span>
+            &quot;getUint64Field&quot;, // getterName
+            &quot;setUint64Field&quot;, // setterName
+<span class="fc" id="L517">            BuiltinTypeInfo.getUInt64(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L534">    private static final FieldInfo FLOAT_FIELD_INFO = new FieldInfo(&quot;floatField&quot;, // schemaName</span>
+            &quot;getFloatField&quot;, // getterName
+            &quot;setFloatField&quot;, // setterName
+<span class="fc" id="L537">            BuiltinTypeInfo.getFloat32(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L554">    private static final FieldInfo DOUBLE_FIELD_INFO = new FieldInfo(&quot;doubleField&quot;, // schemaName</span>
+            &quot;getDoubleField&quot;, // getterName
+            &quot;setDoubleField&quot;, // setterName
+<span class="fc" id="L557">            BuiltinTypeInfo.getFloat64(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+    private static class DummyEnumForClass implements ZserioEnum
+    {
+        @Override
+        public Number getGenericValue()
+        {
+<span class="nc" id="L579">            return 0;</span>
+        }
+    }
+
+<span class="fc" id="L583">    private static final FieldInfo ENUM_FIELD_INFO = new FieldInfo(&quot;enumField&quot;, // schemaName</span>
+            &quot;getEnumField&quot;, // getterName
+            &quot;setEnumField&quot;, // setterName
+            new EnumTypeInfo(&quot;DummyEnum&quot;, // schemaName
+                    DummyEnumForClass.class, // javaClass
+<span class="fc" id="L588">                    BuiltinTypeInfo.getInt8(), // underlyingType</span>
+                    new ArrayList&lt;java.util.function.Supplier&lt;Object&gt;&gt;(), // underlyingTypeArguments
+<span class="fc" id="L590">                    Arrays.asList( // enumItems</span>
+<span class="fc" id="L591">                            new ItemInfo(&quot;ZERO&quot;, BigInteger.valueOf(0), false, false),</span>
+<span class="fc" id="L592">                            new ItemInfo(&quot;One&quot;, BigInteger.valueOf(1), false, false),</span>
+<span class="fc" id="L593">                            new ItemInfo(&quot;MINUS_ONE&quot;, BigInteger.valueOf(-1), false, false))),</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L610">    private static final FieldInfo ENUM64_FIELD_INFO = new FieldInfo(&quot;enum64Field&quot;, // schemaName</span>
+            &quot;getEnum64Field&quot;, // getterName
+            &quot;setEnum64Field&quot;, // setterName
+            new EnumTypeInfo(&quot;DummyEnum&quot;, // schemaName
+                    DummyEnumForClass.class, // javaClass
+<span class="fc" id="L615">                    BuiltinTypeInfo.getUInt64(), // underlyingType</span>
+                    new ArrayList&lt;java.util.function.Supplier&lt;Object&gt;&gt;(), // underlyingTypeArguments
+<span class="fc" id="L617">                    Arrays.asList( // enumItems</span>
+                            new ItemInfo(&quot;UINT64_MAX&quot;, new BigInteger(&quot;18446744073709551615&quot;), false, false))),
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+    private static class DummyBitmaskForClass implements ZserioBitmask
+    {
+        @Override
+        public Number getGenericValue()
+        {
+<span class="nc" id="L640">            return 0;</span>
+        }
+    }
+
+<span class="fc" id="L644">    private static final FieldInfo BITMASK_FIELD_INFO = new FieldInfo(&quot;bitmaskField&quot;, // schemaName</span>
+            &quot;getBitmaskField&quot;, // getterName
+            &quot;setBitmaskField&quot;, // setterName
+            new BitmaskTypeInfo(&quot;DummyBitmask&quot;, // schemaName
+                    DummyBitmaskForClass.class, // javaClass
+<span class="fc" id="L649">                    BuiltinTypeInfo.getInt8(), // underlyingType</span>
+                    new ArrayList&lt;java.util.function.Supplier&lt;Object&gt;&gt;(), // underlyingTypeArguments
+<span class="fc" id="L651">                    Arrays.asList( // bitmaskValues</span>
+<span class="fc" id="L652">                            new ItemInfo(&quot;ZERO&quot;, BigInteger.valueOf(0), false, false),</span>
+<span class="fc" id="L653">                            new ItemInfo(&quot;One&quot;, BigInteger.valueOf(1), false, false),</span>
+<span class="fc" id="L654">                            new ItemInfo(&quot;TWO&quot;, BigInteger.valueOf(2), false, false))),</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L671">    private static final FieldInfo BITMASK64_FIELD_INFO = new FieldInfo(&quot;bitmask64Field&quot;, // schemaName</span>
+            &quot;getBitmask64Field&quot;, // getterName
+            &quot;setBitmask64Field&quot;, // setterName
+            new BitmaskTypeInfo(&quot;DummyBitmask&quot;, // schemaName
+                    DummyBitmaskForClass.class, // javaClass
+<span class="fc" id="L676">                    BuiltinTypeInfo.getUInt64(), // underlyingType</span>
+                    new ArrayList&lt;java.util.function.Supplier&lt;Object&gt;&gt;(), // underlyingTypeArguments
+<span class="fc" id="L678">                    Arrays.asList( // bitmaskValues</span>
+                            new ItemInfo(&quot;UINT64_MAX&quot;, new BigInteger(&quot;18446744073709551615&quot;), false, false))),
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L696">    private static final FieldInfo IDENTIFIER_FIELD_INFO = new FieldInfo(&quot;identifier&quot;, // schemaName</span>
+            &quot;getIdentifier&quot;, // getterName
+            &quot;setIdentifier&quot;, // setterName
+<span class="fc" id="L699">            BuiltinTypeInfo.getUInt32(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L716">    private static final FieldInfo DATA_FIELD_INFO = new FieldInfo(&quot;data&quot;, // schemaName</span>
+            &quot;getData&quot;, // getterName
+            &quot;setData&quot;, // setterName
+<span class="fc" id="L719">            BuiltinTypeInfo.getBitBuffer(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L736">    private static final FieldInfo BYTES_DATA_FIELD_INFO = new FieldInfo(&quot;bytesData&quot;, // schemaName</span>
+            &quot;getBytesData&quot;, // getterName
+            &quot;setBytesData&quot;, // setterName
+<span class="fc" id="L739">            BuiltinTypeInfo.getBytes(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+    private static class Dummy
+    {}
+
+<span class="fc" id="L759">    private static final TypeInfo DUMMY_TYPE_INFO = new StructTypeInfo(&quot;Dummy&quot;, // schemaName</span>
+            Dummy.class, // javaClass
+            &quot;&quot;, // templateName
+            new ArrayList&lt;TypeInfo&gt;(), // templateArguments
+            new ArrayList&lt;FieldInfo&gt;(), // fields
+            new ArrayList&lt;ParameterInfo&gt;(), // parameters
+            new ArrayList&lt;FunctionInfo&gt;() // functions
+    );
+
+<span class="fc" id="L768">    private static final FieldInfo NESTED_FIELD_INFO = new FieldInfo(&quot;nested&quot;, // schemaName</span>
+            &quot;getNested&quot;, // getterName
+            &quot;setNested&quot;, // setterName
+            DUMMY_TYPE_INFO, // typeInfo
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L788">    private static final FieldInfo ARRAY_FIELD_INFO = new FieldInfo(&quot;array&quot;, // schemaName</span>
+            &quot;getArray&quot;, // getterName
+            &quot;setArray&quot;, // setterName
+<span class="fc" id="L791">            BuiltinTypeInfo.getUInt32(), // typeInfo</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            false, // isExtended
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            true, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
