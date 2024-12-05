@@ -1,0 +1,10 @@
+<map id="zserio::TemplatableTypeInfoBase&lt; ALLOC &gt;" name="zserio::TemplatableTypeInfoBase&lt; ALLOC &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="420,104,624,145"/>
+<area shape="rect" id="node4" href="$classzserio_1_1CompoundTypeInfoBase.html" title=" " alt="" coords="672,71,867,112"/>
+<area shape="rect" id="node8" href="$classzserio_1_1SqlTableTypeInfo.html" title=" " alt="" coords="680,136,859,177"/>
+<area shape="rect" id="node2" href="$classzserio_1_1TypeInfoBase.html" title=" " alt="" coords="216,104,372,145"/>
+<area shape="rect" id="node3" href="$classzserio_1_1IBasicTypeInfo.html" title=" " alt="" coords="5,104,168,145"/>
+<area shape="rect" id="node5" href="$classzserio_1_1ChoiceTypeInfo.html" title=" " alt="" coords="915,5,1083,47"/>
+<area shape="rect" id="node6" href="$classzserio_1_1StructTypeInfo.html" title=" " alt="" coords="917,71,1080,112"/>
+<area shape="rect" id="node7" href="$classzserio_1_1UnionTypeInfo.html" title=" " alt="" coords="917,136,1080,177"/>
+</map>
