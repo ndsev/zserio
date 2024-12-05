@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamVarNumTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamVarNumTest.java</span></div><h1>ByteArrayBitStreamVarNumTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L14">public class ByteArrayBitStreamVarNumTest</span>
+{
+    @Test
+    public void varOutOfRange() throws IOException
+    {
+<span class="fc" id="L19">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+                // make sure writer is working
+<span class="fc" id="L24">                writeSentinel(writer);</span>
+
+<span class="fc" id="L26">                IOException thrown = assertThrows(</span>
+<span class="nc" id="L27">                        IOException.class, () -&gt; writer.writeVarUInt16((short)(((short)1) &lt;&lt; (7 + 8))));</span>
+<span class="fc" id="L28">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L29">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L30">                                endsWith(&quot;' is out of range for varuint16!&quot;)));</span>
+
+<span class="pc" id="L32">                thrown = assertThrows(IOException.class, () -&gt; writer.writeVarUInt32(1 &lt;&lt; (7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L33">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L34">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L35">                                endsWith(&quot;' is out of range for varuint32!&quot;)));</span>
+
+<span class="fc" id="L37">                thrown = assertThrows(</span>
+<span class="nc" id="L38">                        IOException.class, () -&gt; writer.writeVarUInt64(1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L39">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L40">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L41">                                endsWith(&quot;' is out of range for varuint64!&quot;)));</span>
+
+<span class="fc" id="L43">                thrown = assertThrows(</span>
+<span class="nc" id="L44">                        IOException.class, () -&gt; writer.writeVarInt16((short)(((short)1) &lt;&lt; (6 + 8))));</span>
+<span class="fc" id="L45">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L46">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L47">                                endsWith(&quot;' is out of range for varint16!&quot;)));</span>
+
+<span class="pc" id="L49">                thrown = assertThrows(IOException.class, () -&gt; writer.writeVarInt32(1 &lt;&lt; (6 + 7 + 7 + 8)));</span>
+<span class="fc" id="L50">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L51">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L52">                                endsWith(&quot;' is out of range for varint32!&quot;)));</span>
+
+<span class="fc" id="L54">                thrown = assertThrows(</span>
+<span class="nc" id="L55">                        IOException.class, () -&gt; writer.writeVarInt64(1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L56">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L57">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L58">                                endsWith(&quot;' is out of range for varint64!&quot;)));</span>
+
+<span class="pc" id="L60">                thrown = assertThrows(IOException.class, () -&gt; writer.writeVarSize(1 &lt;&lt; (2 + 7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L61">                assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L62">                        allOf(startsWith(&quot;BitSizeOfCalculator: Value '&quot;),</span>
+<span class="fc" id="L63">                                endsWith(&quot;' is out of range for varsize!&quot;)));</span>
+
+                {
+                    // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
+<span class="fc" id="L67">                    final byte[] buffer =</span>
+                            new byte[] {(byte)0x8F, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+<span class="fc" id="L69">                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+                    {
+<span class="pc" id="L71">                        thrown = assertThrows(IOException.class, () -&gt; reader.readVarSize());</span>
+<span class="fc" id="L72">                        assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L73">                                allOf(startsWith(&quot;ByteArrayBitStreamReader: Read value '&quot;),</span>
+<span class="fc" id="L74">                                        endsWith(&quot;' is out of range for varsize type!&quot;)));</span>
+                    }
+                }
+
+                {
+                    // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
+<span class="fc" id="L80">                    final byte[] buffer =</span>
+                            new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+<span class="fc" id="L82">                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+                    {
+<span class="pc" id="L84">                        thrown = assertThrows(IOException.class, () -&gt; reader.readVarSize());</span>
+<span class="fc" id="L85">                        assertThat(thrown.getMessage(),</span>
+<span class="fc" id="L86">                                allOf(startsWith(&quot;ByteArrayBitStreamReader: Read value '&quot;),</span>
+<span class="fc" id="L87">                                        endsWith(&quot;' is out of range for varsize type!&quot;)));</span>
+                    }
+                }
+<span class="fc" id="L90">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L95">                readSentinel(reader);</span>
+<span class="fc" id="L96">            }</span>
+        });
+<span class="fc" id="L98">    }</span>
+
+    @Test
+    public void varInt64() throws IOException
+    {
+<span class="fc" id="L103">        final long varInt64Limits[] = {</span>
+                (1L &lt;&lt; 0),
+                (1L &lt;&lt; 6) - 1,
+                (1L &lt;&lt; 6),
+                (1L &lt;&lt; (6 + 7)) - 1,
+                (1L &lt;&lt; (6 + 7)),
+                (1L &lt;&lt; (6 + 7 + 7)) - 1,
+                (1L &lt;&lt; (6 + 7 + 7)),
+                (1L &lt;&lt; (6 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (6 + 7 + 7 + 7)),
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1,
+        };
+
+<span class="fc" id="L122">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L128">                    writeSentinel(writer);</span>
+<span class="fc" id="L129">                    writer.writeVarInt64(sanityVarNums[i]);</span>
+<span class="fc" id="L130">                    writer.writeVarInt64(-sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                for (int i = 0; i &lt; varInt64Limits.length; i++)</span>
+                {
+<span class="fc" id="L135">                    writeSentinel(writer);</span>
+<span class="fc" id="L136">                    writer.writeVarInt64(varInt64Limits[i]);</span>
+<span class="fc" id="L137">                    writer.writeVarInt64(-varInt64Limits[i]);</span>
+                }
+
+<span class="fc" id="L140">                writeSentinel(writer);</span>
+<span class="fc" id="L141">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L148">                    readSentinel(reader);</span>
+<span class="fc" id="L149">                    assertEquals(sanityVarNums[i], reader.readVarInt64());</span>
+<span class="fc" id="L150">                    assertEquals(-sanityVarNums[i], reader.readVarInt64());</span>
+                }
+
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                for (int i = 0; i &lt; varInt64Limits.length; i++)</span>
+                {
+<span class="fc" id="L155">                    readSentinel(reader);</span>
+<span class="fc" id="L156">                    assertEquals(varInt64Limits[i], reader.readVarInt64());</span>
+<span class="fc" id="L157">                    assertEquals(-varInt64Limits[i], reader.readVarInt64());</span>
+                }
+
+<span class="fc" id="L160">                readSentinel(reader);</span>
+<span class="fc" id="L161">            }</span>
+        });
+<span class="fc" id="L163">    }</span>
+
+    @Test
+    public void varInt32() throws IOException
+    {
+<span class="fc" id="L168">        final int varInt32Limits[] = {</span>
+                (1 &lt;&lt; 0),
+                (1 &lt;&lt; 6) - 1,
+                (1 &lt;&lt; 6),
+                (1 &lt;&lt; (6 + 7)) - 1,
+                (1 &lt;&lt; (6 + 7)),
+                (1 &lt;&lt; (6 + 7 + 7)) - 1,
+                (1 &lt;&lt; (6 + 7 + 7)),
+                (1 &lt;&lt; (6 + 7 + 7 + 8)) - 1,
+        };
+
+<span class="fc" id="L179">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L183" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L185">                    writeSentinel(writer);</span>
+<span class="fc" id="L186">                    writer.writeVarInt32(sanityVarNums[i]);</span>
+<span class="fc" id="L187">                    writer.writeVarInt32(-sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                for (int i = 0; i &lt; varInt32Limits.length; i++)</span>
+                {
+<span class="fc" id="L192">                    writeSentinel(writer);</span>
+<span class="fc" id="L193">                    writer.writeVarInt32(varInt32Limits[i]);</span>
+<span class="fc" id="L194">                    writer.writeVarInt32(-varInt32Limits[i]);</span>
+                }
+
+<span class="fc" id="L197">                writeSentinel(writer);</span>
+<span class="fc" id="L198">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L205">                    readSentinel(reader);</span>
+<span class="fc" id="L206">                    assertEquals(sanityVarNums[i], reader.readVarInt32());</span>
+<span class="fc" id="L207">                    assertEquals(-sanityVarNums[i], reader.readVarInt32());</span>
+                }
+
+<span class="fc bfc" id="L210" title="All 2 branches covered.">                for (int i = 0; i &lt; varInt32Limits.length; i++)</span>
+                {
+<span class="fc" id="L212">                    readSentinel(reader);</span>
+<span class="fc" id="L213">                    assertEquals(varInt32Limits[i], reader.readVarInt32());</span>
+<span class="fc" id="L214">                    assertEquals(-varInt32Limits[i], reader.readVarInt32());</span>
+                }
+
+<span class="fc" id="L217">                readSentinel(reader);</span>
+<span class="fc" id="L218">            }</span>
+        });
+<span class="fc" id="L220">    }</span>
+
+    @Test
+    public void varInt16() throws IOException
+    {
+<span class="fc" id="L225">        final short varInt16Limits[] = {</span>
+                (((short)1) &lt;&lt; 0),
+                (((short)1) &lt;&lt; 6) - 1,
+                (((short)1) &lt;&lt; 6),
+                (((short)1) &lt;&lt; (6 + 8)) - 1,
+        };
+
+<span class="fc" id="L232">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L236" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L238">                    writeSentinel(writer);</span>
+<span class="fc" id="L239">                    writer.writeVarInt16(sanityVarNums[i]);</span>
+<span class="fc" id="L240">                    writer.writeVarInt16((short)-sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L243" title="All 2 branches covered.">                for (int i = 0; i &lt; varInt16Limits.length; i++)</span>
+                {
+<span class="fc" id="L245">                    writeSentinel(writer);</span>
+<span class="fc" id="L246">                    writer.writeVarInt16(varInt16Limits[i]);</span>
+<span class="fc" id="L247">                    writer.writeVarInt16((short)-varInt16Limits[i]);</span>
+                }
+
+<span class="fc" id="L250">                writeSentinel(writer);</span>
+<span class="fc" id="L251">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L256" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L258">                    readSentinel(reader);</span>
+<span class="fc" id="L259">                    assertEquals(sanityVarNums[i], reader.readVarInt16());</span>
+<span class="fc" id="L260">                    assertEquals(-sanityVarNums[i], reader.readVarInt16());</span>
+                }
+
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                for (int i = 0; i &lt; varInt16Limits.length; i++)</span>
+                {
+<span class="fc" id="L265">                    readSentinel(reader);</span>
+<span class="fc" id="L266">                    assertEquals(varInt16Limits[i], reader.readVarInt16());</span>
+<span class="fc" id="L267">                    assertEquals(-varInt16Limits[i], reader.readVarInt16());</span>
+                }
+
+<span class="fc" id="L270">                readSentinel(reader);</span>
+<span class="fc" id="L271">            }</span>
+        });
+<span class="fc" id="L273">    }</span>
+
+    @Test
+    public void varUInt64() throws IOException
+    {
+<span class="fc" id="L278">        final long varUInt64Limits[] = {</span>
+                (1L &lt;&lt; 0),
+                (1L &lt;&lt; 7) - 1,
+                (1L &lt;&lt; 7),
+                (1L &lt;&lt; (7 + 7)) - 1,
+                (1L &lt;&lt; (7 + 7)),
+                (1L &lt;&lt; (7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (7 + 7 + 7)),
+                (1L &lt;&lt; (7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7)),
+                (1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1,
+        };
+
+<span class="fc" id="L297">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L301" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L303">                    writeSentinel(writer);</span>
+<span class="fc" id="L304">                    writer.writeVarUInt64(sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L307" title="All 2 branches covered.">                for (int i = 0; i &lt; varUInt64Limits.length; i++)</span>
+                {
+<span class="fc" id="L309">                    writeSentinel(writer);</span>
+<span class="fc" id="L310">                    writer.writeVarUInt64(varUInt64Limits[i]);</span>
+                }
+
+<span class="fc" id="L313">                writeSentinel(writer);</span>
+<span class="fc" id="L314">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L319" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L321">                    readSentinel(reader);</span>
+<span class="fc" id="L322">                    assertEquals(sanityVarNums[i], reader.readVarUInt64());</span>
+                }
+
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                for (int i = 0; i &lt; varUInt64Limits.length; i++)</span>
+                {
+<span class="fc" id="L327">                    readSentinel(reader);</span>
+<span class="fc" id="L328">                    assertEquals(varUInt64Limits[i], reader.readVarUInt64());</span>
+                }
+
+<span class="fc" id="L331">                readSentinel(reader);</span>
+<span class="fc" id="L332">            }</span>
+        });
+<span class="fc" id="L334">    }</span>
+
+    @Test
+    public void varUInt32() throws IOException
+    {
+<span class="fc" id="L339">        final int varUInt32Limits[] = {</span>
+                (1 &lt;&lt; 0),
+                (1 &lt;&lt; 7) - 1,
+                (1 &lt;&lt; 7),
+                (1 &lt;&lt; (7 + 7)) - 1,
+                (1 &lt;&lt; (7 + 7)),
+                (1 &lt;&lt; (7 + 7 + 7)) - 1,
+                (1 &lt;&lt; (7 + 7 + 7)),
+                (1 &lt;&lt; (7 + 7 + 7 + 8)) - 1,
+        };
+
+<span class="fc" id="L350">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L354" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L356">                    writeSentinel(writer);</span>
+<span class="fc" id="L357">                    writer.writeVarUInt32(sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L360" title="All 2 branches covered.">                for (int i = 0; i &lt; varUInt32Limits.length; i++)</span>
+                {
+<span class="fc" id="L362">                    writeSentinel(writer);</span>
+<span class="fc" id="L363">                    writer.writeVarUInt32(varUInt32Limits[i]);</span>
+                }
+
+<span class="fc" id="L366">                writeSentinel(writer);</span>
+<span class="fc" id="L367">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L372" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L374">                    readSentinel(reader);</span>
+<span class="fc" id="L375">                    assertEquals(sanityVarNums[i], reader.readVarUInt32());</span>
+                }
+
+<span class="fc bfc" id="L378" title="All 2 branches covered.">                for (int i = 0; i &lt; varUInt32Limits.length; i++)</span>
+                {
+<span class="fc" id="L380">                    readSentinel(reader);</span>
+<span class="fc" id="L381">                    assertEquals(varUInt32Limits[i], reader.readVarUInt32());</span>
+                }
+
+<span class="fc" id="L384">                readSentinel(reader);</span>
+<span class="fc" id="L385">            }</span>
+        });
+<span class="fc" id="L387">    }</span>
+
+    @Test
+    public void varUInt16() throws IOException
+    {
+<span class="fc" id="L392">        final short varUInt16Limits[] = {</span>
+                (((short)1) &lt;&lt; 0),
+                (((short)1) &lt;&lt; 7) - 1,
+                (((short)1) &lt;&lt; 7),
+                (((short)1) &lt;&lt; (7 + 8)) - 1,
+        };
+
+<span class="fc" id="L399">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L403" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L405">                    writeSentinel(writer);</span>
+<span class="fc" id="L406">                    writer.writeVarUInt16(sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L409" title="All 2 branches covered.">                for (int i = 0; i &lt; varUInt16Limits.length; i++)</span>
+                {
+<span class="fc" id="L411">                    writeSentinel(writer);</span>
+<span class="fc" id="L412">                    writer.writeVarUInt16(varUInt16Limits[i]);</span>
+                }
+
+<span class="fc" id="L415">                writeSentinel(writer);</span>
+<span class="fc" id="L416">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L421" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L423">                    readSentinel(reader);</span>
+<span class="fc" id="L424">                    assertEquals(sanityVarNums[i], reader.readVarUInt16());</span>
+                }
+<span class="fc bfc" id="L426" title="All 2 branches covered.">                for (int i = 0; i &lt; varUInt16Limits.length; i++)</span>
+                {
+<span class="fc" id="L428">                    readSentinel(reader);</span>
+<span class="fc" id="L429">                    assertEquals(varUInt16Limits[i], reader.readVarUInt16());</span>
+                }
+
+<span class="fc" id="L432">                readSentinel(reader);</span>
+<span class="fc" id="L433">            }</span>
+        });
+<span class="fc" id="L435">    }</span>
+
+    @Test
+    public void varSize() throws IOException
+    {
+<span class="fc" id="L440">        final int varSizeLimits[] = {</span>
+                (1 &lt;&lt; 0),
+                (1 &lt;&lt; 7) - 1,
+                (1 &lt;&lt; 7),
+                (1 &lt;&lt; (7 + 7)) - 1,
+                (1 &lt;&lt; (7 + 7)),
+                (1 &lt;&lt; (7 + 7 + 7)) - 1,
+                (1 &lt;&lt; (7 + 7 + 7)),
+                (1 &lt;&lt; (7 + 7 + 7 + 7)) - 1,
+                (1 &lt;&lt; (7 + 7 + 7 + 7)),
+                (1 &lt;&lt; (2 + 7 + 7 + 7 + 8)) - 1,
+        };
+
+<span class="fc" id="L453">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L457" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L459">                    writeSentinel(writer);</span>
+<span class="fc" id="L460">                    writer.writeVarSize(sanityVarNums[i]);</span>
+                }
+
+<span class="fc bfc" id="L463" title="All 2 branches covered.">                for (int i = 0; i &lt; varSizeLimits.length; i++)</span>
+                {
+<span class="fc" id="L465">                    writeSentinel(writer);</span>
+<span class="fc" id="L466">                    writer.writeVarSize(varSizeLimits[i]);</span>
+                }
+
+<span class="fc" id="L469">                writeSentinel(writer);</span>
+<span class="fc" id="L470">            }</span>
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L475" title="All 2 branches covered.">                for (int i = 0; i &lt; sanityVarNums.length; i++)</span>
+                {
+<span class="fc" id="L477">                    readSentinel(reader);</span>
+<span class="fc" id="L478">                    assertEquals(sanityVarNums[i], reader.readVarSize());</span>
+                }
+
+<span class="fc bfc" id="L481" title="All 2 branches covered.">                for (int i = 0; i &lt; varSizeLimits.length; i++)</span>
+                {
+<span class="fc" id="L483">                    readSentinel(reader);</span>
+<span class="fc" id="L484">                    assertEquals(varSizeLimits[i], reader.readVarSize());</span>
+                }
+
+<span class="fc" id="L487">                readSentinel(reader);</span>
+<span class="fc" id="L488">            }</span>
+        });
+<span class="fc" id="L490">    }</span>
+
+    private interface WriteReadTestable
+    {
+        void write(BitStreamWriter writer) throws IOException;
+        void read(BitStreamReader reader) throws IOException;
+    }
+
+    private void writeReadTest(WriteReadTestable writeReadTest) throws IOException
+    {
+<span class="fc" id="L500">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L502">            writeReadTest.write(writer);</span>
+<span class="fc" id="L503">            final byte[] data = writer.toByteArray();</span>
+
+<span class="fc" id="L505">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))</span>
+            {
+<span class="fc" id="L507">                writeReadTest.read(reader);</span>
+            }
+        }
+<span class="fc" id="L510">    }</span>
+
+    private static void writeSentinel(BitStreamWriter writer) throws IOException
+    {
+<span class="fc" id="L514">        writer.writeByte((byte)0x00);</span>
+<span class="fc" id="L515">        writer.writeByte((byte)0xFF);</span>
+<span class="fc" id="L516">        writer.writeByte((byte)0x00);</span>
+<span class="fc" id="L517">    }</span>
+
+    private static void readSentinel(BitStreamReader reader) throws IOException
+    {
+<span class="fc" id="L521">        assertEquals((byte)0x00, reader.readByte());</span>
+<span class="fc" id="L522">        assertEquals((byte)0xFF, reader.readByte());</span>
+<span class="fc" id="L523">        assertEquals((byte)0x00, reader.readByte());</span>
+<span class="fc" id="L524">    }</span>
+
+<span class="fc" id="L526">    private static short sanityVarNums[] = {0, 10, 100};</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

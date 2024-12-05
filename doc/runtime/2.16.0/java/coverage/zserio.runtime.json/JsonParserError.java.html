@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonParserError.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonParserError.java</span></div><h1>JsonParserError.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import zserio.runtime.ZserioError;
+
+/**
+ * Provides type of exceptions thrown from JSON parser.
+ */
+public final class JsonParserError extends ZserioError
+{
+    /**
+     * Constructs an empty JSON parser error object.
+     */
+    public JsonParserError()
+<span class="nc" id="L14">    {}</span>
+
+    /**
+     * Constructs a new JSON parser error with the given message.
+     *
+     * @param msg Error message to create from.
+     */
+    public JsonParserError(final String msg)
+    {
+<span class="fc" id="L23">        super(msg);</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * Constructs a new JSON parser error with the given message and throwable object.
+     *
+     * @param msg Error message to create from.
+     * @param throwable Throwable object to create from.
+     */
+    public JsonParserError(final String msg, final Throwable throwable)
+    {
+<span class="nc" id="L34">        super(msg, throwable);</span>
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * Construct a new JSON parser error with the given throwable object.
+     *
+     * @param throwable Throwable object to create from.
+     */
+    public JsonParserError(final Throwable throwable)
+    {
+<span class="nc" id="L44">        super(throwable);</span>
+<span class="nc" id="L45">    }</span>
+
+    private static final long serialVersionUID = 921445202560692333L;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

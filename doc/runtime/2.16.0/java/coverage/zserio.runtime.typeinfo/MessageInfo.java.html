@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MessageInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">MessageInfo.java</span></div><h1>MessageInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+/**
+ * Type information for pubsub message.
+ */
+public final class MessageInfo
+{
+    /**
+     * Constructor.
+     *
+     * @param schemaName Message schema name.
+     * @param typeInfo Message type info.
+     * @param isPublished Flag whether the message is published.
+     * @param isSubscribed Flag whether the message is subscribed.
+     * @param topic Message topic definition.
+     */
+    public MessageInfo(
+            String schemaName, TypeInfo typeInfo, boolean isPublished, boolean isSubscribed, String topic)
+<span class="nc" id="L19">    {</span>
+<span class="nc" id="L20">        this.schemaName = schemaName;</span>
+<span class="nc" id="L21">        this.typeInfo = typeInfo;</span>
+<span class="nc" id="L22">        this.isPublished = isPublished;</span>
+<span class="nc" id="L23">        this.isSubscribed = isSubscribed;</span>
+<span class="nc" id="L24">        this.topic = topic;</span>
+<span class="nc" id="L25">    }</span>
+
+    /**
+     * Gets name of the message as is defined in zserio schema.
+     *
+     * @return Message schema name.
+     */
+    public String getSchemaName()
+    {
+<span class="nc" id="L34">        return schemaName;</span>
+    }
+
+    /**
+     * Gets type information for a message type.
+     *
+     * @return Message type info.
+     */
+    public TypeInfo getTypeInfo()
+    {
+<span class="nc" id="L44">        return typeInfo;</span>
+    }
+
+    /**
+     * Gets whether the message is published.
+     *
+     * @return True if the message is published, false otherwise.
+     */
+    public boolean isPublished()
+    {
+<span class="nc" id="L54">        return isPublished;</span>
+    }
+
+    /**
+     * Gets whether the message is subscribed.
+     *
+     * @return True if the message is subscribed, false otherwise.
+     */
+    public boolean isSubscribed()
+    {
+<span class="nc" id="L64">        return isSubscribed;</span>
+    }
+
+    /**
+     * Gets pubsub topic definition for the message.
+     *
+     * @return Topic definition.
+     */
+    public String getTopic()
+    {
+<span class="nc" id="L74">        return topic;</span>
+    }
+
+    private final String schemaName;
+    private final TypeInfo typeInfo;
+    private final boolean isPublished;
+    private final boolean isSubscribed;
+    private final String topic;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
