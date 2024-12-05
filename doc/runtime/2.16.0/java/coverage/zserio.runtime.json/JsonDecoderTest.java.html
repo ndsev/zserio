@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonDecoderTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonDecoderTest.java</span></div><h1>JsonDecoderTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L9">public class JsonDecoderTest</span>
+{
+    @Test
+    public void decodeNull()
+    {
+<span class="fc" id="L14">        checkDecoderSuccess(&quot;null&quot;, 0, 4, null);</span>
+<span class="fc" id="L15">        checkDecoderSuccess(&quot;{ } null&quot;, 4, 4, null);</span>
+<span class="fc" id="L16">        checkDecoderSuccess(&quot;null { }&quot;, 0, 4, null);</span>
+<span class="fc" id="L17">        checkDecoderFailure(&quot;invalid&quot;, 0, 1);</span>
+<span class="fc" id="L18">        checkDecoderFailure(&quot;invalid&quot;, 1, 4);</span>
+<span class="fc" id="L19">        checkDecoderFailure(&quot;nul&quot;, 0, 3);</span>
+<span class="fc" id="L20">    }</span>
+
+    @Test
+    public void decodeTrue()
+    {
+<span class="fc" id="L25">        checkDecoderSuccess(&quot;true&quot;, 0, 4, true);</span>
+<span class="fc" id="L26">        checkDecoderSuccess(&quot;{ } true&quot;, 4, 4, true);</span>
+<span class="fc" id="L27">        checkDecoderSuccess(&quot;true { }&quot;, 0, 4, true);</span>
+<span class="fc" id="L28">        checkDecoderFailure(&quot;invalid&quot;, 0, 1);</span>
+<span class="fc" id="L29">        checkDecoderFailure(&quot;stainless&quot;, 1, 4);</span>
+<span class="fc" id="L30">        checkDecoderFailure(&quot;tru&quot;, 0, 3);</span>
+<span class="fc" id="L31">    }</span>
+
+    @Test
+    public void decodeFalse()
+    {
+<span class="fc" id="L36">        checkDecoderSuccess(&quot;false&quot;, 0, 5, false);</span>
+<span class="fc" id="L37">        checkDecoderSuccess(&quot;{ } false&quot;, 4, 5, false);</span>
+<span class="fc" id="L38">        checkDecoderSuccess(&quot;false { }&quot;, 0, 5, false);</span>
+<span class="fc" id="L39">        checkDecoderFailure(&quot;invalid&quot;, 0, 1);</span>
+<span class="fc" id="L40">        checkDecoderFailure(&quot;affected&quot;, 1, 5);</span>
+<span class="fc" id="L41">        checkDecoderFailure(&quot;fal&quot;, 0, 3);</span>
+<span class="fc" id="L42">    }</span>
+
+    @Test
+    public void decodeNan()
+    {
+<span class="fc" id="L47">        checkDecoderSuccess(&quot;NaN&quot;, 0, 3, Double.NaN);</span>
+<span class="fc" id="L48">        checkDecoderSuccess(&quot;{ } NaN&quot;, 4, 3, Double.NaN);</span>
+<span class="fc" id="L49">        checkDecoderSuccess(&quot;NaN { }&quot;, 0, 3, Double.NaN);</span>
+<span class="fc" id="L50">        checkDecoderFailure(&quot;invalid&quot;, 0, 1);</span>
+<span class="fc" id="L51">        checkDecoderFailure(&quot;iNactive&quot;, 1, 3);</span>
+<span class="fc" id="L52">        checkDecoderFailure(&quot;Na&quot;, 0, 2);</span>
+<span class="fc" id="L53">    }</span>
+
+    @Test
+    public void decodePositiveInfinity()
+    {
+<span class="fc" id="L58">        checkDecoderSuccess(&quot;Infinity&quot;, 0, 8, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L59">        checkDecoderSuccess(&quot;{ } Infinity&quot;, 4, 8, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L60">        checkDecoderSuccess(&quot;Infinity { }&quot;, 0, 8, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L61">        checkDecoderFailure(&quot;invalid&quot;, 0, 1);</span>
+<span class="fc" id="L62">        checkDecoderFailure(&quot;iInfinvalid&quot;, 1, 8);</span>
+<span class="fc" id="L63">        checkDecoderFailure(&quot;Infin&quot;, 0, 5);</span>
+<span class="fc" id="L64">    }</span>
+
+    @Test
+    public void decodeNegativeInfinity()
+    {
+<span class="fc" id="L69">        checkDecoderSuccess(&quot;-Infinity&quot;, 0, 9, Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L70">        checkDecoderSuccess(&quot;{ } -Infinity&quot;, 4, 9, Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L71">        checkDecoderSuccess(&quot;-Infinity { }&quot;, 0, 9, Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L72">        checkDecoderFailure(&quot;invalid&quot;, 0, 1);</span>
+<span class="fc" id="L73">        checkDecoderFailure(&quot;i-Infinvalid&quot;, 1, 9);</span>
+<span class="fc" id="L74">        checkDecoderFailure(&quot;-Infin&quot;, 0, 6);</span>
+<span class="fc" id="L75">        checkDecoderFailure(&quot;-Infix&quot;, 0, 6);</span>
+<span class="fc" id="L76">    }</span>
+
+    @Test
+    public void decodeSignedIntegral()
+    {
+<span class="fc" id="L81">        checkDecoderSuccess(&quot;-0&quot;, 0, 2, BigInteger.ZERO);</span>
+<span class="fc" id="L82">        checkDecoderSuccess(&quot;{ } -0&quot;, 4, 2, BigInteger.ZERO);</span>
+<span class="fc" id="L83">        checkDecoderSuccess(&quot;-0 { }&quot;, 0, 2, BigInteger.ZERO);</span>
+<span class="fc" id="L84">        checkDecoderSuccess(&quot;-1&quot;, 0, 2, BigInteger.valueOf(-1));</span>
+<span class="fc" id="L85">        checkDecoderSuccess(&quot;-9223372036854775808&quot;, 0, 20, BigInteger.valueOf(Long.MIN_VALUE));</span>
+
+<span class="fc" id="L87">        checkDecoderFailure(&quot;--10&quot;, 0, 1);</span>
+<span class="fc" id="L88">        checkDecoderFailure(&quot;-&quot;, 0, 1);</span>
+<span class="fc" id="L89">    }</span>
+
+    @Test
+    public void decodeUnsignedIntegral()
+    {
+<span class="fc" id="L94">        checkDecoderSuccess(&quot;0&quot;, 0, 1, BigInteger.ZERO);</span>
+<span class="fc" id="L95">        checkDecoderSuccess(&quot;{ } 0&quot;, 4, 1, BigInteger.ZERO);</span>
+<span class="fc" id="L96">        checkDecoderSuccess(&quot;0 { }&quot;, 0, 1, BigInteger.ZERO);</span>
+<span class="fc" id="L97">        checkDecoderSuccess(&quot;1&quot;, 0, 1, BigInteger.ONE);</span>
+<span class="fc" id="L98">        checkDecoderSuccess(&quot;9223372036854775807&quot;, 0, 19, BigInteger.valueOf(Long.MAX_VALUE));</span>
+<span class="fc" id="L99">        checkDecoderSuccess(&quot;18446744073709551615&quot;, 0, 20, new BigInteger(&quot;18446744073709551615&quot;));</span>
+
+<span class="fc" id="L101">        checkDecoderFailure(&quot;+10&quot;, 0, 1);</span>
+<span class="fc" id="L102">    }</span>
+
+    @Test
+    public void decodeDouble()
+    {
+<span class="fc" id="L107">        checkDecoderSuccess(&quot;0.0&quot;, 0, 3, 0.0);</span>
+<span class="fc" id="L108">        checkDecoderSuccess(&quot;{ } 0.0&quot;, 4, 3, 0.0);</span>
+<span class="fc" id="L109">        checkDecoderSuccess(&quot;0.0 { }&quot;, 0, 3, 0.0);</span>
+<span class="fc" id="L110">        checkDecoderSuccess(&quot;-1.0&quot;, 0, 4, -1.0);</span>
+<span class="fc" id="L111">        checkDecoderSuccess(&quot;1.0&quot;, 0, 3, 1.0);</span>
+<span class="fc" id="L112">        checkDecoderSuccess(&quot;3.5&quot;, 0, 3, 3.5);</span>
+<span class="fc" id="L113">        checkDecoderSuccess(&quot;9.875&quot;, 0, 5, 9.875);</span>
+<span class="fc" id="L114">        checkDecoderSuccess(&quot;0.6171875&quot;, 0, 9, 0.6171875);</span>
+
+<span class="fc" id="L116">        checkDecoderSuccess(&quot;1e+20&quot;, 0, 5, 1e+20);</span>
+<span class="fc" id="L117">        checkDecoderSuccess(&quot;1E+20&quot;, 0, 5, 1E+20);</span>
+<span class="fc" id="L118">        checkDecoderSuccess(&quot;1e-20&quot;, 0, 5, 1e-20);</span>
+<span class="fc" id="L119">        checkDecoderSuccess(&quot;1E-20&quot;, 0, 5, 1E-20);</span>
+<span class="fc" id="L120">        checkDecoderSuccess(&quot;-1e+20&quot;, 0, 6, -1e+20);</span>
+<span class="fc" id="L121">        checkDecoderSuccess(&quot;-1E+20&quot;, 0, 6, -1E+20);</span>
+<span class="fc" id="L122">        checkDecoderSuccess(&quot;-1e-20&quot;, 0, 6, -1e-20);</span>
+<span class="fc" id="L123">        checkDecoderSuccess(&quot;-1E-20&quot;, 0, 6, -1E-20);</span>
+
+<span class="fc" id="L125">        checkDecoderSuccess(&quot;1.0E-20&quot;, 0, 7, 1.0E-20);</span>
+<span class="fc" id="L126">        checkDecoderSuccess(&quot;-1.0E-20&quot;, 0, 8, -1.0E-20);</span>
+<span class="fc" id="L127">        checkDecoderSuccess(&quot;9.875E+3&quot;, 0, 8, 9.875E+3);</span>
+<span class="fc" id="L128">        checkDecoderSuccess(&quot;-9.875E-3&quot;, 0, 9, -9.875E-3);</span>
+
+<span class="fc" id="L130">        checkDecoderFailure(&quot;1EE20&quot;, 0, 2);</span>
+<span class="fc" id="L131">        checkDecoderFailure(&quot;1E.E20&quot;, 0, 2);</span>
+<span class="fc" id="L132">        checkDecoderFailure(&quot;1E++20&quot;, 0, 3);</span>
+<span class="fc" id="L133">        checkDecoderFailure(&quot;1E--20&quot;, 0, 3);</span>
+
+<span class="fc" id="L135">        checkDecoderFailure(&quot;1e&quot;, 0, 2);</span>
+<span class="fc" id="L136">        checkDecoderFailure(&quot;1e+&quot;, 0, 3);</span>
+<span class="fc" id="L137">        checkDecoderFailure(&quot;1E-&quot;, 0, 3);</span>
+<span class="fc" id="L138">    }</span>
+
+    @Test
+    public void decodeString()
+    {
+<span class="fc" id="L143">        checkDecoderSuccess(&quot;\&quot;\&quot;&quot;, 0, 2, &quot;&quot;);</span>
+<span class="fc" id="L144">        checkDecoderSuccess(&quot;{ } \&quot;\&quot;&quot;, 4, 2, &quot;&quot;);</span>
+<span class="fc" id="L145">        checkDecoderSuccess(&quot;\&quot;\&quot; { }&quot;, 0, 2, &quot;&quot;);</span>
+
+<span class="fc" id="L147">        checkDecoderSuccess(&quot;\&quot;test\&quot;&quot;, 0, 6, &quot;test&quot;);</span>
+<span class="fc" id="L148">        checkDecoderSuccess(&quot;\&quot;München\&quot;&quot;, 0, 9, &quot;München&quot;);</span>
+<span class="fc" id="L149">        checkDecoderSuccess(&quot;\&quot;€\&quot;&quot;, 0, 3, &quot;€&quot;);</span>
+
+        // escapes
+<span class="fc" id="L152">        checkDecoderSuccess(&quot;\&quot;\\\\\&quot;&quot;, 0, 4, &quot;\\&quot;);</span>
+<span class="fc" id="L153">        checkDecoderSuccess(&quot;\&quot;\\\&quot;\&quot;&quot;, 0, 4, &quot;\&quot;&quot;);</span>
+<span class="fc" id="L154">        checkDecoderSuccess(&quot;\&quot;\\b\&quot;&quot;, 0, 4, &quot;\b&quot;);</span>
+<span class="fc" id="L155">        checkDecoderSuccess(&quot;\&quot;\\f\&quot;&quot;, 0, 4, &quot;\f&quot;);</span>
+<span class="fc" id="L156">        checkDecoderSuccess(&quot;\&quot;\\n\&quot;&quot;, 0, 4, &quot;\n&quot;);</span>
+<span class="fc" id="L157">        checkDecoderSuccess(&quot;\&quot;\\r\&quot;&quot;, 0, 4, &quot;\r&quot;);</span>
+<span class="fc" id="L158">        checkDecoderSuccess(&quot;\&quot;\\t\&quot;&quot;, 0, 4, &quot;\t&quot;);</span>
+
+<span class="fc" id="L160">        checkDecoderSuccess(&quot;\&quot;\\n\\t%^@(*aAzZ01234569$%^!?&lt;&gt;[]](){}-=+~:;/|\\\\\\\&quot;'Hello World2\&quot;&quot;, 0, 62,</span>
+                &quot;\n\t%^@(*aAzZ01234569$%^!?&lt;&gt;[]](){}-=+~:;/|\\\&quot;\'Hello World2&quot;);
+
+        // &lt;= 0x1F -&gt; unicode escape
+<span class="fc" id="L164">        checkDecoderSuccess(&quot;\&quot;\\u001f\&quot;&quot;, 0, 8, &quot;\u001f&quot;);</span>
+
+<span class="fc" id="L166">        checkDecoderFailure(&quot;\&quot;\\u001x\&quot;&quot;, 0, 7);</span>
+<span class="fc" id="L167">        checkDecoderFailure(&quot;\&quot;unterminated&quot;, 0, 13);</span>
+<span class="fc" id="L168">        checkDecoderFailure(&quot;\&quot;wrong escape \\&quot;, 0, 15);</span>
+<span class="fc" id="L169">        checkDecoderFailure(&quot;\&quot;wrong unicode escape \\u0&quot;, 0, 25);</span>
+<span class="fc" id="L170">        checkDecoderFailure(&quot;\&quot;unknown escape \\x&quot;, 0, 18);</span>
+<span class="fc" id="L171">    }</span>
+
+    @Test
+    public void wrong_arguments()
+    {
+<span class="fc" id="L176">        checkDecoderFailure(&quot;&quot;, 1, 0);</span>
+<span class="fc" id="L177">    }</span>
+
+    private void checkDecoderSuccess(String input, int pos, int expectedNumRead, Object expectedValue)
+    {
+<span class="fc" id="L181">        final JsonDecoder.Result result = JsonDecoder.decodeValue(input, pos);</span>
+<span class="fc" id="L182">        assertEquals(true, result.success());</span>
+<span class="fc" id="L183">        assertEquals(expectedValue, result.getValue());</span>
+<span class="fc" id="L184">        assertEquals(expectedNumRead, result.getNumReadChars());</span>
+<span class="fc" id="L185">    }</span>
+
+    private void checkDecoderFailure(String input, int pos, int expectedNumRead)
+    {
+<span class="fc" id="L189">        final JsonDecoder.Result result = JsonDecoder.decodeValue(input, pos);</span>
+<span class="fc" id="L190">        assertEquals(false, result.success());</span>
+<span class="fc" id="L191">        assertEquals(null, result.getValue());</span>
+<span class="fc" id="L192">        assertEquals(expectedNumRead, result.getNumReadChars());</span>
+<span class="fc" id="L193">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
