@@ -2,9 +2,9 @@
 #define ZSERIO_CPP_RUNTIME_VERSION_H_INC
 
 /** C++ extension runtime version string. */
-constexpr const char* CPP_EXTENSION_RUNTIME_VERSION_STRING = "1.1.0";
+constexpr const char* CPP_EXTENSION_RUNTIME_VERSION_STRING = "1.2.0";
 
 /** C++ extension runtime version in integer value to allow version checking in generated code. */
-#define CPP_EXTENSION_RUNTIME_VERSION_NUMBER 1001000
+#define CPP_EXTENSION_RUNTIME_VERSION_NUMBER 1002000
 
 #endif // ifndef ZSERIO_CPP_RUNTIME_VERSION_H_INC
