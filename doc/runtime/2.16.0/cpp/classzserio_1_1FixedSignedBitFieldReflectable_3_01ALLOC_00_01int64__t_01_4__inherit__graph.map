@@ -1,0 +1,9 @@
+<map id="zserio::FixedSignedBitFieldReflectable&lt; ALLOC, int64_t &gt;" name="zserio::FixedSignedBitFieldReflectable&lt; ALLOC, int64_t &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,541,225,583"/>
+<area shape="rect" id="node2" href="$classzserio_1_1Int64ReflectableBase.html" title=" " alt="" coords="28,452,203,493"/>
+<area shape="rect" id="node3" href="$classzserio_1_1SignedReflectableBase.html" title=" " alt="" coords="22,363,209,404"/>
+<area shape="rect" id="node4" href="$classzserio_1_1IntegralReflectableBase.html" title=" " alt="" coords="19,273,211,315"/>
+<area shape="rect" id="node5" href="$classzserio_1_1BuiltinReflectableBase.html" title=" " alt="" coords="7,184,223,225"/>
+<area shape="rect" id="node6" href="$classzserio_1_1ReflectableBase.html" title=" " alt="" coords="28,95,203,136"/>
+<area shape="rect" id="node7" href="$classzserio_1_1IBasicReflectable.html" title=" " alt="" coords="25,5,206,47"/>
+</map>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeInfoUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">TypeInfoUtilTest.java</span></div><h1>TypeInfoUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L7">public class TypeInfoUtilTest</span>
+{
+    @Test
+    public void isCompound()
+    {
+<span class="fc" id="L12">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.BOOL));</span>
+<span class="fc" id="L13">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.INT8));</span>
+<span class="fc" id="L14">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.INT16));</span>
+<span class="fc" id="L15">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.INT32));</span>
+<span class="fc" id="L16">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.INT64));</span>
+<span class="fc" id="L17">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.UINT8));</span>
+<span class="fc" id="L18">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.UINT16));</span>
+<span class="fc" id="L19">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.UINT32));</span>
+<span class="fc" id="L20">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.UINT64));</span>
+<span class="fc" id="L21">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARINT16));</span>
+<span class="fc" id="L22">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARINT32));</span>
+<span class="fc" id="L23">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARINT64));</span>
+<span class="fc" id="L24">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARINT));</span>
+<span class="fc" id="L25">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARUINT16));</span>
+<span class="fc" id="L26">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARUINT32));</span>
+<span class="fc" id="L27">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARUINT64));</span>
+<span class="fc" id="L28">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARUINT));</span>
+<span class="fc" id="L29">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.VARSIZE));</span>
+<span class="fc" id="L30">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.FIXED_SIGNED_BITFIELD));</span>
+<span class="fc" id="L31">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.FIXED_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L32">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.DYNAMIC_SIGNED_BITFIELD));</span>
+<span class="fc" id="L33">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.DYNAMIC_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L34">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.FLOAT16));</span>
+<span class="fc" id="L35">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.FLOAT32));</span>
+<span class="fc" id="L36">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.FLOAT64));</span>
+<span class="fc" id="L37">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.STRING));</span>
+<span class="fc" id="L38">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.EXTERN));</span>
+<span class="fc" id="L39">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.ENUM));</span>
+<span class="fc" id="L40">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.BITMASK));</span>
+<span class="fc" id="L41">        assertEquals(true, TypeInfoUtil.isCompound(SchemaType.STRUCT));</span>
+<span class="fc" id="L42">        assertEquals(true, TypeInfoUtil.isCompound(SchemaType.CHOICE));</span>
+<span class="fc" id="L43">        assertEquals(true, TypeInfoUtil.isCompound(SchemaType.UNION));</span>
+<span class="fc" id="L44">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.SQL_TABLE));</span>
+<span class="fc" id="L45">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.SQL_DATABASE));</span>
+<span class="fc" id="L46">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.SERVICE));</span>
+<span class="fc" id="L47">        assertEquals(false, TypeInfoUtil.isCompound(SchemaType.PUBSUB));</span>
+<span class="fc" id="L48">    }</span>
+
+    @Test
+    public void hasChoice()
+    {
+<span class="fc" id="L53">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.BOOL));</span>
+<span class="fc" id="L54">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.INT8));</span>
+<span class="fc" id="L55">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.INT16));</span>
+<span class="fc" id="L56">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.INT32));</span>
+<span class="fc" id="L57">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.INT64));</span>
+<span class="fc" id="L58">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.UINT8));</span>
+<span class="fc" id="L59">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.UINT16));</span>
+<span class="fc" id="L60">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.UINT32));</span>
+<span class="fc" id="L61">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.UINT64));</span>
+<span class="fc" id="L62">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARINT16));</span>
+<span class="fc" id="L63">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARINT32));</span>
+<span class="fc" id="L64">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARINT64));</span>
+<span class="fc" id="L65">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARINT));</span>
+<span class="fc" id="L66">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARUINT16));</span>
+<span class="fc" id="L67">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARUINT32));</span>
+<span class="fc" id="L68">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARUINT64));</span>
+<span class="fc" id="L69">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARUINT));</span>
+<span class="fc" id="L70">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.VARSIZE));</span>
+<span class="fc" id="L71">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.FIXED_SIGNED_BITFIELD));</span>
+<span class="fc" id="L72">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.FIXED_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L73">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.DYNAMIC_SIGNED_BITFIELD));</span>
+<span class="fc" id="L74">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.DYNAMIC_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L75">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.FLOAT16));</span>
+<span class="fc" id="L76">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.FLOAT32));</span>
+<span class="fc" id="L77">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.FLOAT64));</span>
+<span class="fc" id="L78">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.STRING));</span>
+<span class="fc" id="L79">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.EXTERN));</span>
+<span class="fc" id="L80">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.ENUM));</span>
+<span class="fc" id="L81">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.BITMASK));</span>
+<span class="fc" id="L82">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.STRUCT));</span>
+<span class="fc" id="L83">        assertEquals(true, TypeInfoUtil.hasChoice(SchemaType.CHOICE));</span>
+<span class="fc" id="L84">        assertEquals(true, TypeInfoUtil.hasChoice(SchemaType.UNION));</span>
+<span class="fc" id="L85">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.SQL_TABLE));</span>
+<span class="fc" id="L86">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.SQL_DATABASE));</span>
+<span class="fc" id="L87">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.SERVICE));</span>
+<span class="fc" id="L88">        assertEquals(false, TypeInfoUtil.hasChoice(SchemaType.PUBSUB));</span>
+<span class="fc" id="L89">    }</span>
+
+    @Test
+    public void isFixedSize()
+    {
+<span class="fc" id="L94">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.BOOL));</span>
+<span class="fc" id="L95">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.INT8));</span>
+<span class="fc" id="L96">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.INT16));</span>
+<span class="fc" id="L97">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.INT32));</span>
+<span class="fc" id="L98">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.INT64));</span>
+<span class="fc" id="L99">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.UINT8));</span>
+<span class="fc" id="L100">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.UINT16));</span>
+<span class="fc" id="L101">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.UINT32));</span>
+<span class="fc" id="L102">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.UINT64));</span>
+<span class="fc" id="L103">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARINT16));</span>
+<span class="fc" id="L104">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARINT32));</span>
+<span class="fc" id="L105">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARINT64));</span>
+<span class="fc" id="L106">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARINT));</span>
+<span class="fc" id="L107">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARUINT16));</span>
+<span class="fc" id="L108">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARUINT32));</span>
+<span class="fc" id="L109">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARUINT64));</span>
+<span class="fc" id="L110">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARUINT));</span>
+<span class="fc" id="L111">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.VARSIZE));</span>
+<span class="fc" id="L112">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.FIXED_SIGNED_BITFIELD));</span>
+<span class="fc" id="L113">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.FIXED_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L114">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.DYNAMIC_SIGNED_BITFIELD));</span>
+<span class="fc" id="L115">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.DYNAMIC_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L116">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.FLOAT16));</span>
+<span class="fc" id="L117">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.FLOAT32));</span>
+<span class="fc" id="L118">        assertEquals(true, TypeInfoUtil.isFixedSize(SchemaType.FLOAT64));</span>
+<span class="fc" id="L119">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.STRING));</span>
+<span class="fc" id="L120">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.EXTERN));</span>
+<span class="fc" id="L121">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.ENUM));</span>
+<span class="fc" id="L122">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.BITMASK));</span>
+<span class="fc" id="L123">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.STRUCT));</span>
+<span class="fc" id="L124">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.CHOICE));</span>
+<span class="fc" id="L125">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.UNION));</span>
+<span class="fc" id="L126">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.SQL_TABLE));</span>
+<span class="fc" id="L127">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.SQL_DATABASE));</span>
+<span class="fc" id="L128">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.SERVICE));</span>
+<span class="fc" id="L129">        assertEquals(false, TypeInfoUtil.isFixedSize(SchemaType.PUBSUB));</span>
+<span class="fc" id="L130">    }</span>
+
+    @Test
+    public void isIntegral()
+    {
+<span class="fc" id="L135">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.BOOL));</span>
+<span class="fc" id="L136">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.INT8));</span>
+<span class="fc" id="L137">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.INT16));</span>
+<span class="fc" id="L138">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.INT32));</span>
+<span class="fc" id="L139">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.INT64));</span>
+<span class="fc" id="L140">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.UINT8));</span>
+<span class="fc" id="L141">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.UINT16));</span>
+<span class="fc" id="L142">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.UINT32));</span>
+<span class="fc" id="L143">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.UINT64));</span>
+<span class="fc" id="L144">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARINT16));</span>
+<span class="fc" id="L145">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARINT32));</span>
+<span class="fc" id="L146">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARINT64));</span>
+<span class="fc" id="L147">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARINT));</span>
+<span class="fc" id="L148">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARUINT16));</span>
+<span class="fc" id="L149">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARUINT32));</span>
+<span class="fc" id="L150">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARUINT64));</span>
+<span class="fc" id="L151">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARUINT));</span>
+<span class="fc" id="L152">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.VARSIZE));</span>
+<span class="fc" id="L153">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.FIXED_SIGNED_BITFIELD));</span>
+<span class="fc" id="L154">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.FIXED_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L155">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.DYNAMIC_SIGNED_BITFIELD));</span>
+<span class="fc" id="L156">        assertEquals(true, TypeInfoUtil.isIntegral(SchemaType.DYNAMIC_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L157">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.FLOAT16));</span>
+<span class="fc" id="L158">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.FLOAT32));</span>
+<span class="fc" id="L159">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.FLOAT64));</span>
+<span class="fc" id="L160">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.STRING));</span>
+<span class="fc" id="L161">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.EXTERN));</span>
+<span class="fc" id="L162">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.ENUM));</span>
+<span class="fc" id="L163">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.BITMASK));</span>
+<span class="fc" id="L164">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.STRUCT));</span>
+<span class="fc" id="L165">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.CHOICE));</span>
+<span class="fc" id="L166">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.UNION));</span>
+<span class="fc" id="L167">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.SQL_TABLE));</span>
+<span class="fc" id="L168">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.SQL_DATABASE));</span>
+<span class="fc" id="L169">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.SERVICE));</span>
+<span class="fc" id="L170">        assertEquals(false, TypeInfoUtil.isIntegral(SchemaType.PUBSUB));</span>
+<span class="fc" id="L171">    }</span>
+
+    @Test
+    public void isSigned()
+    {
+<span class="fc" id="L176">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.BOOL));</span>
+<span class="fc" id="L177">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.INT8));</span>
+<span class="fc" id="L178">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.INT16));</span>
+<span class="fc" id="L179">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.INT32));</span>
+<span class="fc" id="L180">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.INT64));</span>
+<span class="fc" id="L181">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.UINT8));</span>
+<span class="fc" id="L182">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.UINT16));</span>
+<span class="fc" id="L183">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.UINT32));</span>
+<span class="fc" id="L184">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.UINT64));</span>
+<span class="fc" id="L185">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.VARINT16));</span>
+<span class="fc" id="L186">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.VARINT32));</span>
+<span class="fc" id="L187">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.VARINT64));</span>
+<span class="fc" id="L188">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.VARINT));</span>
+<span class="fc" id="L189">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.VARUINT16));</span>
+<span class="fc" id="L190">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.VARUINT32));</span>
+<span class="fc" id="L191">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.VARUINT64));</span>
+<span class="fc" id="L192">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.VARUINT));</span>
+<span class="fc" id="L193">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.VARSIZE));</span>
+<span class="fc" id="L194">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.FIXED_SIGNED_BITFIELD));</span>
+<span class="fc" id="L195">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.FIXED_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L196">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.DYNAMIC_SIGNED_BITFIELD));</span>
+<span class="fc" id="L197">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.DYNAMIC_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L198">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.FLOAT16));</span>
+<span class="fc" id="L199">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.FLOAT32));</span>
+<span class="fc" id="L200">        assertEquals(true, TypeInfoUtil.isSigned(SchemaType.FLOAT64));</span>
+<span class="fc" id="L201">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.STRING));</span>
+<span class="fc" id="L202">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.EXTERN));</span>
+<span class="fc" id="L203">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.ENUM));</span>
+<span class="fc" id="L204">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.BITMASK));</span>
+<span class="fc" id="L205">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.STRUCT));</span>
+<span class="fc" id="L206">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.CHOICE));</span>
+<span class="fc" id="L207">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.UNION));</span>
+<span class="fc" id="L208">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.SQL_TABLE));</span>
+<span class="fc" id="L209">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.SQL_DATABASE));</span>
+<span class="fc" id="L210">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.SERVICE));</span>
+<span class="fc" id="L211">        assertEquals(false, TypeInfoUtil.isSigned(SchemaType.PUBSUB));</span>
+<span class="fc" id="L212">    }</span>
+
+    @Test
+    public void isFloatingPoint()
+    {
+<span class="fc" id="L217">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.BOOL));</span>
+<span class="fc" id="L218">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.INT8));</span>
+<span class="fc" id="L219">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.INT16));</span>
+<span class="fc" id="L220">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.INT32));</span>
+<span class="fc" id="L221">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.INT64));</span>
+<span class="fc" id="L222">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.UINT8));</span>
+<span class="fc" id="L223">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.UINT16));</span>
+<span class="fc" id="L224">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.UINT32));</span>
+<span class="fc" id="L225">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.UINT64));</span>
+<span class="fc" id="L226">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARINT16));</span>
+<span class="fc" id="L227">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARINT32));</span>
+<span class="fc" id="L228">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARINT64));</span>
+<span class="fc" id="L229">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARINT));</span>
+<span class="fc" id="L230">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARUINT16));</span>
+<span class="fc" id="L231">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARUINT32));</span>
+<span class="fc" id="L232">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARUINT64));</span>
+<span class="fc" id="L233">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARUINT));</span>
+<span class="fc" id="L234">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.VARSIZE));</span>
+<span class="fc" id="L235">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.FIXED_SIGNED_BITFIELD));</span>
+<span class="fc" id="L236">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.FIXED_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L237">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.DYNAMIC_SIGNED_BITFIELD));</span>
+<span class="fc" id="L238">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.DYNAMIC_UNSIGNED_BITFIELD));</span>
+<span class="fc" id="L239">        assertEquals(true, TypeInfoUtil.isFloatingPoint(SchemaType.FLOAT16));</span>
+<span class="fc" id="L240">        assertEquals(true, TypeInfoUtil.isFloatingPoint(SchemaType.FLOAT32));</span>
+<span class="fc" id="L241">        assertEquals(true, TypeInfoUtil.isFloatingPoint(SchemaType.FLOAT64));</span>
+<span class="fc" id="L242">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.STRING));</span>
+<span class="fc" id="L243">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.EXTERN));</span>
+<span class="fc" id="L244">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.ENUM));</span>
+<span class="fc" id="L245">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.BITMASK));</span>
+<span class="fc" id="L246">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.STRUCT));</span>
+<span class="fc" id="L247">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.CHOICE));</span>
+<span class="fc" id="L248">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.UNION));</span>
+<span class="fc" id="L249">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.SQL_TABLE));</span>
+<span class="fc" id="L250">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.SQL_DATABASE));</span>
+<span class="fc" id="L251">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.SERVICE));</span>
+<span class="fc" id="L252">        assertEquals(false, TypeInfoUtil.isFloatingPoint(SchemaType.PUBSUB));</span>
+<span class="fc" id="L253">    }</span>
+};
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

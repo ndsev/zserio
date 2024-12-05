@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamBase.java</span></div><h1>ByteArrayBitStreamBase.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import java.io.IOException;
+
+/**
+ * Common abstract class for bit stream reader and writer.
+ */
+<span class="fc" id="L8">abstract class ByteArrayBitStreamBase</span>
+{
+    /**
+     * Gets the current bit position.
+     *
+     * @return Bit position counted from zero.
+     */
+    public long getBitPosition()
+    {
+<span class="fc" id="L17">        return 8 * bytePosition + bitOffset;</span>
+    }
+
+    /**
+     * Gets the current byte position.
+     *
+     * @return Byte position counted from zero.
+     */
+    public int getBytePosition()
+    {
+<span class="fc" id="L27">        return bytePosition;</span>
+    }
+
+    /**
+     * Sets the bit position to the given value.
+     *
+     * @param bitPosition Bit position to set.
+     *
+     * @throws IOException Throws in case of any error.
+     */
+    public void setBitPosition(final long bitPosition) throws IOException
+    {
+<span class="fc" id="L39">        bitOffset = (int)(bitPosition % 8);</span>
+<span class="fc" id="L40">        bytePosition = (int)(bitPosition / 8);</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Gets the current bit offset.
+     *
+     * @return Bit offset counted from zero.
+     */
+    public int getBitOffset()
+    {
+<span class="fc" id="L50">        return bitOffset;</span>
+    }
+
+    /**
+     * Checks if the given numBits value is situated in the range 0 to 64.
+     *
+     * @param numBits Number of bits to check.
+     *
+     * @throws IllegalArgumentException If the numBits value is smaller than zero or greater than 64.
+     */
+    protected static void checkRange(final int numBits) throws IllegalArgumentException
+    {
+<span class="fc bfc" id="L62" title="All 4 branches covered.">        if (numBits &lt; 1 || numBits &gt; 64)</span>
+        {
+<span class="fc" id="L64">            throw new IllegalArgumentException(</span>
+                    &quot;ByteArrayBitStreamBase: Number of bits &quot; + numBits + &quot; is out of range [1, 64].&quot;);
+        }
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Checks if the given numBits value is situated in the range 0 to 63.
+     *
+     * @param numBits Number of bits to check.
+     *
+     * @throws IllegalArgumentException If the numBits value is smaller than zero or greater than 63.
+     */
+    protected static void checkUnsignedRange(final int numBits) throws IllegalArgumentException
+    {
+<span class="fc bfc" id="L78" title="All 4 branches covered.">        if (numBits &lt; 1 || numBits &gt; 63)</span>
+        {
+<span class="fc" id="L80">            throw new IllegalArgumentException(</span>
+                    &quot;ByteArrayBitStreamBase: Number of bits &quot; + numBits + &quot; is out of range [1, 63].&quot;);
+        }
+<span class="fc" id="L83">    }</span>
+
+    /**
+     * The current byte position.
+     */
+    protected int bytePosition;
+
+    /**
+     * The current bit offset.
+     */
+    protected int bitOffset;
+
+    /**
+     * The default character set.
+     */
+    protected static final String DEFAULT_CHARSET_NAME = &quot;UTF-8&quot;;
+
+    /**
+     * Byte value used for modulus calculations.
+     */
+    protected static final byte BYTE_MOD_MASK = 0x7;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
