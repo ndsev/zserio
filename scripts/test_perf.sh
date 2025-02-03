@@ -1035,15 +1035,15 @@ Description:
     Runs performance tests on given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
-        generator... -s test.zs -b test.Blob -f blob.bin
+    $0 [-h] [-e] [-p] [-r] [-l] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
+        target... -s <source> -b <blobname> [-f <blobfile> | -j <jsonfile>]
 
 Arguments:
     -h, --help              Show this help.
     -e, --help-env          Show help for enviroment variables.
     -p, --purge             Purge test build directory.
     -r, --run-only          Run already compiled PerformanceTests again.
-    --profile               Run the test in profiling mode and produce profiling data.
+    -l, --profile           Run the test in profiling mode and produce profiling data.
     -o <dir>, --output-directory <dir>
                             Output directory where tests will be run.
     -d <dir>, --source-dir <dir>
@@ -1056,10 +1056,12 @@ Arguments:
                             Test configuration: READ (default), WRITE, READ_WRITE.
     -s <source>, --source <source>
                             Main zserio source.
-    -b <blob>, --blob-name <blob>
+    -b <blobname>, --blob-name <blobname>
                             Full name of blob to run performance tests on.
-    -f <filename>, --blob-file <filename>
+    -f <blobfile>, --blob-file <blobfile>
                             Path to the blobfile.
+    -j <jsonfile>, --json-file <jsonfile>
+                            Path to the JSON file.
     generator               Specify the generator to test.
 
 Generator can be:
@@ -1242,7 +1244,7 @@ parse_arguments()
                 shift
                 ;;
 
-            "--profile")
+            "-l" | "--profile")
                 eval ${SWITCH_PROFILE_OUT}=1
                 shift
                 ;;
