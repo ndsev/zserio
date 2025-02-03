@@ -20,8 +20,7 @@ jobs:
 
     - name: Archive pull request number
       if: github.event_name == 'pull_request'
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pull_request_number
         path: pull_request_number.txt

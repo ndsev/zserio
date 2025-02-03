@@ -117,7 +117,7 @@ jobs:
         submodules: recursive
 
     - name: Download Zserio release artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: zserio-bin-java8
 
@@ -169,8 +169,7 @@ jobs:
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
 
     - name: Upload Zserio C++ runtime artifacts
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       # we need to collect this artifact from a build which has both clang coverage and clang-tidy reports
       if: ${{ matrix.platform == '64' && matrix.clang-version == '14' && matrix.cxx-standard == '11' &&
               matrix.build-type == 'Debug' }}
@@ -179,8 +178,7 @@ jobs:
         path: release-*/*runtime-libs*
 
     - name: Upload Zserio C++ build artifacts
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "\
           zserio-build-${{matrix.os}}-${{matrix.platform}}-\

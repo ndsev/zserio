@@ -31,24 +31,23 @@ jobs:
     needs: [cpp, java, python, doc, xml]
     runs-on: "ubuntu-22.04"
     steps:
-    # update when https://github.com/actions/download-artifact/issues/315 is fixed
     - name: "Download Zserio compiler artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: zserio-bin-java8
         path: zserio-bin-java8
     - name: "Download Java runtime release artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: zserio-runtime-java8
         path: zserio-runtime-java8
     - name: "Download C++ runtime release artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: zserio-runtime-cpp
         path: zserio-runtime-cpp
     - name: "Download Python runtime release artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: zserio-runtime-python
         path: zserio-runtime-python
@@ -86,8 +85,7 @@ jobs:
         zip -rq ${RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip "runtime_libs"
 
     - name: "Archive release artifacts"
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: linux-release-${{env.ZSERIO_VERSION}}
         path: release-${{env.ZSERIO_VERSION}}

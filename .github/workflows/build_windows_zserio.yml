@@ -109,8 +109,7 @@ jobs:
         scripts/test.sh core
 
     - name: Archive Zserio compiler artifacts
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "zserio-bin-java${{matrix.java-version}}"
         path: release-*

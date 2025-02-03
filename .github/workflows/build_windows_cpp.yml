@@ -98,7 +98,7 @@ jobs:
         submodules: recursive
 
     - name: Download Zserio release artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: zserio-bin-java8
 
@@ -159,8 +159,7 @@ jobs:
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
 
     - name: Archive Zserio C++ runtime artifacts
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       # we want this artifact only once since it contains only sources
       if: ${{ matrix.msvc-toolset == 'v141' && matrix.cxx-standard && matrix.build-type == 'Release' }}
       with:
@@ -168,8 +167,7 @@ jobs:
         path: release-*/*runtime-libs*
 
     - name: Archive Zseiro C++ build artifacts
-      # update when https://github.com/actions/upload-artifact/issues/543 is fixed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "\
           zserio-build-${{matrix.os}}-\
