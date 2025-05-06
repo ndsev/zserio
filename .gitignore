@@ -12,3 +12,5 @@
 
 # Python bytecode
 __pycache__
+/compiler/extensions/cpp/.vscode/
+/compiler/core/src/.vscode/

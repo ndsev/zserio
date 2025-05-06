@@ -21,6 +21,7 @@ public abstract class CppTemplateData implements IncludeCollector
                 context.getGeneratorVersionString(), context.getGeneratorVersionNumber());
 
         withWriterCode = context.getWithWriterCode();
+        withSettersCode = context.getWithSettersCode();
         withValidationCode = context.getWithValidationCode();
         withTypeInfoCode = context.getWithTypeInfoCode();
         withReflectionCode = context.getWithReflectionCode();
@@ -49,6 +50,11 @@ public abstract class CppTemplateData implements IncludeCollector
     public boolean getWithWriterCode()
     {
         return withWriterCode;
+    }
+
+    public boolean getWithSettersCode()
+    {
+        return withSettersCode;
     }
 
     public boolean getWithValidationCode()
@@ -441,6 +447,7 @@ public abstract class CppTemplateData implements IncludeCollector
     private final GeneratorVersionTemplateData generatorVersion;
 
     private final boolean withWriterCode;
+    private final boolean withSettersCode;
     private final boolean withValidationCode;
     private final boolean withTypeInfoCode;
     private final boolean withReflectionCode;

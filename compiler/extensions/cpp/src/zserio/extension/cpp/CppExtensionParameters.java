@@ -23,6 +23,7 @@ public final class CppExtensionParameters
 
         outputDir = parameters.getCommandLineArg(OptionCpp);
         withWriterCode = parameters.getWithWriterCode();
+        withSettersCode = parameters.getWithSettersCode();
         withPubsubCode = parameters.getWithPubsubCode();
         withServiceCode = parameters.getWithServiceCode();
         withSqlCode = parameters.getWithSqlCode();
@@ -43,6 +44,8 @@ public final class CppExtensionParameters
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
             description.add("writerCode");
+        if (withSettersCode)
+            description.add("settersCode");
         if (withPubsubCode)
             description.add("pubsubCode");
         if (withServiceCode)
@@ -77,6 +80,11 @@ public final class CppExtensionParameters
     public boolean getWithWriterCode()
     {
         return withWriterCode;
+    }
+
+    public boolean getWithSettersCode()
+    {
+        return withSettersCode;
     }
 
     public boolean getWithPubsubCode()
@@ -241,6 +249,7 @@ public final class CppExtensionParameters
 
     private final String outputDir;
     private final boolean withWriterCode;
+    private final boolean withSettersCode;
     private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSqlCode;

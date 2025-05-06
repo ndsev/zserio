@@ -172,6 +172,12 @@ public class CppExtensionParametersTest
         }
 
         @Override
+        public boolean getWithSettersCode()
+        {
+            return withWriterCode;
+        }
+
+        @Override
         public boolean getWithCodeComments()
         {
             return false;

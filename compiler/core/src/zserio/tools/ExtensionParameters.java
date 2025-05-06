@@ -89,6 +89,13 @@ public interface ExtensionParameters
     public boolean getWithWriterCode();
 
     /**
+     * Gets the setters code flag.
+     *
+     * @return True if setters code is enabled.
+     */
+    public boolean getWithSettersCode();
+
+    /**
      * Gets the code comments flag.
      *
      * @return True if code comments are enabled.

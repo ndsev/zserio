@@ -90,6 +90,12 @@ final class ZserioExtensionParameters implements ExtensionParameters
     }
 
     @Override
+    public boolean getWithSettersCode()
+    {
+        return commandLineArguments.getWithSettersCode();
+    }
+
+    @Override
     public boolean getWithCodeComments()
     {
         return commandLineArguments.getWithCodeComments();

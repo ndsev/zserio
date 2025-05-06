@@ -39,7 +39,7 @@
         m_objectChoice(allocator)
     </#if>
 </#macro>
-<#if withWriterCode>
+<#if withSettersCode>
     <@compound_constructor_definition compoundConstructorsData, "empty_constructor_field_initialization"/>
 
 </#if>

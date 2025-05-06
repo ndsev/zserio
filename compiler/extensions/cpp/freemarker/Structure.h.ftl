@@ -59,7 +59,7 @@ public:
     /** Definition for allocator type. */
 </#if>
     using allocator_type = ${types.allocator.default};
-<#if withWriterCode>
+<#if withSettersCode>
 
     <@compound_default_constructor compoundConstructorsData/>
 
@@ -233,7 +233,7 @@ public:
      */
         </#if>
     bool ${field.optional.isUsedIndicatorName}() const;
-        <#if withWriterCode>
+        <#if withSettersCode>
             <#if withCodeComments>
 
     /**

@@ -32,7 +32,7 @@
      */
                 </#if>
     const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}() const;
-                <#if withWriterCode>
+                <#if withSettersCode>
                     <#if withCodeComments>
 
     /**
@@ -68,7 +68,7 @@ const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundName}::${compou
             <#lt>${compoundFunction.resultExpression}<#if compoundFunction.returnTypeInfo.isSimple>)</#if>;
 }
 
-<#if withWriterCode && !compoundFunction.returnTypeInfo.isSimple>
+<#if withSettersCode && !compoundFunction.returnTypeInfo.isSimple>
 ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundName}::${compoundFunction.name}()
 {
     return ${compoundFunction.resultExpression};

@@ -19,6 +19,7 @@ final class TemplateDataContext
         cppNativeMapper = new CppNativeMapper(typesContext);
 
         withWriterCode = cppParameters.getWithWriterCode();
+        withSettersCode = cppParameters.getWithSettersCode();
         withRangeCheckCode = cppParameters.getWithRangeCheckCode();
         withValidationCode = cppParameters.getWithValidationCode();
         withTypeInfoCode = cppParameters.getWithTypeInfoCode();
@@ -66,6 +67,11 @@ final class TemplateDataContext
     public boolean getWithWriterCode()
     {
         return withWriterCode;
+    }
+
+    public boolean getWithSettersCode()
+    {
+        return withSettersCode;
     }
 
     public boolean getWithRangeCheckCode()
@@ -125,6 +131,7 @@ final class TemplateDataContext
     private final CppNativeMapper cppNativeMapper;
 
     private final boolean withWriterCode;
+    private final boolean withSettersCode;
     private final boolean withRangeCheckCode;
     private final boolean withValidationCode;
     private final boolean withTypeInfoCode;

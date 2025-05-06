@@ -53,7 +53,7 @@ ${I}            return nullptr;
 ${I}        }
         </#if>
         <#if field.optional??>
-            <#if withWriterCode>
+            <#if withSettersCode>
 ${I}        if (!m_object.${field.optional.isSetIndicatorName}())
             <#else>
 ${I}        if (!m_object.${field.optional.isUsedIndicatorName}())

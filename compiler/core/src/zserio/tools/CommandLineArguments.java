@@ -175,6 +175,16 @@ final class CommandLineArguments
     }
 
     /**
+     * Gets the setters code option.
+     *
+     * @return True if command line arguments enable setters code option.
+     */
+    public boolean getWithSettersCode()
+    {
+        return withSettersCodeOption;
+    }
+
+    /**
      * Gets configuration of warnings.
      *
      * @return Warnings config.
@@ -396,6 +406,14 @@ final class CommandLineArguments
         writerCodeGroup.setRequired(false);
         options.addOptionGroup(writerCodeGroup);
 
+        final OptionGroup settersCodeGroup = new OptionGroup();
+        option = new Option(OptionNameWithSettersCode, false, "enable writing setters code (default)");
+        settersCodeGroup.addOption(option);
+        option = new Option(OptionNameWithoutSettersCode, false, "disable writing setters code");
+        settersCodeGroup.addOption(option);
+        settersCodeGroup.setRequired(false);
+        options.addOptionGroup(settersCodeGroup);
+
         option = new Option(OptionNameWithWarnings, true,
                 "enable specified warnings, use '--help warnings' for detailed description");
         option.setArgName("warning[,warning]*");
@@ -465,6 +483,7 @@ final class CommandLineArguments
         withTypeInfoCodeOption = hasOption(OptionNameWithTypeInfoCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
+        withSettersCodeOption = hasOption(OptionNameWithSettersCode);
         warningsConfig = new WarningsConfig(
                 getOptionValues(OptionNameWithWarnings), getOptionValues(OptionNameWithoutWarnings));
         withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
@@ -479,7 +498,11 @@ final class CommandLineArguments
 
         validateOptions();
 
-        if (!withWriterCodeOption)
+        if (withWriterCodeOption)
+        {
+            withSettersCodeOption = true;
+        }
+        else
         {
             // automatically disable options which are not compatible with withoutWriterCodeOption
             if (withPubsubCodeOption)
@@ -652,6 +675,8 @@ final class CommandLineArguments
     private static final String OptionNameWithoutValidationCode = "withoutValidationCode";
     private static final String OptionNameWithWriterCode = "withWriterCode";
     private static final String OptionNameWithoutWriterCode = "withoutWriterCode";
+    private static final String OptionNameWithSettersCode = "withSettersCode";
+    private static final String OptionNameWithoutSettersCode = "withoutSettersCode";
     private static final String OptionNameWithWarnings = "withWarnings";
     private static final String OptionNameWithoutWarnings = "withoutWarnings";
     private static final String OptionNameWithCrossExtensionCheck = "withCrossExtensionCheck";
@@ -685,6 +710,7 @@ final class CommandLineArguments
     private boolean withTypeInfoCodeOption;
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
+    private boolean withSettersCodeOption;
     private WarningsConfig warningsConfig;
     private boolean withCrossExtensionCheckOption;
     private boolean withGlobalRuleIdCheckOption;

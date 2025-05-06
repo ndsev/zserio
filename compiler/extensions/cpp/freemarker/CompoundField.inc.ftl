@@ -1244,21 +1244,21 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
 </#function>
 
 <#function needs_field_getter field>
-    <#if withWriterCode && !field.typeInfo.isSimple>
+    <#if withSettersCode && !field.typeInfo.isSimple>
         <#return true>
     </#if>
     <#return false>
 </#function>
 
 <#function needs_field_setter field>
-    <#if withWriterCode>
+    <#if withSettersCode>
         <#return true>
     </#if>
     <#return false>
 </#function>
 
 <#function needs_field_rvalue_setter field>
-    <#if withWriterCode && !field.typeInfo.isSimple>
+    <#if withSettersCode && !field.typeInfo.isSimple>
         <#return true>
     </#if>
     <#return false>

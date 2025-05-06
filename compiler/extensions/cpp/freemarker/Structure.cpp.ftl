@@ -65,7 +65,7 @@
         <@field_member_name field/>(<@field_default_constructor_arguments field/>)
     </#list>
 </#macro>
-<#if withWriterCode>
+<#if withSettersCode>
     <#assign emptyConstructorInitMacroName><#if fieldList?has_content>empty_constructor_field_initialization</#if></#assign>
     <@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
 
@@ -326,7 +326,7 @@ bool ${name}::${field.optional.isUsedIndicatorName}() const
     return (<@field_optional_condition field/>);
 }
 
-        <#if withWriterCode>
+        <#if withSettersCode>
 bool ${name}::${field.optional.isSetIndicatorName}() const
 {
     return <@field_member_name field/>.hasValue();
