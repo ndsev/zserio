@@ -1,10 +1,10 @@
 #include <type_traits>
 
 #include "gtest/gtest.h"
-#include "test_utils/Assertions.h"
 #include "setters_code_wow/Tile.h"
-#include "setters_code_ww/Tile.h"
 #include "setters_code_wow_ws/Tile.h"
+#include "setters_code_ww/Tile.h"
+#include "test_utils/Assertions.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 #include "zserio/StringView.h"
@@ -23,7 +23,8 @@ TEST_F(WithSettersCode, checkWOW)
     const char* type = "Item";
 
     ASSERT_METHOD_NOT_PRESENT(PATH, type, " Item()", "Item::Item()");
-    ASSERT_METHOD_NOT_PRESENT(PATH, type, "Item(const allocator_type& allocator)", "Item::Item(const allocator_type&)");
+    ASSERT_METHOD_NOT_PRESENT(
+            PATH, type, "Item(const allocator_type& allocator)", "Item::Item(const allocator_type&)");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setExtraParam(", "void Item::setExtraParam(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
     ASSERT_METHOD_NOT_PRESENT(PATH, type, "void resetExtraParam(", "void Item::resetExtraParam(");
@@ -38,7 +39,8 @@ TEST_F(WithSettersCode, checkWW)
     const char* type = "Item";
 
     ASSERT_METHOD_PRESENT(PATH, type, " Item()", "");
-    ASSERT_METHOD_PRESENT(PATH, type, "Item(const allocator_type& allocator)", "Item::Item(const allocator_type&)");
+    ASSERT_METHOD_PRESENT(
+            PATH, type, "Item(const allocator_type& allocator)", "Item::Item(const allocator_type&)");
     ASSERT_METHOD_PRESENT(PATH, type, "void setExtraParam(", "void Item::setExtraParam(");
     ASSERT_METHOD_PRESENT(PATH, type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
     ASSERT_METHOD_PRESENT(PATH, type, "void resetExtraParam(", "void Item::resetExtraParam(");
@@ -53,7 +55,8 @@ TEST_F(WithSettersCode, checkWOW_WS)
     const char* type = "Item";
 
     ASSERT_METHOD_PRESENT(PATH, type, " Item()", "");
-    ASSERT_METHOD_PRESENT(PATH, type, "Item(const allocator_type& allocator)", "Item::Item(const allocator_type&)");
+    ASSERT_METHOD_PRESENT(
+            PATH, type, "Item(const allocator_type& allocator)", "Item::Item(const allocator_type&)");
     ASSERT_METHOD_PRESENT(PATH, type, "void setExtraParam(", "void Item::setExtraParam(");
     ASSERT_METHOD_PRESENT(PATH, type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
     ASSERT_METHOD_PRESENT(PATH, type, "void resetExtraParam(", "void Item::resetExtraParam(");

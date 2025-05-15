@@ -10,7 +10,7 @@
 
 <@runtime_version_check generatorVersion/>
 
-<#if withWriterCode && fieldList?has_content>
+<#if withSettersCode && fieldList?has_content>
 #include <zserio/Traits.h>
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
