@@ -56,6 +56,7 @@ function(compiler_get_test_warnings_setup VARNAME)
         set(WARNINGS_SETUP_LIST
                 "/wd4996" # used by zserio @deprecated feature (DeprecatedAttribute.h)
                 "/wd4334" # disabled for generated code: result of 32-bit shift implicitly converted to 64 bits
+                "/wd4065" # disabled for generated code: switch statement contains 'default' but no 'case'
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
     endif ()
