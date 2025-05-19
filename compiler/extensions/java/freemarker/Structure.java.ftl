@@ -582,7 +582,11 @@ public class ${name} implements <#rt>
 <#list fieldList as field>
     private <@field_java_type_member_name field/> <@field_member_name field/><#rt>
     <#if field.initializer??>
-        <#lt> = ${field.initializer}<#rt>
+        <#assign rc=field.typeInfo.requiredCast?has_content />
+        <#lt> = <#rt> 
+        <#lt><#if rc>${field.typeInfo.requiredCast}(</#if><#rt>
+        <#lt>${field.initializer}<#rt>
+        <#lt><#if rc>)</#if><#rt>
     </#if>
     <#lt>;
 </#list>
