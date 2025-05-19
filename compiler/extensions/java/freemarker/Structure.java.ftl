@@ -582,7 +582,8 @@ public class ${name} implements <#rt>
 <#list fieldList as field>
     private <@field_java_type_member_name field/> <@field_member_name field/><#rt>
     <#if field.initializer??>
-        <#lt> = ${field.initializer}<#rt>
+        <#assign longCast=field.typeInfo.isLong && !field.typeInfo.isSimple />
+        <#lt> = <#if longCast>(long)(</#if>${field.initializer}<#if longCast>)</#if><#rt>
     </#if>
     <#lt>;
 </#list>
