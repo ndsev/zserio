@@ -121,7 +121,7 @@ jobs:
       shell: bash
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
-        scripts/test.sh -p -i arguments/without_writer_code cpp-${PACKAGE}
+        scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
 
         if [[ "${{matrix.msvc-toolset}}" != "" && "${{matrix.build-type}}" == "Debug" ]] ; then
           # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
@@ -129,7 +129,7 @@ jobs:
         fi
 
         export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
-        scripts/test.sh -p -x arguments/without_writer_code ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
+        scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
 
     - name: Run Zserio integration tests for repeated generation
       shell: bash
