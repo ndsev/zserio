@@ -36,6 +36,12 @@ public final class NativeLongType extends NativeIntegralType
     }
 
     @Override
+    public String requiredCast()
+    {
+        return nullable ? "(long)" : ""; // java.lang.Long accepts only long arguments
+    }
+
+    @Override
     protected String formatLiteral(String rawValue)
     {
         return rawValue + 'L';

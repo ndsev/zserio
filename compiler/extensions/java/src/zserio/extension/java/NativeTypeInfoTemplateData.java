@@ -100,6 +100,11 @@ public final class NativeTypeInfoTemplateData
         return requiresBigInt;
     }
 
+    public String getRequiredCast()
+    {
+        return requiredCast;
+    }
+
     public ArrayableInfoTemplateData getArrayableInfo()
     {
         return arrayableInfo;
@@ -126,6 +131,7 @@ public final class NativeTypeInfoTemplateData
         isDouble = javaNativeType instanceof NativeDoubleType;
         isIntegral = javaNativeType instanceof NativeIntegralType;
         requiresBigInt = isIntegral ? ((NativeIntegralType)javaNativeType).requiresBigInt() : false;
+        requiredCast = javaNativeType.requiredCast();
 
         if (javaNativeType instanceof NativeArrayableType)
             arrayableInfo = new ArrayableInfoTemplateData((NativeArrayableType)javaNativeType);
@@ -161,6 +167,7 @@ public final class NativeTypeInfoTemplateData
     private final boolean isDouble;
     private final boolean isIntegral;
     private final boolean requiresBigInt;
+    private final String requiredCast;
     private final ArrayableInfoTemplateData arrayableInfo;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }

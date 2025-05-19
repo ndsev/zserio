@@ -22,6 +22,11 @@ public abstract class JavaNativeType extends JavaNativeSymbol
 
     public abstract boolean isSimple();
 
+    public String requiredCast()
+    {
+        return "";
+    }
+
     protected static final PackageName JAVA_LANG_PACKAGE =
             new PackageName.Builder().addId("java").addId("lang").get();
 }
