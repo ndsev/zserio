@@ -40,9 +40,16 @@ public final class CppExtensionParameters
         else
             allocatorDefinition = TypesContext.PROPAGATING_POLYMORPHIC_ALLOCATOR;
 
+        if (withWriterCode)
+            withSettersCode = true;
+        else
+            withSettersCode = parameters.argumentExists(OptionWithSettersCode);
+
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
             description.add("writerCode");
+        if (withSettersCode)
+            description.add("settersCode");
         if (withPubsubCode)
             description.add("pubsubCode");
         if (withServiceCode)
@@ -77,6 +84,11 @@ public final class CppExtensionParameters
     public boolean getWithWriterCode()
     {
         return withWriterCode;
+    }
+
+    public boolean getWithSettersCode()
+    {
+        return withSettersCode;
     }
 
     public boolean getWithPubsubCode()
@@ -182,6 +194,13 @@ public final class CppExtensionParameters
                 new Option(OptionWithoutParsingInfoCode, false, "disable parsing info code (default)"));
         bitPositionGroup.setRequired(false);
         options.addOptionGroup(bitPositionGroup);
+
+        final OptionGroup settersGroup = new OptionGroup();
+        settersGroup.addOption(
+                new Option(OptionWithSettersCode, false, "enable writing setters code (default)"));
+        settersGroup.addOption(new Option(OptionWithoutSettersCode, false, "disable writing setters code"));
+        settersGroup.setRequired(false);
+        options.addOptionGroup(settersGroup);
     }
 
     static boolean hasOptionCpp(ExtensionParameters parameters)
@@ -235,12 +254,15 @@ public final class CppExtensionParameters
     private static final String OptionWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
     private static final String OptionWithParsingInfoCode = "withParsingInfoCode";
     private static final String OptionWithoutParsingInfoCode = "withoutParsingInfoCode";
+    private static final String OptionWithSettersCode = "withSettersCode";
+    private static final String OptionWithoutSettersCode = "withoutSettersCode";
 
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
 
     private final String outputDir;
     private final boolean withWriterCode;
+    private final boolean withSettersCode;
     private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSqlCode;

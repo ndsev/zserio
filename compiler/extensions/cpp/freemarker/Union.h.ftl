@@ -65,7 +65,7 @@ public:
 
     <@compound_declare_packing_context fieldList, true/>
 </#if>
-<#if withWriterCode>
+<#if withSettersCode>
 
     <@compound_default_constructor compoundConstructorsData/>
 

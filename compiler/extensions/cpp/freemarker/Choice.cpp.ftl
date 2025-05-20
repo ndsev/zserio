@@ -31,7 +31,7 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<#if withWriterCode>
+<#if withSettersCode>
 <#macro empty_constructor_field_initialization>
         m_objectChoice(allocator)
 </#macro>

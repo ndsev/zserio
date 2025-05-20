@@ -54,7 +54,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
     <#list compoundParametersData.list as compoundParameter>
 
         <#if !compoundParameter.typeInfo.isSimple>
-            <#if withWriterCode>
+            <#if withSettersCode>
             <#-- non-const getter is necessary for setting of offsets -->
                 <#if withCodeComments>
     /**
@@ -109,7 +109,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_definition compoundName compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.typeInfo.isSimple && withWriterCode>
+        <#if !compoundParameter.typeInfo.isSimple && withSettersCode>
 ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
@@ -145,7 +145,7 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
         <#if compoundParameter.typeInfo.isSimple>
             ${compoundParameter.typeInfo.typeFullName}<#t>
         <#else>
-            <#if !withWriterCode>const </#if>${compoundParameter.typeInfo.typeFullName}*<#t>
+            <#if !withSettersCode>const </#if>${compoundParameter.typeInfo.typeFullName}*<#t>
         </#if>
     </#local>
     ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;

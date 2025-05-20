@@ -52,6 +52,7 @@ java -jar zserio.jar
     [-withWarnings|-withoutWarnings <warning[,warning]*>]
     [-withValidationCode|-withoutValidationCode]
     [-withWriterCode|-withoutWriterCode]
+    [-withSettersCode|-withoutSettersCode]
     [-xml <output directory>]
     <input file>
 ```
@@ -218,6 +219,12 @@ disabled. Note that validation code can be enabled only when writer code is enab
 
 Enables/disables generation of the API writing interface extension. This extension allows writing data to the
 bit stream or to the SQLite database. By default is enabled.
+
+**`-withSettersCode|-withoutSettersCode`**
+
+Enables/disables generation of the setter and additional constructors API for C++ extension. Setters are turned on 
+by default but it will be deactivated when -withoutWriterCode is used. If you still want to generate setters 
+API in that case use this option.
 
 **`-xml`**
 
