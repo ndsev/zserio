@@ -9,8 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "ubuntu-20.04", java-version: 8 }
-        - { os: "ubuntu-20.04", java-version: 11 }
+        - { os: "ubuntu-22.04", java-version: 8 }
+        - { os: "ubuntu-22.04", java-version: 11 }
         - { os: "ubuntu-22.04", java-version: 17 }
 
     runs-on: ${{matrix.os}}

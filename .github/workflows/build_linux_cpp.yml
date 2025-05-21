@@ -9,15 +9,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "ubuntu-20.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-20.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-20.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-20.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-20.04", platform: "64", clang-version: "11", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-20.04", platform: "64", clang-version: "11", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-20.04", platform: "32", clang-version: "11", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-20.04", platform: "32", clang-version: "11", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
 
         - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
         - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
@@ -82,7 +77,9 @@ jobs:
         echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
-      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+      run: |
+        echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
+        sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
 
     - name: Install dependencies
       run: sudo apt-get install cmake doxygen graphviz g++-multilib gcovr
