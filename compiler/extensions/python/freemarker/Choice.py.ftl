@@ -20,8 +20,10 @@ selector in (<#list expressionList as expression>${expression}<#if expression?ha
 ${I}raise zserio.PythonRuntimeException("No match in choice ${name}!")
 </#macro>
 <#macro choice_if memberActionMacroName noMatchMacroName packed=false>
+    <#if caseMemberList?has_content>
         selector = ${selector}
 
+    </#if>
     <#list caseMemberList as caseMember>
         <#if caseMember?has_next || !isDefaultUnreachable>
         <#if caseMember?is_first>if <#else>elif </#if><@choice_selector_condition caseMember.expressionList/>:
@@ -31,11 +33,14 @@ ${I}raise zserio.PythonRuntimeException("No match in choice ${name}!")
         <@.vars[memberActionMacroName] caseMember, 3, packed/>
     </#list>
     <#if !isDefaultUnreachable>
+        <#local nextIndent=2 + caseMemberList?has_content?then(1, 0)>
+        <#if caseMemberList?has_content>
         else:
+        </#if>
         <#if defaultMember??>
-            <@.vars[memberActionMacroName] defaultMember, 3, packed/>
+            <@.vars[memberActionMacroName] defaultMember, nextIndent, packed/>
         <#else>
-            <@.vars[noMatchMacroName] name, 3/>
+            <@.vars[noMatchMacroName] name, nextIndent/>
         </#if>
     </#if>
 </#macro>

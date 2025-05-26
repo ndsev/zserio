@@ -52,16 +52,18 @@ ${I}default:
         </#if>
 ${I}}
     <#else>
-        <#if isSelectorExpressionBoolean>
+        <#if caseMemberList?has_content>
+            <#if isSelectorExpressionBoolean>
 ${I}final boolean selector = ${selectorExpression};
-        <#elseif isSelectorExpressionLong>
+            <#elseif isSelectorExpressionLong>
 ${I}final long selector = ${selectorExpression};
-        <#elseif selectorExpressionBitmaskTypeName??>
+            <#elseif selectorExpressionBitmaskTypeName??>
 ${I}final ${selectorExpressionBitmaskTypeName} selector = ${selectorExpression};
-        <#else>
+            <#else>
 ${I}final java.math.BigInteger selector = ${selectorExpression};
-        </#if>
+            </#if>
 
+        </#if>
         <#list caseMemberList as caseMember>
             <#if caseMember?has_next || !isDefaultUnreachable>
 ${I}<#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMember.caseList/>)
@@ -73,14 +75,19 @@ ${I}{
 ${I}}
         </#list>
         <#if !isDefaultUnreachable>
+            <#local nextIndent=indent + caseMemberList?has_content?then(1, 0)>
+            <#if caseMemberList?has_content>
 ${I}else
 ${I}{
-            <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent + 1, packed/>
-            <#else>
-        <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
+            <#if defaultMember??>
+        <@.vars[memberActionMacroName] defaultMember, nextIndent, packed/>
+            <#else>
+        <@.vars[noMatchMacroName] name, nextIndent/>
+            </#if>
+            <#if caseMemberList?has_content>
 ${I}}
+            </#if>
         </#if>
     </#if>
 </#macro>
