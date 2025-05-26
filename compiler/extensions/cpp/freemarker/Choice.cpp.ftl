@@ -109,8 +109,10 @@ ${I}default:
         </#if>
 ${I}}
     <#else>
+        <#if caseMemberList?has_content>
 ${I}const auto selector = ${selectorExpression};
 
+        </#if>
         <#list caseMemberList as caseMember>
             <#if caseMember?has_next || !isDefaultUnreachable>
 ${I}<#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
@@ -122,14 +124,19 @@ ${I}{
 ${I}}
         </#list>
         <#if !isDefaultUnreachable>
+            <#local nextIndent=indent + caseMemberList?has_content?then(1, 0)>
+            <#if caseMemberList?has_content>
 ${I}else
 ${I}{
-            <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, packed, indent+1/>
-            <#else>
-        <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
+            <#if defaultMember??>
+        <@.vars[memberActionMacroName] defaultMember, packed, nextIndent/>
+            <#else>
+        <@.vars[noMatchMacroName] name, nextIndent/>
+            </#if>
+            <#if caseMemberList?has_content>
 ${I}}
+            </#if>
         </#if>
     </#if>
 </#macro>

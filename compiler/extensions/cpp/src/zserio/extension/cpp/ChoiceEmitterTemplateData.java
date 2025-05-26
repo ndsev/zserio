@@ -33,7 +33,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         // TODO[Mi-L@]: Consider using switch also on bitmask (using valueof).
         canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
-                expression.getExprType() != Expression.ExpressionType.BITMASK;
+                expression.getExprType() != Expression.ExpressionType.BITMASK &&
+                choiceType.getChoiceCases().size() > 0;
 
         caseMemberList = new ArrayList<CaseMember>();
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
