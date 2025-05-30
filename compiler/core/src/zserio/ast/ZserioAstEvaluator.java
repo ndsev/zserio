@@ -30,39 +30,37 @@ public final class ZserioAstEvaluator extends ZserioAstWalker
     @Override
     public void visitStructureType(StructureType structureType)
     {
-        if (structureType.getTemplateParameters().isEmpty())
-            structureType.visitChildren(this);
-        else
+        structureType.visitChildren(this);
+
+        if (!structureType.getTemplateParameters().isEmpty())
             visitInstantiations(structureType);
     }
 
     @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
-        if (choiceType.getTemplateParameters().isEmpty())
+        // force selector expression evaluation
+        final Expression selectorExpression = choiceType.getSelectorExpression();
+        selectorExpression.accept(this);
+
+        // extend scope for case expressions to support enumeration items and bitmask values if necessary
+        final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
+        if (selectorExprZserioType instanceof EnumType || selectorExprZserioType instanceof BitmaskType)
         {
-            // force selector expression evaluation
-            final Expression selectorExpression = choiceType.getSelectorExpression();
-            selectorExpression.accept(this);
-
-            // extend scope for case expressions to support enumeration items and bitmask values if necessary
-            final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
-            if (selectorExprZserioType instanceof EnumType || selectorExprZserioType instanceof BitmaskType)
+            final Scope additionalScope = ((ZserioScopedType)selectorExprZserioType).getScope();
+            final AddEvaluationScopeVisitor addScopeVisitor =
+                    new AddEvaluationScopeVisitor(additionalScope);
+            for (ChoiceCase choiceCase : choiceType.getChoiceCases())
             {
-                final Scope additionalScope = ((ZserioScopedType)selectorExprZserioType).getScope();
-                final AddEvaluationScopeVisitor addScopeVisitor =
-                        new AddEvaluationScopeVisitor(additionalScope);
-                for (ChoiceCase choiceCase : choiceType.getChoiceCases())
-                {
-                    final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
-                    for (ChoiceCaseExpression caseExpression : caseExpressions)
-                        caseExpression.getExpression().accept(addScopeVisitor);
-                }
+                final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+                for (ChoiceCaseExpression caseExpression : caseExpressions)
+                    caseExpression.getExpression().accept(addScopeVisitor);
             }
-
-            choiceType.visitChildren(this);
         }
-        else
+
+        choiceType.visitChildren(this);
+
+        if (!choiceType.getTemplateParameters().isEmpty())
         {
             visitInstantiations(choiceType);
         }
@@ -71,10 +69,12 @@ public final class ZserioAstEvaluator extends ZserioAstWalker
     @Override
     public void visitUnionType(UnionType unionType)
     {
-        if (unionType.getTemplateParameters().isEmpty())
-            unionType.visitChildren(this);
-        else
+        unionType.visitChildren(this);
+
+        if (!unionType.getTemplateParameters().isEmpty())
+        {
             visitInstantiations(unionType);
+        }
     }
 
     @Override
@@ -115,10 +115,12 @@ public final class ZserioAstEvaluator extends ZserioAstWalker
     @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
-        if (sqlTableType.getTemplateParameters().isEmpty())
-            sqlTableType.visitChildren(this);
-        else
+        sqlTableType.visitChildren(this);
+
+        if (!sqlTableType.getTemplateParameters().isEmpty())
+        {
             visitInstantiations(sqlTableType);
+        }
     }
 
     @Override

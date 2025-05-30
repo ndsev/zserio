@@ -33,7 +33,6 @@ public final class Expression extends AstNodeBase
         /** the expression is identifier which is dot left operand */
         IS_DOT_LEFT_OPERAND_ID
     }
-    ;
 
     /**
      * Constructor.
@@ -250,9 +249,14 @@ public final class Expression extends AstNodeBase
         EXTERN,
 
         /** Expression which result is bytes type. */
-        BYTES
-    }
-    ;
+        BYTES,
+
+        /** Type dependent on a template parameter. */
+        TEMPLATE_PARAMETER_TYPE,
+
+        /** Value dependent on a template parameter (i.e. it's either enumeration item or bitmask value). */
+        TEMPLATE_PARAMETER_VALUE,
+    };
 
     /**
      * Gets the evaluated type of the expression.
@@ -1008,7 +1012,13 @@ public final class Expression extends AstNodeBase
 
     private void evaluateDotExpression()
     {
-        if (operand1.zserioType == null)
+        if (operand1.zserioType instanceof TemplateParameter ||
+                operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            // left operand is template parameter
+            evaluateTemplateParameterDotExpression();
+        }
+        else if (operand1.zserioType == null)
         {
             // left operand is unknown => it still can be a part of package
             evaluatePackageDotExpression();
@@ -1069,6 +1079,23 @@ public final class Expression extends AstNodeBase
             // this can happened for long package name, we must wait for dot
             unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
             unresolvedIdentifiers.add(operand2);
+        }
+    }
+
+    private void evaluateTemplateParameterDotExpression()
+    {
+        if (operand1.expressionType == ExpressionType.UNKNOWN)
+        {
+            // must be either an enumeration item or a bitmask value
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_VALUE;
+            operand2.expressionType = ExpressionType.TEMPLATE_PARAMETER_VALUE;
+            zserioType = operand1.zserioType;
+            operand2.zserioType = zserioType;
+        }
+        else
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
+            operand2.expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
         }
     }
 
@@ -1139,11 +1166,19 @@ public final class Expression extends AstNodeBase
 
     private void evaluateIsSetOperator()
     {
-        if (operand1.expressionType != ExpressionType.BITMASK)
+        if (operand1.expressionType != ExpressionType.BITMASK &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_VALUE)
+        {
             throw new ParserException(operand1, "'" + operand1.text + "' is not a bitmask!");
+        }
 
-        if (operand2.expressionType != ExpressionType.BITMASK)
+        if (operand2.expressionType != ExpressionType.BITMASK &&
+                operand2.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE &&
+                operand2.expressionType != ExpressionType.TEMPLATE_PARAMETER_VALUE)
+        {
             throw new ParserException(operand2, "'" + operand2.text + "' is not a bitmask!");
+        }
 
         if (operand1.zserioType != operand2.zserioType)
         {
@@ -1191,6 +1226,11 @@ public final class Expression extends AstNodeBase
             expressionIntegerValue = new ExpressionIntegerValue(
                     VarIntegerType.VARSIZE_LOWER_BOUND, VarIntegerType.VARSIZE_UPPER_BOUND);
         }
+        else if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            expressionIntegerValue = new ExpressionIntegerValue(
+                    VarIntegerType.VARSIZE_LOWER_BOUND, VarIntegerType.VARSIZE_UPPER_BOUND);
+        }
         else
         {
             throw new ParserException(
@@ -1200,8 +1240,13 @@ public final class Expression extends AstNodeBase
 
     private void evaluateValueOfOperator()
     {
-        if (operand1.expressionType != ExpressionType.ENUM && operand1.expressionType != ExpressionType.BITMASK)
+
+        if (operand1.expressionType != ExpressionType.ENUM &&
+                operand1.expressionType != ExpressionType.BITMASK &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_VALUE)
+        {
             throw new ParserException(operand1, "'" + operand1.text + "' is not an enumeration or bitmask!");
+        }
 
         expressionType = ExpressionType.INTEGER;
         expressionIntegerValue = operand1.expressionIntegerValue;
@@ -1209,8 +1254,11 @@ public final class Expression extends AstNodeBase
 
     private void evaluateNumBitsOperator()
     {
-        if (operand1.expressionType != ExpressionType.INTEGER)
+        if (operand1.expressionType != ExpressionType.INTEGER &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
             throw new ParserException(operand1, "Integer expression expected!");
+        }
 
         expressionType = ExpressionType.INTEGER;
         expressionIntegerValue = operand1.expressionIntegerValue.numbits();
@@ -1218,17 +1266,17 @@ public final class Expression extends AstNodeBase
 
     private void evaluateUnaryPlusMinus(boolean isNegate)
     {
-        if (operand1.expressionType != ExpressionType.INTEGER &&
-                operand1.expressionType != ExpressionType.FLOAT)
-            throw new ParserException(this, "Integer or float expressions expected!");
+        expressionType = operand1.expressionType;
 
-        if (operand1.expressionType == ExpressionType.FLOAT)
+        if (operand1.expressionType != ExpressionType.INTEGER &&
+                operand1.expressionType != ExpressionType.FLOAT &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE)
         {
-            expressionType = ExpressionType.FLOAT;
+            throw new ParserException(this, "Integer or float expressions expected!");
         }
-        else
+
+        if (operand1.expressionType == ExpressionType.INTEGER)
         {
-            expressionType = ExpressionType.INTEGER;
             expressionIntegerValue =
                     (isNegate) ? operand1.expressionIntegerValue.negate() : operand1.expressionIntegerValue;
         }
@@ -1237,8 +1285,12 @@ public final class Expression extends AstNodeBase
     private void evaluateNegationOperator()
     {
         final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.BOOLEAN)
+
+        if (op1.expressionType != ExpressionType.BOOLEAN &&
+                op1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
             throw new ParserException(this, "Boolean expression expected!");
+        }
 
         expressionType = ExpressionType.BOOLEAN;
     }
@@ -1246,8 +1298,13 @@ public final class Expression extends AstNodeBase
     private void evaluateBitNotExpression()
     {
         final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.BITMASK)
+        if (op1.expressionType != ExpressionType.INTEGER &&
+                op1.expressionType != ExpressionType.BITMASK &&
+                op1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE &&
+                op1.expressionType != ExpressionType.TEMPLATE_PARAMETER_VALUE)
+        {
             throw new ParserException(this, "Integer or bitmask expression expected!");
+        }
 
         expressionType = op1.expressionType;
         expressionIntegerValue = op1.expressionIntegerValue.not();
@@ -1256,6 +1313,13 @@ public final class Expression extends AstNodeBase
 
     private void evaluateArithmeticExpression()
     {
+        if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE ||
+                operand2.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
+            return;
+        }
+
         if (type == ZserioParser.PLUS && operand1.expressionType == ExpressionType.STRING &&
                 operand2.expressionType == ExpressionType.STRING)
         {
@@ -1326,8 +1390,14 @@ public final class Expression extends AstNodeBase
 
     private void evaluateBitExpression()
     {
-        expressionType = operand1.expressionType;
+        if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE ||
+                operand2.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
+            return;
+        }
 
+        expressionType = operand1.expressionType;
         if (operand1.expressionType != operand2.expressionType ||
                 (expressionType != ExpressionType.INTEGER && expressionType != ExpressionType.BITMASK))
             throw new ParserException(this, "Integer or bitmask expressions expected!");
@@ -1376,11 +1446,21 @@ public final class Expression extends AstNodeBase
 
     private void evaluateRelationalExpression()
     {
+        expressionType = ExpressionType.BOOLEAN;
+
+        // TODO[TEMPLATES]
+        if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE ||
+                operand2.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            return;
+        }
+
         if (operand1.expressionType == ExpressionType.UNKNOWN ||
                 operand1.expressionType != operand2.expressionType)
-            throw new ParserException(this,
-                    "Incompatible expression types (" + operand1.expressionType +
-                            " != " + operand2.expressionType + ")!");
+        {
+            throw new ParserException(this, "Incompatible expression types (" + operand1.expressionType +
+                    " != " + operand2.expressionType + ")!");
+        }
 
         if (operand1.expressionType == ExpressionType.FLOAT && type != ZserioParser.LT &&
                 type != ZserioParser.GT)
@@ -1394,7 +1474,6 @@ public final class Expression extends AstNodeBase
         if (operand1.expressionType == ExpressionType.STRING)
             throw new ParserException(this, "String comparison is not implemented!");
 
-        expressionType = ExpressionType.BOOLEAN;
         if (operand1.expressionType == ExpressionType.INTEGER)
         {
             expressionIntegerValue =
@@ -1409,23 +1488,41 @@ public final class Expression extends AstNodeBase
 
     private void evaluateLogicalExpression()
     {
+        expressionType = ExpressionType.BOOLEAN;
+        // TODO[TEMPLATES]
+        if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE ||
+                operand2.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            return;
+        }
+
         if (operand1.expressionType != ExpressionType.BOOLEAN ||
                 operand2.expressionType != ExpressionType.BOOLEAN)
             throw new ParserException(this, "Boolean expressions expected!");
-
-        expressionType = ExpressionType.BOOLEAN;
     }
 
     private void evaluateConditionalExpression()
     {
-        if (operand1.expressionType != ExpressionType.BOOLEAN)
+        if (operand1.expressionType != ExpressionType.BOOLEAN &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
             throw new ParserException(operand1, "Boolean expression expected!");
+        }
+
+        if (operand2.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE ||
+                operand3.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
+            return;
+        }
 
         if (operand2.expressionType == ExpressionType.UNKNOWN ||
                 operand2.expressionType != operand3.expressionType)
+        {
             throw new ParserException(this,
                     "Incompatible expression types (" + operand2.expressionType +
                             " != " + operand3.expressionType + ")!");
+        }
 
         if (operand2.expressionType == ExpressionType.COMPOUND ||
                 operand2.expressionType == ExpressionType.BITMASK ||
@@ -1532,6 +1629,11 @@ public final class Expression extends AstNodeBase
             // this can happen for bitmasks when they are resolved from additional scopes
             // e.g. in bitmask choice or within the isset operator
             evaluateExpressionType((BitmaskType)identifierSymbolOwner);
+        }
+        else if (identifierSymbol instanceof TemplateParameter)
+        {
+            // leave the expressionType UNKNOWN to recognize that this is not the type instantiation yet
+            zserioType = (TemplateParameter)identifierSymbol;
         }
         else
         {
@@ -1676,6 +1778,10 @@ public final class Expression extends AstNodeBase
         else if (baseType instanceof BytesType)
         {
             expressionType = ExpressionType.BYTES;
+        }
+        else if (baseType instanceof TemplateParameter)
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
         }
         else
         {

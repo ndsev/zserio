@@ -34,12 +34,6 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
             typeArgument.accept(visitor);
     }
 
-    @Override
-    public CompoundType getBaseType()
-    {
-        return (CompoundType)super.getBaseType();
-    }
-
     /**
      * Gets a list of type arguments.
      *
@@ -122,19 +116,12 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
     void resolve()
     {
         // check if referenced type is a parameterized compound type
-        final ZserioType baseType = super.getBaseType();
-        if (baseType == null)
-        {
-            // we are in the template here and this is the parameterized template parameter,
-            // so that we don't know if it's a parameterized type yet
-            return;
-        }
-
+        final ZserioType baseType = getBaseType();
         final boolean isParameterized =
                 baseType instanceof CompoundType && !((CompoundType)baseType).getTypeParameters().isEmpty();
         if (isParameterized)
         {
-            final CompoundType compoundType = getBaseType();
+            final CompoundType compoundType = (CompoundType)getBaseType();
             final List<Parameter> typeParameters = compoundType.getTypeParameters();
             // verify that number of arguments corresponds with the type definition
             if (typeArguments.size() != typeParameters.size())
@@ -150,7 +137,7 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
                 throw exception;
             }
         }
-        else
+        else if (!(baseType instanceof TemplateParameter))
         {
             final ParserStackedException exception = new ParserStackedException(
                     getTypeReference().getLocation(),
@@ -164,11 +151,11 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
     @Override
     void evaluate()
     {
-        if (!isEvaluated)
+        if (!isEvaluated && getBaseType() instanceof CompoundType)
         {
             // fill instantiated parameter list
             // (cannot be done sooner since we are waiting to resolve the underlying type reference)
-            final CompoundType compoundType = getBaseType();
+            final CompoundType compoundType = (CompoundType)getBaseType();
             final List<Parameter> typeParameters = compoundType.getTypeParameters();
             for (int i = 0; i < typeParameters.size(); i++)
             {
