@@ -103,13 +103,11 @@ public final class ZserioAstSymbolResolver extends ZserioAstWalker
 
     private void visitType(CompoundType compoundType)
     {
-        if (compoundType.getTemplateParameters().isEmpty())
-        {
-            currentScopedType = compoundType;
-            compoundType.visitChildren(this);
-            currentScopedType = null;
-        }
-        else
+        currentScopedType = compoundType;
+        compoundType.visitChildren(this);
+        currentScopedType = null;
+
+        if (!compoundType.getTemplateParameters().isEmpty())
         {
             visitInstantiations(compoundType);
         }
