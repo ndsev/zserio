@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Template parameters are just wrapped strings.
  */
-public final class TemplateParameter extends AstNodeBase implements ScopeSymbol
+public final class TemplateParameter extends AstNodeBase implements ZserioType
 {
     /**
      * Constructor.
@@ -26,6 +26,14 @@ public final class TemplateParameter extends AstNodeBase implements ScopeSymbol
     public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitTemplateParameter(this);
+    }
+
+    @Override
+    public Package getPackage()
+    {
+        // TODO: template parameter types do not have any package,
+        // because it's not a package symbol, it's a scope symbol
+        throw new InternalError("TemplateParameter.getPackage() is not implemented!");
     }
 
     @Override
