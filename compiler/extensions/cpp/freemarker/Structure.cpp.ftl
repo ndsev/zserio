@@ -590,7 +590,7 @@ const ::zserio::ParsingInfo& ${name}::parsingInfo() const
     <#if field.isExtended>
     if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
     {
-        <#if !field.typeInfo.isSimple && !(field.typeInfo.isString && field.initializer??)>
+        <#if field.optional?? || (!field.typeInfo.isSimple && !(field.typeInfo.isString && field.initializer??))>
         return <@field_member_type_name field/>(<@field_default_constructor_arguments field/>);
         <#else>
         return <@field_default_constructor_arguments field/>;
@@ -615,7 +615,7 @@ const ::zserio::ParsingInfo& ${name}::parsingInfo() const
         <#if field.isExtended>
     if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
     {
-            <#if !field.typeInfo.isSimple && !(field.typeInfo.isString && field.initializer??)>
+            <#if field.optional?? || (!field.typeInfo.isSimple && !(field.typeInfo.isString && field.initializer??))>
         return <@field_member_type_name field/>(<@field_default_constructor_arguments field/>);
             <#else>
         return <@field_default_constructor_arguments field/>;
