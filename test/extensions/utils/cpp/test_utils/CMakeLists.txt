@@ -7,10 +7,15 @@ project(ZserioCppTestUtils)
 
 set(ZSERIO_CPP_TEST_UTILS_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Assertions.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ComparisonOperatorsTest.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/HashTest.h
         ${CMAKE_CURRENT_SOURCE_DIR}/LocalServiceClient.h
         ${CMAKE_CURRENT_SOURCE_DIR}/MemoryResources.h
         ${CMAKE_CURRENT_SOURCE_DIR}/TestPubsub.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/TestUtility.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ValidationObservers.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/WriteReadFileTest.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/WriteReadTest.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ZserioErrorOutput.h
 )
 
