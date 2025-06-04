@@ -7,11 +7,13 @@ google-explicit-constructor:gen/constraints/structure_bitmask_constraints/Availa
 hicpp-signed-bitwise:gen/constraints/structure_bitmask_constraints/Availability.h
 
 performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+performance-move-const-arg:gen/constraints/optional_constraints/OptionalConstraints.cpp
 performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp
 performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp
 
 readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp
 readability-make-member-function-const:gen/constraints/literal_constraint/LiteralConstraint.cpp
+readability-make-member-function-const:gen/constraints/optional_constraints/OptionalConstraints.cpp
 readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp
 readability-make-member-function-const:gen/constraints/structure_constraints/StructureConstraints.cpp
 

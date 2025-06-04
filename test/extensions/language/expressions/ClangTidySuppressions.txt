@@ -19,6 +19,7 @@ hicpp-signed-bitwise:gen/expressions/left_shift_operator/LeftShiftOperator.cpp
 
 performance-move-const-arg:gen/expressions/field_type/FieldTypeExpression.cpp
 performance-move-const-arg:gen/expressions/field_type_with_clash/FieldTypeExpression.cpp
+performance-move-const-arg:gen/expressions/field_type_with_parent_clash/FieldTypeExpression.cpp
 performance-move-const-arg:gen/expressions/index_operator/ElementList.cpp
 performance-move-const-arg:gen/expressions/isset_operator/IsSetOperator.cpp
 performance-move-const-arg:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
