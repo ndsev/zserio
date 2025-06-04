@@ -14,6 +14,10 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
     <dirname property="test_utils.base_dir" file="${ant.file.test_utils}"/>
 
     <property name="zserio.root_dir" location="${test_utils.base_dir}/../../../.."/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+
+    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
+    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
 
     <property name="test_utils.build_dir"
             location="${zserio.root_dir}/build/test/java/${ant.java.version}/utils"/>
@@ -36,6 +40,7 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
             <classpath>
+                <pathelement location="${runtime.jar_file}"/>
                 <pathelement location="${3rdparty.junit.jar_file}"/>
             </classpath>
             <src location="${test_utils.src_dir}"/>

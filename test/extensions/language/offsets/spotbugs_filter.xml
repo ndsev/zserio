@@ -11,4 +11,8 @@
         <!-- Be wary of letting constructors throw exceptions. -->
         <Bug code="CT"/>
     </Match>
+    <Match>
+        <!-- Uses the same code for two switch clauses. -->
+        <Bug code="DB"/>
+    </Match>
 </FindBugsFilter>

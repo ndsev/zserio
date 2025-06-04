@@ -11,4 +11,8 @@
         <!-- Be wary of letting constructors throw exceptions. -->
         <Bug code="CT"/>
     </Match>
+    <Match>
+        <!-- TestChoice uses the same code for two branches. -->
+        <Bug code="DB"/>
+    </Match>
 </FindBugsFilter>
