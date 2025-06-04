@@ -575,6 +575,7 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
     <#list fieldList as field>
         <#if field.usesAnyHolder || field.optional??>
             <#if field.holderNeedsAllocator><#return true></#if>
+            <#if field.initializer?? && field.needsAllocator><#return true></#if>
         <#else>
             <#if field.needsAllocator><#return true></#if>
         </#if>
