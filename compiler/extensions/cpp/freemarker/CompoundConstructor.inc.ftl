@@ -573,10 +573,14 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
 
 <#function empty_constructor_needs_allocator fieldList>
     <#list fieldList as field>
-        <#if field.usesAnyHolder || field.optional??>
-            <#if field.holderNeedsAllocator><#return true></#if>
-        <#else>
-            <#if field.needsAllocator><#return true></#if>
+        <#if field.usesAnyHolder && field.holderNeedsAllocator>
+            <#return true>
+        <#elseif field.optional??>
+            <#if field.holderNeedsAllocator || (field.initializer?? && field.needsAllocator)>
+                <#return true>
+            </#if>
+        <#elseif field.needsAllocator>
+            <#return true>
         </#if>
     </#list>
     <#return false>
