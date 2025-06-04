@@ -1,6 +1,7 @@
 bugprone-forwarding-reference-overload:gen/extended_members/extended_compound_field/Compound.h
 bugprone-forwarding-reference-overload:gen/extended_members/extended_indexed_offsets/Original.h
 bugprone-forwarding-reference-overload:gen/extended_members/extended_optional_parameterized_field/Parameterized.h
+bugprone-forwarding-reference-overload:gen/extended_members/extended_packed_array/Original.h
 
 cert-err58-cpp:cpp/ExtendedChoiceFieldTest.cpp
 cert-err58-cpp:cpp/ExtendedCompoundFieldTest.cpp
@@ -9,6 +10,8 @@ cert-err58-cpp:cpp/ExtendedOptionalParameterizedFieldTest.cpp
 cert-err58-cpp:cpp/ExtendedUnalignedFieldTest.cpp
 cert-err58-cpp:cpp/MultipleExtendedFieldsTest.cpp
 cert-err58-cpp:cpp/MultipleExtendedFieldsVariousTypesTest.cpp
+
+cppcoreguidelines-init-variables:cpp/ExtendedPackedArrayTest.cpp
 
 cppcoreguidelines-pro-type-member-init:gen/extended_members/extended_choice_field/Choice.cpp
 cppcoreguidelines-pro-type-member-init:gen/extended_members/extended_optional_parameterized_field/Parameterized.cpp
@@ -31,6 +34,7 @@ readability-make-member-function-const:gen/extended_members/extended_field_in_te
 readability-make-member-function-const:gen/extended_members/extended_field_in_template/Original.cpp
 readability-make-member-function-const:gen/extended_members/extended_optional_parameterized_field/Original.cpp
 readability-make-member-function-const:gen/extended_members/extended_optional_parameterized_field/Parameterized.cpp
+readability-make-member-function-const:gen/extended_members/extended_packed_array/Element.cpp
 readability-make-member-function-const:gen/extended_members/extended_simple_field/Extended.cpp
 readability-make-member-function-const:gen/extended_members/extended_simple_field/Original.cpp
 readability-make-member-function-const:gen/extended_members/extended_unaligned_field/Extended.cpp

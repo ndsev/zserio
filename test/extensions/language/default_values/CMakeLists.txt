@@ -18,6 +18,8 @@ add_custom_test(default_values
     DEPENDS
         default_values_zs
     SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedDefaultValuesTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalDefaultValuesTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureDefaultValuesTest.cpp
     GENERATED_SOURCES
         ${GENERATED_SOURCES}
