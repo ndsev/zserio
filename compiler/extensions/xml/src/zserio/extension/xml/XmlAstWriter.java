@@ -411,6 +411,7 @@ public final class XmlAstWriter implements ZserioAstVisitor
         final String xmlElementName = (rootExprElementName == null) ? "EXPRESSION" : rootExprElementName;
         final Element xmlElement = xmlDoc.createElement(xmlElementName);
         xmlElement.setAttribute("text", expression.getText());
+        xmlElement.setAttribute("type", expression.getExprType().toString());
         rootExprElementName = null;
         visitAstNode(expression, xmlElement);
     }
