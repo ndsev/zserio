@@ -55,6 +55,9 @@ public final class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = choiceType.getScope();
         fillExpressionScopes = true;
 
+        for (TemplateParameter templateParameter : choiceType.getTemplateParameters())
+            templateParameter.accept(this);
+
         for (Parameter parameter : choiceType.getTypeParameters())
             parameter.accept(this);
 
@@ -104,6 +107,9 @@ public final class ZserioAstScopeSetter extends ZserioAstWalker
     {
         currentScope = unionType.getScope();
         fillExpressionScopes = true;
+
+        for (TemplateParameter templateParameter : unionType.getTemplateParameters())
+            templateParameter.accept(this);
 
         for (Parameter parameter : unionType.getTypeParameters())
             parameter.accept(this);
