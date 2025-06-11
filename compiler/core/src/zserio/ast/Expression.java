@@ -1243,6 +1243,7 @@ public final class Expression extends AstNodeBase
 
         if (operand1.expressionType != ExpressionType.ENUM &&
                 operand1.expressionType != ExpressionType.BITMASK &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE &&
                 operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_VALUE)
         {
             throw new ParserException(operand1, "'" + operand1.text + "' is not an enumeration or bitmask!");
