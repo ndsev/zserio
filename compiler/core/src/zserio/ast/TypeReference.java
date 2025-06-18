@@ -130,8 +130,7 @@ public final class TypeReference extends AstNodeBase
             return;
 
         // resolve referenced type
-        PackageSymbol symbol =
-                ownerPackage.getVisibleSymbol(this, referencedPackageName, referencedTypeName);
+        PackageSymbol symbol = ownerPackage.getVisibleSymbol(this, referencedPackageName, referencedTypeName);
         if (symbol == null)
         {
             int foundIndex = TemplateParameter.indexOf(templateParameters, referencedTypeName);
