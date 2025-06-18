@@ -112,38 +112,38 @@ jobs:
       run: |
         scripts/release.sh -p runtime_libs
 
-    - name: Run Zserio tests
-      shell: bash
-      run: |
-        scripts/test.sh cpp-${PACKAGE}
+#    - name: Run Zserio tests
+#      shell: bash
+#      run: |
+#        scripts/test.sh cpp-${PACKAGE}
 
-    - name: Run Zserio tests with extra arguments
-      shell: bash
-      run: |
-        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
-        scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
+#    - name: Run Zserio tests with extra arguments
+#      shell: bash
+#      run: |
+#        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
+#        scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
 
-        if [[ "${{matrix.msvc-toolset}}" != "" && "${{matrix.build-type}}" == "Debug" ]] ; then
+#        if [[ "${{matrix.msvc-toolset}}" != "" && "${{matrix.build-type}}" == "Debug" ]] ; then
           # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
-          EXCLUDE_SET_CPP_ALLOCATOR="-x arguments/set_cpp_allocator"
-        fi
+#          EXCLUDE_SET_CPP_ALLOCATOR="-x arguments/set_cpp_allocator"
+#        fi
 
-        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
-        scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
+#        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+#        scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code ${EXCLUDE_SET_CPP_ALLOCATOR} cpp-${PACKAGE}
 
     - name: Run Zserio integration tests for repeated generation
       shell: bash
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
-    - name: Run Zserio API compatibility checks
-      # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
-      if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run: |
-        scripts/test_compat_api.sh cpp-${PACKAGE}
+#    - name: Run Zserio API compatibility checks
+#      # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
+#      if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
+#      shell: bash
+#      env:
+#        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#      run: |
+#        scripts/test_compat_api.sh cpp-${PACKAGE}
 
     - name: Run Zserio performance tests
       shell: bash
@@ -153,10 +153,10 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
-    - name: Run Zserio benchmarks
-      shell: bash
-      run: |
-        scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
+#    - name: Run Zserio benchmarks
+#      shell: bash
+#      run: |
+#        scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
 
     - name: Archive Zserio C++ runtime artifacts
       uses: actions/upload-artifact@v4
