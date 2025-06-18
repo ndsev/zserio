@@ -445,7 +445,7 @@ public final class CompoundFieldTemplateData
         public Compound(TemplateDataContext context,
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation) throws ZserioExtensionException
         {
-            this(context, parameterizedTypeInstantiation.getBaseType());
+            this(context, (CompoundType)parameterizedTypeInstantiation.getBaseType());
 
             for (InstantiatedParameter param : parameterizedTypeInstantiation.getInstantiatedParameters())
             {
