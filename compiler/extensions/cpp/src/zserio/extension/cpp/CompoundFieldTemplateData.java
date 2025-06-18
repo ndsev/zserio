@@ -237,7 +237,7 @@ public final class CompoundFieldTemplateData
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation,
                 IncludeCollector includeCollector) throws ZserioExtensionException
         {
-            this(context, parameterizedTypeInstantiation.getBaseType(), includeCollector);
+            this(context, (CompoundType)parameterizedTypeInstantiation.getBaseType(), includeCollector);
 
             for (InstantiatedParameter param : parameterizedTypeInstantiation.getInstantiatedParameters())
             {
