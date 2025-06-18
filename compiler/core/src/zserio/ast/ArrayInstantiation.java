@@ -189,7 +189,7 @@ public final class ArrayInstantiation extends TypeInstantiation
     private static boolean isSimpleTypePackable(ZserioType baseType)
     {
         return baseType instanceof IntegerType || baseType instanceof EnumType ||
-                baseType instanceof BitmaskType;
+                baseType instanceof BitmaskType || baseType instanceof TemplateParameter;
     }
 
     private void checkPackedArrayElementType(
