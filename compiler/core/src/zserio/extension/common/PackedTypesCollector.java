@@ -54,14 +54,6 @@ public class PackedTypesCollector extends ZserioAstWalker
 
     private void visitCompound(CompoundType compoundType)
     {
-        if (!compoundType.getTemplateParameters().isEmpty())
-        {
-            // visit instantiations
-            for (ZserioTemplatableType instantiation : compoundType.getInstantiations())
-                instantiation.accept(this);
-            return;
-        }
-
         for (Field field : compoundType.getFields()) // it's enough to traverse fields
         {
             boolean inPackedArray = false;
@@ -87,6 +79,13 @@ public class PackedTypesCollector extends ZserioAstWalker
 
             if (inPackedArray)
                 --packedArraysDepth;
+        }
+
+        if (!compoundType.getTemplateParameters().isEmpty())
+        {
+            // visit instantiations
+            for (ZserioTemplatableType instantiation : compoundType.getInstantiations())
+                instantiation.accept(this);
         }
     }
 
