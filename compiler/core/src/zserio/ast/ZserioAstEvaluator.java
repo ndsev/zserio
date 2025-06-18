@@ -48,8 +48,7 @@ public final class ZserioAstEvaluator extends ZserioAstWalker
         if (selectorExprZserioType instanceof EnumType || selectorExprZserioType instanceof BitmaskType)
         {
             final Scope additionalScope = ((ZserioScopedType)selectorExprZserioType).getScope();
-            final AddEvaluationScopeVisitor addScopeVisitor =
-                    new AddEvaluationScopeVisitor(additionalScope);
+            final AddEvaluationScopeVisitor addScopeVisitor = new AddEvaluationScopeVisitor(additionalScope);
             for (ChoiceCase choiceCase : choiceType.getChoiceCases())
             {
                 final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();

@@ -256,7 +256,7 @@ public final class Expression extends AstNodeBase
 
         /** Value dependent on a template parameter (i.e. it's either enumeration item or bitmask value). */
         TEMPLATE_PARAMETER_VALUE,
-    };
+    }
 
     /**
      * Gets the evaluated type of the expression.
@@ -1299,8 +1299,7 @@ public final class Expression extends AstNodeBase
     private void evaluateBitNotExpression()
     {
         final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.INTEGER &&
-                op1.expressionType != ExpressionType.BITMASK &&
+        if (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.BITMASK &&
                 op1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE &&
                 op1.expressionType != ExpressionType.TEMPLATE_PARAMETER_VALUE)
         {
@@ -1459,8 +1458,9 @@ public final class Expression extends AstNodeBase
         if (operand1.expressionType == ExpressionType.UNKNOWN ||
                 operand1.expressionType != operand2.expressionType)
         {
-            throw new ParserException(this, "Incompatible expression types (" + operand1.expressionType +
-                    " != " + operand2.expressionType + ")!");
+            throw new ParserException(this,
+                    "Incompatible expression types (" + operand1.expressionType +
+                            " != " + operand2.expressionType + ")!");
         }
 
         if (operand1.expressionType == ExpressionType.FLOAT && type != ZserioParser.LT &&
