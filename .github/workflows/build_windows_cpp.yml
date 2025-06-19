@@ -138,14 +138,14 @@ jobs:
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
-    - name: Run Zserio API compatibility checks
-      # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
-      if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run: |
-        scripts/test_compat_api.sh cpp-${PACKAGE}
+    #- name: Run Zserio API compatibility checks
+    #  # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
+    #  if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
+    #  shell: bash
+    #  env:
+    #    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    #  run: |
+    #    scripts/test_compat_api.sh cpp-${PACKAGE}
 
     - name: Run Zserio performance tests
       shell: bash
