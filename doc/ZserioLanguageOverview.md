@@ -396,8 +396,11 @@ the selector value is equal to any of the case label values. A choice type may h
 selected when no case label matches the selector value. The decoder will throw an exception when there is no
 default branch and the selector does not match any case label. Any branch, including the default branch, may be
 empty, with a terminating semicolon directly following the label. It is good practice to insert a comment in
-this case. When the selector expression has an enumeration type, the enumeration type prefix may be omitted
-from the case label literals.
+this case. When the selector expression has an enumeration or bitmask type, the type prefix may be omitted from
+the case label literals.
+
+> Note that when selector expression type is a template parameter, the type prefix may
+never be omitted even if when all template instantiations use only enumeration and bitmasks.
 
 **Example**
 ```
@@ -1048,8 +1051,8 @@ struct IsSetOperator
 ```
 
 > Note that the bitmask type used in the `isset` operator can be deduced, so it's allowed to discard
-the type name and a dot, e.g. `isset(testBitmask, INT)` instead of
-`isset(testBitmask, TestBitmask.INT)`.
+the type name and a dot, e.g. `isset(testBitmask, INT)` instead of `isset(testBitmask, TestBitmask.INT)`.
+But when the bitmask type is a template parameter, the type prefix may never be discarded.
 
 > Since `2.8.0`
 
