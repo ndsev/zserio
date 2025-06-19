@@ -27,10 +27,8 @@ public class TemplatesErrorTest
     @Test
     public void constraintExpressionsExpectsConstant()
     {
-        final String errors[] = {"constraint_expression_expects_constant_error.zs:10:5: "
-                        + "    In instantiation of 'TestStruct' required from here",
-                "constraint_expression_expects_constant_error.zs:5:27: "
-                        + "Unresolved symbol 'uint32' within expression scope!"};
+        final String errors[] = {"constraint_expression_expects_constant_error.zs:5:19: "
+                + "Incompatible expression types (INTEGER != UNKNOWN)!"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 
@@ -52,10 +50,7 @@ public class TemplatesErrorTest
     @Test
     public void fieldNotAvailableInFunction()
     {
-        final String errors[] = {"field_not_available_in_function_error.zs:21:5: "
-                        + "    In instantiation of 'TestStruct' required from here",
-                "field_not_available_in_function_error.zs:16:5: "
-                        + "    In instantiation of 'FieldNotAvailable' required from here",
+        final String errors[] = {
                 "field_not_available_in_function_error.zs:5:30:     In function 'getField2' called from here",
                 "field_not_available_in_function_error.zs:10:16: "
                         + "Unresolved symbol 'field2' within expression scope!"};
