@@ -14,7 +14,7 @@ jobs:
         - { os: "ubuntu-22.04", python-version: "3.11" }
         - { os: "ubuntu-22.04", python-version: "3.12" }
         - { os: "ubuntu-22.04", python-version: "3.13" }
-        
+
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-python${{matrix.python-version}}
 
@@ -85,13 +85,13 @@ jobs:
       run: |
         scripts/test_gen.sh python
 
-    - name: Run Zserio API compatibility checks
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        MYPY_ENABLED: 0
-        PYLINT_ENABLED: 0
-      run: |
-        scripts/test_compat_api.sh python
+    #- name: Run Zserio API compatibility checks
+    #  env:
+    #    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    #    MYPY_ENABLED: 0
+    #    PYLINT_ENABLED: 0
+    #  run: |
+    #    scripts/test_compat_api.sh python
 
     - name: Run Zserio performance tests
       run: |

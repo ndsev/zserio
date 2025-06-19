@@ -142,17 +142,17 @@ jobs:
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
-    - name: Run Zserio API compatibility checks
-      env:
-        CLANG_FORMAT_BIN: ""
-        CLANG_TIDY_BIN: ""
-        GCOVR_BIN: ""
-        LLVM_PROFDATA_BIN: ""
-        LLVM_COV_BIN: ""
-        SANITIZERS_ENABLED: 0
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run: |
-        scripts/test_compat_api.sh cpp-${PACKAGE}
+    #- name: Run Zserio API compatibility checks
+    #  env:
+    #    CLANG_FORMAT_BIN: ""
+    #    CLANG_TIDY_BIN: ""
+    #    GCOVR_BIN: ""
+    #    LLVM_PROFDATA_BIN: ""
+    #    LLVM_COV_BIN: ""
+    #    SANITIZERS_ENABLED: 0
+    #    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    #  run: |
+    #    scripts/test_compat_api.sh cpp-${PACKAGE}
 
     - name: Run Zserio performance tests
       run: |

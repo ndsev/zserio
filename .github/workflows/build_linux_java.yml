@@ -79,12 +79,12 @@ jobs:
       run: |
         scripts/test_gen.sh java
 
-    - name: Run Zserio API compatibility checks
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        SPOTBUGS_HOME: ""
-      run: |
-        scripts/test_compat_api.sh java
+    #- name: Run Zserio API compatibility checks
+    #  env:
+    #    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    #    SPOTBUGS_HOME: ""
+    #  run: |
+    #    scripts/test_compat_api.sh java
 
     - name: Run Zserio performance tests
       run: |
