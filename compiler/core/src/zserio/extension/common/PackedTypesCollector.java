@@ -69,12 +69,23 @@ public class PackedTypesCollector extends ZserioAstWalker
                 typeInstantiation = arrayInstantiation.getElementTypeInstantiation();
             }
 
-            final ZserioType baseType = typeInstantiation.getBaseType();
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
             if (packedArraysDepth > 0)
             {
-                packedTypes.add(baseType); // remember the base type (element base type in case of arrays)
-                if (baseType instanceof CompoundType && !compoundType.equals(baseType))
-                    baseType.accept(this);
+                packedTypes.add(fieldBaseType); // remember the base type (element base type in case of arrays)
+                if (fieldBaseType instanceof CompoundType)
+                {
+                    final CompoundType fieldCompoundType = (CompoundType)fieldBaseType;
+                    if (fieldCompoundType.getTemplate() != null)
+                    {
+                        // mark also templates as used in a packed array
+                        packedTypes.add(fieldCompoundType.getTemplate());
+                    }
+                    if (!compoundType.equals(fieldCompoundType))
+                    {
+                        fieldCompoundType.accept(this);
+                    }
+                }
             }
 
             if (inPackedArray)
