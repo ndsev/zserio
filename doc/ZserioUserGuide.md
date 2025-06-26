@@ -222,9 +222,11 @@ bit stream or to the SQLite database. By default is enabled.
 
 **`-withSettersCode|-withoutSettersCode`**
 
-Enables/disables generation of the setter and additional constructors API for C++ extension. Setters are turned on 
-by default but it will be deactivated when -withoutWriterCode is used. If you still want to generate setters 
-API in that case use this option.
+Enables/disables generation of the setter and additional constructors API for C++ extension. Setters are turned
+on by default but they will be deactivated when `-withoutWriterCode` is used. If you still want to generate
+setters API in that case use this option.
+
+> This parameter is currently supported by C++ generator only.
 
 **`-xml`**
 
