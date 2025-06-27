@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HashCodeUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">HashCodeUtilTest.java</span></div><h1>HashCodeUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.array.Array;
+import zserio.runtime.array.ArrayTraits;
+import zserio.runtime.array.ArrayType;
+import zserio.runtime.array.RawArray;
+import zserio.runtime.io.BitBuffer;
+
+<span class="fc" id="L15">public class HashCodeUtilTest</span>
+{
+    @Test
+    public void simpleType()
+    {
+<span class="fc" id="L20">        final int hashSeed = 1;</span>
+
+<span class="fc" id="L22">        final boolean boolValue = true;</span>
+<span class="fc" id="L23">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 1, HashCodeUtil.calcHashCode(hashSeed, boolValue));</span>
+
+<span class="fc" id="L25">        final Boolean boolValueBoxed = Boolean.valueOf(false);</span>
+<span class="fc" id="L26">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, boolValueBoxed));</span>
+<span class="fc" id="L27">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Boolean)null));</span>
+
+<span class="fc" id="L29">        final byte byteValue = 10;</span>
+<span class="fc" id="L30">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, byteValue));</span>
+
+<span class="fc" id="L32">        final Byte byteValueBoxed = Byte.valueOf((byte)10);</span>
+<span class="fc" id="L33">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, byteValueBoxed));</span>
+<span class="fc" id="L34">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Byte)null));</span>
+
+<span class="fc" id="L36">        final short shortValue = 10;</span>
+<span class="fc" id="L37">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, shortValue));</span>
+
+<span class="fc" id="L39">        final Short shortValueBoxed = Short.valueOf((short)10);</span>
+<span class="fc" id="L40">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, shortValueBoxed));</span>
+<span class="fc" id="L41">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Short)null));</span>
+
+<span class="fc" id="L43">        final int intValue = 10;</span>
+<span class="fc" id="L44">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, intValue));</span>
+<span class="fc" id="L45">        final int intValue2 = -1;</span>
+<span class="fc" id="L46">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER - 1, HashCodeUtil.calcHashCode(hashSeed, intValue2));</span>
+
+<span class="fc" id="L48">        final Integer intValueBoxed = Integer.valueOf(10);</span>
+<span class="fc" id="L49">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, intValueBoxed));</span>
+<span class="fc" id="L50">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Integer)null));</span>
+
+<span class="fc" id="L52">        final long longValue = -1;</span>
+<span class="fc" id="L53">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, longValue));</span>
+
+<span class="fc" id="L55">        final Long longValueBoxed = Long.valueOf(10);</span>
+<span class="fc" id="L56">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, longValueBoxed));</span>
+<span class="fc" id="L57">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Long)null));</span>
+
+<span class="fc" id="L59">        final float floatValue = 10.0f;</span>
+<span class="fc" id="L60">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + FloatUtil.convertFloatToInt(floatValue),</span>
+<span class="fc" id="L61">                HashCodeUtil.calcHashCode(hashSeed, floatValue));</span>
+
+<span class="fc" id="L63">        final Float floatValueBoxed = Float.valueOf(10.0f);</span>
+<span class="fc" id="L64">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + FloatUtil.convertFloatToInt(floatValue),</span>
+<span class="fc" id="L65">                HashCodeUtil.calcHashCode(hashSeed, floatValueBoxed));</span>
+<span class="fc" id="L66">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Float)null));</span>
+
+<span class="fc" id="L68">        final double doubleValue = 10.0;</span>
+<span class="fc" id="L69">        final long doubleValueAsLong = FloatUtil.convertDoubleToLong(doubleValue);</span>
+<span class="fc" id="L70">        final int expectedDoubleHashCode =</span>
+                HashCodeUtil.HASH_PRIME_NUMBER + (int)(doubleValueAsLong ^ (doubleValueAsLong &gt;&gt;&gt; 32));
+<span class="fc" id="L72">        assertEquals(expectedDoubleHashCode, HashCodeUtil.calcHashCode(hashSeed, doubleValue));</span>
+
+<span class="fc" id="L74">        final Double doubleValueBoxed = Double.valueOf(10.0);</span>
+<span class="fc" id="L75">        assertEquals(expectedDoubleHashCode, HashCodeUtil.calcHashCode(hashSeed, doubleValueBoxed));</span>
+<span class="fc" id="L76">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Double)null));</span>
+<span class="fc" id="L77">    }</span>
+
+    @Test
+    public void stringType()
+    {
+<span class="fc" id="L82">        final int hashSeed = 1;</span>
+<span class="fc" id="L83">        final String stringValue = String.valueOf('0');</span>
+<span class="fc" id="L84">        assertEquals(</span>
+<span class="fc" id="L85">                HashCodeUtil.HASH_PRIME_NUMBER + (int)'0', HashCodeUtil.calcHashCode(hashSeed, stringValue));</span>
+
+<span class="fc" id="L87">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (String)null));</span>
+<span class="fc" id="L88">    }</span>
+
+    @Test
+    public void bitBufferType()
+    {
+<span class="fc" id="L93">        final int hashSeed = 1;</span>
+<span class="fc" id="L94">        final BitBuffer bitBufferValue = new BitBuffer(new byte[] {});</span>
+<span class="fc" id="L95">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + HashCodeUtil.HASH_SEED,</span>
+<span class="fc" id="L96">                HashCodeUtil.calcHashCode(hashSeed, bitBufferValue));</span>
+
+<span class="fc" id="L98">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (BitBuffer)null));</span>
+<span class="fc" id="L99">    }</span>
+
+    @Test
+    public void enumType()
+    {
+<span class="fc" id="L104">        final int hashSeed = 1;</span>
+<span class="fc" id="L105">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+<span class="fc" id="L106">                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.NONE.getValue()),</span>
+<span class="fc" id="L107">                HashCodeUtil.calcHashCode(hashSeed, Color.NONE));</span>
+<span class="fc" id="L108">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+<span class="fc" id="L109">                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.RED.getValue()),</span>
+<span class="fc" id="L110">                HashCodeUtil.calcHashCode(hashSeed, Color.RED));</span>
+<span class="fc" id="L111">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+<span class="fc" id="L112">                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.BLUE.getValue()),</span>
+<span class="fc" id="L113">                HashCodeUtil.calcHashCode(hashSeed, Color.BLUE));</span>
+<span class="fc" id="L114">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+<span class="fc" id="L115">                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.BLACK.getValue()),</span>
+<span class="fc" id="L116">                HashCodeUtil.calcHashCode(hashSeed, Color.BLACK));</span>
+
+<span class="fc" id="L118">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Color)null));</span>
+<span class="fc" id="L119">    }</span>
+
+    @Test
+    public void bitmaskType()
+    {
+<span class="fc" id="L124">        final int hashSeed = 1;</span>
+<span class="fc" id="L125">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+<span class="fc" id="L127">                                Permissions.Values.READ.getValue()),</span>
+<span class="fc" id="L128">                HashCodeUtil.calcHashCode(hashSeed, Permissions.Values.READ));</span>
+<span class="fc" id="L129">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+<span class="fc" id="L131">                                Permissions.Values.WRITE.getValue()),</span>
+<span class="fc" id="L132">                HashCodeUtil.calcHashCode(hashSeed, Permissions.Values.WRITE));</span>
+<span class="fc" id="L133">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+<span class="fc" id="L135">                                Permissions.Values.CREATE.getValue()),</span>
+<span class="fc" id="L136">                HashCodeUtil.calcHashCode(hashSeed, Permissions.Values.CREATE));</span>
+
+<span class="fc" id="L138">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Permissions)null));</span>
+<span class="fc" id="L139">    }</span>
+
+    @Test
+    public void objectType()
+    {
+<span class="fc" id="L144">        final int hashSeed = 1;</span>
+<span class="fc" id="L145">        final DummyObject objectValue = new DummyObject(10);</span>
+<span class="fc" id="L146">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, objectValue));</span>
+
+<span class="fc" id="L148">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (DummyObject)null));</span>
+<span class="fc" id="L149">    }</span>
+
+    @Test
+    public void arrayType()
+    {
+<span class="fc" id="L154">        final int hashSeed = 1;</span>
+<span class="fc" id="L155">        final Array arrayValue = new Array(new RawArray.IntRawArray(new int[] {3, 7}),</span>
+                new ArrayTraits.SignedBitFieldIntArrayTraits(32), ArrayType.NORMAL);
+<span class="fc" id="L157">        final int rawArrayHashCode =</span>
+                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + 3) * HashCodeUtil.HASH_PRIME_NUMBER +
+                7;
+<span class="fc" id="L160">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + rawArrayHashCode,</span>
+<span class="fc" id="L161">                HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L163">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Array)null));</span>
+<span class="fc" id="L164">    }</span>
+
+    @Test
+    public void simpleArrayType()
+    {
+<span class="fc" id="L169">        final int hashSeed = 1;</span>
+
+<span class="fc" id="L171">        final int expectedBooleanHashCode =</span>
+                (HashCodeUtil.HASH_PRIME_NUMBER + 0) * HashCodeUtil.HASH_PRIME_NUMBER + 1;
+<span class="fc" id="L173">        final boolean[] boolArrayValue = new boolean[] {false, true};</span>
+<span class="fc" id="L174">        assertEquals(expectedBooleanHashCode, HashCodeUtil.calcHashCode(hashSeed, boolArrayValue));</span>
+<span class="fc" id="L175">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (boolean[])null));</span>
+
+<span class="fc" id="L177">        final int expectedIntegralHashCode =</span>
+                (HashCodeUtil.HASH_PRIME_NUMBER + 3) * HashCodeUtil.HASH_PRIME_NUMBER + 7;
+
+<span class="fc" id="L180">        final byte[] byteArrayValue = new byte[] {3, 7};</span>
+<span class="fc" id="L181">        assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, byteArrayValue));</span>
+<span class="fc" id="L182">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (byte[])null));</span>
+
+<span class="fc" id="L184">        final short[] shortArrayValue = new short[] {3, 7};</span>
+<span class="fc" id="L185">        assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, shortArrayValue));</span>
+<span class="fc" id="L186">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (short[])null));</span>
+
+<span class="fc" id="L188">        final int[] intArrayValue = new int[] {3, 7};</span>
+<span class="fc" id="L189">        assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, intArrayValue));</span>
+<span class="fc" id="L190">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (int[])null));</span>
+
+<span class="fc" id="L192">        final long[] longArrayValue = new long[] {3, 7};</span>
+<span class="fc" id="L193">        assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, longArrayValue));</span>
+<span class="fc" id="L194">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (long[])null));</span>
+
+<span class="fc" id="L196">        final float[] floatArrayValue = new float[] {10.0f};</span>
+<span class="fc" id="L197">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + FloatUtil.convertFloatToInt(floatArrayValue[0]),</span>
+<span class="fc" id="L198">                HashCodeUtil.calcHashCode(hashSeed, floatArrayValue));</span>
+<span class="fc" id="L199">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (float[])null));</span>
+
+<span class="fc" id="L201">        final double[] doubleArrayValue = new double[] {10.0};</span>
+<span class="fc" id="L202">        final long doubleValueAsLong = FloatUtil.convertDoubleToLong(doubleArrayValue[0]);</span>
+<span class="fc" id="L203">        final int expectedDoubleArrayHashCode =</span>
+                HashCodeUtil.HASH_PRIME_NUMBER + (int)(doubleValueAsLong ^ (doubleValueAsLong &gt;&gt;&gt; 32));
+<span class="fc" id="L205">        assertEquals(expectedDoubleArrayHashCode, HashCodeUtil.calcHashCode(hashSeed, doubleArrayValue));</span>
+<span class="fc" id="L206">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (double[])null));</span>
+<span class="fc" id="L207">    }</span>
+
+    @Test
+    public void bigIntegerArrayType()
+    {
+<span class="fc" id="L212">        final int hashSeed = 1;</span>
+<span class="fc" id="L213">        final BigInteger[] arrayValue = new BigInteger[] {BigInteger.valueOf(3), BigInteger.valueOf(7)};</span>
+<span class="fc" id="L214">        final int expectedHashCode = (HashCodeUtil.HASH_PRIME_NUMBER + 3) * HashCodeUtil.HASH_PRIME_NUMBER + 7;</span>
+<span class="fc" id="L215">        assertEquals(expectedHashCode, HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L217">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (BigInteger[])null));</span>
+<span class="fc" id="L218">    }</span>
+
+    @Test
+    public void stringArrayType()
+    {
+<span class="fc" id="L223">        final int hashSeed = 1;</span>
+<span class="fc" id="L224">        final String[] arrayValue = new String[] {String.valueOf('0')};</span>
+<span class="fc" id="L225">        assertEquals(</span>
+<span class="fc" id="L226">                HashCodeUtil.HASH_PRIME_NUMBER + (int)'0', HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L228">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (String[])null));</span>
+<span class="fc" id="L229">    }</span>
+
+    @Test
+    public void bitBufferArrayType()
+    {
+<span class="fc" id="L234">        final int hashSeed = 1;</span>
+<span class="fc" id="L235">        final BitBuffer[] arrayValue = new BitBuffer[] {new BitBuffer(new byte[] {})};</span>
+<span class="fc" id="L236">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + HashCodeUtil.HASH_SEED,</span>
+<span class="fc" id="L237">                HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L239">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (BitBuffer[])null));</span>
+<span class="fc" id="L240">    }</span>
+
+    @Test
+    public void enumArrayType()
+    {
+<span class="fc" id="L245">        final int hashSeed = 1;</span>
+<span class="fc" id="L246">        final Color[] arrayValue = new Color[] {Color.NONE};</span>
+<span class="fc" id="L247">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+<span class="fc" id="L248">                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.NONE.getValue()),</span>
+<span class="fc" id="L249">                HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L251">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Color[])null));</span>
+<span class="fc" id="L252">    }</span>
+
+    @Test
+    public void bitmaskArrayType()
+    {
+<span class="fc" id="L257">        final int hashSeed = 1;</span>
+<span class="fc" id="L258">        final Permissions[] arrayValue = new Permissions[] {Permissions.Values.READ};</span>
+<span class="fc" id="L259">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +</span>
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+<span class="fc" id="L261">                                Permissions.Values.READ.getValue()),</span>
+<span class="fc" id="L262">                HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L264">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Permissions[])null));</span>
+<span class="fc" id="L265">    }</span>
+
+    @Test
+    public void objectArrayType()
+    {
+<span class="fc" id="L270">        final int hashSeed = 1;</span>
+<span class="fc" id="L271">        final DummyObject[] arrayValue = new DummyObject[] {new DummyObject(3), new DummyObject(7)};</span>
+<span class="fc" id="L272">        assertEquals((HashCodeUtil.HASH_PRIME_NUMBER + 3) * HashCodeUtil.HASH_PRIME_NUMBER + 7,</span>
+<span class="fc" id="L273">                HashCodeUtil.calcHashCode(hashSeed, arrayValue));</span>
+
+<span class="fc" id="L275">        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (DummyObject[])null));</span>
+<span class="fc" id="L276">    }</span>
+
+    // enum
+<span class="fc" id="L279">    private static enum Color implements ZserioEnum, SizeOf {</span>
+<span class="fc" id="L280">        NONE(0),</span>
+<span class="fc" id="L281">        RED(2),</span>
+<span class="fc" id="L282">        BLUE(3),</span>
+<span class="fc" id="L283">        BLACK(7);</span>
+
+        private Color(int value)
+<span class="fc" id="L286">        {</span>
+<span class="fc" id="L287">            this.value = value;</span>
+<span class="fc" id="L288">        }</span>
+
+        public int getValue()
+        {
+<span class="fc" id="L292">            return value;</span>
+        }
+
+        @Override
+        public Number getGenericValue()
+        {
+<span class="fc" id="L298">            return value;</span>
+        }
+
+        @Override
+        public int bitSizeOf()
+        {
+<span class="nc" id="L304">            return 0;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long position)
+        {
+<span class="nc" id="L310">            return 0;</span>
+        }
+
+        private int value;
+    }
+
+    // bitmask
+    private static class Permissions implements ZserioBitmask, SizeOf
+    {
+        public Permissions(int value)
+<span class="fc" id="L320">        {</span>
+<span class="fc" id="L321">            this.value = value;</span>
+<span class="fc" id="L322">        }</span>
+
+        @Override
+        public boolean equals(Object other)
+        {
+<span class="nc bnc" id="L327" title="All 2 branches missed.">            if (!(other instanceof Permissions))</span>
+<span class="nc" id="L328">                return false;</span>
+
+<span class="nc bnc" id="L330" title="All 2 branches missed.">            return value == ((Permissions)other).value;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L336">            int result = zserio.runtime.HashCodeUtil.HASH_SEED;</span>
+<span class="fc" id="L337">            result = HashCodeUtil.calcHashCode(result, value);</span>
+<span class="fc" id="L338">            return result;</span>
+        }
+
+        public int getValue()
+        {
+<span class="fc" id="L343">            return value;</span>
+        }
+
+        @Override
+        public java.lang.Number getGenericValue()
+        {
+<span class="nc" id="L349">            return value;</span>
+        }
+
+        @Override
+        public int bitSizeOf()
+        {
+<span class="nc" id="L355">            return 0;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long position)
+        {
+<span class="nc" id="L361">            return 0;</span>
+        }
+
+<span class="nc" id="L364">        public static final class Values</span>
+        {
+<span class="fc" id="L366">            public static final Permissions READ = new Permissions(1);</span>
+<span class="fc" id="L367">            public static final Permissions WRITE = new Permissions(2);</span>
+<span class="fc" id="L368">            public static final Permissions CREATE = new Permissions(4);</span>
+        }
+
+        private int value;
+    }
+
+    private static class DummyObject implements SizeOf
+    {
+        public DummyObject(int hashCode)
+<span class="fc" id="L377">        {</span>
+<span class="fc" id="L378">            this.hashCode = hashCode;</span>
+<span class="fc" id="L379">        }</span>
+
+        @Override
+        public boolean equals(Object other)
+        {
+<span class="nc bnc" id="L384" title="All 2 branches missed.">            if (!(other instanceof DummyObject))</span>
+<span class="nc" id="L385">                return false;</span>
+
+<span class="nc bnc" id="L387" title="All 2 branches missed.">            return hashCode == ((DummyObject)other).hashCode;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L393">            return hashCode;</span>
+        }
+
+        @Override
+        public int bitSizeOf()
+        {
+<span class="nc" id="L399">            return 0;</span>
+        }
+
+        @Override
+        public int bitSizeOf(long position)
+        {
+<span class="nc" id="L405">            return 0;</span>
+        }
+
+        private final int hashCode;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

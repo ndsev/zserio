@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationTimerTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.validation</a> &gt; <span class="el_source">ValidationTimerTest.java</span></div><h1>ValidationTimerTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.validation;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L7">public class ValidationTimerTest</span>
+{
+    @Test
+    public void tenSecondsTimer() throws InterruptedException
+    {
+<span class="fc" id="L12">        final ValidationTimer validationTimer = new ValidationTimer();</span>
+<span class="fc" id="L13">        validationTimer.start();</span>
+<span class="fc" id="L14">        Thread.sleep(10000);</span>
+<span class="fc" id="L15">        validationTimer.stop();</span>
+<span class="fc" id="L16">        final long minTolerance = 9000;</span>
+<span class="fc" id="L17">        final long maxTolerance = 11000;</span>
+<span class="fc" id="L18">        final long duration = validationTimer.getDuration();</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        assertTrue(duration &gt;= minTolerance, &quot;Duration '&quot; + duration + &quot;' should be &gt;= '&quot; + minTolerance + &quot;'&quot;);</span>
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">        assertTrue(duration &lt;= maxTolerance, &quot;Duration '&quot; + duration + &quot;' should be &lt;= '&quot; + maxTolerance + &quot;'&quot;);</span>
+<span class="fc" id="L21">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
