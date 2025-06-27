@@ -1,0 +1,6 @@
+var classzserio_1_1PackedArrayTraits_3_01ARRAY__TRAITS_00_01typename_01std_1_1enable__if_3_01has__owe10d97e3d412a17953796c0100aee372 =
+[
+    [ "ArrayTraits", "classzserio_1_1PackedArrayTraits_3_01ARRAY__TRAITS_00_01typename_01std_1_1enable__if_3_01has__owe10d97e3d412a17953796c0100aee372.html#a8aa46b9c52faa11124771c2175d6376d", null ],
+    [ "ElementType", "classzserio_1_1PackedArrayTraits_3_01ARRAY__TRAITS_00_01typename_01std_1_1enable__if_3_01has__owe10d97e3d412a17953796c0100aee372.html#a0733c12944f34b650785be0ffb230c91", null ],
+    [ "OwnerType", "classzserio_1_1PackedArrayTraits_3_01ARRAY__TRAITS_00_01typename_01std_1_1enable__if_3_01has__owe10d97e3d412a17953796c0100aee372.html#a97fffc414175fa3c6ad9b7ec55e8f0e2", null ]
+];

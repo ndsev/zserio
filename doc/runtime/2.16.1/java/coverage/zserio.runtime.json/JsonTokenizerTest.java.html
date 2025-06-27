@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonTokenizerTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonTokenizerTest.java</span></div><h1>JsonTokenizerTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L13">public class JsonTokenizerTest</span>
+{
+    @Test
+    public void tokens() throws IOException
+    {
+<span class="fc" id="L18">        final Reader reader = new StringReader(&quot;{\&quot;array\&quot;:\n[\n{\&quot;key\&quot;:\n10}]}&quot;);</span>
+<span class="fc" id="L19">        final JsonTokenizer tokenizer = new JsonTokenizer(reader);</span>
+
+<span class="fc" id="L21">        assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L22">        assertEquals('{', tokenizer.getValue());</span>
+<span class="fc" id="L23">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L24">        assertEquals(&quot;array&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L25">        assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L26">        assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L27">        assertEquals(JsonToken.BEGIN_ARRAY, tokenizer.next());</span>
+<span class="fc" id="L28">        assertEquals('[', tokenizer.getValue());</span>
+<span class="fc" id="L29">        assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L30">        assertEquals('{', tokenizer.getValue());</span>
+<span class="fc" id="L31">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L32">        assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L33">        assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L34">        assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L35">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L36">        assertEquals(BigInteger.valueOf(10), tokenizer.getValue());</span>
+<span class="fc" id="L37">        assertEquals(JsonToken.END_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L38">        assertEquals('}', tokenizer.getValue());</span>
+<span class="fc" id="L39">        assertEquals(JsonToken.END_ARRAY, tokenizer.next());</span>
+<span class="fc" id="L40">        assertEquals(']', tokenizer.getValue());</span>
+<span class="fc" id="L41">        assertEquals(JsonToken.END_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L42">        assertEquals('}', tokenizer.getValue());</span>
+<span class="fc" id="L43">        assertEquals(JsonToken.END_OF_FILE, tokenizer.next());</span>
+
+<span class="fc" id="L45">        reader.close();</span>
+<span class="fc" id="L46">    }</span>
+
+    @Test
+    public void lineColumn() throws IOException
+    {
+<span class="fc" id="L51">        final Reader reader = new StringReader(&quot;\n{\r   \&quot;key\&quot;  \n :\n10}\r&quot;);</span>
+<span class="fc" id="L52">        final JsonTokenizer tokenizer = new JsonTokenizer(reader);</span>
+
+<span class="fc" id="L54">        assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L55">        assertEquals('{', tokenizer.getValue());</span>
+<span class="fc" id="L56">        assertEquals(2, tokenizer.getLine());</span>
+<span class="fc" id="L57">        assertEquals(1, tokenizer.getColumn());</span>
+
+<span class="fc" id="L59">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L60">        assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L61">        assertEquals(3, tokenizer.getLine());</span>
+<span class="fc" id="L62">        assertEquals(4, tokenizer.getColumn());</span>
+
+<span class="fc" id="L64">        assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L65">        assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L66">        assertEquals(4, tokenizer.getLine());</span>
+<span class="fc" id="L67">        assertEquals(2, tokenizer.getColumn());</span>
+
+<span class="fc" id="L69">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L70">        assertEquals(BigInteger.valueOf(10), tokenizer.getValue());</span>
+<span class="fc" id="L71">        assertEquals(5, tokenizer.getLine());</span>
+<span class="fc" id="L72">        assertEquals(1, tokenizer.getColumn());</span>
+
+<span class="fc" id="L74">        assertEquals(JsonToken.END_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L75">        assertEquals('}', tokenizer.getValue());</span>
+<span class="fc" id="L76">        assertEquals(5, tokenizer.getLine());</span>
+<span class="fc" id="L77">        assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L79">        assertEquals(JsonToken.END_OF_FILE, tokenizer.next());</span>
+<span class="fc" id="L80">        assertEquals(5, tokenizer.getLine());</span>
+<span class="fc" id="L81">        assertEquals(4, tokenizer.getColumn());</span>
+
+<span class="fc" id="L83">        reader.close();</span>
+<span class="fc" id="L84">    }</span>
+
+    @Test
+    public void longInputSplitInNumber()
+    {
+<span class="fc" id="L89">        final StringBuilder jsonBuilder = new StringBuilder();</span>
+<span class="fc" id="L90">        jsonBuilder.append(&quot;{\n&quot;); // 2 chars</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int i = 0; i &lt; 4000; ++i) // 20 x 4000 &gt; 65534 to check reading by chunks</span>
+        {
+            // BUFFER_SIZE is 65536, thus 65534 % 20 gives position within the string below
+            // where the buffer will be split =&gt; 14, which is somewhere in the middle of the number
+            //                 |-&gt;            &lt;-|
+<span class="fc" id="L96">            jsonBuilder.append(&quot;  \&quot;key\&quot;: 100000000,\n&quot;); // 20 chars</span>
+        }
+<span class="fc" id="L98">        jsonBuilder.append(&quot;  \&quot;key\&quot;: 100000000\n&quot;);</span>
+<span class="fc" id="L99">        jsonBuilder.append('}');</span>
+
+<span class="fc" id="L101">        final Reader reader = new StringReader(jsonBuilder.toString());</span>
+<span class="fc" id="L102">        final JsonTokenizer tokenizer = new JsonTokenizer(reader);</span>
+
+<span class="fc" id="L104">        assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L105">        assertEquals('{', tokenizer.getValue());</span>
+<span class="fc" id="L106">        assertEquals(1, tokenizer.getLine());</span>
+<span class="fc" id="L107">        assertEquals(1, tokenizer.getColumn());</span>
+
+<span class="fc" id="L109">        int i = 0;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (; i &lt; 4000; ++i)</span>
+        {
+<span class="fc" id="L112">            assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L113">            assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L114">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L115">            assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L117">            assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L118">            assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L119">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L120">            assertEquals(8, tokenizer.getColumn());</span>
+
+<span class="fc" id="L122">            assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L123">            assertEquals(BigInteger.valueOf(100000000), tokenizer.getValue());</span>
+<span class="fc" id="L124">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L125">            assertEquals(10, tokenizer.getColumn());</span>
+
+<span class="fc" id="L127">            assertEquals(JsonToken.ITEM_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L128">            assertEquals(',', tokenizer.getValue());</span>
+<span class="fc" id="L129">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L130">            assertEquals(19, tokenizer.getColumn());</span>
+        }
+
+<span class="fc" id="L133">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L134">        assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L135">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L136">        assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L138">        assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L139">        assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L140">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L141">        assertEquals(8, tokenizer.getColumn());</span>
+
+<span class="fc" id="L143">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L144">        assertEquals(BigInteger.valueOf(100000000), tokenizer.getValue());</span>
+<span class="fc" id="L145">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L146">        assertEquals(10, tokenizer.getColumn());</span>
+
+<span class="fc" id="L148">        assertEquals(JsonToken.END_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L149">        assertEquals(1 + i + 2, tokenizer.getLine());</span>
+<span class="fc" id="L150">        assertEquals(1, tokenizer.getColumn());</span>
+<span class="fc" id="L151">    }</span>
+
+    @Test
+    public void longInputSplitInString()
+    {
+<span class="fc" id="L156">        final StringBuilder jsonBuilder = new StringBuilder();</span>
+<span class="fc" id="L157">        jsonBuilder.append(&quot;{\n&quot;); // 2 chars</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        for (int i = 0; i &lt; 4000; ++i) // 20 x 4000 &gt; 65534 to check reading by chunks</span>
+        {
+            // BUFFER_SIZE is 65536, thus 65534 % 20 gives position within the string below
+            // where the buffer will be split =&gt; 14, which is somewhere in the middle of the number
+            //                 |-&gt;             &lt;-|
+<span class="fc" id="L163">            jsonBuilder.append(&quot;  \&quot;key\&quot;: \&quot;1000000\&quot;,\n&quot;); // 20 chars</span>
+        }
+<span class="fc" id="L165">        jsonBuilder.append(&quot;  \&quot;key\&quot;: \&quot;1000000\&quot;\n&quot;);</span>
+<span class="fc" id="L166">        jsonBuilder.append('}');</span>
+
+<span class="fc" id="L168">        final Reader reader = new StringReader(jsonBuilder.toString());</span>
+<span class="fc" id="L169">        final JsonTokenizer tokenizer = new JsonTokenizer(reader);</span>
+
+<span class="fc" id="L171">        assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L172">        assertEquals('{', tokenizer.getValue());</span>
+<span class="fc" id="L173">        assertEquals(1, tokenizer.getLine());</span>
+<span class="fc" id="L174">        assertEquals(1, tokenizer.getColumn());</span>
+
+<span class="fc" id="L176">        int i = 0;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        for (; i &lt; 4000; ++i)</span>
+        {
+<span class="fc" id="L179">            assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L180">            assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L181">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L182">            assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L184">            assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L185">            assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L186">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L187">            assertEquals(8, tokenizer.getColumn());</span>
+
+<span class="fc" id="L189">            assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L190">            assertEquals(&quot;1000000&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L191">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L192">            assertEquals(10, tokenizer.getColumn());</span>
+
+<span class="fc" id="L194">            assertEquals(JsonToken.ITEM_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L195">            assertEquals(',', tokenizer.getValue());</span>
+<span class="fc" id="L196">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L197">            assertEquals(19, tokenizer.getColumn());</span>
+        }
+
+<span class="fc" id="L200">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L201">        assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L202">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L203">        assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L205">        assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L206">        assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L207">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L208">        assertEquals(8, tokenizer.getColumn());</span>
+
+<span class="fc" id="L210">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L211">        assertEquals(&quot;1000000&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L212">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L213">        assertEquals(10, tokenizer.getColumn());</span>
+
+<span class="fc" id="L215">        assertEquals(JsonToken.END_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L216">        assertEquals(1 + i + 2, tokenizer.getLine());</span>
+<span class="fc" id="L217">        assertEquals(1, tokenizer.getColumn());</span>
+<span class="fc" id="L218">    }</span>
+
+    @Test
+    public void longInputSplitInDoubleAfterE()
+    {
+<span class="fc" id="L223">        final StringBuilder jsonBuilder = new StringBuilder();</span>
+<span class="fc" id="L224">        jsonBuilder.append(&quot;{\n&quot;); // 2 chars</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        for (int i = 0; i &lt; 4000; ++i) // 20 x 4000 &gt; 65534 to check reading by chunks</span>
+        {
+            // BUFFER_SIZE is 65536, thus 65534 % 20 gives position within the string below
+            // where the buffer will be split =&gt; 14, which is somewhere in the middle of the number
+            //                 |-&gt;            &lt;-|
+<span class="fc" id="L230">            jsonBuilder.append(&quot;  \&quot;key\&quot;:    1e5   ,\n&quot;); // 20 chars</span>
+        }
+<span class="fc" id="L232">        jsonBuilder.append(&quot;  \&quot;key\&quot;:    1e5  \n&quot;);</span>
+<span class="fc" id="L233">        jsonBuilder.append('}');</span>
+
+<span class="fc" id="L235">        final Reader reader = new StringReader(jsonBuilder.toString());</span>
+<span class="fc" id="L236">        final JsonTokenizer tokenizer = new JsonTokenizer(reader);</span>
+
+<span class="fc" id="L238">        assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L239">        assertEquals('{', tokenizer.getValue());</span>
+<span class="fc" id="L240">        assertEquals(1, tokenizer.getLine());</span>
+<span class="fc" id="L241">        assertEquals(1, tokenizer.getColumn());</span>
+
+<span class="fc" id="L243">        int i = 0;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        for (; i &lt; 4000; ++i)</span>
+        {
+<span class="fc" id="L246">            assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L247">            assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L248">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L249">            assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L251">            assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L252">            assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L253">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L254">            assertEquals(8, tokenizer.getColumn());</span>
+
+<span class="fc" id="L256">            assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L257">            assertEquals(1e5, tokenizer.getValue());</span>
+<span class="fc" id="L258">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L259">            assertEquals(13, tokenizer.getColumn());</span>
+
+<span class="fc" id="L261">            assertEquals(JsonToken.ITEM_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L262">            assertEquals(',', tokenizer.getValue());</span>
+<span class="fc" id="L263">            assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L264">            assertEquals(19, tokenizer.getColumn());</span>
+        }
+
+<span class="fc" id="L267">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L268">        assertEquals(&quot;key&quot;, tokenizer.getValue());</span>
+<span class="fc" id="L269">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L270">        assertEquals(3, tokenizer.getColumn());</span>
+
+<span class="fc" id="L272">        assertEquals(JsonToken.KEY_SEPARATOR, tokenizer.next());</span>
+<span class="fc" id="L273">        assertEquals(':', tokenizer.getValue());</span>
+<span class="fc" id="L274">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L275">        assertEquals(8, tokenizer.getColumn());</span>
+
+<span class="fc" id="L277">        assertEquals(JsonToken.VALUE, tokenizer.next());</span>
+<span class="fc" id="L278">        assertEquals(1e5, tokenizer.getValue());</span>
+<span class="fc" id="L279">        assertEquals(1 + i + 1, tokenizer.getLine());</span>
+<span class="fc" id="L280">        assertEquals(13, tokenizer.getColumn());</span>
+
+<span class="fc" id="L282">        assertEquals(JsonToken.END_OBJECT, tokenizer.next());</span>
+<span class="fc" id="L283">        assertEquals(1 + i + 2, tokenizer.getLine());</span>
+<span class="fc" id="L284">        assertEquals(1, tokenizer.getColumn());</span>
+<span class="fc" id="L285">    }</span>
+
+    @Test
+    public void unknownToken() throws IOException
+    {
+<span class="fc" id="L290">        final Reader reader = new StringReader(&quot;\\\n&quot;);</span>
+<span class="fc" id="L291">        final JsonTokenizer tokenizer = new JsonTokenizer(reader);</span>
+<span class="pc" id="L292">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; tokenizer.next());</span>
+<span class="fc" id="L293">        assertEquals(&quot;JsonTokenizer:1:1: Unknown token!&quot;, exception.getMessage());</span>
+
+<span class="fc" id="L295">        reader.close();</span>
+<span class="fc" id="L296">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
