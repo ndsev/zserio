@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VarSizeUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">VarSizeUtilTest.java</span></div><h1>VarSizeUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L8">public class VarSizeUtilTest</span>
+{
+    @Test
+    public void convertBitBufferSizeToInt()
+    {
+<span class="fc" id="L13">        assertEquals(0, VarSizeUtil.convertBitBufferSizeToInt(0));</span>
+<span class="fc" id="L14">        assertEquals(Integer.MAX_VALUE, VarSizeUtil.convertBitBufferSizeToInt(Integer.MAX_VALUE));</span>
+<span class="fc" id="L15">    }</span>
+
+    @Test
+    public void convertBitBufferSizeToIntMinOverflow()
+    {
+<span class="fc" id="L20">        assertThrows(RuntimeException.class,</span>
+<span class="nc" id="L21">                () -&gt; VarSizeUtil.convertBitBufferSizeToInt((long)Integer.MAX_VALUE + 1));</span>
+<span class="fc" id="L22">    }</span>
+
+    @Test
+    public void convertBitBufferSizeToIntMaxOverflow()
+    {
+<span class="pc" id="L27">        assertThrows(RuntimeException.class, () -&gt; VarSizeUtil.convertBitBufferSizeToInt(Long.MAX_VALUE));</span>
+<span class="fc" id="L28">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

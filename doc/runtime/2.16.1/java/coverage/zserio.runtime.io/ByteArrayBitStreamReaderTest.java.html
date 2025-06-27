@@ -1,0 +1,769 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamReaderTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamReaderTest.java</span></div><h1>ByteArrayBitStreamReaderTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L15">public class ByteArrayBitStreamReaderTest</span>
+{
+    @Test
+    public void bitBufferConstructor() throws IOException
+    {
+<span class="fc" id="L20">        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x80}, 17);</span>
+
+<span class="fc" id="L22">        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))</span>
+        {
+<span class="fc" id="L24">            assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());</span>
+<span class="fc" id="L25">            assertEquals(0xAEE, reader.readBits(12));</span>
+<span class="fc" id="L26">            assertEquals(0x0A, reader.readBits(4));</span>
+<span class="fc" id="L27">            assertEquals(0x01, reader.readBits(1));</span>
+
+            // check eof
+<span class="pc" id="L30">            assertThrows(IOException.class, () -&gt; reader.readBits(1));</span>
+        }
+<span class="fc" id="L32">    }</span>
+
+    @Test
+    public void bitBufferConstructorOverflow() throws IOException
+    {
+<span class="fc" id="L37">        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);</span>
+<span class="fc" id="L38">        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))</span>
+        {
+<span class="fc" id="L40">            assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());</span>
+
+<span class="pc" id="L42">            assertThrows(IOException.class, () -&gt; reader.readBits(20));</span>
+        }
+<span class="fc" id="L44">    }</span>
+
+    @Test
+    public void bitConstructor() throws IOException
+    {
+<span class="fc" id="L49">        final long bitSize = 17;</span>
+<span class="fc" id="L50">        final byte[] buffer = new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x80};</span>
+
+<span class="fc" id="L52">        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, bitSize))</span>
+        {
+<span class="fc" id="L54">            assertEquals(bitSize, reader.getBufferBitSize());</span>
+<span class="fc" id="L55">            assertEquals(0xAEE, reader.readBits(12));</span>
+<span class="fc" id="L56">            assertEquals(0x0A, reader.readBits(4));</span>
+<span class="fc" id="L57">            assertEquals(0x01, reader.readBits(1));</span>
+
+            // check eof
+<span class="pc" id="L60">            assertThrows(IOException.class, () -&gt; reader.readBits(1));</span>
+        }
+<span class="fc" id="L62">    }</span>
+
+    @Test
+    public void bitConstructorOverflow() throws IOException
+    {
+<span class="fc" id="L67">        final long bitSize = 19;</span>
+<span class="fc" id="L68">        final byte[] buffer = new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xF0};</span>
+<span class="fc" id="L69">        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, bitSize))</span>
+        {
+<span class="fc" id="L71">            assertEquals(bitSize, reader.getBufferBitSize());</span>
+
+<span class="pc" id="L73">            assertThrows(IOException.class, () -&gt; reader.readBits(20));</span>
+        }
+<span class="fc" id="L75">    }</span>
+
+    @Test
+    public void readUnalignedData() throws IOException
+    {
+        // number expected to read at offset
+<span class="fc" id="L81">        final int testValue = 123;</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (int offset = 0; offset &lt;= 64; ++offset)</span>
+        {
+            // write test value at offset to data buffer
+<span class="fc" id="L86">            final byte[] buffer = new byte[(8 + offset + 7) / 8];</span>
+<span class="fc" id="L87">            buffer[offset / 8] = (byte)(testValue &gt;&gt; (offset % 8));</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (offset % 8 != 0) // don't write behind the buffer</span>
+<span class="fc" id="L89">                buffer[offset / 8 + 1] = (byte)(testValue &lt;&lt; (8 - offset % 8));</span>
+
+<span class="fc" id="L91">            final BitBuffer bitBuffer = new BitBuffer(buffer, 8 + offset);</span>
+<span class="fc" id="L92">            try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))</span>
+            {
+                // read offset bits
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                if (offset != 0) // java reader cannot read 0 bits</span>
+<span class="fc" id="L96">                    assertEquals(0, reader.readSignedBits(offset)); // java readBits is up to 63 bits!</span>
+
+                // read magic number
+<span class="fc" id="L99">                assertEquals(testValue, reader.readBits(8), &quot;offset: &quot; + offset);</span>
+
+                // check eof
+<span class="pc" id="L102">                assertThrows(IOException.class, () -&gt; reader.readBits(1), &quot;offset: &quot; + offset + &quot;!&quot;);</span>
+            }
+        }
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * Test the exception in the protected readRange method.
+     */
+    @Test
+    public void rangeMinException() throws IOException
+    {
+<span class="fc" id="L113">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="pc" id="L117">                assertThrows(IllegalArgumentException.class, () -&gt; reader.readBits(0));</span>
+<span class="fc" id="L118">            }</span>
+        });
+<span class="fc" id="L120">    }</span>
+
+    /**
+     * Test the exception in the protected readRange method.
+     */
+    @Test
+    public void rangeMaxException() throws IOException
+    {
+<span class="fc" id="L128">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="pc" id="L132">                assertThrows(IllegalArgumentException.class, () -&gt; reader.readBits(64));</span>
+<span class="fc" id="L133">            }</span>
+        });
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Test the bit offset getter.
+     */
+    @Test
+    public void bitOffset() throws IOException
+    {
+<span class="fc" id="L143">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L147">                assertEquals(0, reader.getBitOffset());</span>
+<span class="fc" id="L148">            }</span>
+        });
+<span class="fc" id="L150">    }</span>
+
+    @Test
+    public void readByte() throws IOException
+    {
+<span class="fc" id="L155">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+                byte b;
+                long pos;
+                long bytePos;
+
+<span class="fc" id="L163">                b = reader.readByte();</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">                assertTrue(b == 6 * 16 + 7);</span>
+<span class="fc" id="L165">                b = reader.readByte();</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">                assertTrue(b == 8 * 16 + 9 - 256);</span>
+<span class="fc" id="L167">                pos = reader.getBitPosition();</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">                assertTrue(pos == 16);</span>
+<span class="fc" id="L169">                bytePos = reader.getBytePosition();</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">                assertTrue(bytePos == 2);</span>
+
+<span class="fc" id="L172">                reader.setBitPosition(0);</span>
+
+<span class="fc" id="L174">                b = reader.readByte();</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">                assertTrue(b == 6 * 16 + 7);</span>
+<span class="fc" id="L176">                b = reader.readByte();</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">                assertTrue(b == 8 * 16 + 9 - 256);</span>
+<span class="fc" id="L178">                pos = reader.getBitPosition();</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                assertTrue(pos == 16);</span>
+<span class="fc" id="L180">                bytePos = reader.getBytePosition();</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">                assertTrue(bytePos == 2);</span>
+<span class="fc" id="L182">            }</span>
+        });
+<span class="fc" id="L184">    }</span>
+
+    @Test
+    public void readUnsignedByte() throws IOException
+    {
+<span class="fc" id="L189">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L193">                int b = reader.readByte();</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                assertTrue(b == 6 * 16 + 7);</span>
+<span class="fc" id="L195">                b = reader.readByte();</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">                assertTrue(b == 8 * 16 + 9 - 256);</span>
+<span class="fc" id="L197">                long pos = reader.getBitPosition();</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                assertTrue(pos == 16);</span>
+<span class="fc" id="L199">                long bytePos = reader.getBytePosition();</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">                assertTrue(bytePos == 2);</span>
+
+<span class="fc" id="L202">                reader.setBitPosition(0);</span>
+
+<span class="fc" id="L204">                b = reader.readByte();</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">                assertTrue(b == 6 * 16 + 7);</span>
+<span class="fc" id="L206">                b = reader.readByte();</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">                assertTrue(b == 8 * 16 + 9 - 256);</span>
+<span class="fc" id="L208">                pos = reader.getBitPosition();</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">                assertTrue(pos == 16);</span>
+<span class="fc" id="L210">                bytePos = reader.getBytePosition();</span>
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">                assertTrue(bytePos == 2);</span>
+<span class="fc" id="L212">            }</span>
+        });
+<span class="fc" id="L214">    }</span>
+
+    @Test
+    public void readUnsignedInt1() throws IOException
+    {
+<span class="fc" id="L219">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L223">                final short uint8 = reader.readUnsignedByte();</span>
+<span class="fc" id="L224">                assertEquals(uint8, 0x67);</span>
+<span class="fc" id="L225">                final long uint32 = reader.readUnsignedInt();</span>
+<span class="fc" id="L226">                assertEquals(uint32, 0x891234CDL);</span>
+<span class="fc" id="L227">            }</span>
+        });
+<span class="fc" id="L229">    }</span>
+
+    @Test
+    public void readUnsignedShort() throws IOException
+    {
+<span class="fc" id="L234">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L238">                final short uint8 = reader.readUnsignedByte();</span>
+<span class="fc" id="L239">                assertEquals(uint8, 0x67);</span>
+<span class="fc" id="L240">                final int uint16 = reader.readUnsignedShort();</span>
+<span class="fc" id="L241">                assertEquals(uint16, 0x8912);</span>
+<span class="fc" id="L242">            }</span>
+        });
+<span class="fc" id="L244">    }</span>
+
+    @Test
+    public void bitStreamReader() throws IOException
+    {
+<span class="fc" id="L249">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L253">                long v = reader.readBits(2);</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">                assertTrue(v == 6 &gt;&gt; 2);</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 2);</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 0);</span>
+<span class="fc" id="L257">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">                assertTrue(v == (6 &amp; 0x03));</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 4);</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 0);</span>
+<span class="fc" id="L261">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">                assertTrue(v == 7 &gt;&gt; 2);</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 6);</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 0);</span>
+<span class="fc" id="L265">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                assertTrue(v == (7 &amp; 0x03));</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 8);</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="fc" id="L269">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">                assertTrue(v == 8 &gt;&gt; 2);</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 10);</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="fc" id="L273">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">                assertTrue(v == (8 &amp; 0x03));</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 12);</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="fc" id="L277">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">                assertTrue(v == 9 &gt;&gt; 2);</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 14);</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="fc" id="L281">                v = reader.readBits(2);</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">                assertTrue(v == (9 &amp; 0x03));</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 16);</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 2);</span>
+<span class="fc" id="L285">            }</span>
+        });
+<span class="fc" id="L287">    }</span>
+
+    @Test
+    public void readByteNotAligned() throws IOException
+    {
+<span class="fc" id="L292">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+                long v;
+                int uint8;
+<span class="fc" id="L298">                v = reader.readBits(4);</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">                assertTrue(v == 6);</span>
+<span class="fc" id="L300">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">                assertTrue(uint8 == 0x78);</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 12);</span>
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="fc" id="L304">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">                assertTrue(uint8 == 0x91);</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 20);</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 2);</span>
+<span class="fc" id="L308">            }</span>
+        });
+<span class="fc" id="L310">    }</span>
+
+    @Test
+    public void setBitPosition() throws IOException
+    {
+<span class="fc" id="L315">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+                short s;
+<span class="fc" id="L320">                final short t = 0x6789;</span>
+                int uint8;
+<span class="fc" id="L322">                s = reader.readShort();</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">                assertTrue(s == t);</span>
+
+<span class="fc" id="L325">                reader.setBitPosition(0);</span>
+<span class="fc" id="L326">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">                assertTrue(uint8 == 0x67);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 8);</span>
+
+<span class="fc" id="L331">                reader.setBitPosition(1);</span>
+<span class="fc" id="L332">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">                assertTrue(uint8 == (t &amp; 0x7F80) &gt;&gt; 7);</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 9);</span>
+
+<span class="fc" id="L337">                reader.setBitPosition(2);</span>
+<span class="fc" id="L338">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L339" title="1 of 2 branches missed.">                assertTrue(uint8 == (t &amp; 0x3FC0) &gt;&gt; 6);</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 10);</span>
+
+<span class="fc" id="L343">                reader.setBitPosition(3);</span>
+<span class="fc" id="L344">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">                assertTrue(uint8 == (t &amp; 0x1FE0) &gt;&gt; 5);</span>
+<span class="pc bpc" id="L346" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 11);</span>
+
+<span class="fc" id="L349">                reader.setBitPosition(4);</span>
+<span class="fc" id="L350">                uint8 = reader.readUnsignedByte();</span>
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">                assertTrue(uint8 == 0x78);</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">                assertTrue(reader.getBytePosition() == 1);</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">                assertTrue(reader.getBitPosition() == 12);</span>
+<span class="fc" id="L354">            }</span>
+        });
+<span class="fc" id="L356">    }</span>
+
+    @Test
+    public void signedBitfield1() throws IOException
+    {
+<span class="fc" id="L361">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc" id="L365">                writer.writeByte(-1);</span>
+<span class="fc" id="L366">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L371">                assertEquals(-1L, reader.readSignedBits(3));</span>
+<span class="fc" id="L372">                assertEquals(-1L, reader.readSignedBits(2));</span>
+<span class="fc" id="L373">                assertEquals(-1L, reader.readSignedBits(3));</span>
+<span class="fc" id="L374">            }</span>
+        });
+<span class="fc" id="L376">    }</span>
+
+    @Test
+    public void signedBitfield2() throws IOException
+    {
+<span class="fc" id="L381">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L383">            writer.writeShort((short)-10000);</span>
+<span class="fc" id="L384">            final byte[] blob = writer.toByteArray();</span>
+<span class="fc" id="L385">            assertEquals(2, blob.length);</span>
+
+<span class="fc" id="L387">            try (final BitStreamReader sReader = new ByteArrayBitStreamReader(blob))</span>
+            {
+<span class="fc" id="L389">                final long s = sReader.readSignedBits(16);</span>
+<span class="fc" id="L390">                assertEquals(-10000L, s);</span>
+            }
+
+<span class="fc" id="L393">            try (final BitStreamReader uReader = new ByteArrayBitStreamReader(blob))</span>
+            {
+<span class="fc" id="L395">                final long u = uReader.readBits(16);</span>
+<span class="fc" id="L396">                assertEquals(55536L, u);</span>
+            }
+        }
+<span class="fc" id="L399">    }</span>
+
+    @Test
+    public void signedBitfield3() throws IOException
+    {
+<span class="fc" id="L404">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+<span class="fc" id="L407">            {}</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+<span class="fc" id="L411">            {}</span>
+        });
+
+<span class="fc" id="L414">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L416">            writer.writeSignedBits(-5, 10);</span>
+<span class="fc" id="L417">            writer.writeSignedBits(-6, 10);</span>
+<span class="fc" id="L418">            writer.writeSignedBits(-7, 10);</span>
+<span class="fc" id="L419">            final byte[] blob = writer.toByteArray();</span>
+<span class="fc" id="L420">            assertEquals(4, blob.length);</span>
+
+<span class="fc" id="L422">            try (final BitStreamReader sReader = new ByteArrayBitStreamReader(blob))</span>
+            {
+<span class="fc" id="L424">                long s1 = sReader.readSignedBits(10);</span>
+<span class="fc" id="L425">                long s2 = sReader.readSignedBits(10);</span>
+<span class="fc" id="L426">                long s3 = sReader.readSignedBits(10);</span>
+<span class="fc" id="L427">                assertEquals(-5L, s1);</span>
+<span class="fc" id="L428">                assertEquals(-6L, s2);</span>
+<span class="fc" id="L429">                assertEquals(-7L, s3);</span>
+            }
+
+<span class="fc" id="L432">            try (final BitStreamReader uReader = new ByteArrayBitStreamReader(blob))</span>
+            {
+<span class="fc" id="L434">                long u1 = uReader.readBits(10);</span>
+<span class="fc" id="L435">                long u2 = uReader.readBits(10);</span>
+<span class="fc" id="L436">                long u3 = uReader.readBits(10);</span>
+<span class="fc" id="L437">                assertEquals(1019, u1);</span>
+<span class="fc" id="L438">                assertEquals(1018, u2);</span>
+<span class="fc" id="L439">                assertEquals(1017, u3);</span>
+            }
+        }
+<span class="fc" id="L442">    }</span>
+
+    @Test
+    public void alignTo() throws IOException
+    {
+<span class="fc" id="L447">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L451">                reader.alignTo(10);</span>
+<span class="fc" id="L452">                assertEquals(0, reader.getBitPosition());</span>
+<span class="fc" id="L453">                reader.setBitPosition(reader.getBitPosition() + 1);</span>
+<span class="fc" id="L454">                reader.alignTo(10);</span>
+<span class="fc" id="L455">                assertEquals(10, reader.getBitPosition());</span>
+<span class="fc" id="L456">            }</span>
+        });
+<span class="fc" id="L458">    }</span>
+
+    @Test
+    public void skipBits() throws IOException
+    {
+<span class="fc" id="L463">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L467">                assertEquals(0, reader.getBitPosition());</span>
+<span class="fc" id="L468">                reader.setBitPosition(reader.getBitPosition() + 10);</span>
+<span class="fc" id="L469">                assertEquals(10, reader.getBitPosition());</span>
+<span class="fc" id="L470">            }</span>
+        });
+<span class="fc" id="L472">    }</span>
+
+    @Test
+    public void readLong() throws IOException
+    {
+<span class="fc" id="L477">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc" id="L481">                writer.writeLong(Long.MAX_VALUE);</span>
+<span class="fc" id="L482">                writer.writeLong(Long.MIN_VALUE);</span>
+<span class="fc" id="L483">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L488">                assertEquals(Long.MAX_VALUE, reader.readLong());</span>
+<span class="fc" id="L489">                assertEquals(Long.MIN_VALUE, reader.readLong());</span>
+<span class="fc" id="L490">            }</span>
+        });
+<span class="fc" id="L492">    }</span>
+
+    @Test
+    public void readInt() throws IOException
+    {
+<span class="fc" id="L497">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc" id="L501">                writer.writeInt(Integer.MAX_VALUE);</span>
+<span class="fc" id="L502">                writer.writeInt(Integer.MIN_VALUE);</span>
+<span class="fc" id="L503">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L508">                assertEquals(Integer.MAX_VALUE, reader.readInt());</span>
+<span class="fc" id="L509">                assertEquals(Integer.MIN_VALUE, reader.readInt());</span>
+<span class="fc" id="L510">            }</span>
+        });
+<span class="fc" id="L512">    }</span>
+
+    @Test
+    public void readString() throws IOException
+    {
+<span class="fc" id="L517">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc bfc" id="L521" title="All 2 branches covered.">                for (String s : DATA)</span>
+                {
+<span class="fc" id="L523">                    writeString(writer, s);</span>
+                }
+<span class="fc" id="L525">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L530" title="All 2 branches covered.">                for (String s : DATA)</span>
+                {
+<span class="fc" id="L532">                    assertEquals(s, reader.readString());</span>
+                }
+<span class="fc" id="L534">            }</span>
+
+            // write string in a format understood by ByteArrayBitStreamReader.readString()
+            private void writeString(ImageOutputStream writer, String s) throws IOException
+            {
+                // see DATA below, all strings have length which fits to first byte of varint64
+<span class="fc" id="L540">                writer.writeByte(s.length());</span>
+<span class="fc" id="L541">                writer.write(s.getBytes(&quot;UTF8&quot;));</span>
+<span class="fc" id="L542">            }</span>
+
+<span class="fc" id="L544">            private /*static*/ final String DATA[] = {&quot;&quot;, &quot;tmp&quot;, &quot;test&quot;};</span>
+        });
+<span class="fc" id="L546">    }</span>
+
+    @Test
+    public void readBool() throws IOException
+    {
+<span class="fc" id="L551">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc bfc" id="L555" title="All 2 branches covered.">                for (boolean value : DATA)</span>
+                {
+<span class="fc" id="L557">                    writeBool(writer, value);</span>
+                }
+<span class="fc" id="L559">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc bfc" id="L564" title="All 2 branches covered.">                for (boolean value : DATA)</span>
+                {
+<span class="fc" id="L566">                    assertEquals(value, reader.readBool());</span>
+                }
+<span class="fc" id="L568">            }</span>
+
+            // write boolean in a format understood by ByteArrayBitStreamReader.readBool()
+            private void writeBool(ImageOutputStream writer, boolean value) throws IOException
+            {
+<span class="fc bfc" id="L573" title="All 2 branches covered.">                writer.writeBit(value ? 1 : 0);</span>
+<span class="fc" id="L574">            }</span>
+
+<span class="fc" id="L576">            private /*static*/ final boolean DATA[] = {false, false, true};</span>
+        });
+<span class="fc" id="L578">    }</span>
+
+    @Test
+    public void readBits() throws IOException
+    {
+<span class="fc" id="L583">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc" id="L587">                writer.writeLong((1L &lt;&lt; 63) - 1);</span>
+<span class="fc" id="L588">                writer.writeLong(0);</span>
+<span class="fc" id="L589">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L594">                assertEquals(0, reader.readBits(1)); // MSB</span>
+<span class="fc" id="L595">                assertEquals((1L &lt;&lt; 63) - 1, reader.readBits(63));</span>
+<span class="fc" id="L596">                assertEquals(0, reader.readBits(1)); // MSB</span>
+<span class="fc" id="L597">                assertEquals(0, reader.readBits(63));</span>
+<span class="fc" id="L598">            }</span>
+        });
+<span class="fc" id="L600">    }</span>
+
+    @Test
+    public void readBitsInvalidNumException() throws IOException
+    {
+<span class="fc" id="L605">        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]))</span>
+        {
+<span class="pc" id="L607">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readBits(-1));</span>
+<span class="pc" id="L608">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readBits(0));</span>
+<span class="pc" id="L609">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readBits(64));</span>
+        }
+<span class="fc" id="L611">    }</span>
+
+    @Test
+    public void readSignedBitsInvalidNumException() throws IOException
+    {
+<span class="fc" id="L616">        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]))</span>
+        {
+<span class="pc" id="L618">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readSignedBits(-1));</span>
+<span class="pc" id="L619">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readSignedBits(0));</span>
+<span class="pc" id="L620">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readSignedBits(65));</span>
+        }
+<span class="fc" id="L622">    }</span>
+
+    @Test
+    public void readBigInteger() throws IOException
+    {
+<span class="fc" id="L627">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ImageOutputStream writer) throws IOException
+            {
+<span class="fc" id="L631">                writer.writeLong(10);</span>
+<span class="fc" id="L632">                writer.writeLong(Long.MAX_VALUE);</span>
+<span class="fc" id="L633">            }</span>
+
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L638">                assertEquals(BigInteger.TEN, reader.readBigInteger(64));</span>
+<span class="fc" id="L639">                assertEquals(BigInteger.valueOf(Long.MAX_VALUE), reader.readBigInteger(64));</span>
+<span class="fc" id="L640">            }</span>
+        });
+<span class="fc" id="L642">    }</span>
+
+    @Test
+    public void readBigIntegerInvalidNumException() throws IOException
+    {
+<span class="fc" id="L647">        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]))</span>
+        {
+<span class="pc" id="L649">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readBigInteger(-1));</span>
+<span class="pc" id="L650">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readBigInteger(0));</span>
+<span class="pc" id="L651">            assertThrows(IllegalArgumentException.class, () -&gt; reader.readBigInteger(65));</span>
+        }
+<span class="fc" id="L653">    }</span>
+
+    @Test
+    public void readSignedBigInteger() throws IOException
+    {
+<span class="fc" id="L658">        writeReadTest(new SampleWriteReadTest() {</span>
+            @Override
+            public void read(ByteArrayBitStreamReader reader) throws IOException
+            {
+<span class="fc" id="L662">                assertEquals(BigInteger.valueOf(103), reader.readSignedBigInteger(8));</span>
+<span class="fc" id="L663">                assertEquals(BigInteger.valueOf(-8), reader.readSignedBigInteger(4));</span>
+<span class="fc" id="L664">            }</span>
+        });
+<span class="fc" id="L666">    }</span>
+
+    @Test
+    public void readSignedBigInteger2() throws IOException
+    {
+<span class="fc" id="L671">        final BigInteger bigIntLongLong = BigInteger.valueOf(Long.MAX_VALUE);</span>
+<span class="fc" id="L672">        final BigInteger bigIntLongLongLong = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);</span>
+
+<span class="fc" id="L674">        try (final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L676">            babsw.writeBigInteger(bigIntLongLong, 64);</span>
+<span class="fc" id="L677">            babsw.writeBigInteger(bigIntLongLongLong, 64);</span>
+<span class="fc" id="L678">            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray()))</span>
+            {
+<span class="fc" id="L680">                assertEquals(bigIntLongLong, in.readSignedBigInteger(64));</span>
+<span class="fc" id="L681">                assertEquals(bigIntLongLongLong, in.readBigInteger(64));</span>
+            }
+        }
+<span class="fc" id="L684">    }</span>
+
+    @Test
+    public void readFloat16() throws IOException
+    {
+<span class="fc" id="L689">        try (final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L691">            babsw.writeFloat16(1.0f);</span>
+<span class="fc" id="L692">            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray()))</span>
+            {
+<span class="fc" id="L694">                assertEquals(1.0f, in.readFloat16(), 0);</span>
+            }
+        }
+<span class="fc" id="L697">    }</span>
+
+    @Test
+    public void readTooMuch() throws IOException
+    {
+        // stream containing 1 byte of data
+<span class="fc" id="L703">        try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(new byte[] {0x33}))</span>
+        {
+            // 5 out of 8 bits are attempted to read. expected to just go fine
+<span class="fc" id="L706">            in.readBits(5);</span>
+            // 9 out of 8 bits are attempted to read. expected to throw documented exception
+<span class="pc" id="L708">            assertThrows(IOException.class, () -&gt; in.readBits(4));</span>
+        }
+<span class="fc" id="L710">    }</span>
+
+    @Test
+    public void readUnaligned63Bits() throws IOException
+    {
+<span class="fc" id="L715">        final byte[] data = {(byte)0x0f, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff,</span>
+                (byte)0xff, (byte)0xe0};
+
+<span class="fc" id="L718">        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))</span>
+        {
+<span class="fc" id="L720">            assertEquals(0, reader.readBits(4));</span>
+<span class="fc" id="L721">            assertEquals(0x7FFFFFFFFFFFFFFFL, reader.readBits(63));</span>
+<span class="fc" id="L722">            assertEquals(0, reader.readBits(5));</span>
+        }
+<span class="fc" id="L724">    }</span>
+
+    private interface WriteReadTestable
+    {
+        // don't use BitStreamWriter so that this tests solely the reader
+        void write(ImageOutputStream writer) throws IOException;
+        void read(ByteArrayBitStreamReader reader) throws IOException;
+    }
+
+    private abstract static class SampleWriteReadTest implements WriteReadTestable
+    {
+        public void write(ImageOutputStream writer) throws IOException
+        {
+<span class="fc" id="L737">            writer.writeBits(6, 4);</span>
+<span class="fc" id="L738">            writer.writeBits(7, 4);</span>
+<span class="fc" id="L739">            writer.writeBits(8, 4);</span>
+<span class="fc" id="L740">            writer.writeBits(9, 4);</span>
+<span class="fc" id="L741">            writer.writeBits(1, 4);</span>
+<span class="fc" id="L742">            writer.writeBits(2, 4);</span>
+<span class="fc" id="L743">            writer.writeBits(3, 4);</span>
+<span class="fc" id="L744">            writer.writeBits(4, 4);</span>
+<span class="fc" id="L745">            writer.writeBits(12, 4);</span>
+<span class="fc" id="L746">            writer.writeBits(13, 4);</span>
+<span class="fc" id="L747">            writer.writeBits(14, 4);</span>
+<span class="fc" id="L748">            writer.writeBits(15, 4);</span>
+<span class="fc" id="L749">        }</span>
+    }
+
+    private void writeReadTest(WriteReadTestable writeReadTest) throws IOException
+    {
+<span class="fc" id="L754">        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream())</span>
+        {
+<span class="fc" id="L756">            try (final MemoryCacheImageOutputStream writer = new MemoryCacheImageOutputStream(outputStream))</span>
+            {
+<span class="fc" id="L758">                writeReadTest.write(writer);</span>
+            }
+
+<span class="fc" id="L761">            final byte[] data = outputStream.toByteArray();</span>
+<span class="fc" id="L762">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))</span>
+            {
+<span class="fc" id="L764">                writeReadTest.read(reader);</span>
+            }
+        }
+<span class="fc" id="L767">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
