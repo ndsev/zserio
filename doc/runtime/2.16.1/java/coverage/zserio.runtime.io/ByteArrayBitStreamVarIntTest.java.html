@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamVarIntTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamVarIntTest.java</span></div><h1>ByteArrayBitStreamVarIntTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L9">public class ByteArrayBitStreamVarIntTest</span>
+{
+    @Test
+    public void readWriteZero() throws IOException
+    {
+<span class="fc" id="L14">        readWriteTest(0, 1);</span>
+<span class="fc" id="L15">    }</span>
+
+    @Test
+    public void readWriteLongMin() throws IOException
+    {
+<span class="fc" id="L20">        readWriteTest(Long.MIN_VALUE, 1); // special case, encoded as -0</span>
+<span class="fc" id="L21">    }</span>
+
+    @Test
+    public void readWriteLongMax() throws IOException
+    {
+<span class="fc" id="L26">        readWriteTest(Long.MAX_VALUE, 9);</span>
+<span class="fc" id="L27">    }</span>
+
+    @Test
+    public void readWriteMinusOne() throws IOException
+    {
+<span class="fc" id="L32">        readWriteTest(-1L, 1);</span>
+<span class="fc" id="L33">    }</span>
+
+    @Test
+    public void readWriteOne() throws IOException
+    {
+<span class="fc" id="L38">        readWriteTest(1L, 1);</span>
+<span class="fc" id="L39">    }</span>
+
+    @Test
+    public void readWriteByte1NegativeMax() throws IOException
+    {
+<span class="fc" id="L44">        readWriteTest(-(1L &lt;&lt; 6) + 1, 1);</span>
+<span class="fc" id="L45">    }</span>
+
+    @Test
+    public void readWriteByte1PositiveMax() throws IOException
+    {
+<span class="fc" id="L50">        readWriteTest((1L &lt;&lt; 6) - 1, 1);</span>
+<span class="fc" id="L51">    }</span>
+
+    @Test
+    public void readWriteByte2NegativeMin() throws IOException
+    {
+<span class="fc" id="L56">        readWriteTest(-(1L &lt;&lt; 6), 2);</span>
+<span class="fc" id="L57">    }</span>
+
+    @Test
+    public void readWriteByte2PositiveMin() throws IOException
+    {
+<span class="fc" id="L62">        readWriteTest((1L &lt;&lt; 6), 2);</span>
+<span class="fc" id="L63">    }</span>
+
+    @Test
+    public void readWriteByte2NegativeMax() throws IOException
+    {
+<span class="fc" id="L68">        readWriteTest(-(1L &lt;&lt; 13) + 1, 2);</span>
+<span class="fc" id="L69">    }</span>
+
+    @Test
+    public void readWriteByte2PositiveMax() throws IOException
+    {
+<span class="fc" id="L74">        readWriteTest((1L &lt;&lt; 13) - 1, 2);</span>
+<span class="fc" id="L75">    }</span>
+
+    @Test
+    public void readWriteByte3NegativeMin() throws IOException
+    {
+<span class="fc" id="L80">        readWriteTest(-(1L &lt;&lt; 13), 3);</span>
+<span class="fc" id="L81">    }</span>
+
+    @Test
+    public void readWriteByte3PositiveMin() throws IOException
+    {
+<span class="fc" id="L86">        readWriteTest((1L &lt;&lt; 13), 3);</span>
+<span class="fc" id="L87">    }</span>
+
+    @Test
+    public void readWriteByte3NegativeMax() throws IOException
+    {
+<span class="fc" id="L92">        readWriteTest(-(1L &lt;&lt; 20) + 1, 3);</span>
+<span class="fc" id="L93">    }</span>
+
+    @Test
+    public void readWriteByte3PositiveMax() throws IOException
+    {
+<span class="fc" id="L98">        readWriteTest((1L &lt;&lt; 20) - 1, 3);</span>
+<span class="fc" id="L99">    }</span>
+
+    @Test
+    public void readWriteByte4NegativeMin() throws IOException
+    {
+<span class="fc" id="L104">        readWriteTest(-(1L &lt;&lt; 20), 4);</span>
+<span class="fc" id="L105">    }</span>
+
+    @Test
+    public void readWriteByte4PositiveMin() throws IOException
+    {
+<span class="fc" id="L110">        readWriteTest((1L &lt;&lt; 20), 4);</span>
+<span class="fc" id="L111">    }</span>
+
+    @Test
+    public void readWriteByte4NegativeMax() throws IOException
+    {
+<span class="fc" id="L116">        readWriteTest(-(1L &lt;&lt; 27) + 1, 4);</span>
+<span class="fc" id="L117">    }</span>
+
+    @Test
+    public void readWriteByte4PositiveMax() throws IOException
+    {
+<span class="fc" id="L122">        readWriteTest((1L &lt;&lt; 27) - 1, 4);</span>
+<span class="fc" id="L123">    }</span>
+
+    @Test
+    public void readWriteByte5NegativeMin() throws IOException
+    {
+<span class="fc" id="L128">        readWriteTest(-(1L &lt;&lt; 27), 5);</span>
+<span class="fc" id="L129">    }</span>
+
+    @Test
+    public void readWriteByte5PositiveMin() throws IOException
+    {
+<span class="fc" id="L134">        readWriteTest((1L &lt;&lt; 27), 5);</span>
+<span class="fc" id="L135">    }</span>
+
+    @Test
+    public void readWriteByte5NegativeMax() throws IOException
+    {
+<span class="fc" id="L140">        readWriteTest(-(1L &lt;&lt; 34) + 1, 5);</span>
+<span class="fc" id="L141">    }</span>
+
+    @Test
+    public void readWriteByte5PositiveMax() throws IOException
+    {
+<span class="fc" id="L146">        readWriteTest((1L &lt;&lt; 34) - 1, 5);</span>
+<span class="fc" id="L147">    }</span>
+
+    @Test
+    public void readWriteByte6NegativeMin() throws IOException
+    {
+<span class="fc" id="L152">        readWriteTest(-(1L &lt;&lt; 34), 6);</span>
+<span class="fc" id="L153">    }</span>
+
+    @Test
+    public void readWriteByte6PositiveMin() throws IOException
+    {
+<span class="fc" id="L158">        readWriteTest((1L &lt;&lt; 34), 6);</span>
+<span class="fc" id="L159">    }</span>
+
+    @Test
+    public void readWriteByte6NegativeMax() throws IOException
+    {
+<span class="fc" id="L164">        readWriteTest(-(1L &lt;&lt; 41) + 1, 6);</span>
+<span class="fc" id="L165">    }</span>
+
+    @Test
+    public void readWriteByte6PositiveMax() throws IOException
+    {
+<span class="fc" id="L170">        readWriteTest((1L &lt;&lt; 41) - 1, 6);</span>
+<span class="fc" id="L171">    }</span>
+
+    @Test
+    public void readWriteByte7NegativeMin() throws IOException
+    {
+<span class="fc" id="L176">        readWriteTest(-(1L &lt;&lt; 41), 7);</span>
+<span class="fc" id="L177">    }</span>
+
+    @Test
+    public void readWriteByte7PositiveMin() throws IOException
+    {
+<span class="fc" id="L182">        readWriteTest((1L &lt;&lt; 41), 7);</span>
+<span class="fc" id="L183">    }</span>
+
+    @Test
+    public void readWriteByte7NegativeMax() throws IOException
+    {
+<span class="fc" id="L188">        readWriteTest(-(1L &lt;&lt; 48) + 1, 7);</span>
+<span class="fc" id="L189">    }</span>
+
+    @Test
+    public void readWriteByte7PositiveMax() throws IOException
+    {
+<span class="fc" id="L194">        readWriteTest((1L &lt;&lt; 48) - 1, 7);</span>
+<span class="fc" id="L195">    }</span>
+
+    @Test
+    public void readWriteByte8NegativeMin() throws IOException
+    {
+<span class="fc" id="L200">        readWriteTest(-(1L &lt;&lt; 48), 8);</span>
+<span class="fc" id="L201">    }</span>
+
+    @Test
+    public void readWriteByte8PositiveMin() throws IOException
+    {
+<span class="fc" id="L206">        readWriteTest((1L &lt;&lt; 48), 8);</span>
+<span class="fc" id="L207">    }</span>
+
+    @Test
+    public void readWriteByte8NegativeMax() throws IOException
+    {
+<span class="fc" id="L212">        readWriteTest(-(1L &lt;&lt; 55) + 1, 8);</span>
+<span class="fc" id="L213">    }</span>
+
+    @Test
+    public void readWriteByte8PositiveMax() throws IOException
+    {
+<span class="fc" id="L218">        readWriteTest((1L &lt;&lt; 55) - 1, 8);</span>
+<span class="fc" id="L219">    }</span>
+
+    @Test
+    public void readWriteByte9NegativeMin() throws IOException
+    {
+<span class="fc" id="L224">        readWriteTest(-(1L &lt;&lt; 55), 9);</span>
+<span class="fc" id="L225">    }</span>
+
+    @Test
+    public void readWriteByte9PositiveMin() throws IOException
+    {
+<span class="fc" id="L230">        readWriteTest((1L &lt;&lt; 55), 9);</span>
+<span class="fc" id="L231">    }</span>
+
+    @Test
+    public void readWriteByte9NegativeMax() throws IOException
+    {
+<span class="fc" id="L236">        readWriteTest(-(1L &lt;&lt; 63) + 1, 9);</span>
+<span class="fc" id="L237">    }</span>
+
+    @Test
+    public void readWriteByte9PositiveMax() throws IOException
+    {
+<span class="fc" id="L242">        readWriteTest((1L &lt;&lt; 63) - 1, 9);</span>
+<span class="fc" id="L243">    }</span>
+
+    private void readWriteTest(long value, int expectedNumBytes) throws IOException
+    {
+<span class="fc" id="L247">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L249">            writer.writeVarInt(value);</span>
+<span class="fc" id="L250">            assertEquals(0, writer.getBitPosition() % 8);</span>
+<span class="fc" id="L251">            assertEquals(expectedNumBytes, writer.getBytePosition());</span>
+<span class="fc" id="L252">            final byte[] buffer = writer.toByteArray();</span>
+<span class="fc" id="L253">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+            {
+<span class="fc" id="L255">                final long readValue = reader.readVarInt();</span>
+<span class="fc" id="L256">                assertEquals(value, readValue);</span>
+            }
+        }
+<span class="fc" id="L259">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DepthWalkFilterTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.walker</a> &gt; <span class="el_source">DepthWalkFilterTest.java</span></div><h1>DepthWalkFilterTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.walker;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.typeinfo.FieldInfo;
+
+import test_object.WalkerObject;
+
+<span class="fc" id="L12">public class DepthWalkFilterTest</span>
+{
+    @Test
+    public void depth0()
+    {
+<span class="fc" id="L17">        final DepthWalkFilter walkFilter = new DepthWalkFilter(0);</span>
+<span class="fc" id="L18">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L19">        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);</span>
+<span class="fc" id="L20">        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);</span>
+<span class="fc" id="L21">        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);</span>
+
+<span class="fc" id="L23">        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 0</span>
+<span class="fc" id="L24">        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 0</span>
+
+<span class="fc" id="L26">        assertFalse(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+<span class="fc" id="L28">        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+
+<span class="fc" id="L31">        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+<span class="fc" id="L33">        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+<span class="fc" id="L35">    }</span>
+
+    @Test
+    public void depth1()
+    {
+<span class="fc" id="L40">        final DepthWalkFilter walkFilter = new DepthWalkFilter(1);</span>
+<span class="fc" id="L41">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L42">        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);</span>
+<span class="fc" id="L43">        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);</span>
+<span class="fc" id="L44">        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);</span>
+
+<span class="fc" id="L46">        assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 0</span>
+<span class="fc" id="L47">        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 1</span>
+<span class="fc" id="L48">        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 1</span>
+<span class="fc" id="L49">        assertFalse(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L51">        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L53">        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L55">        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L57">        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 0</span>
+
+<span class="fc" id="L59">        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+<span class="fc" id="L61">        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 1</span>
+<span class="fc" id="L62">        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo)); // 1</span>
+<span class="fc" id="L63">        assertFalse(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L65">        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L67">        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L69">        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 1
+<span class="fc" id="L71">        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+
+<span class="fc" id="L74">        assertTrue(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+<span class="fc" id="L76">        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT)); // 0
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
