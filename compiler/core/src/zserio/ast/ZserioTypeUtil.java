@@ -16,7 +16,7 @@ public final class ZserioTypeUtil
      */
     public static String getFullName(ZserioType type)
     {
-        if (type instanceof BuiltInType)
+        if (type instanceof BuiltInType || type instanceof TemplateParameter)
             return type.getName();
 
         return getFullName(type.getPackage().getPackageName(), type.getName());

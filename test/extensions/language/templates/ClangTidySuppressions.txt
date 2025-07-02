@@ -244,4 +244,3 @@ readability-make-member-function-const:gen/templates/union_templated_field/Compo
 readability-make-member-function-const:gen/templates/union_templated_field/Compound_uint32.cpp
 
 readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp
-
