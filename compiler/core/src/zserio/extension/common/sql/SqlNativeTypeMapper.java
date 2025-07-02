@@ -10,6 +10,7 @@ import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
+import zserio.ast.TemplateParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
@@ -20,6 +21,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.common.sql.types.NativeBlobType;
 import zserio.extension.common.sql.types.NativeIntegerType;
 import zserio.extension.common.sql.types.NativeRealType;
+import zserio.extension.common.sql.types.NativeTemplateType;
 import zserio.extension.common.sql.types.NativeTextType;
 import zserio.extension.common.sql.types.SqlNativeType;
 
@@ -148,6 +150,12 @@ public final class SqlNativeTypeMapper
             sqlType = blobType;
         }
 
+        @Override
+        public void visitTemplateParameter(TemplateParameter templateParameter)
+        {
+            sqlType = templateType;
+        }
+
         private SqlNativeType sqlType = null;
     }
 
@@ -155,4 +163,5 @@ public final class SqlNativeTypeMapper
     private final static NativeRealType realType = new NativeRealType();
     private final static NativeTextType textType = new NativeTextType();
     private final static NativeBlobType blobType = new NativeBlobType();
+    private final static NativeTemplateType templateType = new NativeTemplateType();
 }
