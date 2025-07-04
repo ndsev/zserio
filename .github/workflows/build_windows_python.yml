@@ -9,11 +9,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "windows-2019", python-version: "3.9" }
-        - { os: "windows-2019", python-version: "3.10" }
-        - { os: "windows-2019", python-version: "3.11" }
-        - { os: "windows-2019", python-version: "3.12" }
-        - { os: "windows-2019", python-version: "3.13" }
+        - { os: "windows-2022", python-version: "3.9" }
+        - { os: "windows-2022", python-version: "3.10" }
+        - { os: "windows-2022", python-version: "3.11" }
+        - { os: "windows-2022", python-version: "3.12" }
+        - { os: "windows-2022", python-version: "3.13" }
         
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-python${{matrix.python-version}}
@@ -24,8 +24,12 @@ jobs:
       run: |
         echo "PYLINT_ENABLED=1" >> ${GITHUB_ENV}
         echo "MYPY_ENABLED=1" >> ${GITHUB_ENV}
-        # python wants v141 which exists in VS2019 only
-        echo "MSVC_CMAKE_GENERATOR=Visual Studio 16 2019" >> ${GITHUB_ENV}
+        # python wants v141
+        echo "MSVC_CMAKE_GENERATOR=Visual Studio 17 2022" >> ${GITHUB_ENV}
+        echo "MSVC_CMAKE_TOOLSET=v141" >> ${GITHUB_ENV}
+        echo "CMAKE_BUILD_PARALLEL_LEVEL=8" >> ${GITHUB_ENV}
+        echo "Running vs_installer.exe..."
+        "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 --nocache --passive --norestart --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
 
     - name: Install dependencies
       shell: bash
