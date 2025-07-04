@@ -140,12 +140,15 @@ TEST(ReflectableUtilTest, equalFloatingPoints)
             ReflectableFactory::getFloat64(std::numeric_limits<double>::denorm_min() * 2),
             ReflectableFactory::getFloat64(std::numeric_limits<double>::denorm_min())));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(NAN)),
-            ReflectableFactory::getFloat64(static_cast<double>(NAN))));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(INFINITY)),
-            ReflectableFactory::getFloat64(static_cast<double>(INFINITY))));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(-static_cast<double>(INFINITY)),
-            ReflectableFactory::getFloat64(-static_cast<double>(INFINITY))));
+    auto testA = ReflectableFactory::getFloat64(static_cast<double>(NAN));
+    auto testB = ReflectableFactory::getFloat64(static_cast<double>(NAN));
+    ASSERT_TRUE(ReflectableUtil::equal(testA, testB));
+    testA = ReflectableFactory::getFloat64(static_cast<double>(INFINITY));
+    testB = ReflectableFactory::getFloat64(static_cast<double>(INFINITY));
+    ASSERT_TRUE(ReflectableUtil::equal(testA, testB));
+    testA = ReflectableFactory::getFloat64(-static_cast<double>(INFINITY));
+    testB = ReflectableFactory::getFloat64(-static_cast<double>(INFINITY));
+    ASSERT_TRUE(ReflectableUtil::equal(testA, testB));
 
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0),
             ReflectableFactory::getFloat64(static_cast<double>(INFINITY))));
