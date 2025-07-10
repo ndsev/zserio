@@ -961,6 +961,12 @@ public final class Expression extends AstNodeBase
 
     private void evaluateFunctionCallExpression(Scope forcedEvaluationScope)
     {
+        if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
+            return;
+        }
+
         if (!(operand1.symbolObject instanceof Function))
             throw new ParserException(operand1, "'" + operand1.text + "' is not a function!");
 
@@ -1000,14 +1006,27 @@ public final class Expression extends AstNodeBase
 
     private void evaluateArrayElement()
     {
-        if (!(operand1.symbolInstantiation instanceof ArrayInstantiation))
+        if (!(operand1.symbolInstantiation instanceof ArrayInstantiation) &&
+                operand1.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
             throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
+        }
 
-        if (operand2.expressionType != ExpressionType.INTEGER)
+        if (operand2.expressionType != ExpressionType.INTEGER &&
+                operand2.expressionType != ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
             throw new ParserException(operand2, "Integer expression expected!");
+        }
 
-        final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)operand1.symbolInstantiation;
-        evaluateExpressionType(arrayInstantiation.getElementTypeInstantiation());
+        if (operand1.expressionType == ExpressionType.TEMPLATE_PARAMETER_TYPE)
+        {
+            expressionType = ExpressionType.TEMPLATE_PARAMETER_TYPE;
+        }
+        else
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)operand1.symbolInstantiation;
+            evaluateExpressionType(arrayInstantiation.getElementTypeInstantiation());
+        }
     }
 
     private void evaluateDotExpression()
