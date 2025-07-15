@@ -383,6 +383,20 @@ public final class Expression extends AstNodeBase
     }
 
     /**
+     * Gets all fields referenced from the expressions.
+     *
+     * @return Map of fields with their owners referenced from the expression.
+     */
+    public Map<Field, CompoundType> getReferencedFieldsWithOwner()
+    {
+        // LinkedHashSet is used intentionally to guarantee insert order
+        final Map<Field, CompoundType> referencedFieldsWithOwner = new LinkedHashMap<Field, CompoundType>();
+        addReferencedFieldWithOwner(referencedFieldsWithOwner);
+
+        return referencedFieldsWithOwner;
+    }
+
+    /**
      * Optional field information returned from the getReferencedOptionalFields() method.
      */
     public final static class OptionalFieldInfo
@@ -857,6 +871,25 @@ public final class Expression extends AstNodeBase
         }
     }
 
+    private void addReferencedFieldWithOwner(Map<Field, CompoundType> referencedFieldsWithOwner)
+    {
+        if (symbolObject instanceof Field && expressionOwner instanceof CompoundType)
+        {
+            referencedFieldsWithOwner.put((Field)symbolObject, (CompoundType)expressionOwner);
+        }
+
+        if (operand1 != null)
+        {
+            operand1.addReferencedFieldWithOwner(referencedFieldsWithOwner);
+            if (operand2 != null)
+            {
+                operand2.addReferencedFieldWithOwner(referencedFieldsWithOwner);
+                if (operand3 != null)
+                    operand3.addReferencedFieldWithOwner(referencedFieldsWithOwner);
+            }
+        }
+    }
+
     private void addReferencedOptionalField(Map<Field, OptionalFieldInfo> referencedOptionalFields,
             ArrayList<AstNode> currentDotPrefix, ArrayList<Expression> currentLeftAndExprs)
     {
@@ -956,6 +989,7 @@ public final class Expression extends AstNodeBase
         zserioType = operand1.zserioType;
         symbolObject = operand1.symbolObject;
         symbolInstantiation = operand1.symbolInstantiation;
+        expressionOwner = operand1.expressionOwner;
         unresolvedIdentifiers = operand1.unresolvedIdentifiers;
     }
 
@@ -1159,22 +1193,27 @@ public final class Expression extends AstNodeBase
         final String dotOperand = operand2.text;
         final FoundSymbol foundSymbol = compoundScope.findSymbol(dotOperand);
         if (foundSymbol == null)
+        {
             throw new ParserException(
                     this, "'" + dotOperand + "' undefined in compound '" + compoundType.getName() + "'!");
+        }
 
         symbolObject = foundSymbol.getSymbol();
         operand2.symbolObject = symbolObject; // this is used by formatter (operand2 was not evaluated)
         if (symbolObject instanceof Field)
         {
             evaluateExpressionType(((Field)symbolObject).getTypeInstantiation());
+            expressionOwner = compoundType;
         }
         else if (symbolObject instanceof Parameter)
         {
             evaluateExpressionType(((Parameter)symbolObject).getTypeReference());
+            expressionOwner = compoundType;
         }
         else if (symbolObject instanceof Function)
         {
             // function type, we must wait for "()"
+            expressionOwner = compoundType;
         }
         else
         {
@@ -1830,6 +1869,7 @@ public final class Expression extends AstNodeBase
         zserioType = null;
         symbolObject = null;
         symbolInstantiation = null;
+        expressionOwner = null;
         unresolvedIdentifiers = new ArrayList<Expression>();
         needsBigIntegerCastingToNative = false;
     }
