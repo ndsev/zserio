@@ -306,7 +306,8 @@ public final class ZserioAstTemplator extends ZserioAstWalker
         }
 
         nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
-        nameBuilder.append(argumentType.getName());
+        // replace ':' which can occur when the template arguments is a fixed bit field
+        nameBuilder.append(argumentType.getName().replace(":", TEMPLATE_NAME_SEPARATOR));
 
         for (TemplateArgument innerArgument : innerTemplateArguments)
             appendTemplateArgument(nameBuilder, innerArgument, generateFullName);
