@@ -1,1 +1,2 @@
 ZSERIO_ARGS=-withoutCrossExtensionCheck
+WERROR=0
