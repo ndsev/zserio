@@ -1,8 +1,13 @@
+bugprone-exception-escape:gen/union_types/templated_union/TestUnion_extern_bytes_Compound_ParameterizedStruct_varsize.cpp
+bugprone-exception-escape:gen/union_types/templated_union/TestUnion_extern_bytes_Compound_ParameterizedStruct_varsize.h
+bugprone-exception-escape:gen/union_types/templated_union/TestUnion_float32_string_Compound_ParameterizedUnion_varsize.cpp
+bugprone-exception-escape:gen/union_types/templated_union/TestUnion_float32_string_Compound_ParameterizedUnion_varsize.h
 bugprone-exception-escape:gen/union_types/union_with_multiple_parameters/TestUnion.cpp
 bugprone-exception-escape:gen/union_types/union_with_multiple_parameters/TestUnion.h
 bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.cpp
 bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.h
 
+bugprone-forwarding-reference-overload:gen/union_types/templated_union/ParameterizedStruct_varsize.h
 bugprone-forwarding-reference-overload:gen/union_types/union_with_multiple_parameters/Data13.h
 bugprone-forwarding-reference-overload:gen/union_types/union_with_parameterized_field/ArrayHolder.h
 
@@ -13,17 +18,22 @@ cert-err58-cpp:cpp/UnionWithArrayTest.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionWithArrayTest.cpp
 
 cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp
+cppcoreguidelines-pro-type-member-init:gen/union_types/templated_union/ParameterizedStruct_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/union_types/templated_union/ParameterizedUnion_varsize.cpp
 cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_multiple_parameters/Data13.cp
 cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_multiple_parameters/Data13.cpp
 cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_multiple_parameters/TestUnion.cpp
 cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp
 cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp
 
+performance-move-const-arg:gen/union_types/templated_union/TestUnion_extern_bytes_Compound_ParameterizedStruct_varsize.cpp
+performance-move-const-arg:gen/union_types/templated_union/TestUnion_float32_string_Compound_ParameterizedUnion_varsize.cpp
 performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion1.cpp
 performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion2.cpp
 performance-move-const-arg:gen/union_types/union_with_parameter/TestUnion.cpp
 performance-move-const-arg:cpp/EmptyUnionTest.cpp
 
+readability-make-member-function-const:gen/union_types/templated_union/ParameterizedStruct_varsize.cpp
 readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXY.cpp
 readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXYZ.cpp
 readability-make-member-function-const:gen/union_types/union_with_array/Data8.cpp
@@ -31,4 +41,3 @@ readability-make-member-function-const:gen/union_types/union_with_multiple_param
 readability-make-member-function-const:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp
 
 readability-simplify-boolean-expr:gen/union_types/empty_union/EmptyUnion.cpp
-

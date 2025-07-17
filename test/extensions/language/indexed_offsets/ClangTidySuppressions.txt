@@ -1,6 +1,7 @@
 bugprone-exception-escape:gen/indexed_offsets/indexed_offset_array_in_nested_choice/TestChoice.cpp
 bugprone-exception-escape:gen/indexed_offsets/indexed_offset_array_in_nested_choice/TestChoice.h
 
+bugprone-forwarding-reference-overload:gen/indexed_offsets/optional_nested_indexed_offset_array_in_template/OptionalNestedIndexedOffsetArrayInTemplate.h
 bugprone-forwarding-reference-overload:gen/indexed_offsets/packed_indexed_offset_array_holder/OffsetArray.h
 
 cert-err58-cpp:cpp/PackedAutoIndexedOffsetArrayTest.cpp
@@ -18,6 +19,7 @@ performance-move-const-arg:gen/indexed_offsets/indexed_offset_array_in_choice_ho
 performance-move-const-arg:gen/indexed_offsets/indexed_offset_array_in_nested_choice/TestStruct.cpp
 performance-move-const-arg:gen/indexed_offsets/int14_indexed_offset_array/Int14IndexedOffsetArray.cpp
 
+readability-make-member-function-const:gen/indexed_offsets/optional_nested_indexed_offset_array_in_template/Header_uint16_uint32.cpp
 readability-make-member-function-const:gen/indexed_offsets/compound_indexed_offset_array/Compound.cpp
 readability-make-member-function-const:gen/indexed_offsets/indexed_offset_array_in_choice/TestChoice.cpp
 readability-make-member-function-const:gen/indexed_offsets/indexed_offset_array_in_choice/TestStruct.cpp
@@ -27,4 +29,5 @@ readability-make-member-function-const:gen/indexed_offsets/indexed_offset_array_
 readability-make-member-function-const:gen/indexed_offsets/indexed_offset_array_in_nested_choice/TestStruct.cpp
 readability-make-member-function-const:gen/indexed_offsets/optional_nested_indexed_offset_array/Header.cpp
 readability-make-member-function-const:gen/indexed_offsets/packed_indexed_offset_array_holder/OffsetHolder.cpp
+
 readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp

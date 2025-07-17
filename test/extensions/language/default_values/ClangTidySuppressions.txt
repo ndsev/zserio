@@ -1,9 +1,17 @@
+bugprone-forwarding-reference-overload:gen/default_values/default_values_in_templates/StringDefault_string.h
+
+google-explicit-constructor:gen/default_values/default_values_in_templates/TestBitmask.h
 google-explicit-constructor:gen/default_values/structure_default_values/Permission.h
 
 hicpp-signed-bitwise:gen/default_values/structure_default_values/Permission.h
 
+performance-move-const-arg:gen/default_values/default_values_in_templates/DefaultValuesInTemplate.cpp
+
+readability-make-member-function-const:gen/default_values/default_values_in_templates/IntegralDefault_varint.cpp
 readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp
 
+readability-uppercase-literal-suffix:gen/default_values/default_values_in_templates/FloatingDefault_float16.cpp
+readability-uppercase-literal-suffix:gen/default_values/default_values_in_templates/FloatingDefault_float64.cpp
 readability-uppercase-literal-suffix:gen/default_values/extended_default_values/ExtendedDefaultValues.cpp
 readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp
 

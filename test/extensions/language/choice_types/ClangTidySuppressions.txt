@@ -1,10 +1,17 @@
 bugprone-exception-escape:gen/choice_types/multiple_param_choice/TestChoice.cpp
 bugprone-exception-escape:gen/choice_types/multiple_param_choice/TestChoice.h
+bugprone-exception-escape:gen/choice_types/templated_choice/TestChoice_bytes_TestUnion_Selector.cpp
+bugprone-exception-escape:gen/choice_types/templated_choice/TestChoice_bytes_TestUnion_Selector.h
+bugprone-exception-escape:gen/choice_types/templated_choice/TestChoice_TestStruct_TestUnion_Selector.cpp
+bugprone-exception-escape:gen/choice_types/templated_choice/TestChoice_TestStruct_TestUnion_Selector.h
 
 bugprone-forwarding-reference-overload:gen/choice_types/multiple_param_choice/Data13.h
 
 bugprone-unhandled-self-assignment:gen/choice_types/function_returning_literal_selector_choice/TestChoice.cpp
 bugprone-unhandled-self-assignment:gen/choice_types/function_selector_choice/TestChoice.cpp
+bugprone-unhandled-self-assignment:gen/choice_types/templated_choice/TestChoice_bytes_TestUnion_Selector.cpp
+bugprone-unhandled-self-assignment:gen/choice_types/templated_choice/TestChoice_TestStruct_TestUnion_Selector.cpp
+bugprone-unhandled-self-assignment:gen/choice_types/templated_choice/TestUnion.cpp
 
 cert-err58-cpp:cpp/ChoiceCompatibilityCheckTest.cpp
 cert-err58-cpp:cpp/UInt64ParamChoiceTest.cpp
@@ -27,6 +34,9 @@ cppcoreguidelines-pro-type-member-init:gen/choice_types/function_returning_liter
 cppcoreguidelines-pro-type-member-init:gen/choice_types/function_selector_choice/TestChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/multiple_param_choice/Data13.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/multiple_param_choice/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/choice_types/templated_choice/TestChoice_bytes_TestUnion_Selector.cpp
+cppcoreguidelines-pro-type-member-init:gen/choice_types/templated_choice/TestChoice_TestStruct_TestUnion_Selector.cpp
+cppcoreguidelines-pro-type-member-init:gen/choice_types/templated_choice/TestUnion.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/uint16_param_choice/UInt16ParamChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/uint32_param_choice/UInt32ParamChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/uint64_param_choice/UInt64ParamChoice.cpp
@@ -40,6 +50,8 @@ performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVer
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVersion2.cpp
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion1.cpp
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion2.cpp
+performance-move-const-arg:gen/choice_types/templated_choice/TemplatedChoice.cpp
+performance-move-const-arg:gen/choice_types/templated_choice/TestChoice_TestStruct_TestUnion_Selector.cpp
 
 readability-make-member-function-const:gen/choice_types/bitmask_param_choice/BitmaskParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/bool_param_choice/BoolParamChoice.cpp
@@ -59,6 +71,7 @@ readability-make-member-function-const:gen/choice_types/full_bitmask_param_choic
 readability-make-member-function-const:gen/choice_types/full_enum_param_choice/FullEnumParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/function_selector_choice/Selector.cpp
 readability-make-member-function-const:gen/choice_types/multiple_param_choice/Data13.cpp
+readability-make-member-function-const:gen/choice_types/templated_choice/TestStruct.cpp
 readability-make-member-function-const:gen/choice_types/uint16_param_choice/UInt16ParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/uint32_param_choice/UInt32ParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/uint64_param_choice/UInt64ParamChoice.cpp

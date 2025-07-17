@@ -1,35 +1,60 @@
+bugprone-forwarding-reference-overload:gen/expressions/expressions_in_templates/IsSetParam_ColorB.h
+bugprone-forwarding-reference-overload:gen/expressions/expressions_in_templates/ParameterizedArrayHolder_ParameterizedArrayElement_uint16_bool__.h
 bugprone-forwarding-reference-overload:gen/expressions/parameterized_array_type/ParameterizedArrayHolder.h
+
+bugprone-reserved-identifier:gen/expressions/expressions_in_templates/ParameterizedArrayExpressions_ParameterizedArrayHolder_Paramete_.h
+bugprone-reserved-identifier:gen/expressions/expressions_in_templates/ParameterizedArrayHolder_ParameterizedArrayElement_uint16_bool__.h
+
+bugprone-signed-char-misuse:gen/expressions/expressions_in_templates/ValueOfExpressions_ColorE_ColorB.cpp
 
 cert-err58-cpp:gen/expressions/string_type/CHOOSED_STRING_CONSTANT.h
 cert-err58-cpp:gen/expressions/string_type/STRING_CONSTANT.h
 
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/IndexOperatorTest.cpp
 
+cppcoreguidelines-pro-type-member-init:gen/expressions/expressions_in_templates/Index_bool.cpp
+cppcoreguidelines-pro-type-member-init:gen/expressions/expressions_in_templates/ParameterizedArrayElement_uint16_bool.cpp
+cppcoreguidelines-pro-type-member-init:gen/expressions/expressions_in_templates/ParameterizedArrayHolder_ParameterizedArrayElement_uint16_bool__.cpp
 cppcoreguidelines-pro-type-member-init:gen/expressions/index_operator/Element.cpp
+cppcoreguidelines-pro-type-member-init:gen/expressions/parameter_type/ParameterTypeExpression.cpp
 cppcoreguidelines-pro-type-member-init:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 cppcoreguidelines-pro-type-member-init:gen/expressions/parameterized_array_type/ParameterizedArrayHolder.cpp
-cppcoreguidelines-pro-type-member-init:gen/expressions/parameter_type/ParameterTypeExpression.cpp
 
 google-build-using-namespace:cpp/StringTypeTest.cpp
 
 google-explicit-constructor:gen/expressions/bitmask_type/Colors.h
+google-explicit-constructor:gen/expressions/expressions_in_templates/ColorB.h
 google-explicit-constructor:gen/expressions/isset_operator/TestBitmask.h
 
+hicpp-signed-bitwise:gen/expressions/expressions_in_templates/LeftShiftExpressions_uint32.cpp
 hicpp-signed-bitwise:gen/expressions/left_shift_operator/LeftShiftOperator.cpp
 
-performance-move-const-arg:gen/expressions/field_type/FieldTypeExpression.cpp
+performance-move-const-arg:gen/expressions/expressions_in_templates/ExpressionsInTemplates.cpp
+performance-move-const-arg:gen/expressions/expressions_in_templates/FieldExpressions_Field.cpp
+performance-move-const-arg:gen/expressions/expressions_in_templates/IndexExpressions_Index_bool.cpp
+performance-move-const-arg:gen/expressions/expressions_in_templates/IsSetExpressions_ColorB.cpp
+performance-move-const-arg:gen/expressions/expressions_in_templates/ParameterizedArrayElement_uint16_bool.cpp
 performance-move-const-arg:gen/expressions/field_type_with_clash/FieldTypeExpression.cpp
 performance-move-const-arg:gen/expressions/field_type_with_parent_clash/FieldTypeExpression.cpp
+performance-move-const-arg:gen/expressions/field_type/FieldTypeExpression.cpp
 performance-move-const-arg:gen/expressions/index_operator/ElementList.cpp
 performance-move-const-arg:gen/expressions/isset_operator/IsSetOperator.cpp
-performance-move-const-arg:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 performance-move-const-arg:gen/expressions/parameter_type/ParameterTypeExpression.cpp
+performance-move-const-arg:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 
 readability-make-member-function-const:gen/expressions/bitmask_type/BitmaskTypeExpression.cpp
-readability-make-member-function-const:gen/expressions/cast_uint8_to_uint64/CastUInt8ToUInt64Expression.cpp
 readability-make-member-function-const:gen/expressions/cast_uint64_to_uint8/CastUInt64ToUInt8Expression.cpp
+readability-make-member-function-const:gen/expressions/cast_uint8_to_uint64/CastUInt8ToUInt64Expression.cpp
 readability-make-member-function-const:gen/expressions/const_type/ConstTypeExpression.cpp
 readability-make-member-function-const:gen/expressions/enumeration_type/EnumerationTypeExpression.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/BitmaskExpressions_ColorB.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/EnumExpressions_ColorE.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/FloatExpressions_float64.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/FunctionExpressions_ColorE.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/Index_bool.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/IsSetExpressions_ColorB.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/IsSetParam_ColorB.cpp
+readability-make-member-function-const:gen/expressions/expressions_in_templates/ParameterizedArrayElement_uint16_bool.cpp
 readability-make-member-function-const:gen/expressions/full_const_type/FullConstTypeExpression.cpp
 readability-make-member-function-const:gen/expressions/full_enumeration_type/FullEnumerationTypeExpression.cpp
 readability-make-member-function-const:gen/expressions/function_type/FunctionTypeExpression.cpp
@@ -38,18 +63,19 @@ readability-make-member-function-const:gen/expressions/isset_operator/IsSetOpera
 readability-make-member-function-const:gen/expressions/isset_operator/Parameterized.cpp
 readability-make-member-function-const:gen/expressions/lengthof_operator/LengthOfFunctions.cpp
 readability-make-member-function-const:gen/expressions/numbits_operator/NumBitsFunctions.cpp
-readability-make-member-function-const:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 readability-make-member-function-const:gen/expressions/parameter_type/ParameterTypeExpression.cpp
+readability-make-member-function-const:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 readability-make-member-function-const:gen/expressions/parenthesis/ParenthesisExpression.cpp
 readability-make-member-function-const:gen/expressions/question_mark/QuestionMarkExpression.cpp
 readability-make-member-function-const:gen/expressions/uint64_type/UInt64TypeExpression.cpp
 readability-make-member-function-const:gen/expressions/used_before_type/UsedBeforeTypeExpression.cpp
 
+readability-simplify-boolean-expr:gen/expressions/expressions_in_templates/Index_bool.cpp
+readability-simplify-boolean-expr:gen/expressions/expressions_in_templates/QuestionMarkExpressions_float32_bool.cpp
 readability-simplify-boolean-expr:gen/expressions/index_operator/Element.cpp
 readability-simplify-boolean-expr:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
 readability-simplify-boolean-expr:gen/expressions/question_mark/QuestionMarkExpression.cpp
 
 readability-uppercase-literal-suffix:gen/expressions/float_type/FloatTypeExpression.cpp
-readability-uppercase-literal-suffix:gen/expressions/question_mark/QuestionMarkExpression.cpp
 readability-uppercase-literal-suffix:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
-
+readability-uppercase-literal-suffix:gen/expressions/question_mark/QuestionMarkExpression.cpp

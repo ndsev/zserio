@@ -11,4 +11,8 @@
         <!-- Be wary of letting constructors throw exceptions. -->
         <Bug code="CT"/>
     </Match>
+    <Match>
+        <!-- Rough value of Math.PI found: 3.14. -->
+        <Bug code="CNT"/>
+    </Match>
 </FindBugsFilter>

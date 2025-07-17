@@ -1,17 +1,26 @@
 bugprone-exception-escape:gen/parameterized_types/grand_child_param/ItemChoice.cpp
 bugprone-exception-escape:gen/parameterized_types/grand_child_param/ItemChoice.h
 
+bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional_in_template/ExtraValue_bit_7.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional_in_template/Holder.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional_in_template/Holder.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional/ExtraValue.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param/Block.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/multiple_params/Data13.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/nested_parameterized_field/TopLevel.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/param_with_optional/ExtraValue.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_nested_in_array_in_template/Element_Parameterized_uint8.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_nested_in_array_in_template/Element_Parameterized_uint8.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_nested_in_array_in_template/Holder.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_nested_in_array_in_template/Holder.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/parameterized_nested_in_array/Element.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParamHolder.h
 
-bugprone-unhandled-self-assignment:gen/parameterized_types/array_element_param/Block.cpp
+bugprone-unhandled-self-assignment:gen/parameterized_types/array_element_param_with_optional_in_template/Value_Param_bit_7_ExtraValue_bit_7.cpp
+bugprone-unhandled-self-assignment:gen/parameterized_types/array_element_param_with_optional_in_template/Value_Param_bit_7_ExtraValue_bit_7.cpp
 bugprone-unhandled-self-assignment:gen/parameterized_types/array_element_param_with_optional/Value.cpp
+bugprone-unhandled-self-assignment:gen/parameterized_types/array_element_param/Block.cpp
 bugprone-unhandled-self-assignment:gen/parameterized_types/bytes_param/Parameterized.cpp
 bugprone-unhandled-self-assignment:gen/parameterized_types/extern_param/Parameterized.cpp
 bugprone-unhandled-self-assignment:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
@@ -26,6 +35,10 @@ cert-err58-cpp:cpp/NestedParameterizedFieldTest.cpp
 cert-err58-cpp:cpp/PackedArrayElementParamTest.cpp
 cert-err58-cpp:cpp/ParamWithOptionalTest.cpp
 
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional_in_template/ExtraValue_bit_7.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional_in_template/ExtraValue_bit_7.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional_in_template/Value_Param_bit_7_ExtraValue_bit_7.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional_in_template/Value_Param_bit_7_ExtraValue_bit_7.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional/Value.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param/Block.cpp
@@ -42,6 +55,8 @@ cppcoreguidelines-pro-type-member-init:gen/parameterized_types/packed_array_elem
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/param_with_optional/ExtraValue.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/param_with_optional/Value.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_nested_in_array_in_template/Parameterized_uint8.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_nested_in_array_in_template/Parameterized_uint8.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_nested_in_array/Parameterized.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/Param.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
@@ -70,6 +85,8 @@ performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_c
 performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_clashing/ElementFactory_array.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp
+performance-move-const-arg:gen/parameterized_types/parameterized_nested_in_array_in_template/Parameterized_uint8.cpp
+performance-move-const-arg:gen/parameterized_types/parameterized_nested_in_array_in_template/Parameterized_uint8.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_nested_in_array/Parameterized.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_param/Param.cpp
 performance-move-const-arg:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
@@ -77,6 +94,10 @@ performance-move-const-arg:gen/parameterized_types/parameterized_param/Parameter
 performance-move-const-arg:gen/parameterized_types/simple_param/Item.cpp
 performance-move-const-arg:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
 
+readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional_in_template/ExtraValue_bit_7.cpp
+readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional_in_template/ExtraValue_bit_7.cpp
+readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional_in_template/Param_bit_7.cpp
+readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional_in_template/Param_bit_7.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param_with_optional/Param.cpp
 readability-make-member-function-const:gen/parameterized_types/array_element_param/BlockHeader.cpp
@@ -98,6 +119,8 @@ readability-make-member-function-const:gen/parameterized_types/param_with_option
 readability-make-member-function-const:gen/parameterized_types/param_with_optional/Param.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp
+readability-make-member-function-const:gen/parameterized_types/parameterized_nested_in_array_in_template/Parameterized_uint8.cpp
+readability-make-member-function-const:gen/parameterized_types/parameterized_nested_in_array_in_template/Parameterized_uint8.cppbugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional_in_template/ExtraValue_bit_7.h
 readability-make-member-function-const:gen/parameterized_types/parameterized_nested_in_array/Parameterized.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_param/Param.cpp
 readability-make-member-function-const:gen/parameterized_types/parameterized_param/ParameterizedParamHolder.cpp

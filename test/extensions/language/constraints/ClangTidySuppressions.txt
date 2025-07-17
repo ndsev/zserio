@@ -1,17 +1,23 @@
 bugprone-forwarding-reference-overload:gen/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
 
 cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+cppcoreguidelines-pro-type-member-init:gen/constraints/constraints_in_templates/TemplatedChoice_TStruct_string_TestBitmask.cpp
 
+google-explicit-constructor:gen/constraints/constraints_in_templates/TestBitmask.h
 google-explicit-constructor:gen/constraints/structure_bitmask_constraints/Availability.h
 
 hicpp-signed-bitwise:gen/constraints/structure_bitmask_constraints/Availability.h
 
 performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+performance-move-const-arg:gen/constraints/constraints_in_templates/TemplatedChoice_TStruct_string_TestBitmask.cpp
+performance-move-const-arg:gen/constraints/constraints_in_templates/TemplatedStruct_TStruct_string_TestEnum.cpp
+performance-move-const-arg:gen/constraints/constraints_in_templates/TemplatedUnion_varint64_extern_TestBitmask.cpp
 performance-move-const-arg:gen/constraints/optional_constraints/OptionalConstraints.cpp
 performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp
 performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp
 
 readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+readability-make-member-function-const:gen/constraints/constraints_in_templates/TemplatedChoice_TStruct_string_TestBitmask.cpp
 readability-make-member-function-const:gen/constraints/literal_constraint/LiteralConstraint.cpp
 readability-make-member-function-const:gen/constraints/optional_constraints/OptionalConstraints.cpp
 readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp
