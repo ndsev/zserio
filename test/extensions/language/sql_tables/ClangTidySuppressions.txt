@@ -2,6 +2,9 @@ bugprone-forwarding-reference-overload:gen/sql_tables/blob_field_with_children_i
 bugprone-forwarding-reference-overload:gen/sql_tables/blob_offsets_param_table/OffsetsHolder.h
 bugprone-forwarding-reference-overload:gen/sql_tables/blob_offsets_param_table/ParameterizedBlob.h
 bugprone-forwarding-reference-overload:gen/sql_tables/blob_param_table/ParameterizedBlob.h
+bugprone-forwarding-reference-overload:gen/sql_tables/templated_sql_table_param/Parameterized.h
+
+bugprone-signed-char-misuse:gen/sql_tables/templated_sql_table/TestTable_int8.cpp
 
 bugprone-unhandled-self-assignment:gen/sql_tables/blob_offsets_param_table/ParameterizedBlob.cpp
 bugprone-unhandled-self-assignment:gen/sql_tables/blob_param_table/ParameterizedBlob.cpp
@@ -24,8 +27,27 @@ cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_bitmask_field_tab
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_table/TestTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table_param/Parameterized.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table_param/TestTable_Parameterized.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_Blob.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_float16.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_int8.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_string.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_TestBitmask.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_uint32.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_varint16.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_varuint.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/without_pk_table/WithoutPkTable.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/BlobOffsetsParamTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/BlobParamTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/ColumnParamTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/ComplexTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/ConstParamTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/MultiplePkTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/SubtypedTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/WithoutPkTableTest.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/blob_param_table/BlobParamTable.cpp
@@ -38,25 +60,32 @@ cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/subtyped_bitmask_fiel
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/subtyped_table/TestTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_Blob.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_float16.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_int8.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_Parameterized.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_string.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_TestBitmask.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_TestEnum.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_uint32.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_varint16.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table/TestTable_varuint.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/templated_sql_table_param/TestTable_Parameterized.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/without_pk_table/WithoutPkTable.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/BlobOffsetsParamTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/BlobParamTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/ColumnParamTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/ComplexTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/ConstParamTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/MultiplePkTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/SubtypedTableTest.cpp
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/WithoutPkTableTest.cpp
 
+fuchsia-multiple-inheritance:gen/sql_tables/templated_sql_table_param/TestDb.h
+fuchsia-multiple-inheritance:gen/sql_tables/templated_sql_table/TestDb.h
 fuchsia-multiple-inheritance:gen/sql_tables/TestDb.h
 
 google-explicit-constructor:gen/sql_tables/subtyped_bitmask_field_table/TestBitmask.h
+google-explicit-constructor:gen/sql_tables/templated_sql_table/TestBitmask.h
 
 performance-move-const-arg:gen/sql_tables/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.cpp
 performance-move-const-arg:gen/sql_tables/blob_param_table/BlobParamTable.cpp
 performance-move-const-arg:gen/sql_tables/column_param_table/ParameterizedBlob.cpp
 performance-move-const-arg:gen/sql_tables/complex_table/TestBlob.cpp
 performance-move-const-arg:gen/sql_tables/const_param_table/ParameterizedBlob.cpp
+performance-move-const-arg:gen/sql_tables/templated_sql_table/TestTable_Blob.cpp
 
 readability-make-member-function-const:gen/sql_tables/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.cpp
 readability-make-member-function-const:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp
@@ -64,3 +93,4 @@ readability-make-member-function-const:gen/sql_tables/blob_param_table/Parameter
 readability-make-member-function-const:gen/sql_tables/column_param_table/ParameterizedBlob.cpp
 readability-make-member-function-const:gen/sql_tables/complex_table/TestBlob.cpp
 readability-make-member-function-const:gen/sql_tables/const_param_table/ParameterizedBlob.cpp
+readability-make-member-function-const:gen/sql_tables/templated_sql_table_param/Parameterized.cpp

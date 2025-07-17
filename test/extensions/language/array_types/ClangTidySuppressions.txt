@@ -11,6 +11,55 @@ bugprone-forwarding-reference-overload:gen/array_types/packed_auto_array_uint8/P
 bugprone-forwarding-reference-overload:gen/array_types/packed_fixed_array_uint8/PackedFixedArray.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_variable_array_struct/TestPackedArray.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_variable_array_struct/TestUnpackedArray.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_bytes.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_TestEnum.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_TestUnion_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_uint8.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/Templated_varsize.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/TemplatedAutoArray.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_auto_array/TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_array_of_templates/Holder.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_array_of_templates/Element_TestEnum_TestChoice.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_bytes.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_TestEnum.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_TestUnion_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_uint8.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/Templated_varsize.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/TemplatedPackedAutoArray.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_auto_array/TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_bytes.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_TestEnum.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_TestUnion_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_uint8.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/Templated_varsize.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum_varsize.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_packed_variable_array/TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_bytes.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_TestEnum.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_TestStruct_string.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_TestUnion_TestBitmask.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_uint8.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/Templated_varsize.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum_varsize.h
+bugprone-forwarding-reference-overload:gen/array_types/templated_variable_array/TestStruct_string.h
+
+bugprone-unhandled-self-assignment:gen/array_types/templated_auto_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum.cpp
+bugprone-unhandled-self-assignment:gen/array_types/templated_packed_auto_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum.cpp
+bugprone-unhandled-self-assignment:gen/array_types/templated_packed_variable_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum_varsize.cpp
+bugprone-unhandled-self-assignment:gen/array_types/templated_variable_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum_varsize.cpp
 
 bugprone-use-after-move:language/array_types/cpp/AutoArrayBitfieldParamTest.cpp
 bugprone-use-after-move:language/array_types/cpp/PackedAutoArrayBitfieldParamTest.cpp
@@ -42,6 +91,7 @@ cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithB
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithExternTest.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp
 
+cppcoreguidelines-pro-type-member-init:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
@@ -52,8 +102,35 @@ cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_str
 cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/MixedColorChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_array_of_templates/Element_TestEnum_TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_array_of_templates/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_auto_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_auto_array/TestChoice_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_auto_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_auto_array/TestChoice_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Arrays_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_bytes.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_string.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_TestBitmask.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_TestStruct_string.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_TestUnion_TestBitmask.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_uint8.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/Templated_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_packed_variable_array/TestChoice_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Arrays_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_bytes.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_string.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_TestBitmask.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_TestEnum.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_TestStruct_string.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_TestUnion_TestBitmask.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_uint8.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/Templated_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/TemplatedParam_TestChoice_TestEnum_Templated_TestEnum_varsize.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/templated_variable_array/TestChoice_TestEnum.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
-cppcoreguidelines-pro-type-member-init:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
 
 google-explicit-constructor:gen/array_types/arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_arrays_mapping/TestBitmask.h
@@ -61,12 +138,17 @@ google-explicit-constructor:gen/array_types/packed_variable_array_struct/TestBit
 google-explicit-constructor:gen/array_types/packing_interface_optimization/MixedColorBitmask.h
 google-explicit-constructor:gen/array_types/packing_interface_optimization/PackedColorBitmask.h
 google-explicit-constructor:gen/array_types/packing_interface_optimization/UnpackedColorBitmask.h
+google-explicit-constructor:gen/array_types/templated_auto_array/TestBitmask.h
+google-explicit-constructor:gen/array_types/templated_packed_auto_array/TestBitmask.h
+google-explicit-constructor:gen/array_types/templated_packed_variable_array/TestBitmask.h
+google-explicit-constructor:gen/array_types/templated_variable_array/TestBitmask.h
 
 hicpp-signed-bitwise:gen/array_types/packing_interface_optimization/MixedColorBitmask.h
 hicpp-signed-bitwise:gen/array_types/packing_interface_optimization/PackedColorBitmask.h
 hicpp-signed-bitwise:gen/array_types/packing_interface_optimization/UnpackedColorBitmask.h
 
 hicpp-multiway-paths-covered:gen/array_types/packed_auto_array_removed_enum_item/Traffic.cpp
+hicpp-multiway-paths-covered:gen/array_types/templated_packed_array_of_templates/TestEnum.cpp
 
 misc-no-recursion # reports also tested_release and some system headers
 
@@ -82,9 +164,17 @@ performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestUnio
 performance-move-const-arg:gen/array_types/packing_interface_optimization/MixedColorStruct.cpp
 performance-move-const-arg:gen/array_types/packing_interface_optimization/PackedColorStruct.cpp
 performance-move-const-arg:gen/array_types/packing_interface_optimization/UnpackedColorStruct.cpp
+performance-move-const-arg:gen/array_types/templated_auto_array/TestUnion_TestBitmask.cpp
+performance-move-const-arg:gen/array_types/templated_packed_array_of_templates/ArrayTemplate_TestEnum_TestChoice.cpp
+performance-move-const-arg:gen/array_types/templated_packed_auto_array/TestUnion_TestBitmask.cpp
+performance-move-const-arg:gen/array_types/templated_packed_variable_array/TemplatedPackedVariableArray.cpp
+performance-move-const-arg:gen/array_types/templated_packed_variable_array/TestUnion_TestBitmask.cpp
+performance-move-const-arg:gen/array_types/templated_variable_array/TemplatedVariableArray.cpp
+performance-move-const-arg:gen/array_types/templated_variable_array/TestUnion_TestBitmask.cpp
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArray.cpp
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 
+readability-make-member-function-const:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
 readability-make-member-function-const:gen/array_types/packed_auto_array_empty_compounds/Main.cpp
 readability-make-member-function-const:gen/array_types/packed_auto_array_struct_with_unpacked_field/TestStructure.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
@@ -99,8 +189,29 @@ readability-make-member-function-const:gen/array_types/packing_interface_optimiz
 readability-make-member-function-const:gen/array_types/packing_interface_optimization/PackedColorStruct.cpp
 readability-make-member-function-const:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
 readability-make-member-function-const:gen/array_types/packing_interface_optimization/UnpackedColorStruct.cpp
+readability-make-member-function-const:gen/array_types/templated_auto_array/TestChoice_TestEnum.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_array_of_templates/TestChoice.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_array_of_templates/Element_TestEnum_TestChoice.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_auto_array/TestChoice_TestEnum.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Arrays_varsize.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Templated_bytes.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Templated_string.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Templated_TestBitmask.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Templated_TestEnum.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Templated_uint8.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/Templated_varsize.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/TemplatedPackedVariableArray.cpp
+readability-make-member-function-const:gen/array_types/templated_packed_variable_array/TestChoice_TestEnum.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Arrays_varsize.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Templated_bytes.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Templated_string.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Templated_TestBitmask.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Templated_TestEnum.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Templated_uint8.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/Templated_varsize.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/TemplatedVariableArray.cpp
+readability-make-member-function-const:gen/array_types/templated_variable_array/TestChoice_TestEnum.cpp
 readability-make-member-function-const:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
-readability-make-member-function-const:gen_choice_tag_clash/choice_tag_clash/TestChoice.cpp
 
 readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
 readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyUnion.cpp

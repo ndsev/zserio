@@ -2,8 +2,12 @@ bugprone-forwarding-reference-overload:gen/functions/structure_bytes/Child.h
 bugprone-forwarding-reference-overload:gen/functions/structure_extern/Child.h
 bugprone-forwarding-reference-overload:gen/functions/structure_parent_child_value/ParentValue.h
 bugprone-forwarding-reference-overload:gen/functions/structure_string/StringPool.h
+bugprone-forwarding-reference-overload:gen/functions/templated_structure_array_param/TemplatedStructureArrayParam.h
+bugprone-forwarding-reference-overload:gen/functions/templated_structure_parent_child_value/ParentValue_ChildValue_uint32_uint32.h
+bugprone-forwarding-reference-overload:gen/functions/templated_structure_parent_child_value/TemplatedStructureParentChildValue.h
 
 bugprone-unhandled-self-assignment:gen/functions/choice_array/ItemRef.cpp
+bugprone-unhandled-self-assignment:gen/functions/templated_choice_array/ItemRef_Item_OuterArray_Item.cpp
 bugprone-unhandled-self-assignment:gen/functions/union_array/ItemRef.cpp
 
 cert-err58-cpp:cpp/StructureArrayTest.cpp
@@ -21,6 +25,8 @@ cppcoreguidelines-pro-type-member-init:gen/functions/choice_array/ItemRef.cpp
 cppcoreguidelines-pro-type-member-init:gen/functions/structure_array_param/ChildStructure.cpp
 cppcoreguidelines-pro-type-member-init:gen/functions/structure_optional/ValueConsumer.cpp
 cppcoreguidelines-pro-type-member-init:gen/functions/structure_param/MetresConverter.cpp
+cppcoreguidelines-pro-type-member-init:gen/functions/templated_choice_array/ItemRef_Item_OuterArray_Item.cpp
+cppcoreguidelines-pro-type-member-init:gen/functions/templated_structure_array_param/ChildStructure_uint8.cpp
 cppcoreguidelines-pro-type-member-init:gen/functions/union_array/ItemRef.cpp
 
 google-build-using-namespace:cpp/StructureStringTest.cpp
@@ -33,6 +39,12 @@ performance-move-const-arg:gen/functions/structure_optional/ValueConsumer.cpp
 performance-move-const-arg:gen/functions/structure_param/MetresConverterCaller.cpp
 performance-move-const-arg:gen/functions/structure_param/MetresConverter.cpp
 performance-move-const-arg:gen/functions/structure_parent_child_value/ParentValue.cpp
+performance-move-const-arg:gen/functions/templated_choice_array/Inner.cpp
+performance-move-const-arg:gen/functions/templated_choice_array/ItemRef_Item_OuterArray_Item.cpp
+performance-move-const-arg:gen/functions/templated_structure_array_param/ChildStructure_uint8.cpp
+performance-move-const-arg:gen/functions/templated_structure_array_param/ParentStructure_uint8_ChildStructure_uint8.cpp
+performance-move-const-arg:gen/functions/templated_structure_parent_child_value/ParentValue_ChildValue_uint32_uint32.cpp
+performance-move-const-arg:gen/functions/templated_structure_parent_child_value/TemplatedStructureParentChildValue.cpp
 performance-move-const-arg:gen/functions/union_array/ItemRef.cpp
 
 readability-make-member-function-const:gen/functions/choice_array/ItemRef.cpp
@@ -45,5 +57,8 @@ readability-make-member-function-const:gen/functions/structure_optional/ValueCon
 readability-make-member-function-const:gen/functions/structure_param/MetresConverter.cpp
 readability-make-member-function-const:gen/functions/structure_parent_child_value/ChildValue.cpp
 readability-make-member-function-const:gen/functions/structure_value/CustomVarInt.cpp
+readability-make-member-function-const:gen/functions/templated_choice_array/OuterArray_Item.cpp
+readability-make-member-function-const:gen/functions/templated_choice_array/ItemRef_Item_OuterArray_Item.cpp
+readability-make-member-function-const:gen/functions/templated_structure_array_param/ChildStructure_uint8.cpp
 readability-make-member-function-const:gen/functions/union_array/Item.cpp
 readability-make-member-function-const:gen/functions/union_array/OuterArray.cpp

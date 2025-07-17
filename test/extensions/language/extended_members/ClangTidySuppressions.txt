@@ -19,6 +19,7 @@ cppcoreguidelines-pro-type-member-init:gen/extended_members/multiple_extended_fi
 
 performance-move-const-arg:gen/extended_members/extended_choice_field/Extended.cpp
 performance-move-const-arg:gen/extended_members/extended_field_in_template/ExtendedCompound.cpp
+performance-move-const-arg:gen/extended_members/extended_optional_field_in_template/ExtendedCompound.cpp
 performance-move-const-arg:gen/extended_members/extended_optional_parameterized_field/Extended.cpp
 performance-move-const-arg:gen/extended_members/multiple_extended_fields_various_types/Extended2.cpp
 performance-move-const-arg:cpp/ExtendedEmptyStructureTest.cpp

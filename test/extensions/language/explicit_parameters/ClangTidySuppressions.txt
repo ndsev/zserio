@@ -3,6 +3,7 @@ bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_blob_par
 bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_enum_param/TestBlob.h
 bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_same_as_field/TestBlob.h
 bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_simple_param/TestBlob.h
+bugprone-forwarding-reference-overload:gen/explicit_parameters/templated_explicit_param/Parameterized.h
 
 bugprone-unhandled-self-assignment:gen/explicit_parameters/explicit_blob_param/TestBlob.cpp
 
@@ -20,6 +21,8 @@ cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_explicit
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_with_same_name/Parameterized1.cpp
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/multiple_with_same_name/Parameterized2.cpp
+cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/templated_explicit_param/Parameterized.cpp
+cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/templated_explicit_param/TestTableWithExplicit_Parameterized.cpp
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp
@@ -28,8 +31,10 @@ cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_sam
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/templated_explicit_param/TestTableWithExplicit_Parameterized.cpp
 
 fuchsia-multiple-inheritance:gen/explicit_parameters/ExplicitParametersDb.h
+fuchsia-multiple-inheritance:gen/explicit_parameters/templated_explicit_param/TestDb.h
 
 google-explicit-constructor:gen/explicit_parameters/explicit_bitmask_param/TestBitmask.h
 
@@ -46,3 +51,4 @@ readability-make-member-function-const:gen/explicit_parameters/explicit_simple_p
 readability-make-member-function-const:gen/explicit_parameters/multiple_explicit_params/TestBlob.cpp
 readability-make-member-function-const:gen/explicit_parameters/multiple_with_same_name/Parameterized1.cpp
 readability-make-member-function-const:gen/explicit_parameters/multiple_with_same_name/Parameterized2.cpp
+readability-make-member-function-const:gen/explicit_parameters/templated_explicit_param/Parameterized.cpp

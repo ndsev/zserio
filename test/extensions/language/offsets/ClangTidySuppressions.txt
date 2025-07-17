@@ -1,6 +1,13 @@
-bugprone-exception-escape:gen/offsets/offset_in_nested_choice/TestChoice.h
+bugprone-exception-escape:gen/offsets/offset_in_nested_choice_in_template/TestChoice_NestedChoice_uint32.cpp
+bugprone-exception-escape:gen/offsets/offset_in_nested_choice_in_template/TestChoice_NestedChoice_uint32.h
 bugprone-exception-escape:gen/offsets/offset_in_nested_choice/TestChoice.cpp
+bugprone-exception-escape:gen/offsets/offset_in_nested_choice/TestChoice.h
 
+bugprone-forwarding-reference-overload:gen/offsets/offset_in_nested_choice_in_template/OffsetInNestedChoiceInTemplate.h
+bugprone-forwarding-reference-overload:gen/offsets/offset_in_nested_union_in_template/OffsetInNestedUnionInTemplate.h
+bugprone-forwarding-reference-overload:gen/offsets/parameter_offset_in_template/ParameterOffsetInTemplate.h
+
+bugprone-unhandled-self-assignment:gen/offsets/parameter_offset_in_template/Room_OffsetHolder.cpp
 bugprone-unhandled-self-assignment:gen/offsets/parameter_offset/Room.cpp
 
 cert-err58-cpp:cpp/PackedAutoArrayOffsetTest.cpp
@@ -8,34 +15,50 @@ cert-err58-cpp:cpp/UInt64OffsetTest.cpp
 
 cppcoreguidelines-pro-type-member-init:gen/offsets/nested_offset/NestedOffsetChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/offsets/offset_in_choice/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/offsets/offset_in_nested_choice_in_template/NestedChoice_uint32.cpp
+cppcoreguidelines-pro-type-member-init:gen/offsets/offset_in_nested_choice_in_template/TestChoice_NestedChoice_uint32.cpp
 cppcoreguidelines-pro-type-member-init:gen/offsets/offset_in_nested_choice/NestedChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/offsets/offset_in_nested_choice/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/offsets/parameter_offset_in_template/Room_OffsetHolder.cpp
 cppcoreguidelines-pro-type-member-init:gen/offsets/parameter_offset/Room.cpp
 
 google-build-using-namespace:cpp/UInt64OffsetTest.cpp
 
 performance-move-const-arg:gen/offsets/nested_offset/NestedOffset.cpp
 performance-move-const-arg:gen/offsets/offset_in_choice/TestStruct.cpp
+performance-move-const-arg:gen/offsets/offset_in_nested_choice_in_template/TestStruct_TestChoice_NestedChoice_uint32.cpp
 performance-move-const-arg:gen/offsets/offset_in_nested_choice/TestStruct.cpp
+performance-move-const-arg:gen/offsets/parameter_offset_in_template/Room_OffsetHolder.cpp
+performance-move-const-arg:gen/offsets/parameter_offset_in_template/School_OffsetHolder_Room_OffsetHolder.cpp
 performance-move-const-arg:gen/offsets/parameter_offset/Room.cpp
 performance-move-const-arg:gen/offsets/parameter_offset/School.cpp
 
 readability-make-member-function-const:gen/offsets/auto_array_offset/AutoArrayHolder.cpp
 readability-make-member-function-const:gen/offsets/bit_offset/BitOffset.cpp
+readability-make-member-function-const:gen/offsets/nested_offset/NestedOffset.cpp
 readability-make-member-function-const:gen/offsets/nested_offset/NestedOffsetChoice.cpp
 readability-make-member-function-const:gen/offsets/nested_offset/NestedOffsetStructure.cpp
-readability-make-member-function-const:gen/offsets/nested_offset/NestedOffset.cpp
 readability-make-member-function-const:gen/offsets/offset_in_choice/TestChoice.cpp
 readability-make-member-function-const:gen/offsets/offset_in_choice/TestStruct.cpp
+readability-make-member-function-const:gen/offsets/offset_in_nested_choice_in_template/NestedChoice_uint32.cpp
+readability-make-member-function-const:gen/offsets/offset_in_nested_choice_in_template/TestChoice_NestedChoice_uint32.cpp
+readability-make-member-function-const:gen/offsets/offset_in_nested_choice_in_template/TestStruct_TestChoice_NestedChoice_uint32.cpp
 readability-make-member-function-const:gen/offsets/offset_in_nested_choice/NestedChoice.cpp
 readability-make-member-function-const:gen/offsets/offset_in_nested_choice/TestChoice.cpp
 readability-make-member-function-const:gen/offsets/offset_in_nested_choice/TestStruct.cpp
+readability-make-member-function-const:gen/offsets/optional_offset_in_template/OffsetHolder_uint32.cpp
 readability-make-member-function-const:gen/offsets/optional_member_offset/OptionalMemberOffset.cpp
+readability-make-member-function-const:gen/offsets/optional_member_optional_offset/OptionalMemberOffset.cpp
 readability-make-member-function-const:gen/offsets/packed_auto_array_offset/AutoArrayHolder.cpp
 readability-make-member-function-const:gen/offsets/uint64_offset/UInt64Offset.cpp
 
 readability-simplify-boolean-expr:gen/offsets/nested_offset/NestedOffsetChoice.cpp
 readability-simplify-boolean-expr:gen/offsets/offset_in_choice/TestChoice.cpp
+readability-simplify-boolean-expr:gen/offsets/offset_in_nested_choice_in_template/NestedChoice_uint32.cpp
+readability-simplify-boolean-expr:gen/offsets/offset_in_nested_choice_in_template/TestChoice_NestedChoice_uint32.cpp
 readability-simplify-boolean-expr:gen/offsets/offset_in_nested_choice/NestedChoice.cpp
 readability-simplify-boolean-expr:gen/offsets/offset_in_nested_choice/TestChoice.cpp
 readability-simplify-boolean-expr:gen/offsets/optional_member_offset/OptionalMemberOffset.cpp
+readability-simplify-boolean-expr:gen/offsets/optional_member_optional_offset/OptionalMemberOffset.cpp
+readability-simplify-boolean-expr:gen/offsets/optional_offset_in_template/OffsetHolder_uint32.cpp
+readability-simplify-boolean-expr:gen/offsets/optional_offset_in_template/OptionalMemberOffset.cpp
