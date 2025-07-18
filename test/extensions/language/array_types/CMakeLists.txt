@@ -11,7 +11,7 @@ zserio_generate_cpp(
 target_link_libraries(array_types_zs PUBLIC ZserioCppRuntime)
 if (ZSERIO_LOG)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
-    check_zserio_warnings("${ZSERIO_LOG}" 15)
+    check_zserio_warnings("${ZSERIO_LOG}" 17)
 endif ()
 
 add_library(choice_tag_clash_zs STATIC ${TEST_ZS_ROOT}/choice_tag_clash.zs)
