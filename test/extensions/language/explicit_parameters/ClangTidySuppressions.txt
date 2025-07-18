@@ -31,6 +31,7 @@ cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_sam
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/explicit_parameters/templated_explicit_param/TestTableWithExplicit_Parameterized.cpp
 
 fuchsia-multiple-inheritance:gen/explicit_parameters/ExplicitParametersDb.h
 fuchsia-multiple-inheritance:gen/explicit_parameters/templated_explicit_param/TestDb.h
