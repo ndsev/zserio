@@ -140,7 +140,8 @@ jobs:
 
     - name: Run Zserio API compatibility checks
       # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
-      if: ${{ matrix.msvc-toolset == '' || matrix.build-type == 'Release' }}
+      # MinGW Debug/Release build fails because of long paths
+      if: ${{ matrix.mingw-version == '' && (matrix.msvc-toolset == '' || matrix.build-type == 'Release') }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
