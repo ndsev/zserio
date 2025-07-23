@@ -784,6 +784,33 @@ update_web_pages()
     return 0
 }
 
+
+# Update Zserio API compatibility testing by removing the compat-api branch.
+update_compat_api()
+{
+    local COMPAT_API_BRANCH="compat-api"
+    echo "Removing ${COMPAT_API_BRANCH} branch."
+    echo
+
+    local GREP_RESULT=`"${GIT}" ls-remote | grep ${COMPAT_API_BRANCH}`
+    if [ $? -eq 0 -a -n "${GREP_RESULT}" ] ; then
+        "${GIT}" branch -D ${COMPAT_API_BRANCH}
+        local GIT_RESULT=$?
+        if [ ${GIT_RESULT} -ne 0 ] ; then
+            stderr_echo "Git failed with return code ${GIT_RESULT}!"
+            return 1
+        fi
+        "${GIT}" push origin -d ${COMPAT_API_BRANCH}
+        local GIT_RESULT=$?
+        if [ ${GIT_RESULT} -ne 0 ] ; then
+            stderr_echo "Git failed with return code ${GIT_RESULT}!"
+            return 1
+        fi
+    fi
+
+    return 0
+}
+
 # Patch old runtime documentations - add the new release option
 patch_old_runtime_doc()
 {
@@ -917,6 +944,7 @@ Repository can be empty for all repositories or arbitrary combination of
     tutorial_python  Update Zserio Tutorial Python repository after new Zserio release
     streamlit        Update Zserio Streamlit repository after new Zserio release
     web_pages        Update Zserio Web Pages branch after new Zserio release
+    compat_api       Update Zserio API compatibility testing by removing the compat-api branch
 
 Examples:
     $0
@@ -934,7 +962,7 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=10
+    local NUM_OF_ARGS=11
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
     local PARAM_MAVEN_OUT="$1"; shift
@@ -946,6 +974,7 @@ parse_arguments()
     local PARAM_TUTORIAL_PYTHON_OUT="$1"; shift
     local PARAM_STREAMLIT_OUT="$1"; shift
     local PARAM_WEB_PAGES_OUT="$1"; shift
+    local PARAM_COMPAT_API_OUT="$1"; shift
 
     eval ${PARAM_MAVEN_OUT}=0
     eval ${PARAM_PYPI_OUT}=0
@@ -956,6 +985,7 @@ parse_arguments()
     eval ${PARAM_TUTORIAL_PYTHON_OUT}=0
     eval ${PARAM_STREAMLIT_OUT}=0
     eval ${PARAM_WEB_PAGES_OUT}=0
+    eval ${PARAM_COMPAT_API_OUT}=0
 
     local NUM_PARAMS=0
     local ARG="$1"
@@ -1039,6 +1069,12 @@ parse_arguments()
                 shift 1
                 ;;
 
+            "compat_api")
+                eval ${PARAM_COMPAT_API_OUT}=1
+                NUM_PARAMS=$((NUM_PARAMS + 1))
+                shift 1
+                ;;
+
             *)
                 stderr_echo "Invalid parameter '${ARG}'!"
                 echo
@@ -1058,6 +1094,7 @@ parse_arguments()
         eval ${PARAM_TUTORIAL_PYTHON_OUT}=1
         eval ${PARAM_STREAMLIT_OUT}=1
         eval ${PARAM_WEB_PAGES_OUT}=1
+        eval ${PARAM_COMPAT_API_OUT}=1
     fi
 
     return 0
@@ -1080,8 +1117,9 @@ main()
     local PARAM_TUTORIAL_PYTHON
     local PARAM_STREAMLIT
     local PARAM_WEB_PAGES
+    local PARAM_COMPAT_API
     parse_arguments PARAM_OUT_DIR PARAM_MAVEN PARAM_PYPI PARAM_CONAN PARAM_EXTENSION_SAMPLE PARAM_TUTORIAL_CPP \
-            PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES "$@"
+            PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES PARAM_COMPAT_API "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -1173,6 +1211,13 @@ main()
 
     if [[ ${PARAM_WEB_PAGES} == 1 ]] ; then
         update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    if [[ ${PARAM_COMPAT_API} == 1 ]] ; then
+        update_compat_api
         if [ $? -ne 0 ] ; then
             return 1
         fi
