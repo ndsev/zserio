@@ -89,12 +89,12 @@ jobs:
       with:
         name: linux-release-${{env.ZSERIO_VERSION}}
         path: release-${{env.ZSERIO_VERSION}}
-        
+
     - name: "Checkout scripts"
       uses: actions/checkout@v4
       with:
         path: zserio
-          
+
     - name: "Compose dev release"
       run: |
         DEV_DIR=dev-${ZSERIO_VERSION}
@@ -102,25 +102,25 @@ jobs:
 
         mkdir scripts
         cp -r zserio/scripts/. scripts
-        
+
         mkdir cmake
         cp -r zserio/cmake/. cmake
-        
+
         mkdir -p compiler/core/src/zserio/tools
         cp zserio/compiler/core/src/zserio/tools/ZserioVersion.java compiler/core/src/zserio/tools
-        
+
         mkdir -p compiler/extensions/cpp/runtime
         cp zserio/compiler/extensions/cpp/runtime/ClangTidyConfig.txt compiler/extensions/cpp/runtime
-        
+
         mkdir -p test/extensions
         cp zserio/test/extensions/pylintrc.txt test/extensions
         cp zserio/test/extensions/mypy.ini test/extensions
-        
+
         mkdir -p 3rdparty/cpp/sqlite
         cp -r zserio/3rdparty/cpp/sqlite/. 3rdparty/cpp/sqlite
-        
+
         zip -rq ${DEV_DIR}/zserio-${ZSERIO_VERSION}-scripts.zip "scripts" "cmake" "compiler" "test" "3rdparty"
-        
+
     - name: "Archive developer artifact"
       id: upload-dev-release
       uses: actions/upload-artifact@v4
