@@ -13,5 +13,5 @@ public final class XmlExtensionVersion
     public static final String XML_EXTENSION_VERSION_STRING = "1.0.5";
 
     /** Expected Zserio core version string. */
-    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.16.1";
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.17.0";
 }
