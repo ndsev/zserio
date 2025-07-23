@@ -10,7 +10,6 @@ import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
-import zserio.ast.TemplateParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
