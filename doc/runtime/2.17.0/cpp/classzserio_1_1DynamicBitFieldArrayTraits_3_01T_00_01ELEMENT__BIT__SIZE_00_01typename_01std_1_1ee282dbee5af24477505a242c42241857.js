@@ -1,0 +1,5 @@
+var classzserio_1_1DynamicBitFieldArrayTraits_3_01T_00_01ELEMENT__BIT__SIZE_00_01typename_01std_1_1ee282dbee5af24477505a242c42241857 =
+[
+    [ "ElementType", "classzserio_1_1DynamicBitFieldArrayTraits_3_01T_00_01ELEMENT__BIT__SIZE_00_01typename_01std_1_1ee282dbee5af24477505a242c42241857.html#ab223f6dc190d6b21e0cbf5591b4243df", null ],
+    [ "OwnerType", "classzserio_1_1DynamicBitFieldArrayTraits_3_01T_00_01ELEMENT__BIT__SIZE_00_01typename_01std_1_1ee282dbee5af24477505a242c42241857.html#a5096bb341e88a0065284bd778edab936", null ]
+];
