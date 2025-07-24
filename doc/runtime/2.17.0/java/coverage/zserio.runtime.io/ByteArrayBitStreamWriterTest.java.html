@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamWriterTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamWriterTest.java</span></div><h1>ByteArrayBitStreamWriterTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L14">public class ByteArrayBitStreamWriterTest</span>
+{
+    @Test
+    public void test1() throws Exception
+    {
+<span class="fc" id="L19">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L23" title="All 2 branches covered.">                for (int value : DATA)</span>
+                {
+<span class="fc" id="L25">                    writer.writeBits(value, 4);</span>
+                }
+<span class="fc" id="L27">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">                for (int value : DATA)</span>
+                {
+<span class="fc" id="L34">                    assertEquals(value, reader.readBits(4));</span>
+                }
+<span class="fc" id="L36">            }</span>
+
+<span class="fc" id="L38">            private final int[] DATA = {</span>
+                    0x6,
+                    0x7,
+                    0x8,
+                    0x9,
+                    0x1,
+                    0x2,
+                    0x3,
+                    0x4,
+                    0xc,
+                    0xd,
+                    0xe,
+                    0xf,
+            };
+        });
+<span class="fc" id="L53">    }</span>
+
+    @Test
+    public void test2() throws Exception
+    {
+<span class="fc" id="L58">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc" id="L62">                writer.writeBits(6, 4);</span>
+<span class="fc" id="L63">                writer.writeBits(0x78, 8);</span>
+<span class="fc" id="L64">                writer.writeBits(0x91, 8);</span>
+<span class="fc" id="L65">                writer.writeBits(0x23, 8);</span>
+<span class="fc" id="L66">                writer.writeBits(0x4c, 8);</span>
+<span class="fc" id="L67">                writer.writeBits(0xde, 8);</span>
+<span class="fc" id="L68">                writer.writeBits(0xf, 4);</span>
+<span class="fc" id="L69">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc" id="L74">                assertEquals(0x6, reader.readBits(4));</span>
+<span class="fc" id="L75">                assertEquals(0x7, reader.readBits(4));</span>
+<span class="fc" id="L76">                assertEquals(0x8, reader.readBits(4));</span>
+<span class="fc" id="L77">                assertEquals(0x9, reader.readBits(4));</span>
+
+<span class="fc" id="L79">                assertEquals(0x1, reader.readBits(4));</span>
+<span class="fc" id="L80">                assertEquals(0x2, reader.readBits(4));</span>
+<span class="fc" id="L81">                assertEquals(0x3, reader.readBits(4));</span>
+<span class="fc" id="L82">                assertEquals(0x4, reader.readBits(4));</span>
+
+<span class="fc" id="L84">                assertEquals(0xc, reader.readBits(4));</span>
+<span class="fc" id="L85">                assertEquals(0xd, reader.readBits(4));</span>
+<span class="fc" id="L86">                assertEquals(0xe, reader.readBits(4));</span>
+<span class="fc" id="L87">                assertEquals(0xf, reader.readBits(4));</span>
+<span class="fc" id="L88">            }</span>
+        });
+<span class="fc" id="L90">    }</span>
+
+    @Test
+    public void test3() throws Exception
+    {
+<span class="fc" id="L95">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc" id="L99">                writer.writeBits(6, 4);</span>
+<span class="fc" id="L100">                writer.writeShort((short)0x7891);</span>
+<span class="fc" id="L101">                writer.writeShort((short)0x234c);</span>
+<span class="fc" id="L102">                writer.writeBits(0xd, 4);</span>
+<span class="fc" id="L103">                writer.writeBits(0xef, 8);</span>
+<span class="fc" id="L104">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc" id="L109">                assertEquals(0x6, reader.readBits(4));</span>
+<span class="fc" id="L110">                assertEquals(0x7, reader.readBits(4));</span>
+<span class="fc" id="L111">                assertEquals(0x8, reader.readBits(4));</span>
+<span class="fc" id="L112">                assertEquals(0x9, reader.readBits(4));</span>
+
+<span class="fc" id="L114">                assertEquals(0x1, reader.readBits(4));</span>
+<span class="fc" id="L115">                assertEquals(0x2, reader.readBits(4));</span>
+<span class="fc" id="L116">                assertEquals(0x3, reader.readBits(4));</span>
+<span class="fc" id="L117">                assertEquals(0x4, reader.readBits(4));</span>
+
+<span class="fc" id="L119">                assertEquals(0xc, reader.readBits(4));</span>
+<span class="fc" id="L120">                assertEquals(0xd, reader.readBits(4));</span>
+<span class="fc" id="L121">                assertEquals(0xe, reader.readBits(4));</span>
+<span class="fc" id="L122">                assertEquals(0xf, reader.readBits(4));</span>
+<span class="fc" id="L123">            }</span>
+        });
+<span class="fc" id="L125">    }</span>
+
+    @Test
+    public void test4() throws Exception
+    {
+<span class="fc" id="L130">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L132">            writer.writeShort((short)0x234c);</span>
+<span class="fc" id="L133">            writer.writeBits(0xef, 8);</span>
+<span class="fc" id="L134">            writer.alignTo(32);</span>
+
+<span class="fc" id="L136">            final byte[] b = writer.toByteArray();</span>
+<span class="fc" id="L137">            assertEquals(b.length * 8L, 32);</span>
+        }
+<span class="fc" id="L139">    }</span>
+
+    @Test
+    public void writeUnalignedData() throws IOException
+    {
+        // number expected to be written at offset
+<span class="fc" id="L145">        final int testValue = 123;</span>
+
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (int offset = 0; offset &lt;= 63; ++offset)</span>
+        {
+<span class="fc" id="L149">            final int bufferByteSize = (8 + offset + 7) / 8;</span>
+<span class="fc" id="L150">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(bufferByteSize))</span>
+            {
+                // fill the buffer with 1s to check proper masking
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                for (int i = 0; i &lt; bufferByteSize; ++i)</span>
+<span class="fc" id="L154">                    writer.writeBits(0xFF, 8);</span>
+
+<span class="fc" id="L156">                writer.setBitPosition(0);</span>
+
+<span class="fc bfc" id="L158" title="All 2 branches covered.">                if (offset != 0)</span>
+<span class="fc" id="L159">                    writer.writeBits(0, offset);</span>
+<span class="fc" id="L160">                writer.writeBits(testValue, 8);</span>
+
+                // check written value
+<span class="fc" id="L163">                byte[] writtenData = writer.toByteArray();</span>
+<span class="fc" id="L164">                int writtenTestValue = ((int)writtenData[offset / 8]) &lt;&lt; (offset % 8);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">                if (offset % 8 != 0)</span>
+<span class="fc" id="L166">                    writtenTestValue |= (0xFF &amp; writtenData[offset / 8 + 1]) &gt;&gt;&gt; (8 - (offset % 8));</span>
+<span class="fc" id="L167">                assertEquals(testValue, writtenTestValue, &quot;offset: &quot; + offset);</span>
+            }
+        }
+<span class="fc" id="L170">    }</span>
+
+    @Test
+    public void writeByte() throws IOException
+    {
+<span class="fc" id="L175">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">                for (byte value : DATA)</span>
+                {
+<span class="fc" id="L181">                    writer.writeByte(value);</span>
+                }
+<span class="fc" id="L183">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                for (byte value : DATA)</span>
+                {
+<span class="fc" id="L190">                    assertEquals(value, reader.readByte());</span>
+                }
+<span class="fc" id="L192">            }</span>
+
+<span class="fc" id="L194">            private final byte[] DATA = {</span>
+                    0,
+                    1,
+                    -1,
+                    Byte.MAX_VALUE,
+                    Byte.MIN_VALUE,
+            };
+        });
+<span class="fc" id="L202">    }</span>
+
+    @Test
+    public void writeShort() throws IOException
+    {
+<span class="fc" id="L207">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L211" title="All 2 branches covered.">                for (short value : DATA)</span>
+                {
+<span class="fc" id="L213">                    writer.writeShort(value);</span>
+                }
+<span class="fc" id="L215">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L220" title="All 2 branches covered.">                for (short value : DATA)</span>
+                {
+<span class="fc" id="L222">                    assertEquals(value, reader.readShort());</span>
+                }
+<span class="fc" id="L224">            }</span>
+
+<span class="fc" id="L226">            private final short[] DATA = {</span>
+                    0,
+                    1,
+                    -1,
+                    Short.MAX_VALUE,
+                    Short.MIN_VALUE,
+            };
+        });
+<span class="fc" id="L234">    }</span>
+
+    @Test
+    public void writeInt() throws IOException
+    {
+<span class="fc" id="L239">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L243" title="All 2 branches covered.">                for (int value : DATA)</span>
+                {
+<span class="fc" id="L245">                    writer.writeInt(value);</span>
+                }
+<span class="fc" id="L247">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">                for (int value : DATA)</span>
+                {
+<span class="fc" id="L254">                    assertEquals(value, reader.readInt());</span>
+                }
+<span class="fc" id="L256">            }</span>
+
+<span class="fc" id="L258">            private final int[] DATA = {</span>
+                    0,
+                    1,
+                    -1,
+                    Integer.MIN_VALUE,
+                    Integer.MAX_VALUE,
+                    127,
+                    137,
+            };
+        });
+<span class="fc" id="L268">    }</span>
+
+    @Test
+    public void writeLong() throws IOException
+    {
+<span class="fc" id="L273">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L277" title="All 2 branches covered.">                for (long value : DATA)</span>
+                {
+<span class="fc" id="L279">                    writer.writeLong(value);</span>
+                }
+<span class="fc" id="L281">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L286" title="All 2 branches covered.">                for (long value : DATA)</span>
+                {
+<span class="fc" id="L288">                    assertEquals(value, reader.readLong());</span>
+                }
+<span class="fc" id="L290">            }</span>
+
+<span class="fc" id="L292">            private final long[] DATA = {</span>
+                    0,
+                    1,
+                    -1,
+                    Long.MAX_VALUE,
+                    Long.MIN_VALUE,
+                    1111111111L,
+                    1212121212L,
+            };
+        });
+<span class="fc" id="L302">    }</span>
+
+    @Test
+    public void writeUnsignedInt() throws IOException
+    {
+<span class="fc" id="L307">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L311" title="All 2 branches covered.">                for (long value : DATA)</span>
+                {
+<span class="fc" id="L313">                    writer.writeUnsignedInt(value);</span>
+                }
+<span class="fc" id="L315">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L320" title="All 2 branches covered.">                for (long value : DATA)</span>
+                {
+<span class="fc" id="L322">                    assertEquals(value, reader.readUnsignedInt());</span>
+                }
+<span class="fc" id="L324">            }</span>
+
+<span class="fc" id="L326">            private final long[] DATA = {</span>
+                    0,
+                    1,
+                    Integer.MAX_VALUE,
+            };
+        });
+<span class="fc" id="L332">    }</span>
+
+    @Test
+    public void writeUnsignedByte() throws IOException
+    {
+<span class="fc" id="L337">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L341" title="All 2 branches covered.">                for (short value : DATA)</span>
+                {
+<span class="fc" id="L343">                    writer.writeUnsignedByte(value);</span>
+                }
+<span class="fc" id="L345">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L350" title="All 2 branches covered.">                for (short value : DATA)</span>
+                {
+<span class="fc" id="L352">                    assertEquals(value, reader.readUnsignedByte());</span>
+                }
+<span class="fc" id="L354">            }</span>
+
+<span class="fc" id="L356">            private final short[] DATA = {</span>
+                    5,
+                    Byte.MAX_VALUE,
+            };
+        });
+<span class="fc" id="L361">    }</span>
+
+    @Test
+    public void writeBigInteger() throws IOException
+    {
+<span class="fc" id="L366">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc" id="L370">                writer.writeBigInteger(BigInteger.valueOf(0x1), 4);</span>
+<span class="fc" id="L371">                writer.writeBigInteger(BigInteger.valueOf(0x7), 4);</span>
+<span class="fc" id="L372">                writer.writeBigInteger(BigInteger.valueOf(0x7f), 8);</span>
+<span class="fc" id="L373">                writer.writeBigInteger(BigInteger.valueOf(0x7fff), 16);</span>
+<span class="fc" id="L374">                writer.writeBigInteger(BigInteger.valueOf(0x7fffffff), 32);</span>
+<span class="fc" id="L375">                writer.writeBigInteger(BigInteger.valueOf(0x7fffffffffffffffL), 64);</span>
+<span class="fc" id="L376">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc" id="L381">                final int[] expectedBytes = {</span>
+                        0x17, // 0x1, 0x7 nibbles combined
+                        0x7f,
+                        0x7f,
+                        0xff,
+                        0x7f,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0x7f,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                };
+<span class="fc bfc" id="L399" title="All 2 branches covered.">                for (int value : expectedBytes)</span>
+                {
+<span class="fc" id="L401">                    assertEquals(value, reader.readUnsignedByte());</span>
+                }
+<span class="fc" id="L403">            }</span>
+        });
+<span class="fc" id="L405">    }</span>
+
+    @Test
+    public void writeBigIntegerInvalidNumException() throws IOException
+    {
+<span class="fc" id="L410">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L412">            final int numBits[] = {-1, 0}; //, 65};</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">            for (int i = 0; i &lt; numBits.length; ++i)</span>
+            {
+<span class="fc" id="L415">                final int numBitsArg = numBits[i];</span>
+<span class="fc" id="L416">                assertThrows(IllegalArgumentException.class,</span>
+<span class="nc" id="L417">                        () -&gt; writer.writeBigInteger(BigInteger.ZERO, numBitsArg));</span>
+<span class="fc" id="L418">                assertThrows(IllegalArgumentException.class,</span>
+<span class="nc" id="L419">                        () -&gt; writer.writeBigInteger(BigInteger.ONE, numBitsArg));</span>
+            } // for numbits
+        }
+<span class="fc" id="L422">    }</span>
+
+    @Test
+    public void writeFloat16() throws IOException
+    {
+<span class="fc" id="L427">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc" id="L431">                writer.writeFloat16(1.0f);</span>
+<span class="fc" id="L432">                writer.writeFloat16(2.0f);</span>
+<span class="fc" id="L433">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // hand-encoded values
+<span class="fc" id="L439">                assertEquals(0x3c00, reader.readUnsignedShort());</span>
+<span class="fc" id="L440">                assertEquals(0x4000, reader.readUnsignedShort());</span>
+<span class="fc" id="L441">            }</span>
+        });
+<span class="fc" id="L443">    }</span>
+
+    /**
+     * Test capacity.
+     *
+     * @throws IOException if the writings and readings fail
+     */
+    @Test
+    public void capacity() throws IOException
+    {
+<span class="fc" id="L453">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L455">            writer.writeInt(10);</span>
+<span class="fc" id="L456">            writer.writeLong(10);</span>
+<span class="fc" id="L457">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray()))</span>
+            {
+<span class="fc" id="L459">                assertEquals(10, reader.readInt());</span>
+<span class="fc" id="L460">                assertEquals(10, reader.readLong());</span>
+            }
+        }
+
+<span class="fc" id="L464">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(1234))</span>
+        {
+<span class="fc" id="L466">            writer.writeByte((byte)127);</span>
+<span class="fc" id="L467">            writer.writeBits(7, 4);</span>
+<span class="fc" id="L468">            writer.writeInt(123);</span>
+<span class="fc" id="L469">            writer.writeLong(12345678910L);</span>
+
+<span class="fc" id="L471">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray()))</span>
+            {
+<span class="fc" id="L473">                assertEquals((byte)127, reader.readByte());</span>
+<span class="fc" id="L474">                assertEquals(7, reader.readBits(4));</span>
+<span class="fc" id="L475">                assertEquals(123, reader.readInt());</span>
+<span class="fc" id="L476">                assertEquals(12345678910L, reader.readLong());</span>
+            }
+        }
+
+<span class="pc" id="L480">        assertThrows(IllegalArgumentException.class, () -&gt; new ByteArrayBitStreamWriter(Integer.MAX_VALUE));</span>
+<span class="pc" id="L481">        assertThrows(IllegalArgumentException.class, () -&gt; new ByteArrayBitStreamWriter(-1));</span>
+<span class="fc" id="L482">    }</span>
+
+    /**
+     * Test the writeBool method.
+     *
+     * @throws IOException if the writing fails
+     */
+    @Test
+    public void writeBool() throws IOException
+    {
+<span class="fc" id="L492">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+<span class="fc bfc" id="L496" title="All 2 branches covered.">                for (boolean value : DATA)</span>
+                {
+<span class="fc" id="L498">                    writer.writeBool(value);</span>
+                }
+<span class="fc" id="L500">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+<span class="fc bfc" id="L505" title="All 2 branches covered.">                for (boolean value : DATA)</span>
+                {
+<span class="fc bfc" id="L507" title="All 2 branches covered.">                    assertEquals(value, reader.readBit() != 0 ? true : false);</span>
+                }
+<span class="fc" id="L509">                assertEquals(DATA.length, getBitOffset(reader));</span>
+<span class="fc" id="L510">            }</span>
+
+<span class="fc" id="L512">            private final boolean[] DATA = {</span>
+                    true,
+                    false,
+            };
+        });
+<span class="fc" id="L517">    }</span>
+
+    /**
+     * Test the growBuffer method.
+     *
+     * @throws IOException if the ByteArrayBitStreamWriter cannot be closed
+     */
+    @Test
+    public void growBuffer() throws IOException
+    {
+<span class="fc" id="L527">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc bfc" id="L529" title="All 2 branches covered.">            for (int i = 0; i &lt; 8191; i++)</span>
+            {
+<span class="fc" id="L531">                writer.writeByte((byte)1);</span>
+            }
+<span class="fc" id="L533">            assertEquals(8191, writer.getBytePosition());</span>
+        }
+<span class="fc" id="L535">    }</span>
+
+    @Test
+    public void writeBitsInvalidNumException() throws IOException
+    {
+<span class="fc" id="L540">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L542">            final int numBits[] = {-1, 0, 65};</span>
+<span class="fc bfc" id="L543" title="All 2 branches covered.">            for (int i = 0; i &lt; numBits.length; ++i)</span>
+            {
+<span class="fc" id="L545">                final int numBitsArg = numBits[i];</span>
+<span class="pc" id="L546">                assertThrows(IllegalArgumentException.class, () -&gt; writer.writeBits(0x0L, numBitsArg));</span>
+<span class="pc" id="L547">                assertThrows(IllegalArgumentException.class, () -&gt; writer.writeBits(0x1L, numBitsArg));</span>
+
+<span class="pc" id="L549">                assertThrows(IllegalArgumentException.class, () -&gt; writer.writeSignedBits(0x0L, numBitsArg));</span>
+<span class="pc" id="L550">                assertThrows(IllegalArgumentException.class, () -&gt; writer.writeSignedBits(0x1L, numBitsArg));</span>
+            } // for numbits
+        }
+<span class="fc" id="L553">    }</span>
+
+    @Test
+    public void writeBitsIllegalArgumentException() throws IOException
+    {
+<span class="fc" id="L558">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc bfc" id="L560" title="All 2 branches covered.">            for (int i = 1; i &lt; 64; i++)</span>
+            {
+<span class="fc" id="L562">                final long minSigned = -(1L &lt;&lt; (i - 1));</span>
+<span class="fc" id="L563">                final long maxUnsigned = (1L &lt;&lt; (i)) - 1;</span>
+
+<span class="fc" id="L565">                final long minSignedViolation = minSigned - 1;</span>
+<span class="fc" id="L566">                final long maxUnsignedViolation = maxUnsigned + 1;</span>
+
+<span class="fc" id="L568">                writer.writeBits(maxUnsigned, i);</span>
+<span class="fc" id="L569">                writer.writeSignedBits(minSigned, i);</span>
+
+<span class="fc" id="L571">                final int iArg = i;</span>
+<span class="fc" id="L572">                assertThrows(IllegalArgumentException.class,</span>
+                        ()
+<span class="nc" id="L574">                                -&gt; writer.writeSignedBits(minSignedViolation, iArg),</span>
+                        &quot;unexpected success writeBits: &quot; + minSignedViolation + &quot; # &quot; + i);
+
+<span class="fc" id="L577">                assertThrows(IllegalArgumentException.class,</span>
+                        ()
+<span class="nc" id="L579">                                -&gt; writer.writeBits(maxUnsignedViolation, iArg),</span>
+                        &quot;unexpected success writeBits: &quot; + maxUnsignedViolation + &quot; # &quot; + i);
+            } // for numBits
+        }
+<span class="fc" id="L583">    }</span>
+
+    @Test
+    public void writeIllegalArgumentException() throws IOException
+    {
+<span class="fc" id="L588">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="pc" id="L590">            assertThrows(IllegalArgumentException.class, () -&gt; writer.writeUnsignedByte((short)-1));</span>
+
+<span class="pc" id="L592">            assertThrows(IllegalArgumentException.class, () -&gt; writer.writeUnsignedShort(-1));</span>
+
+<span class="pc" id="L594">            assertThrows(IllegalArgumentException.class, () -&gt; writer.writeUnsignedInt(-1L));</span>
+
+<span class="pc" id="L596">            assertThrows(IllegalArgumentException.class, () -&gt; writer.writeUnsignedByte((short)(1 &lt;&lt; 8)));</span>
+
+<span class="pc" id="L598">            assertThrows(IllegalArgumentException.class, () -&gt; writer.writeUnsignedShort(1 &lt;&lt; 16));</span>
+
+<span class="pc" id="L600">            assertThrows(IllegalArgumentException.class, () -&gt; writer.writeUnsignedInt(1L &lt;&lt; 32));</span>
+
+            // Note: no range check for writeBigInteger
+        }
+<span class="fc" id="L604">    }</span>
+
+    @Test
+    public void writeVarInt16() throws IOException
+    {
+<span class="fc" id="L609">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L614">                writer.writeVarInt16((short)0);</span>
+<span class="fc" id="L615">                writer.writeVarInt16((short)+0x3f);</span>
+<span class="fc" id="L616">                writer.writeVarInt16((short)-0x3f);</span>
+
+                // 2 bytes
+<span class="fc" id="L619">                writer.writeVarInt16((short)+0x7f);</span>
+<span class="fc" id="L620">                writer.writeVarInt16((short)-0x7f);</span>
+<span class="fc" id="L621">                writer.writeVarInt16((short)+0x3fff);</span>
+<span class="fc" id="L622">                writer.writeVarInt16((short)-0x3fff);</span>
+<span class="fc" id="L623">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L629">                assertEquals(0x00, reader.readBits(8)); //  0</span>
+<span class="fc" id="L630">                assertEquals(0x3f, reader.readBits(8)); //  111111b =  0x3f</span>
+<span class="fc" id="L631">                assertEquals(0xbf, reader.readBits(8)); // -111111b = -0x3f</span>
+
+                // 2 bytes
+<span class="fc" id="L634">                assertEquals(0x407f, reader.readBits(16)); //  0b1111111 =  0x7f</span>
+<span class="fc" id="L635">                assertEquals(0xc07f, reader.readBits(16)); // -0b1111111 = -0x7f</span>
+<span class="fc" id="L636">                assertEquals(0x7fff, reader.readBits(16)); //  0b11111111111111 =  0x3fff</span>
+<span class="fc" id="L637">                assertEquals(0xffff, reader.readBits(16)); // -0b11111111111111 = -0x3fff</span>
+<span class="fc" id="L638">            }</span>
+        });
+<span class="fc" id="L640">    }</span>
+
+    @Test
+    public void writeVarInt32() throws IOException
+    {
+<span class="fc" id="L645">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L650">                writer.writeVarInt32(0);</span>
+<span class="fc" id="L651">                writer.writeVarInt32(+0x3f);</span>
+<span class="fc" id="L652">                writer.writeVarInt32(-0x3f);</span>
+
+                // 2 bytes
+<span class="fc" id="L655">                writer.writeVarInt32(+0x7f);</span>
+<span class="fc" id="L656">                writer.writeVarInt32(-0x7f);</span>
+<span class="fc" id="L657">                writer.writeVarInt32(+0x1fff);</span>
+<span class="fc" id="L658">                writer.writeVarInt32(-0x1fff);</span>
+
+                // 3 bytes
+<span class="fc" id="L661">                writer.writeVarInt32(+0x3fff);</span>
+<span class="fc" id="L662">                writer.writeVarInt32(-0x3fff);</span>
+<span class="fc" id="L663">                writer.writeVarInt32(+0xfffff);</span>
+<span class="fc" id="L664">                writer.writeVarInt32(-0xfffff);</span>
+
+                // 4 bytes
+<span class="fc" id="L667">                writer.writeVarInt32(+0x3fffff);</span>
+<span class="fc" id="L668">                writer.writeVarInt32(-0x3fffff);</span>
+<span class="fc" id="L669">                writer.writeVarInt32(+0xfffffff);</span>
+<span class="fc" id="L670">                writer.writeVarInt32(-0xfffffff);</span>
+<span class="fc" id="L671">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L677">                assertEquals(0x00, reader.readBits(8)); //  0</span>
+<span class="fc" id="L678">                assertEquals(0x3f, reader.readBits(8)); //  111111b =  0x3f</span>
+<span class="fc" id="L679">                assertEquals(0xbf, reader.readBits(8)); // -111111b = -0x3f</span>
+
+                // 2 bytes
+<span class="fc" id="L682">                assertEquals(0x407f, reader.readBits(16)); //  0b1111111 =  0x7f</span>
+<span class="fc" id="L683">                assertEquals(0xc07f, reader.readBits(16)); // -0b1111111 = -0x7f</span>
+<span class="fc" id="L684">                assertEquals(0x7f7f, reader.readBits(16)); //  0b1111111111111 =  0x1fff</span>
+<span class="fc" id="L685">                assertEquals(0xff7f, reader.readBits(16)); // -0b1111111111111 = -0x1fff</span>
+
+                // 3 bytes
+<span class="fc" id="L688">                assertEquals(0x40ff7fL, reader.readBits(24)); //  0b11111111111111 =  0x3fff</span>
+<span class="fc" id="L689">                assertEquals(0xc0ff7fL, reader.readBits(24)); // -0b11111111111111 = -0x3fff</span>
+<span class="fc" id="L690">                assertEquals(0x7fff7fL, reader.readBits(24)); //  0b11111111111111 =  0xfffff</span>
+<span class="fc" id="L691">                assertEquals(0xffff7fL, reader.readBits(24)); // -0b11111111111111 = -0xfffff</span>
+
+                // 4 bytes
+<span class="fc" id="L694">                assertEquals(0x40ffffffL, reader.readBits(32)); //  0x1fffff</span>
+<span class="fc" id="L695">                assertEquals(0xc0ffffffL, reader.readBits(32)); // -0x1fffff</span>
+<span class="fc" id="L696">                assertEquals(0x7fffffffL, reader.readBits(32)); //  0xfffffff</span>
+<span class="fc" id="L697">                assertEquals(0xffffffffL, reader.readBits(32)); // -0xfffffff</span>
+<span class="fc" id="L698">            }</span>
+        });
+<span class="fc" id="L700">    }</span>
+
+    @Test
+    public void writeVarUInt16() throws IOException
+    {
+<span class="fc" id="L705">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L710">                writer.writeVarUInt16((short)0);</span>
+<span class="fc" id="L711">                writer.writeVarUInt16((short)0x7f);</span>
+
+                // 2 bytes
+<span class="fc" id="L714">                writer.writeVarUInt16((short)0xff);</span>
+<span class="fc" id="L715">                writer.writeVarUInt16((short)0x7fff);</span>
+<span class="fc" id="L716">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L722">                assertEquals(0x00, reader.readBits(8)); // 0</span>
+<span class="fc" id="L723">                assertEquals(0x7f, reader.readBits(8)); // 1111111b = 0x7f</span>
+
+                // 2 bytes
+<span class="fc" id="L726">                assertEquals(0x80ff, reader.readBits(16)); // 0b11111111 = 0xff</span>
+<span class="fc" id="L727">                assertEquals(0xffff, reader.readBits(16)); // 0b111111111111111 = 0x7fff</span>
+<span class="fc" id="L728">            }</span>
+        });
+<span class="fc" id="L730">    }</span>
+
+    @Test
+    public void writeVarUInt32() throws IOException
+    {
+<span class="fc" id="L735">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L740">                writer.writeVarUInt32(0);</span>
+<span class="fc" id="L741">                writer.writeVarUInt32(0x7f);</span>
+
+                // 2 bytes
+<span class="fc" id="L744">                writer.writeVarUInt32(0xff);</span>
+<span class="fc" id="L745">                writer.writeVarUInt32(0x3fff);</span>
+
+                // 3 bytes
+<span class="fc" id="L748">                writer.writeVarUInt32(0x7fff);</span>
+<span class="fc" id="L749">                writer.writeVarUInt32(0x1fffff);</span>
+
+                // 4 bytes
+<span class="fc" id="L752">                writer.writeVarUInt32(0x3fffff);</span>
+<span class="fc" id="L753">                writer.writeVarUInt32(0x1fffffff);</span>
+<span class="fc" id="L754">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L760">                assertEquals(0x00, reader.readBits(8)); // 0</span>
+<span class="fc" id="L761">                assertEquals(0x7f, reader.readBits(8)); // 1111111b = 0x7f</span>
+
+                // 2 bytes
+<span class="fc" id="L764">                assertEquals(0x817f, reader.readBits(16));</span>
+<span class="fc" id="L765">                assertEquals(0xff7f, reader.readBits(16));</span>
+
+                // 3 bytes
+<span class="fc" id="L768">                assertEquals(0x81ff7f, reader.readBits(24));</span>
+<span class="fc" id="L769">                assertEquals(0xffff7f, reader.readBits(24));</span>
+
+                // 4 bytes
+<span class="fc" id="L772">                assertEquals(0x80ffffffL, reader.readBits(32));</span>
+<span class="fc" id="L773">                assertEquals(0xffffffffL, reader.readBits(32));</span>
+<span class="fc" id="L774">            }</span>
+        });
+<span class="fc" id="L776">    }</span>
+
+    @Test
+    public void writeVarSize() throws IOException
+    {
+<span class="fc" id="L781">        writeReadTest(new WriteReadTestable() {</span>
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L786">                writer.writeVarSize(0);</span>
+<span class="fc" id="L787">                writer.writeVarSize(0x7f);</span>
+
+                // 2 bytes
+<span class="fc" id="L790">                writer.writeVarSize(0xff);</span>
+<span class="fc" id="L791">                writer.writeVarSize(0x3fff);</span>
+
+                // 3 bytes
+<span class="fc" id="L794">                writer.writeVarSize(0x7fff);</span>
+<span class="fc" id="L795">                writer.writeVarSize(0x1fffff);</span>
+
+                // 4 bytes
+<span class="fc" id="L798">                writer.writeVarSize(0x3fffff);</span>
+<span class="fc" id="L799">                writer.writeVarSize(0xfffffff);</span>
+
+                // 5 bytes
+<span class="fc" id="L802">                writer.writeVarSize(0x1fffffff);</span>
+<span class="fc" id="L803">                writer.writeVarSize(0x7fffffff);</span>
+<span class="fc" id="L804">            }</span>
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // 1 byte
+<span class="fc" id="L810">                assertEquals(0x00, reader.readBits(8)); // 0</span>
+<span class="fc" id="L811">                assertEquals(0x7f, reader.readBits(8)); // 1111111b = 0x7f</span>
+
+                // 2 bytes
+<span class="fc" id="L814">                assertEquals(0x817f, reader.readBits(16));</span>
+<span class="fc" id="L815">                assertEquals(0xff7f, reader.readBits(16));</span>
+
+                // 3 bytes
+<span class="fc" id="L818">                assertEquals(0x81ff7f, reader.readBits(24));</span>
+<span class="fc" id="L819">                assertEquals(0xffff7f, reader.readBits(24));</span>
+
+                // 4 bytes
+<span class="fc" id="L822">                assertEquals(0x81ffff7fL, reader.readBits(32));</span>
+<span class="fc" id="L823">                assertEquals(0xffffff7fL, reader.readBits(32));</span>
+
+                // 5 bytes
+<span class="fc" id="L826">                assertEquals(0x80ffffffffL, reader.readBits(40));</span>
+<span class="fc" id="L827">                assertEquals(0x83ffffffffL, reader.readBits(40));</span>
+<span class="fc" id="L828">            }</span>
+        });
+<span class="fc" id="L830">    }</span>
+
+    /**
+     * Describes a test method.
+     */
+<span class="fc" id="L835">    private enum TestMethod</span>
+    {
+        /**
+         * Test method: write aligned.
+         */
+
+<span class="fc" id="L841">        ALIGNED,</span>
+
+        /**
+         * Test method: write unaligned.
+         */
+<span class="fc" id="L846">        UNALIGNED;</span>
+    }
+
+    private interface WriteReadTestable
+    {
+        // don't use BitStreamReader so that this tests solely the writer
+        void write(ByteArrayBitStreamWriter writer) throws IOException;
+        void read(ImageInputStream reader) throws IOException;
+    }
+
+    private void writeReadTest(WriteReadTestable writeReadTest) throws IOException
+    {
+<span class="fc bfc" id="L858" title="All 2 branches covered.">        for (final TestMethod method : TestMethod.values())</span>
+        {
+<span class="fc" id="L860">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+
+<span class="fc bfc" id="L863" title="All 2 branches covered.">                if (method == TestMethod.UNALIGNED)</span>
+                {
+<span class="fc" id="L865">                    writer.writeBits(1, 1);</span>
+                }
+<span class="fc" id="L867">                writeReadTest.write(writer);</span>
+
+<span class="fc" id="L869">                final byte[] data = writer.toByteArray();</span>
+<span class="fc bfc" id="L870" title="All 2 branches covered.">                if (method == TestMethod.UNALIGNED)</span>
+<span class="fc" id="L871">                    trimBitFromLeft(data);</span>
+<span class="fc" id="L872">                try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);</span>
+<span class="fc" id="L873">                        final MemoryCacheImageInputStream reader =</span>
+                                new MemoryCacheImageInputStream(inputStream);)
+                {
+<span class="fc" id="L876">                    writeReadTest.read(reader);</span>
+                }
+            }
+        }
+<span class="fc" id="L880">    }</span>
+
+    private static void trimBitFromLeft(byte[] data)
+    {
+<span class="fc" id="L884">        byte carry = 0;</span>
+<span class="fc bfc" id="L885" title="All 2 branches covered.">        for (int i = data.length; i &gt; 0; --i)</span>
+        {
+<span class="fc" id="L887">            final int currentValue = data[i - 1] &amp; 0xff; // prevent sign extension later (signed byte-&gt;int)</span>
+
+<span class="fc" id="L889">            data[i - 1] = (byte)((currentValue &lt;&lt; 1) | carry);</span>
+<span class="fc" id="L890">            carry = (byte)(currentValue &gt;&gt;&gt; 7); // MSB move to carry</span>
+        }
+        // the last carry bit is trimmed off
+<span class="fc" id="L893">    }</span>
+
+    private static long getBitOffset(ImageInputStream inputStream) throws IOException
+    {
+<span class="fc" id="L897">        return 8 * inputStream.getStreamPosition() + inputStream.getBitOffset();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
