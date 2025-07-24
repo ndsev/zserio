@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationBitStreamReaderTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.validation</a> &gt; <span class="el_source">ValidationBitStreamReaderTest.java</span></div><h1>ValidationBitStreamReaderTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.validation;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.array.Array;
+import zserio.runtime.array.ArrayTraits;
+import zserio.runtime.array.ArrayType;
+import zserio.runtime.array.RawArray;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+<span class="fc" id="L17">public class ValidationBitStreamReaderTest</span>
+{
+    @Test
+    public void validationWithReadOnly() throws IOException
+    {
+<span class="fc" id="L22">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L24">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L25">            writer.writeBits(2, 2);</span>
+<span class="fc" id="L26">            writer.writeBits(7, 3);</span>
+<span class="fc" id="L27">            writer.writeBits(9, 4);</span>
+<span class="fc" id="L28">            writer.writeBits(10, 5);</span>
+
+<span class="fc" id="L30">            final byte[] originalStream = writer.toByteArray();</span>
+
+<span class="fc" id="L32">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L33">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // put rubbish at the end position which is not used
+<span class="fc" id="L35">            changedStream[changedStream.length - 1] |= 0x01;</span>
+
+<span class="fc" id="L37">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L39">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L40">                assertEquals(2, reader.readBits(2));</span>
+<span class="fc" id="L41">                assertEquals(7, reader.readBits(3));</span>
+<span class="fc" id="L42">                assertEquals(9, reader.readBits(4));</span>
+<span class="fc" id="L43">                assertEquals(10, reader.readBits(5));</span>
+
+<span class="fc" id="L45">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L46">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L49">    }</span>
+
+    @Test
+    public void validationWithAlignTo() throws IOException
+    {
+<span class="fc" id="L54">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L56">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L57">            writer.alignTo(2);</span>
+<span class="fc" id="L58">            writer.writeBits(2, 2);</span>
+<span class="fc" id="L59">            writer.alignTo(4);</span>
+<span class="fc" id="L60">            writer.writeBits(7, 3);</span>
+<span class="fc" id="L61">            writer.alignTo(4);</span>
+<span class="fc" id="L62">            writer.writeBits(9, 4);</span>
+<span class="fc" id="L63">            writer.alignTo(8);</span>
+<span class="fc" id="L64">            writer.writeBits(10, 5);</span>
+
+<span class="fc" id="L66">            final byte[] originalStream = writer.toByteArray();</span>
+
+<span class="fc" id="L68">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L69">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // put rubbish to the aligned dummy bits and at the end
+<span class="fc" id="L71">            changedStream[0] |= 0x40;</span>
+<span class="fc" id="L72">            changedStream[0] |= 0x01;</span>
+<span class="fc" id="L73">            changedStream[1] |= 0x0F;</span>
+<span class="fc" id="L74">            changedStream[2] |= 0x03;</span>
+
+<span class="fc" id="L76">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L78">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L79">                reader.alignTo(2);</span>
+<span class="fc" id="L80">                assertEquals(2, reader.readBits(2));</span>
+<span class="fc" id="L81">                reader.alignTo(4);</span>
+<span class="fc" id="L82">                assertEquals(7, reader.readBits(3));</span>
+<span class="fc" id="L83">                reader.alignTo(4);</span>
+<span class="fc" id="L84">                assertEquals(9, reader.readBits(4));</span>
+<span class="fc" id="L85">                reader.alignTo(8);</span>
+<span class="fc" id="L86">                assertEquals(10, reader.readBits(5));</span>
+
+<span class="fc" id="L88">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L89">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L92">    }</span>
+
+    @Test
+    public void validationWithSkipBits() throws IOException
+    {
+<span class="fc" id="L97">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L99">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L100">            writer.writeBits(0, 1); // skip</span>
+<span class="fc" id="L101">            writer.writeBits(2, 2);</span>
+<span class="fc" id="L102">            writer.writeBits(0, 2); // skip</span>
+<span class="fc" id="L103">            writer.writeBits(7, 3);</span>
+<span class="fc" id="L104">            writer.writeBits(0, 3); // skip</span>
+<span class="fc" id="L105">            writer.writeBits(9, 4);</span>
+<span class="fc" id="L106">            writer.writeBits(0, 4); // skip</span>
+<span class="fc" id="L107">            writer.writeBits(10, 5);</span>
+<span class="fc" id="L108">            writer.writeBits(0, 5); // skip</span>
+
+<span class="fc" id="L110">            final byte[] originalStream = writer.toByteArray();</span>
+
+<span class="fc" id="L112">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L113">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // put rubbish to the skipped dummy bits and at the end
+<span class="fc" id="L115">            changedStream[0] |= 0x40;</span>
+<span class="fc" id="L116">            changedStream[0] |= 0x0C;</span>
+<span class="fc" id="L117">            changedStream[1] |= 0x70;</span>
+<span class="fc" id="L118">            changedStream[2] |= 0xF0;</span>
+<span class="fc" id="L119">            changedStream[3] |= 0x7C;</span>
+<span class="fc" id="L120">            changedStream[3] |= 0x03;</span>
+
+<span class="fc" id="L122">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L124">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L125">                reader.setBitPosition(reader.getBitPosition() + 1);</span>
+<span class="fc" id="L126">                assertEquals(2, reader.readBits(2));</span>
+<span class="fc" id="L127">                reader.setBitPosition(reader.getBitPosition() + 2);</span>
+<span class="fc" id="L128">                assertEquals(7, reader.readBits(3));</span>
+<span class="fc" id="L129">                reader.setBitPosition(reader.getBitPosition() + 3);</span>
+<span class="fc" id="L130">                assertEquals(9, reader.readBits(4));</span>
+<span class="fc" id="L131">                reader.setBitPosition(reader.getBitPosition() + 4);</span>
+<span class="fc" id="L132">                assertEquals(10, reader.readBits(5));</span>
+<span class="fc" id="L133">                reader.setBitPosition(reader.getBitPosition() + 5);</span>
+
+<span class="fc" id="L135">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L136">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L139">    }</span>
+
+    @Test
+    public void validationWithSkipBytes() throws IOException
+    {
+<span class="fc" id="L144">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L146">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L147">            writer.writeBits(0, 8); // skip</span>
+<span class="fc" id="L148">            writer.writeBits(2, 2);</span>
+<span class="fc" id="L149">            writer.writeBits(0, 8); // skip</span>
+<span class="fc" id="L150">            writer.writeBits(7, 3);</span>
+
+<span class="fc" id="L152">            final byte[] originalStream = writer.toByteArray();</span>
+
+<span class="fc" id="L154">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L155">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // put rubbish to the skipped dummy bits and at the end
+<span class="fc" id="L157">            changedStream[0] |= 0x7F;</span>
+<span class="fc" id="L158">            changedStream[1] |= 0x80;</span>
+<span class="fc" id="L159">            changedStream[1] |= 0x1F;</span>
+<span class="fc" id="L160">            changedStream[2] |= 0xE0;</span>
+<span class="fc" id="L161">            changedStream[2] |= 0x03;</span>
+
+<span class="fc" id="L163">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L165">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L166">                reader.setBitPosition(reader.getBitPosition() + 8);</span>
+<span class="fc" id="L167">                assertEquals(2, reader.readBits(2));</span>
+<span class="fc" id="L168">                reader.setBitPosition(reader.getBitPosition() + 8);</span>
+<span class="fc" id="L169">                assertEquals(7, reader.readBits(3));</span>
+
+<span class="fc" id="L171">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L172">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L175">    }</span>
+
+    @Test
+    public void validationWithSetPosition() throws IOException
+    {
+<span class="fc" id="L180">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L182">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L183">            writer.writeBits(2, 2);</span>
+<span class="fc" id="L184">            writer.writeBits(7, 3);</span>
+<span class="fc" id="L185">            writer.writeBits(9, 4);</span>
+<span class="fc" id="L186">            writer.writeBits(10, 5);</span>
+
+<span class="fc" id="L188">            final byte[] originalStream = writer.toByteArray();</span>
+
+<span class="fc" id="L190">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L191">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // put rubbish at the end position which is not used
+<span class="fc" id="L193">            changedStream[changedStream.length - 1] |= 0x01;</span>
+
+<span class="fc" id="L195">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L197">                reader.readBits(16);</span>
+<span class="fc" id="L198">                reader.setBitPosition(0);</span>
+<span class="fc" id="L199">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L200">                assertEquals(2, reader.readBits(2));</span>
+<span class="fc" id="L201">                assertEquals(7, reader.readBits(3));</span>
+<span class="fc" id="L202">                assertEquals(9, reader.readBits(4));</span>
+<span class="fc" id="L203">                assertEquals(10, reader.readBits(5));</span>
+
+<span class="fc" id="L205">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L206">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L209">    }</span>
+
+    @Test
+    public void validationWithImplicitArray() throws IOException
+    {
+<span class="fc" id="L214">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L216">            writer.writeBits(0xAB, 8);</span>
+<span class="fc" id="L217">            writer.writeBits(0xCD, 8);</span>
+
+<span class="fc" id="L219">            final byte[] originalStream = writer.toByteArray();</span>
+
+<span class="fc" id="L221">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(originalStream))</span>
+            {
+<span class="fc" id="L223">                final RawArray rawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L224">                final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArrayTraits(8);</span>
+<span class="fc" id="L225">                final Array readArray = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);</span>
+<span class="fc" id="L226">                readArray.read(reader);</span>
+<span class="fc" id="L227">                final short[] readRawArray = readArray.getRawArray();</span>
+<span class="fc" id="L228">                assertEquals(0xAB, readRawArray[0]);</span>
+<span class="fc" id="L229">                assertEquals(0xCD, readRawArray[1]);</span>
+
+<span class="fc" id="L231">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L232">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L235">    }</span>
+
+    @Test
+    public void validationWithNan() throws IOException
+    {
+<span class="fc" id="L240">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L242">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L243">            writer.writeFloat16(Float.NaN);</span>
+<span class="fc" id="L244">            writer.writeBits(2, 2);</span>
+
+<span class="fc" id="L246">            final byte[] originalStream = writer.toByteArray();</span>
+<span class="fc" id="L247">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L248">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // change NaN to binary represantation which is not used by writer
+<span class="fc" id="L250">            changedStream[0] |= 0x40;</span>
+<span class="fc" id="L251">            changedStream[1] |= 0xFF;</span>
+<span class="fc" id="L252">            changedStream[2] |= 0x80;</span>
+
+<span class="fc" id="L254">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L256">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L257">                assertTrue(Float.isNaN(reader.readFloat16()));</span>
+<span class="fc" id="L258">                assertEquals(2, reader.readBits(2));</span>
+
+<span class="fc" id="L260">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L261">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L264">    }</span>
+
+    @Test
+    public void validationWithNanAndSetPosition() throws IOException
+    {
+<span class="fc" id="L269">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L271">            writer.writeBits(1, 1);</span>
+<span class="fc" id="L272">            writer.writeFloat16(Float.NaN);</span>
+<span class="fc" id="L273">            writer.writeBits(2, 2);</span>
+
+<span class="fc" id="L275">            final byte[] originalStream = writer.toByteArray();</span>
+<span class="fc" id="L276">            final byte[] changedStream = new byte[originalStream.length];</span>
+<span class="fc" id="L277">            System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);</span>
+            // change NaN to binary representation which is not used by writer
+<span class="fc" id="L279">            changedStream[0] |= 0x40;</span>
+<span class="fc" id="L280">            changedStream[1] |= 0xFF;</span>
+<span class="fc" id="L281">            changedStream[2] |= 0x80;</span>
+
+<span class="fc" id="L283">            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))</span>
+            {
+<span class="fc" id="L285">                assertTrue(Float.isNaN(reader.readFloat16()));</span>
+<span class="fc" id="L286">                reader.setBitPosition(0);</span>
+
+<span class="fc" id="L288">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L289">                assertTrue(Float.isNaN(reader.readFloat16()));</span>
+<span class="fc" id="L290">                assertEquals(2, reader.readBits(2));</span>
+
+<span class="fc" id="L292">                final byte[] maskedStream = reader.toMaskedByteArray();</span>
+<span class="fc" id="L293">                assertTrue(Arrays.equals(originalStream, maskedStream));</span>
+            }
+        }
+<span class="fc" id="L296">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
