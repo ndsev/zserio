@@ -225,8 +225,8 @@ upload_maven()
             return 1
         fi
         echo $'\e[1;33m'"Don't forget to check the staged repository at" \
-                "https://s01.oss.sonatype.org/#stagingRepositories!"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push Close button, wait and then push Release button" \
+                "https://central.sonatype.com/publishing/deployments!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push Publish button and wait for around 10 minutes" \
                 "to copy artifacts to Maven Central!"$'\e[0m'
         read -n 1 -s -r -p "Press any key to continue..."
         echo

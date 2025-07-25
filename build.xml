@@ -268,9 +268,9 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
     <target name="deploy" depends="deploy_clean, download_zserio, generate_pom_runtime, generate_pom_bundle,
             generate_settings">
         <property name="zserio.deploy.release_repo_url"
-                value="https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"/>
+                value="https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"/>
         <property name="zserio.deploy.snapshot_repo_url"
-                value="https://s01.oss.sonatype.org/content/repositories/snapshots"/>
+                value="https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots"/>
         <condition property="zserio.deploy.repo_url"
                 value="${zserio.deploy.snapshot_repo_url}" else="${zserio.deploy.release_repo_url}">
             <equals arg1="${zserio.deploy.snapshot_flag}" arg2="yes"/>

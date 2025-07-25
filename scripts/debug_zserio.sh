@@ -9,7 +9,7 @@ print_help()
     cat << EOF
 Description:
     Runs distr/zserio.jar with attached debugger (VS Code).
-    
+
 Example:
     $0 -src ../build -cpp ../build/debug my_test.zs
 
