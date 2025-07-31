@@ -81,6 +81,7 @@ public final class NativeIntegralType extends NativeBuiltinType
     {
         StringBuilder buffer = new StringBuilder();
 
+        buffer.append("std::");
         if (!isSigned)
             buffer.append('u');
         buffer.append("int");
