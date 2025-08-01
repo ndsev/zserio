@@ -14,7 +14,7 @@ abstract class ByteArrayBitStreamBase
      */
     public long getBitPosition()
     {
-        return 8 * bytePosition + bitOffset;
+        return 8L * bytePosition + bitOffset;
     }
 
     /**

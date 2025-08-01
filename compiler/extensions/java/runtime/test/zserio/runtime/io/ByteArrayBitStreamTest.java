@@ -795,6 +795,36 @@ public class ByteArrayBitStreamTest
         }
     }
 
+    @Test
+    public void twoGigaBytes() throws IOException
+    {
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            byte test[] = new byte[] {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, (byte)0x80, (byte)0x90,
+                    (byte)0xA0, (byte)0xB0, (byte)0xC0, (byte)0xD0, (byte)0xE0, (byte)0xF0};
+            final int N = 127 * 1024 * 1024;
+
+            for (int i = 0; i < N; ++i)
+                writer.writeBytes(test); // writes 1+15 bytes
+
+            assertEquals(16 * N, writer.getBytePosition());
+            assertEquals(8L * 16 * N, writer.getBitPosition());
+
+            final byte[] buffer = writer.toByteArray();
+            assertEquals(16 * N, buffer.length);
+
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+            {
+                for (int i = 0; i < N; ++i)
+                {
+                    byte[] bytes = reader.readBytes();
+                    assertEquals(15, bytes.length);
+                    assertArrayEquals(test, bytes);
+                }
+            }
+        }
+    }
+
     private void testImpl(Method writeMethod, Method readMethod, Object[] values, int maxStartBitPos)
             throws Exception
     {
