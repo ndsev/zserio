@@ -795,6 +795,48 @@ public class ByteArrayBitStreamTest
         }
     }
 
+    @Test
+    public void twoGigaBytes() throws IOException
+    {
+        final int MAX_BUFFER_SIZE =
+                Integer.MAX_VALUE - 8; // Some VMs reserve an additional header word in the underlying array
+
+        byte test[] = new byte[254]; // write will store 2+254 = 256B
+        for (int i = 0; i < test.length; ++i)
+            test[i] = (byte)(i + 1);
+        final int NUM = 8 * 1024 * 1024 - 1; //*(2+test.length) = almost 2GB
+
+        byte test2[] = new byte[MAX_BUFFER_SIZE - NUM * (2 + test.length) - 2]; // last allocation
+        for (int i = 0; i < test2.length; ++i)
+            test2[i] = (byte)(i + 1);
+
+        byte[] buffer = null;
+
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            for (int i = 0; i < NUM; ++i)
+            {
+                writer.writeBytes(test); // writes 2+254 bytes
+            }
+            writer.writeBytes(test2);
+            assertEquals(MAX_BUFFER_SIZE, writer.getBytePosition());
+            assertEquals(8L * MAX_BUFFER_SIZE, writer.getBitPosition());
+            buffer = writer.toByteArray();
+            assertEquals(MAX_BUFFER_SIZE, buffer.length);
+        }
+
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+        {
+            for (int i = 0; i < NUM; ++i)
+            {
+                byte[] bytes = reader.readBytes();
+                assertArrayEquals(test, bytes);
+            }
+            byte[] bytes = reader.readBytes();
+            assertArrayEquals(test2, bytes);
+        }
+    }
+
     private void testImpl(Method writeMethod, Method readMethod, Object[] values, int maxStartBitPos)
             throws Exception
     {

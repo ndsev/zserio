@@ -341,6 +341,7 @@ Command hints to reformat source manually using clang-format tool (in case of fo
                 <arg line="--details tree"/>
                 <arg line="--exclude-engine junit-vintage"/>
                 <arg line="--reports-dir ${zserio_java_runtime.test.results_dir}"/>
+                <jvmarg line="-Xmx16g"/> <!-- for ByteArrayBitStreamTest -->
             </java>
         </jacoco:coverage>
 
