@@ -1,7 +1,6 @@
 #ifndef ZSERIO_PMR_POLYMORPHIC_ALLOCATOR_H_INC
 #define ZSERIO_PMR_POLYMORPHIC_ALLOCATOR_H_INC
 
-#include <cstddef>
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -29,8 +28,8 @@ public:
     // conform to C++11. [old-compiler-support]
     using pointer = value_type*;
     using const_pointer = const value_type*;
-    using size_type = std::size_t;
-    using difference_type = std::ptrdiff_t;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
     using reference = value_type&;
     using const_reference = const value_type&;
 
@@ -90,7 +89,7 @@ public:
      *
      * \param size Number of values to allocate memory for.
      */
-    value_type* allocate(std::size_t size)
+    value_type* allocate(size_t size)
     {
         return static_cast<value_type*>(m_resource->allocate(size * sizeof(value_type), alignof(value_type)));
     }
@@ -102,7 +101,7 @@ public:
      * \param size Number of values held by the memory pointed to by memory.
      *         Shall be the same size as was used for allocation of memory.
      */
-    void deallocate(value_type* memory, std::size_t size) noexcept
+    void deallocate(value_type* memory, size_t size) noexcept
     {
         m_resource->deallocate(memory, size * sizeof(value_type), alignof(value_type));
     }

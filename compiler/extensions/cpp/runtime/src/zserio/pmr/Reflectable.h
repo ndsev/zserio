@@ -2,6 +2,7 @@
 #define ZSERIO_PMR_REFLECTABLE_H_INC
 
 #include "zserio/Reflectable.h"
+#include "zserio/Types.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio

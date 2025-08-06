@@ -1,7 +1,6 @@
 #ifndef ZSERIO_ANY_HOLDER_H_INC
 #define ZSERIO_ANY_HOLDER_H_INC
 
-#include <cstddef>
 #include <type_traits>
 
 #include "zserio/AllocatorHolder.h"

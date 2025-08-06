@@ -10,6 +10,7 @@
 #include "zserio/Span.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/Traits.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

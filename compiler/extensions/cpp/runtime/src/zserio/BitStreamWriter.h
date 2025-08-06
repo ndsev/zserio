@@ -2,7 +2,6 @@
 #define ZSERIO_BIT_STREAM_WRITER_H_INC
 
 #include <algorithm>
-#include <cstddef>
 #include <cstring>
 
 #include "zserio/BitBuffer.h"

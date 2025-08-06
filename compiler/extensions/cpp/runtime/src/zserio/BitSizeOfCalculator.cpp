@@ -85,7 +85,7 @@ static const std::array<uint64_t, 5> VARSIZE_MAX_VALUES = {
         (UINT64_C(1) << (2 + 7 + 7 + 7 + 8)) - 1,
 };
 
-template <std::size_t SIZE>
+template <size_t SIZE>
 static size_t bitSizeOfVarIntImpl(
         uint64_t value, const std::array<uint64_t, SIZE>& maxValues, const char* varIntName)
 {

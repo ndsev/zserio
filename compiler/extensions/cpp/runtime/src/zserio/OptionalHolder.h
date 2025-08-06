@@ -1,7 +1,6 @@
 #ifndef ZSERIO_OPTIONAL_HOLDER_H_INC
 #define ZSERIO_OPTIONAL_HOLDER_H_INC
 
-#include <cstddef>
 #include <type_traits>
 
 #include "zserio/CppRuntimeException.h"

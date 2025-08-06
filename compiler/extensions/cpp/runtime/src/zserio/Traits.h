@@ -5,6 +5,7 @@
 
 #include "zserio/NoInit.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -14,7 +15,7 @@ class BitStreamReader;
 struct PropagateAllocatorT;
 template <typename>
 class BasicPackingContextNode;
-template <typename, std::size_t>
+template <typename, size_t>
 class Span;
 
 namespace detail

@@ -5,6 +5,7 @@
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 // needed to have proper typedefs
+#include "zserio/Types.h"
 #include "zserio/pmr/AnyHolder.h"
 #include "zserio/pmr/BitBuffer.h"
 #include "zserio/pmr/String.h"

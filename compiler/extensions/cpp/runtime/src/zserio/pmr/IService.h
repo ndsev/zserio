@@ -2,6 +2,7 @@
 #define ZSERIO_I_SERVICE_H_INC
 
 #include "zserio/IService.h"
+#include "zserio/Types.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 // needed to have proper pmr typedefs

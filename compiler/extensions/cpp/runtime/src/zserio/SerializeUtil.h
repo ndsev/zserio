@@ -14,6 +14,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/FileUtil.h"
 #include "zserio/Traits.h"
+#include "zserio/Types.h"
 #include "zserio/Vector.h"
 
 namespace zserio

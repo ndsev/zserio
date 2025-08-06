@@ -13,6 +13,7 @@
 #include "zserio/Traits.h"
 #include "zserio/TypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

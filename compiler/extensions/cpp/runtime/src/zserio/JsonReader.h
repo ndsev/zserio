@@ -9,6 +9,7 @@
 #include "zserio/OptionalHolder.h"
 #include "zserio/SizeConvertUtil.h"
 #include "zserio/StringView.h"
+#include "zserio/Types.h"
 #include "zserio/UniquePtr.h"
 #include "zserio/ZserioTreeCreator.h"
 

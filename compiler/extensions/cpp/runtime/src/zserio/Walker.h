@@ -12,6 +12,7 @@
 #include "zserio/String.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/TypeInfoUtil.h"
+#include "zserio/Types.h"
 #include "zserio/Vector.h"
 #include "zserio/WalkerConst.h"
 

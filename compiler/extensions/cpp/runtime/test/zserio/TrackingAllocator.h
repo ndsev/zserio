@@ -5,6 +5,7 @@
 #include <set>
 
 #include "gtest/gtest.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -80,14 +81,14 @@ public:
             m_tracker(other.m_tracker)
     {}
 
-    value_type* allocate(std::size_t size)
+    value_type* allocate(size_t size)
     {
         const auto ptr = m_allocator.allocate(size);
         m_tracker->allocated(ptr);
         return ptr;
     }
 
-    void deallocate(value_type* memory, std::size_t size) noexcept
+    void deallocate(value_type* memory, size_t size) noexcept
     {
         m_tracker->deallocated(memory);
         m_allocator.deallocate(memory, size);

@@ -3,6 +3,7 @@
 
 #include <new>
 
+#include "zserio/Types.h"
 #include "zserio/pmr/MemoryResource.h"
 
 namespace zserio

@@ -21,6 +21,7 @@
 #include "zserio/JsonWriter.h"
 #include "zserio/ReflectableUtil.h"
 #include "zserio/Traits.h"
+#include "zserio/Types.h"
 #include "zserio/Walker.h"
 
 namespace zserio

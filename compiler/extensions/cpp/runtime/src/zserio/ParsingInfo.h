@@ -1,10 +1,10 @@
 #ifndef ZSERIO_PARSING_INFO_INC_H
 #define ZSERIO_PARSING_INFO_INC_H
 
-#include <cstddef>
 #include <limits>
 
 #include "zserio/CppRuntimeException.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

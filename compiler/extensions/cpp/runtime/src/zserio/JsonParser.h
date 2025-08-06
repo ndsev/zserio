@@ -5,6 +5,7 @@
 #include "zserio/JsonDecoder.h"
 #include "zserio/JsonTokenizer.h"
 #include "zserio/Span.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

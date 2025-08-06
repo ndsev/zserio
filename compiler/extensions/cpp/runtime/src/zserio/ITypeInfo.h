@@ -4,6 +4,7 @@
 #include "zserio/IReflectable.h"
 #include "zserio/Span.h"
 #include "zserio/StringView.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
