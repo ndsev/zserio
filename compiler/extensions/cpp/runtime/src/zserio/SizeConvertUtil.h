@@ -1,8 +1,6 @@
 #ifndef ZSERIO_SIZE_CONVERT_UTIL_H_INC
 #define ZSERIO_SIZE_CONVERT_UTIL_H_INC
 
-#include <cstddef>
-
 #include "zserio/Types.h"
 
 namespace zserio

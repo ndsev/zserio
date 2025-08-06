@@ -2,7 +2,6 @@
 #define ZSERIO_ENUMS_H_INC
 
 #include <algorithm>
-#include <cstddef>
 #include <type_traits>
 
 #include "zserio/CppRuntimeException.h"

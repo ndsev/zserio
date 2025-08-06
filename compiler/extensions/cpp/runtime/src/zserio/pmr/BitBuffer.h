@@ -2,6 +2,7 @@
 #define ZSERIO_PMR_BIT_BUFFER_H_INC
 
 #include "zserio/BitBuffer.h"
+#include "zserio/Types.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio

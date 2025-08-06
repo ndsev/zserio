@@ -2,7 +2,6 @@
 #define ZSERIO_STRING_VIEW_H_INC
 
 #include <algorithm>
-#include <cstddef>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -11,6 +10,7 @@
 #include "zserio/RebindAlloc.h"
 #include "zserio/String.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -839,7 +839,7 @@ private:
 };
 
 template <typename CharT, class Traits>
-constexpr std::size_t const BasicStringView<CharT, Traits>::npos;
+constexpr size_t const BasicStringView<CharT, Traits>::npos;
 
 /**
  * Comparison operator.
@@ -999,7 +999,7 @@ inline namespace literals
 /**
  * User-defined literal for StringView.
  */
-constexpr ::zserio::StringView operator""_sv(const char* str, std::size_t len) noexcept
+constexpr ::zserio::StringView operator""_sv(const char* str, size_t len) noexcept
 {
     return ::zserio::StringView(str, len);
 }

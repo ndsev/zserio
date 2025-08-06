@@ -11,6 +11,7 @@
 #include "zserio/Span.h"
 #include "zserio/String.h"
 #include "zserio/StringView.h"
+#include "zserio/Types.h"
 #include "zserio/Vector.h"
 
 namespace zserio

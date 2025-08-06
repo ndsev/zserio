@@ -9,6 +9,7 @@
 #include "zserio/BitBuffer.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/ITypeInfo.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

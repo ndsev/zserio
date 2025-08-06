@@ -2,6 +2,7 @@
 #define ZSERIO_PMR_ANY_HOLDER_H_INC
 
 #include "zserio/AnyHolder.h"
+#include "zserio/Types.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio

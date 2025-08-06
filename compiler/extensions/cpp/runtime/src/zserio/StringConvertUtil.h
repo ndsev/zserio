@@ -7,6 +7,7 @@
 
 #include "zserio/RebindAlloc.h"
 #include "zserio/String.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

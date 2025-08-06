@@ -1,7 +1,6 @@
 #ifndef ZSERIO_BIT_BUFFER_H_INC
 #define ZSERIO_BIT_BUFFER_H_INC
 
-#include <cstddef>
 #include <cstring>
 #include <type_traits>
 #include <vector>

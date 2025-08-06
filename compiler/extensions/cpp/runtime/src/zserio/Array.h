@@ -12,6 +12,7 @@
 #include "zserio/DeltaContext.h"
 #include "zserio/SizeConvertUtil.h"
 #include "zserio/Traits.h"
+#include "zserio/Types.h"
 #include "zserio/UniquePtr.h"
 
 namespace zserio

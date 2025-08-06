@@ -1,7 +1,6 @@
 #ifndef ZSERIO_BITSIZEOF_CALCULATOR_H_INC
 #define ZSERIO_BITSIZEOF_CALCULATOR_H_INC
 
-#include <cstddef>
 #include <string>
 
 #include "zserio/BitBuffer.h"

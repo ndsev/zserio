@@ -13,6 +13,7 @@
 #include "zserio/BitBuffer.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

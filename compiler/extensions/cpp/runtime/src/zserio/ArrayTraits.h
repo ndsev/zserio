@@ -13,6 +13,7 @@
 #include "zserio/Enums.h"
 #include "zserio/SizeConvertUtil.h"
 #include "zserio/Traits.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

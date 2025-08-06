@@ -8,6 +8,7 @@
 #include "zserio/JsonEncoder.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/TypeInfoUtil.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

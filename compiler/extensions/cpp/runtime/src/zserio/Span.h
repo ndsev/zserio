@@ -8,28 +8,30 @@
 #include <type_traits>
 #include <vector>
 
+#include "zserio/Types.h"
+
 namespace zserio
 {
 
 /**
  * Constant used to differentiate between spans of dynamic and static extent.
  */
-constexpr std::size_t dynamic_extent = std::numeric_limits<std::size_t>::max();
+constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
 
 namespace detail
 {
 
-template <typename T, std::size_t Extent>
+template <typename T, size_t Extent>
 struct SpanStorage
 {
     SpanStorage() = default;
 
-    SpanStorage(T* data, std::size_t) :
+    SpanStorage(T* data, size_t) :
             m_data(data)
     {}
 
     T* m_data = nullptr;
-    static constexpr std::size_t m_size = Extent;
+    static constexpr size_t m_size = Extent;
 };
 
 template <typename T>
@@ -37,13 +39,13 @@ struct SpanStorage<T, dynamic_extent>
 {
     SpanStorage() = default;
 
-    SpanStorage(T* data, std::size_t size) :
+    SpanStorage(T* data, size_t size) :
             m_data(data),
             m_size(size)
     {}
 
     T* m_data = nullptr;
-    std::size_t m_size = 0;
+    size_t m_size = 0;
 };
 
 } // namespace detail
@@ -54,13 +56,13 @@ struct SpanStorage<T, dynamic_extent>
  * as long as the instance of the Span is alive.
  * Inspired by C++20 std::span.
  */
-template <typename T, std::size_t Extent = dynamic_extent>
+template <typename T, size_t Extent = dynamic_extent>
 class Span
 {
 public:
     using element_type = T;
     using value_type = typename std::remove_cv<T>::type;
-    using size_type = std::size_t;
+    using size_type = size_t;
     using difference_type = std::ptrdiff_t;
     using pointer = T*;
     using const_pointer = const T*;

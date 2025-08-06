@@ -1,10 +1,11 @@
 #ifndef ZSERIO_PMR_I_MEMORY_RESOURCE_H_INC
 #define ZSERIO_PMR_I_MEMORY_RESOURCE_H_INC
 
-#include <cstddef>
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
     #include <iostream>
 #endif
+
+#include "zserio/Types.h"
 
 namespace zserio
 {
