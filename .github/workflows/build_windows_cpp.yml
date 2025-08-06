@@ -46,7 +46,16 @@ jobs:
           # v141 toolset is not installed in windows-2022/VS2022 image by default
           if [[ "${{matrix.msvc-toolset}}" == "v141" ]] ; then
             echo "Running vs_installer.exe..."
-            "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 --nocache --passive --norestart --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+            time "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 --nocache --passive --norestart --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+            # extra logging to debug rare VS installation not found error
+            echo "ls VC/Auxiliary/Build"
+            ls "/c/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build"
+            echo "ls VC/Tools/MSVC"
+            ls "/c/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC"
+            echo "find /c/Program Files/Microsoft Visual Studio/2022/Enterprise -name v141"
+            find "/c/Program Files/Microsoft Visual Studio/2022/Enterprise" -name v141
+            echo "req query HKLM/.../VisualStudio/Setup"
+            reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\Setup"
           fi
         fi
 
