@@ -3,6 +3,7 @@ package zserio.runtime.io;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -798,6 +799,10 @@ public class ByteArrayBitStreamTest
     @Test
     public void twoGigaBytes() throws IOException
     {
+        // run this test only on x64
+        String arch = System.getProperty("sun.arch.data.model");
+        assumeTrue(arch != null && arch.equals("64"));
+
         final int MAX_BUFFER_SIZE =
                 Integer.MAX_VALUE - 8; // Some VMs reserve an additional header word in the underlying array
 
