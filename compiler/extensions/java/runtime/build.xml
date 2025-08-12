@@ -72,6 +72,13 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <property name="zserio_java_runtime.3rdparty.junit.jar_file"
             location="${zserio_java_runtime.3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
 
+    <condition property="is64bit">
+        <equals arg1="${os.arch}" arg2="amd64"/>
+    </condition>
+    <condition property="is64bit">
+        <equals arg1="${os.arch}" arg2="x86_64"/>
+    </condition>
+
     <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
     <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
         <condition>
@@ -341,7 +348,7 @@ Command hints to reformat source manually using clang-format tool (in case of fo
                 <arg line="--details tree"/>
                 <arg line="--exclude-engine junit-vintage"/>
                 <arg line="--reports-dir ${zserio_java_runtime.test.results_dir}"/>
-                <jvmarg line="-Xmx16g"/> <!-- for ByteArrayBitStreamTest -->
+                <jvmarg if:set="is64bit" value="-Xmx16g"/> <!-- for ByteArrayBitStreamTest -->
             </java>
         </jacoco:coverage>
 
