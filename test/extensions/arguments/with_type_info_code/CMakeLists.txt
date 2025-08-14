@@ -32,17 +32,37 @@ if (ZSERIO_LOG_STRING_EXPRESSIONS)
     check_zserio_warnings("${ZSERIO_LOG_STRING_EXPRESSIONS}" 0)
 endif ()
 
+add_library(json_param_cast_zs STATIC ${TEST_ZS_ROOT}/json_param_cast.zs)
+zserio_generate_cpp(
+    TARGET json_param_cast_zs
+    SRC_DIR ${TEST_ZS_ROOT}
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_json_param_cast
+    EXTRA_ARGS -withoutSourcesAmalgamation -withTypeInfoCode -withReflectionCode ${ZSERIO_EXTRA_ARGS}
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_JSON_PARAM_CAST
+    OUTPUT_VAR ZSERIO_LOG_JSON_PARAM_CAST
+    ERROR_VAR ZSERIO_LOG_JSON_PARAM_CAST
+)
+target_link_libraries(json_param_cast_zs PUBLIC ZserioCppRuntime)
+target_include_directories(json_param_cast_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+if (ZSERIO_LOG_JSON_PARAM_CAST)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_json_param_cast.txt "${ZSERIO_LOG_JSON_PARAM_CAST}")
+    check_zserio_warnings("${ZSERIO_LOG_JSON_PARAM_CAST}" 0)
+endif ()
+
 add_custom_test(with_type_info_code
     DEPENDS
+        json_param_cast_zs
         type_info_string_expressions_zs
         with_type_info_code_zs
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DebugStringTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/JsonParamCastTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TypeInfoStringExpressionsTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithTypeInfoCodeCreator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithTypeInfoCodeCreator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithTypeInfoCodeTest.cpp
     GENERATED_SOURCES
         ${GENERATED_SOURCES}
+        ${GENERATED_SOURCES_JSON_PARAM_CAST}
         ${GENERATED_SOURCES_STRING_EXPRESSIONS}
 )

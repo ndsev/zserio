@@ -6,6 +6,13 @@ bugprone-exception-escape:gen/with_type_info_code/RecursiveChoice.h
 bugprone-forwarding-reference-overload:gen_string_expressions/type_info_string_expressions/TypeInfoStringExpressions.h
 bugprone-forwarding-reference-overload:gen/with_type_info_code/ParameterizedStruct.h
 bugprone-forwarding-reference-overload:gen/with_type_info_code/TemplatedParameterizedStruct_TS32.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Float16Param.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Float32Param.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Float64Param.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Int8Param.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Int16Param.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Int32Param.h
+bugprone-forwarding-reference-overload:gen_json_param_cast/json_param_cast/Int64Param.h
 
 bugprone-reserved-identifier:gen/with_type_info_code/TestBitmask.h
 bugprone-reserved-identifier:gen/with_type_info_code/TestEnum.h
@@ -14,6 +21,7 @@ bugprone-unhandled-self-assignment:gen/with_type_info_code/ParameterizedStruct.c
 bugprone-unhandled-self-assignment:gen/with_type_info_code/TemplatedParameterizedStruct_TS32.cpp
 
 cert-err58-cpp:cpp/DebugStringTest.cpp
+cert-err58-cpp:cpp/JsonParamCastTest.cpp
 cert-err58-cpp:cpp/WithTypeInfoCodeTest.cpp
 
 cppcoreguidelines-pro-type-member-init:gen_string_expressions/type_info_string_expressions/TestChoice.cpp
@@ -27,6 +35,13 @@ cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/TemplatedParamete
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/TemplatedSqlTableU8.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/TemplatedSqlTable_uint32.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/WithoutRowIdTable.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Float16Param.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Float32Param.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Float64Param.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Int8Param.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Int16Param.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Int32Param.cpp
+cppcoreguidelines-pro-type-member-init:gen_json_param_cast/json_param_cast/Int64Param.cpp
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_type_info_code/Fts4Table.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_type_info_code/SqlTable.cpp
@@ -52,6 +67,7 @@ misc-no-recursion # reports also tested_release and some system headers
 performance-move-const-arg:gen_string_expressions/type_info_string_expressions/TestStruct.cpp
 performance-move-const-arg:gen/with_type_info_code/ComplexStruct.cpp
 performance-move-const-arg:gen/with_type_info_code/WithTypeInfoCode.cpp
+performance-move-const-arg:gen_json_param_cast/json_param_cast/Holder.cpp
 
 readability-make-member-function-const:gen_string_expressions/type_info_string_expressions/TestChoice.cpp
 readability-make-member-function-const:gen_string_expressions/type_info_string_expressions/TestStruct.cpp
@@ -60,7 +76,18 @@ readability-make-member-function-const:gen/with_type_info_code/SimpleChoice.cpp
 readability-make-member-function-const:gen/with_type_info_code/SimpleStruct.cpp
 readability-make-member-function-const:gen/with_type_info_code/TS32.cpp
 readability-make-member-function-const:gen/with_type_info_code/WithTypeInfoCode.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Float16Param.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Float32Param.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Float64Param.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Holder.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Int8Param.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Int16Param.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Int32Param.cpp
+readability-make-member-function-const:gen_json_param_cast/json_param_cast/Int64Param.cpp
 
 readability-uppercase-literal-suffix:gen/with_type_info_code/SimpleStruct.cpp
+readability-uppercase-literal-suffix:gen_json_param_cast/json_param_cast/Float16Param.cpp
+readability-uppercase-literal-suffix:gen_json_param_cast/json_param_cast/Float32Param.cpp
+readability-uppercase-literal-suffix:gen_json_param_cast/json_param_cast/Holder.cpp
 
 readability-simplify-boolean-expr:gen/with_type_info_code/RecursiveChoice.cpp

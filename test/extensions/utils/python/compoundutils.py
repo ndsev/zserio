@@ -27,6 +27,42 @@ def trace_calls(frame, event, arg):
     return trace_calls  # Important: the trace function must return itself
 
 
+def dumpToFile(obj: Any, file_name: str):
+    with open(file_name, "w", encoding="utf-8") as file:
+        file.write(dump(obj))
+
+
+def dump(obj: Any, indent_level: int = 0, visited=None) -> str:
+    if visited is None:
+        visited = set()
+
+    ret = ""
+    # Avoid infinite recursion for circular references
+    if id(obj) in visited:
+        ret += " " * indent_level + f"-> (Circular Reference to {type(obj).__name__})\n"
+        return ret
+    visited.add(id(obj))
+
+    ret += f"{type(obj).__name__} {{\n"
+
+    # Iterate over instance attributes
+    indent_str = "  " * indent_level
+    if hasattr(obj, "__dict__"):
+        for key, value in obj.__dict__.items():
+            if not key.startswith("__"):  # Exclude special attributes
+                ret += indent_str + f"  {key}: "
+                if hasattr(value, "__dict__") and not isinstance(
+                    value, (str, int, float, list, dict, set, tuple)
+                ):
+                    ret += dump(value, indent_level + 2, visited)
+                else:
+                    ret += str(value) + "\n"
+        ret += indent_str + "}\n"
+    else:
+        ret += indent_str + "  (No __dict__ attribute, potentially a built-in type)\n"
+    return ret
+
+
 def writeReadTest(clazz: Type[Any], data: Any):
     bitSize = data.bitsizeof()
     bitBuffer = zserio.serialize(data)

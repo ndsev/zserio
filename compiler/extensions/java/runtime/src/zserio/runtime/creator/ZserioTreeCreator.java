@@ -312,11 +312,28 @@ public final class ZserioTreeCreator
 
         try
         {
+            for (int i = 0; i < arguments.length && i < parametersTypes.length; ++i)
+            {
+                String paramType = parametersTypes[i].getName();
+                if (paramType.equals("byte"))
+                    arguments[i] = Byte.valueOf(arguments[i].toString());
+                else if (paramType.equals("short"))
+                    arguments[i] = Short.valueOf(arguments[i].toString());
+                else if (paramType.equals("int") && !(arguments[i] instanceof Integer))
+                    arguments[i] = Integer.valueOf(arguments[i].toString());
+                else if (paramType.equals("long"))
+                    arguments[i] = Long.valueOf(arguments[i].toString());
+                else if (paramType.equals("float"))
+                    arguments[i] = Float.valueOf(arguments[i].toString());
+                else if (paramType.equals("double") && !(arguments[i] instanceof Double))
+                    arguments[i] = Double.valueOf(arguments[i].toString());
+            }
+
             final Constructor<?> constructor = typeInfo.getJavaClass().getConstructor(parametersTypes);
             return constructor.newInstance(arguments);
         }
         catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                InvocationTargetException excpt)
+                InvocationTargetException | NumberFormatException excpt)
         {
             throw new ZserioError("ZserioTreeCreator: Cannot call constructor of Zserio object '" +
                             typeInfo.getSchemaName() + "'!",
