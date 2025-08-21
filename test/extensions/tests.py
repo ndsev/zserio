@@ -163,7 +163,7 @@ def _runBlack(sourcePath):
         subprocess.run(["black", sourcePath, "--line-length=112", "--diff"], check=False)
         which_python_result = subprocess.run(["which", "python"], check=False, capture_output=True, text=True)
         print("Command hint to reformat source manually using black tool:")
-        print("  " + which_python_result.stdout.strip() + " -m black [SOURCE] --line-length=112")
+        print("  " + which_python_result.stdout.strip() + " -m black --line-length=112 [SOURCE]")
         return result.returncode
 
     return 0

@@ -1158,8 +1158,8 @@ build_cpp_binding_to_python()
     local BUILD_SOURCES_DIR="${BUILD_ZSERIO_CPP_DIR}/sources"
 
     mkdir -p "${BUILD_SOURCES_DIR}"
-    cp -r "${PYTHON_RUNTIME_DIR}/zserio_cpp/"* "${BUILD_SOURCES_DIR}"
-    cp -r "${CPP_RUNTIME_DIR}/"* "${BUILD_SOURCES_DIR}/"
+    cp -u -r "${PYTHON_RUNTIME_DIR}/zserio_cpp/"* "${BUILD_SOURCES_DIR}"
+    cp -u -r "${CPP_RUNTIME_DIR}/"* "${BUILD_SOURCES_DIR}/"
 
     python "${BUILD_SOURCES_DIR}/setup.py" build --build-base="${BUILD_ZSERIO_CPP_DIR}"
     if [ $? -ne 0 ] ; then

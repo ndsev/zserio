@@ -11,30 +11,22 @@ import java.util.ArrayList;
  */
 public class Dumper
 {
-    private ArrayList<Object> visited = new ArrayList<Object>();
-
     public static String dump(Object obj)
     {
-        Dumper dumper = new Dumper();
+        final Dumper dumper = new Dumper();
         return dumper.toString(obj, 0);
     }
 
     public static void dumpToFile(Object obj, String fileName) throws IOException
     {
-        Dumper dumper = new Dumper();
+        final Dumper dumper = new Dumper();
         try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(fileName), "utf-8"))
         {
             fw.write(dumper.toString(obj, 0));
         }
     }
 
-    /**
-     * Converts an object to a string representation that lists all fields.
-     * @param obj an object
-     * @return a string with the object's class name and all field names and
-     * values
-     */
-    public String toString(Object obj, int level)
+    private String toString(Object obj, int level)
     {
         if (obj == null)
             return "null";
@@ -112,4 +104,6 @@ public class Dumper
 
         return r.toString();
     }
+
+    private ArrayList<Object> visited = new ArrayList<Object>();
 }

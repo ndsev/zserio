@@ -85,7 +85,7 @@ test_python_runtime()
         echo
         echo "Command hint to reformat source manually using black tool:"
         local PYTHON_EXECUTABLE=`which python`
-        echo "  ${PYTHON_EXECUTABLE} -m black [SOURCE] --line-length=112"
+        echo "  ${PYTHON_EXECUTABLE} -m black --line-length=112 [SOURCE]"
         stderr_echo "Running black failed with return code ${BLACK_RESULT}!"
         return 1
     fi
