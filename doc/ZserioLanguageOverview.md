@@ -581,7 +581,21 @@ struct ItemCount
 
 The return type of a function has to be a standard integer or compound type, and the function parameter list
 must be empty. The function body may contain nothing but a return statement with an expression matching
-the return type.
+the return type. 
+
+The return expression can refer to compound parameters:
+
+```
+struct MetresConverter(uint16 metres)
+{
+    uint16  valueA;
+
+    function uint16 toCentimetres()
+    {
+        return 100*metres;
+    }
+};
+```
 
 Functions are intended to provide no more than simple expression semantics. There are no plans to add more
 advanced type conversion or even procedural logic to zserio.
@@ -655,9 +669,11 @@ For encoding details see [encoding guide](ZserioEncodingGuide.md#implicit-array-
 ```
 struct ImplicitArray
 {
-    implicit Element list[];
+    implicit int16 list[];
 };
 ```
+
+Implicit arrays of compound elements are currently not allowed. 
 
 The length of the `list` array can be referenced as `lengthof(list)`, see
 [lengthof Operator](#lengthof-operator).
@@ -693,14 +709,15 @@ struct AutoArrayCandidate
 
 ### Packed Arrays
 
-An array type can be packed indicated by a `packed` keyword. The only supported packing algorithm is
-delta compression which is applied for packed arrays of:
+An array type can be packed indicated by a `packed` keyword. The only supported packing algorithm is delta compression which is applied to the packable elements of packed arrays. Packable elements are:
 
 - all integer types (uint32, varuint, ...)
 - enumeration types
 - bitmask types
-- compound types which contain integer types, enumeration, bitmask types or inner packable arrays
+- compound types which contain at least one field of integer type, enumeration, bitmask types or inner packable arrays
 - all union types (even if do not contain any packable fields because selector is always packable integer type)
+
+In delta compression only the element differences are stored which leads to a reduced element bit size. 
 
 **Example**
 ```
