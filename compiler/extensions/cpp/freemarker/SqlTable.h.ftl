@@ -295,7 +295,7 @@ public:
     private:
         explicit Reader(::zserio::SqliteConnection& db, <#rt>
                 <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-                <#lt>const ${types.string.name}& sqlQuery, const allocator_type& allocator = allocator_type());
+                <#lt>const ${types.string.name}& sqlQuery, const allocator_type& allocator = {});
         friend class ${name};
 
         void makeStep();
@@ -406,7 +406,22 @@ public:
      */
 </#if>
     Reader createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-            <#lt>::zserio::StringView condition = ::zserio::StringView()) const;
+            <#lt>::zserio::StringView condition = {}) const;
+<#if withCodeComments>
+    /**
+     * Creates the table reader for given table names and SQL condition.
+     *
+        <#if needsParameterProvider>
+     * \param parameterProvider Explicit parameter provider to be used during reading.
+        </#if>
+     * \param columns case-sensitive names of columns to retreive
+     * \param condition SQL condition to use.
+     *
+     * \return Created table reader.
+     */
+</#if>
+    Reader createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>::zserio::Span<const ${types.string.name}> columns, ::zserio::StringView condition = {}) const;
 <#if withWriterCode>
     <#if withCodeComments>
 

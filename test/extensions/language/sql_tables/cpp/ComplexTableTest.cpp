@@ -100,27 +100,35 @@ protected:
         }
     }
 
-    static void checkComplexTableRow(const ComplexTable::Row& row1, const ComplexTable::Row& row2)
+    static void checkComplexTableRow(
+            const ComplexTable::Row& row1, const ComplexTable::Row& row2, int columns = 0xFFFF)
     {
-        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
+#define ASSERT_EQU(flag, name)                                                                                 \
+    if (columns & flag)                                                                                        \
+        ASSERT_EQ(row1.get##name(), row2.get##name());                                                         \
+    else                                                                                                       \
+        ASSERT_FALSE(row2.is##name##Set());
 
-        ASSERT_EQ(row1.getAge(), row2.getAge());
-        ASSERT_EQ(row1.getName(), row2.getName());
-        ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
-        ASSERT_EQ(row1.getSalary(), row2.getSalary());
-        ASSERT_EQ(row1.getBonus(), row2.getBonus());
-        ASSERT_EQ(row1.getValue(), row2.getValue());
-        ASSERT_EQ(row1.getColor(), row2.getColor());
-        ASSERT_EQ(row1.getBlob(), row2.getBlob());
+        ASSERT_EQU(1, BlobId);
+        ASSERT_EQU(2, Age);
+        ASSERT_EQU(4, Name);
+        ASSERT_EQU(8, IsValid);
+        ASSERT_EQU(0x10, Salary);
+        ASSERT_EQU(0x20, Bonus);
+        ASSERT_EQU(0x40, Value);
+        ASSERT_EQU(0x80, Color);
+        ASSERT_EQU(0x100, Blob);
+
+#undef ASSERT_EQU
     }
 
-    static void checkComplexTableRows(
-            const vector_type<ComplexTable::Row>& rows1, const vector_type<ComplexTable::Row>& rows2)
+    static void checkComplexTableRows(const vector_type<ComplexTable::Row>& rows1,
+            const vector_type<ComplexTable::Row>& rows2, int columns = 0xFFFF)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
         {
-            checkComplexTableRow(rows1[i], rows2[i]);
+            checkComplexTableRow(rows1[i], rows2[i], columns);
         }
     }
 
@@ -323,6 +331,26 @@ TEST_F(ComplexTableTest, readWithCondition)
 
     const size_t expectedRowNum = 1;
     checkComplexTableRow(writtenRows[expectedRowNum], readRows[0]);
+}
+
+TEST_F(ComplexTableTest, readWithColumnNames)
+{
+    ComplexTable& testTable = m_database->getComplexTable();
+    ComplexTableParameterProvider parameterProvider;
+
+    vector_type<ComplexTable::Row> writtenRows;
+    fillComplexTableRows(writtenRows);
+    testTable.write(parameterProvider, writtenRows);
+
+    vector_type<ComplexTable::Row> readRows;
+    std::vector<string_type> columns{"blobId", "salary"};
+    auto reader = testTable.createReader(parameterProvider, columns);
+    while (reader.hasNext())
+    {
+        readRows.push_back(reader.next());
+    }
+
+    checkComplexTableRows(writtenRows, readRows, 0x11);
 }
 
 TEST_F(ComplexTableTest, update)

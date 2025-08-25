@@ -141,11 +141,42 @@ ${name}::Reader ${name}::createReader(<#if needsParameterProvider>IParameterProv
     return Reader(m_db, <#if needsParameterProvider>parameterProvider, </#if>sqlQuery, get_allocator_ref());
 }
 
+${name}::Reader ${name}::createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+        <#lt>::zserio::Span<const ${types.string.name}> columns, ::zserio::StringView condition) const
+{
+    ${types.string.name} sqlQuery(get_allocator_ref());
+
+<#list fields as field>
+    if (std::count_if(columns.begin(), columns.end(), [](const ${types.string.name}& col) {
+            return col == "${field.name}";
+        }))
+        sqlQuery += "${field.name},";
+    else
+        sqlQuery += "NULL,";
+
+</#list>
+    if (sqlQuery.empty())
+    {
+        throw ::zserio::SqliteException("${name}::createReader: columns are empty");
+    }
+
+    sqlQuery.pop_back();
+    sqlQuery = "SELECT " + sqlQuery + " FROM ";
+    appendTableNameToQuery(sqlQuery);
+    if (!condition.empty())
+    {
+        sqlQuery += " WHERE ";
+        sqlQuery += condition;
+    }
+
+    return Reader(m_db, <#if needsParameterProvider>parameterProvider, </#if>sqlQuery, get_allocator_ref());
+}
+
 ${name}::Reader::Reader(::zserio::SqliteConnection& db, <#rt>
         <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
         <#lt>const ${types.string.name}& sqlQuery, const allocator_type& allocator) :
         ::zserio::AllocatorHolder<allocator_type>(allocator),
-        <#lt><#if needsParameterProvider>m_parameterProvider(parameterProvider),</#if><#rt>
+        <#if needsParameterProvider>m_parameterProvider(parameterProvider),<#else><#t></#if>
         m_stmt(db.prepareStatement(sqlQuery))
 {
     makeStep();
