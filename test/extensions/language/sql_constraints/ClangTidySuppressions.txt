@@ -1,3 +1,6 @@
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp
 

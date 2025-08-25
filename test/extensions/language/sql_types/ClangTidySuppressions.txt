@@ -1,5 +1,7 @@
 bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_types/SqlTypesTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp
 

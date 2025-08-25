@@ -140,7 +140,7 @@ protected:
 private:
     InvalidMemoryResource m_invalidMemoryResource;
     MemoryResourceScopedSetter m_invalidMemoryResourceSetter;
-    TestMemoryResource<10 * 1024> m_memoryResource;
+    TestMemoryResource<11 * 1024> m_memoryResource;
     allocator_type m_allocator;
 
 protected:

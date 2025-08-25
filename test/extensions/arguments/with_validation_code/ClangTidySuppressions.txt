@@ -3,6 +3,21 @@ bugprone-forwarding-reference-overload:gen/with_validation_code/depend_table_val
 bugprone-signed-char-misuse:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp
 bugprone-signed-char-misuse:gen/with_validation_code/depend_table_validation/DependTable.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/blob_table_validation/BlobTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/constraint_table_validation/ConstraintTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/control_validation/Table1.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/control_validation/Table2.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/control_validation/Table3.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/depend_table_validation/Blob.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/depend_table_validation/DependTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/full_range_table_validation/FullRangeTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/hidden_column_table_validation/HiddenColumnTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/simple_table_validation/RootStruct.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/simple_table_validation/SimpleTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/virtual_table_validation/TestTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_validation_code/virtual_table_validation/VirtualTable.cpp
+
 cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/SimpleTableValidationTest.cpp
 
 cppcoreguidelines-pro-type-member-init:gen/with_validation_code/blob_table_validation/BlobTable.cpp
