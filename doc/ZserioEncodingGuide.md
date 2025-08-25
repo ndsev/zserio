@@ -674,13 +674,13 @@ Bit position | Value | Value (bin) | Description
 9-16         | 250   | 11111010    | `list[1]`
 17-24        | 251   | 11111011    | `list[2]`
 25-32        | 252   | 11111100    | `list[3]`
-33-40        | 253   | 11111101    | `list[3]`
+33-40        | 253   | 11111101    | `list[4]`
 
 > In this case, the packed array will be encoded by the single bit `0` (`isPacked` will be `false`) followed by the
 > uncompressed array elements - it's 41 bits instead of original 40 bits.
 
-Packed arrays of integers can be always replaced by normal schema without packed functionality.
-The following shows packed array of integers which corresponds to the previous `PackedArray` example:
+Packed arrays of integers can always be replaced by elaborated schema without packed functionality.
+The following sample shows packed array of integers which corresponds to the previous `PackedArray` example:
 
 **Example**
 
@@ -707,16 +707,67 @@ struct PackedArray
 
 Both examples from above result in the exact same bit stream.
 
+### Packed Arrays of Optional members
+
+When `optional` member is used the element difference is calculated only between elements which are 
+set. Null optionals only encode empty optional flag as usual.
+
+When optional member with an `if` clause is used the element difference is calculated only between elements which 
+evaluate to true. Elements with false condition are not stored.
+
+**Example**
+
+```
+struct Element
+{
+    optional int8 number;
+};
+
+struct PackedArray
+{
+    packed Element list[5];
+};
+```
+
+Assuming the `PackedArray` fields:
+```
+list = [none, 11, none, 15, 20] # decimal values
+```
+
+The structure will be encoded as a bit stream `01100001 10000101 10101001 01010000`: 
+ 
+```
+Offset   00 01 02 03
+0000     61 85 a9 50
+```
+
+Bit position | Value | Value (bin) | Description
+------------ | ----- | ----------- | -----------
+0            | 0     | 0           | `list[0].number` is not set
+1            | 1     | 1           | `list[1].number` is set
+2            | 1     | 1           | `PackingDescriptor.isPacked` is true, the maximum delta is 20-15 = 5
+3-8          | 3     | 000011      | `PackingDescriptor.maxBitNumber`, ceil(log2(maxDelta)) = 3 
+9-16         | 11    | 00001011    | `list[1].number` value
+17           | 0     | 0           | `list[2].number` is not set
+18           | 1     | 1           | `list[3].number` is set
+19-22        | 4     | 0100        | `list[3].number` difference: 15 - 11 = 4
+23           | 1     | 1           | `list[4].number` is set
+24-27        | 5     | 0101        | `list[4].number` difference: 20 - 15 = 5
+
+> Packed array took 28 bits instead of 29 bits (3*(1+8)+2*1) unpacked. The difference would get bigger if int16 or int32 number is used.
+
 ### Packed Arrays of Compounds
 
 [Packed arrays of compounds](ZserioLanguageOverview.md#packed-arrays) are encoded compound element by
 compound element.
 
-If the compound field is packable than the field in the first compound element will contain `PackingDescriptor`
-followed by the field value. Each field in following compound elements will contain delta of the next
-field value (if `PackingDescriptor.isPacked = 1`, otherwise it will contain the field value).
+If the compound field is packable then the first element's field value encodes a `PackingDescriptor` 
+structure first. First element value is stored directly. Next element 
+values are stored as differences (when `isPacked=1`) or as unpacked values (when `isPacked=0`). 
+Unpacked encoding is used when packed encoding would lead to an increased bit size e.g. when the
+element difference is too big.
 
-If the compound field is unpackable, it's value is simply written in the stream.
+If the compound field is unpackable, its value is written to the stream directly.
 
 **Example**
 
@@ -771,10 +822,10 @@ Bit position | Value | Value (hex, bin)   | Description
 123-130      | 1     | 01                 | length of `list[4].text` string, encoded as `varsize`
 131-138      | "d"   | 65                 | UTF-8 encoded string "e"
 
-> This is 139 bits instead of 240 bits which would be used without packing (`5 * (32 + 16`)).
+> Here the packed array is encoded in 139 bits instead of 240 bits for the unpacked variant (`5 * (32 + 16`)).
 
-Packed arrays of compounds can be always replaced by normal schema without packed functionality.
-The following shows packed array of compounds  which corresponds to the previous `PackedArray` example:
+Packed arrays of compounds can always be replaced by elaborated schema without packed functionality.
+The following sample shows a packed array of compounds which corresponds to the previous `PackedArray` example:
 
 ```
 struct PackingDescriptor
@@ -806,8 +857,17 @@ struct PackedArray
 
 Both examples from above result in the exact same bit stream.
 
-Packed arrays of choices and unions are encoding in the same way, meaning that all fields corresponded to the
-same case are considered as an array. If such array is empty, nothing is encoded in the bit stream.
+### Packed Arrays of Choices, Unions 
+
+> In choice and union only one case is active. Other cases are not encoded so it works like a struct having optional fields.
+
+In packed arrays of `choice` elements each element can have different tag set. First element stores 
+`PackingDescriptor` of the selected choice value and the value itself. Next elements are stored as differences as long
+as they use the same tag. If the next element uses different previously unused tag `PackingDescriptor` of the new choice 
+value is stored first. The element difference is always calculated from the last element having the same tag.
+
+`Unions` work the same way as choices but they store tags as well. Because the tag is packable first element stores 
+`PackingDescriptor` for the tag and tag value itself. Next elements store tag differences.
 
 ### Packed Arrays of Nested Compounds
 
@@ -889,10 +949,10 @@ Bit position | Value | Value (hex, `bin`) | Description
 303-318      | 0     | 00 00              | `list[4].innerStructure.value16` - `uint16` always uses 2 bytes
 
 > This is 319 bits instead of 640 bits which would be used without packing (`5 * (32 + 16 + 64 + 16)`).
-> Note that `value16` is not packed because it would be worse than
+> Note that `value16` is not packed because it would lead to an increased bit size.
 
-Packed arrays of nested compounds can be always replaced by normal schema without packed functionality.
-The following shows packed array of nested compounds  which corresponds to the previous `PackedArray` example:
+Packed arrays of nested compounds can always be replaced by elaborated schema without packed functionality.
+The following sample shows packed array of nested compounds which corresponds to the previous `PackedArray` example:
 
 ```
 struct PackingDescriptor
@@ -945,6 +1005,11 @@ struct PackedArray
 ```
 
 Both examples from above result in the exact same byte stream.
+
+### Packed Arrays of Nested Arrays
+
+Inner packable arrays are automatically packed as well. They behave the same way as if being marked 
+as packed. They store their own `PackingDescriptors` and element differences as usual. 
 
 ## Alignment and Offsets
 
