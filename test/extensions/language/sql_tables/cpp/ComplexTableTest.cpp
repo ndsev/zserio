@@ -103,7 +103,6 @@ protected:
     static void checkComplexTableRow(const ComplexTable::Row& row1, const ComplexTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
-
         ASSERT_EQ(row1.getAge(), row2.getAge());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
@@ -208,6 +207,30 @@ protected:
         for (size_t i = 0; i < rows1.size(); ++i)
         {
             checkComplexTableRowWithNullValues(rows1[i], rows2[i]);
+        }
+    }
+
+    static void checkComplexTableRowBlobIdSalary(const ComplexTable::Row& row1, const ComplexTable::Row& row2)
+    {
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
+        ASSERT_EQ(row1.getSalary(), row2.getSalary());
+
+        ASSERT_FALSE(row2.isAgeSet());
+        ASSERT_FALSE(row2.isNameSet());
+        ASSERT_FALSE(row2.isIsValidSet());
+        ASSERT_FALSE(row2.isBonusSet());
+        ASSERT_FALSE(row2.isValueSet());
+        ASSERT_FALSE(row2.isColorSet());
+        ASSERT_FALSE(row2.isBlobSet());
+    }
+
+    static void checkComplexTableRowsBlobIdSalary(
+            const vector_type<ComplexTable::Row>& rows1, const vector_type<ComplexTable::Row>& rows2)
+    {
+        ASSERT_EQ(rows1.size(), rows2.size());
+        for (size_t i = 0; i < rows1.size(); ++i)
+        {
+            checkComplexTableRowBlobIdSalary(rows1[i], rows2[i]);
         }
     }
 
@@ -325,6 +348,26 @@ TEST_F(ComplexTableTest, readWithCondition)
     checkComplexTableRow(writtenRows[expectedRowNum], readRows[0]);
 }
 
+TEST_F(ComplexTableTest, readWithColumnNames)
+{
+    ComplexTable& testTable = m_database->getComplexTable();
+    ComplexTableParameterProvider parameterProvider;
+
+    vector_type<ComplexTable::Row> writtenRows;
+    fillComplexTableRows(writtenRows);
+    testTable.write(parameterProvider, writtenRows);
+
+    vector_type<ComplexTable::Row> readRows;
+    std::vector<string_type> columns{"blobId", "salary"};
+    auto reader = testTable.createReader(parameterProvider, columns);
+    while (reader.hasNext())
+    {
+        readRows.push_back(reader.next());
+    }
+
+    checkComplexTableRowsBlobIdSalary(writtenRows, readRows);
+}
+
 TEST_F(ComplexTableTest, update)
 {
     ComplexTable& testTable = m_database->getComplexTable();
@@ -350,6 +393,45 @@ TEST_F(ComplexTableTest, update)
     ASSERT_EQ(1, readRows.size());
 
     checkComplexTableRow(updateRow, readRows[0]);
+}
+
+TEST_F(ComplexTableTest, updateWithColumnNames)
+{
+    ComplexTable& testTable = m_database->getComplexTable();
+    ComplexTableParameterProvider parameterProvider;
+
+    vector_type<ComplexTable::Row> writtenRows;
+    fillComplexTableRows(writtenRows);
+    const auto& firstRow = writtenRows[0];
+    testTable.write(parameterProvider, writtenRows);
+
+    const uint64_t updateRowId = firstRow.getBlobId();
+    ComplexTable::Row updateRow;
+    updateRow.setName("UpdatedName");
+    updateRow.setAge(109);
+    const std::array<string_type, 2> updateColumns{"name", "age"};
+    const string_type updateCondition = "blobId=" + zserio::toString<allocator_type>(updateRowId);
+    testTable.update(parameterProvider, updateRow, updateColumns, updateCondition);
+
+    vector_type<ComplexTable::Row> readRows;
+    auto reader = testTable.createReader(parameterProvider, updateCondition);
+    while (reader.hasNext())
+    {
+        readRows.push_back(reader.next());
+    }
+    ASSERT_EQ(1, readRows.size());
+    const auto& readRow = readRows[0];
+
+    ASSERT_EQ(updateRow.getName(), readRow.getName());
+    ASSERT_EQ(updateRow.getAge(), readRow.getAge());
+
+    ASSERT_EQ(firstRow.getBlob(), readRow.getBlob());
+    ASSERT_EQ(firstRow.getBlobId(), readRow.getBlobId());
+    ASSERT_EQ(firstRow.getBonus(), readRow.getBonus());
+    ASSERT_EQ(firstRow.getColor(), readRow.getColor());
+    ASSERT_EQ(firstRow.getIsValid(), readRow.getIsValid());
+    ASSERT_EQ(firstRow.getSalary(), readRow.getSalary());
+    ASSERT_EQ(firstRow.getValue(), readRow.getValue());
 }
 
 } // namespace complex_table

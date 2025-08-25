@@ -294,8 +294,8 @@ public:
 
     private:
         explicit Reader(::zserio::SqliteConnection& db, <#rt>
-                <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-                <#lt>const ${types.string.name}& sqlQuery, const allocator_type& allocator = allocator_type());
+                <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>const ::std::array<bool, ${fields?size}>& columnsMapping,
+                ::zserio::StringView sqlQuery, const allocator_type& allocator = {});
         friend class ${name};
 
         void makeStep();
@@ -303,6 +303,7 @@ public:
 <#if needsParameterProvider>
         IParameterProvider& m_parameterProvider;
 </#if>
+        ::std::array<bool, ${fields?size}> m_columnsMapping;
         ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> m_stmt;
         int m_lastResult;
     };
@@ -406,7 +407,24 @@ public:
      */
 </#if>
     Reader createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-            <#lt>::zserio::StringView condition = ::zserio::StringView()) const;
+            <#lt>::zserio::StringView condition = {}) const;
+
+<#if withCodeComments>
+    /**
+     * Creates the table reader for given table names and SQL condition.
+     *
+        <#if needsParameterProvider>
+     * \param parameterProvider Explicit parameter provider to be used during reading.
+        </#if>
+     * \param columns case-sensitive names of columns to retreive
+     * \param condition SQL condition to use.
+     *
+     * \return Created table reader.
+     */
+</#if>
+    Reader createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>::zserio::Span<const ${types.string.name}> columns,
+            ::zserio::StringView condition = {}) const;
 <#if withWriterCode>
     <#if withCodeComments>
 
@@ -417,10 +435,12 @@ public:
      * \param parameterProvider Explicit parameter provider to be used during reading.
         </#if>
      * \param rows Table rows to write.
+     * \param columns Column names to write. If omitted or empty, all columns are used.
      */
     </#if>
     void write(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-            <#lt>::zserio::Span<Row> rows);
+            <#lt>::zserio::Span<Row> rows, ::zserio::Span<const ${types.string.name}> columns = {});
+
     <#if withCodeComments>
 
     /**
@@ -430,11 +450,19 @@ public:
      * \param parameterProvider Explicit parameter provider to be used during reading.
         </#if>
      * \param row Table row to update.
+     * \param columns Column names to write. If omitted or empty, all columns are used.
      * \param whereCondition SQL where condition to use.
      */
+    /** \{ */
     </#if>
-    void update(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-            <#lt>Row& row, ::zserio::StringView whereCondition);
+    void update(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>Row& row, <#rt>
+            <#lt>::zserio::StringView whereCondition);
+
+    void update(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>Row& row,
+             ::zserio::Span<const ${types.string.name}> columns, ::zserio::StringView whereCondition);
+    <#if withCodeComments>
+     /** \} */
+    </#if>
 </#if>
 <#if withValidationCode>
 
@@ -466,6 +494,13 @@ public:
     bool validate(::zserio::IValidationObserver& validationObserver<#rt>
             <#lt><#if needsParameterProvider>, IParameterProvider& parameterProvider</#if>, bool& continueValidation);
 </#if>
+
+    static constexpr ::std::array<::zserio::StringView, ${fields?size}> columnNames =
+    {{
+<#list fields as field>
+        ::zserio::StringView("${field.name}", ${field.name?length})<#sep>,</#sep>
+</#list>
+    }};
 
 private:
 <#if withValidationCode>
@@ -500,8 +535,8 @@ private:
 
 </#if>
 <#if withWriterCode>
-    void writeRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-            <#lt>Row& row, sqlite3_stmt& statement);
+    void writeRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>Row& row,
+            const ::std::array<bool, ${fields?size}>& columnsMapping, sqlite3_stmt& statement);
 
     void appendCreateTableToQuery(${types.string.name}& sqlQuery) const;
 

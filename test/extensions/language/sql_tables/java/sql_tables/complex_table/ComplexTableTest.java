@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -95,6 +96,36 @@ public class ComplexTableTest
     }
 
     @Test
+    public void readWithColumnNames() throws SQLException, IOException, ZserioError
+    {
+        final ComplexTable testTable = database.getComplexTable();
+
+        final List<ComplexTableRow> writtenRows = new ArrayList<ComplexTableRow>();
+        fillComplexTableRows(writtenRows);
+        testTable.write(writtenRows);
+
+        final ComplexTableParameterProvider parameterProvider = new ComplexTableParameterProvider();
+        final List<ComplexTableRow> readRows =
+                testTable.read(parameterProvider, Arrays.asList("blobId", "name"));
+
+        assertEquals(writtenRows.size(), readRows.size());
+        for (int i = 0; i < writtenRows.size(); ++i)
+        {
+            ComplexTableRow writtenRow = writtenRows.get(i);
+            ComplexTableRow readRow = readRows.get(i);
+            assertEquals(writtenRow.getBlobId(), readRow.getBlobId());
+            assertEquals(writtenRow.getName(), readRow.getName());
+            assertTrue(readRow.isNullAge());
+            assertTrue(readRow.isNullBlob());
+            assertTrue(readRow.isNullBonus());
+            assertTrue(readRow.isNullColor());
+            assertTrue(readRow.isNullIsValid());
+            assertTrue(readRow.isNullSalary());
+            assertTrue(readRow.isNullValue());
+        }
+    }
+
+    @Test
     public void update() throws SQLException, IOException, ZserioError
     {
         final ComplexTable testTable = database.getComplexTable();
@@ -114,6 +145,50 @@ public class ComplexTableTest
 
         final ComplexTableRow readRow = readRows.get(0);
         checkComplexTableRow(updateRow, readRow);
+    }
+
+    @Test
+    public void updateWithColumnNames() throws SQLException, IOException, ZserioError
+    {
+        final ComplexTable testTable = database.getComplexTable();
+
+        final List<ComplexTableRow> writtenRows = new ArrayList<ComplexTableRow>();
+        fillComplexTableRows(writtenRows);
+        testTable.write(writtenRows);
+
+        final int updateRowId = 3;
+        final String updateCondition = "blobId=" + updateRowId;
+        final ComplexTableRow updateRow = new ComplexTableRow();
+        updateRow.setAge(100);
+        updateRow.setName("Gagarin");
+        testTable.update(updateRow, Arrays.asList("name", "age"), updateCondition);
+
+        final ComplexTableParameterProvider parameterProvider = new ComplexTableParameterProvider();
+        final List<ComplexTableRow> readRows = testTable.read(parameterProvider);
+        assertEquals(writtenRows.size(), readRows.size());
+        for (int i = 0; i < writtenRows.size(); ++i)
+        {
+            final ComplexTableRow readRow = readRows.get(i);
+            final ComplexTableRow writtenRow = writtenRows.get(i);
+            if (readRow.getBlobId().intValue() == updateRowId)
+            {
+                assertEquals(updateRow.getAge(), readRow.getAge());
+                assertEquals(updateRow.getName(), readRow.getName());
+            }
+            else
+            {
+                assertEquals(writtenRow.getAge(), readRow.getAge());
+                assertEquals(writtenRow.getName(), readRow.getName());
+            }
+            assertEquals(writtenRow.getBlob(), readRow.getBlob());
+            assertEquals(writtenRow.getBlobId(), readRow.getBlobId());
+            assertEquals(writtenRow.getBonus(), readRow.getBonus());
+            assertEquals(writtenRow.getClass(), readRow.getClass());
+            assertEquals(writtenRow.getColor(), readRow.getColor());
+            assertEquals(writtenRow.getIsValid(), readRow.getIsValid());
+            assertEquals(writtenRow.getSalary(), readRow.getSalary());
+            assertEquals(writtenRow.getValue(), readRow.getValue());
+        }
     }
 
     @Test
