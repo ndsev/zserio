@@ -103,7 +103,6 @@ protected:
     static void checkComplexTableRow(const ComplexTable::Row& row1, const ComplexTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
-
         ASSERT_EQ(row1.getAge(), row2.getAge());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
@@ -208,6 +207,30 @@ protected:
         for (size_t i = 0; i < rows1.size(); ++i)
         {
             checkComplexTableRowWithNullValues(rows1[i], rows2[i]);
+        }
+    }
+
+    static void checkComplexTableRowBlobIdSalary(const ComplexTable::Row& row1, const ComplexTable::Row& row2)
+    {
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
+        ASSERT_EQ(row1.getSalary(), row2.getSalary());
+
+        ASSERT_FALSE(row2.isAgeSet());
+        ASSERT_FALSE(row2.isNameSet());
+        ASSERT_FALSE(row2.isIsValidSet());
+        ASSERT_FALSE(row2.isBonusSet());
+        ASSERT_FALSE(row2.isValueSet());
+        ASSERT_FALSE(row2.isColorSet());
+        ASSERT_FALSE(row2.isBlobSet());
+    }
+
+    static void checkComplexTableRowsBlobIdSalary(
+            const vector_type<ComplexTable::Row>& rows1, const vector_type<ComplexTable::Row>& rows2)
+    {
+        ASSERT_EQ(rows1.size(), rows2.size());
+        for (size_t i = 0; i < rows1.size(); ++i)
+        {
+            checkComplexTableRowBlobIdSalary(rows1[i], rows2[i]);
         }
     }
 
@@ -323,6 +346,26 @@ TEST_F(ComplexTableTest, readWithCondition)
 
     const size_t expectedRowNum = 1;
     checkComplexTableRow(writtenRows[expectedRowNum], readRows[0]);
+}
+
+TEST_F(ComplexTableTest, readWithColumnNames)
+{
+    ComplexTable& testTable = m_database->getComplexTable();
+    ComplexTableParameterProvider parameterProvider;
+
+    vector_type<ComplexTable::Row> writtenRows;
+    fillComplexTableRows(writtenRows);
+    testTable.write(parameterProvider, writtenRows);
+
+    vector_type<ComplexTable::Row> readRows;
+    std::vector<string_type> columns{"blobId", "salary"};
+    auto reader = testTable.createReader(parameterProvider, columns);
+    while (reader.hasNext())
+    {
+        readRows.push_back(reader.next());
+    }
+
+    checkComplexTableRowsBlobIdSalary(writtenRows, readRows);
 }
 
 TEST_F(ComplexTableTest, update)
