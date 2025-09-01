@@ -158,6 +158,21 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self.assertTrue(hasattr(userType, "TABLE_NAME_EUROPE"))
         self.assertTrue(hasattr(userType, "TABLE_NAME_AMERICA"))
 
+    def testValueTypeMethods(self):
+        userType = self.api.Type
+
+        assertPropertyPresent(self, userType, "value", readOnly=True)
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
+
+        userType = self.api.Value
+
+        assertPropertyPresent(self, userType, "is_valid", readOnly=True)
+        assertPropertyPresent(self, userType, "value", readOnly=True)
+        assertMethodNotPresent(self, userType, "is_value_set")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
+
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeTile(writer)

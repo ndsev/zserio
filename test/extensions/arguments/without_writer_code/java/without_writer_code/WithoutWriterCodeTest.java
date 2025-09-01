@@ -234,6 +234,24 @@ public class WithoutWriterCodeTest
     }
 
     @Test
+    public void checkValueTypeMethods() throws IOException
+    {
+        assertMethodNotPresent(Type.class, "Type()");
+        assertMethodNotPresent(Type.class, "Type(long)");
+        assertMethodNotPresent(Type.class, "setValue(long)");
+        assertMethodNotPresent(Type.class, "initializeOffsets(");
+        assertMethodNotPresent(Type.class, "write(");
+
+        assertMethodNotPresent(Value.class, "Value(without_writer_code.Type");
+        assertMethodNotPresent(Value.class, "setIsValid(boolean)");
+        assertMethodNotPresent(Value.class, "setValue(");
+        assertMethodNotPresent(Value.class, "isValueSet()");
+        assertMethodNotPresent(Value.class, "resetValue()");
+        assertMethodNotPresent(Value.class, "initializeOffsets(");
+        assertMethodNotPresent(Value.class, "write(");
+    }
+
+    @Test
     public void readConstructor() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
