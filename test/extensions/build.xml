@@ -253,7 +253,8 @@ Command hints to reformat source manually using clang-format tool (in case of fo
                     <pathelement location="${test_utils.jar_file}"/>
                 </auxClasspath>
             </spotbugs>
-            <fail message="SpotBugs found some issues!" if="@{testName}.is_failed"/>
+            <loadfile property="htmlerror" srcfile="${@{testName}.build_dir}/spotbugs.html" if:set="@{testName}.is_failed"/>
+            <fail message="SpotBugs found some issues!\n${htmlerror}" if="@{testName}.is_failed"/>
         </sequential>
     </macrodef>
 
