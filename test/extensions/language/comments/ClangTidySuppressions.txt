@@ -3,6 +3,11 @@ bugprone-forwarding-reference-overload:gen/comments/classic_doc/struct_template_
 bugprone-forwarding-reference-overload:gen/comments/markdown_doc/struct_template_comments/Field_Compound.h
 bugprone-forwarding-reference-overload:gen/comments/markdown_doc/struct_template_comments/Field_string.h
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/comments/classic_doc/sql_database_comments/Table.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/comments/classic_doc/sql_table_comments/VirtualTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/comments/markdown_doc/sql_database_comments/Table.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/comments/markdown_doc/sql_table_comments/VirtualTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/comments/classic_doc/choice_comments/TestChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/comments/classic_doc/sql_database_comments/Table.cpp
 cppcoreguidelines-pro-type-member-init:gen/comments/classic_doc/sql_table_comments/VirtualTable.cpp

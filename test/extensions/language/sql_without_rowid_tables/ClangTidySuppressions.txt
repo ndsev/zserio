@@ -1,3 +1,7 @@
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/OrdinaryRowIdTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/WithoutRowIdTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/OrdinaryRowIdTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/WithoutRowIdTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.cpp

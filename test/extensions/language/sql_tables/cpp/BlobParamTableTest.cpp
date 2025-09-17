@@ -180,6 +180,31 @@ TEST_F(BlobParamTableTest, deleteTable)
     ASSERT_TRUE(isTableInDb());
 }
 
+TEST_F(BlobParamTableTest, writeWithColumns)
+{
+    BlobParamTable& testTable = m_database->getBlobParamTable();
+
+    vector_type<BlobParamTable::Row> writtenRows;
+    BlobParamTable::Row row;
+    row.setName("Pepek");
+    writtenRows.push_back(row);
+    row.setName("Rishi");
+    writtenRows.push_back(row);
+
+    std::array<string_type, 1> columns{"name"};
+    testTable.write(writtenRows, columns);
+
+    BlobParamTable::Reader reader = testTable.createReader();
+    for (size_t i = 0; reader.hasNext(); ++i)
+    {
+        auto readRow = reader.next();
+        ASSERT_EQ(i + 1, readRow.getBlobId());
+        ASSERT_EQ(writtenRows[i].getName(), readRow.getName());
+        ASSERT_FALSE(readRow.isBlobSet());
+        ASSERT_FALSE(readRow.isParametersSet());
+    }
+}
+
 TEST_F(BlobParamTableTest, readWithoutCondition)
 {
     BlobParamTable& testTable = m_database->getBlobParamTable();
@@ -237,6 +262,38 @@ TEST_F(BlobParamTableTest, readWithCondition)
     checkBlobParamTableRow(writtenRows[expectedRowNum], readRows[0]);
 }
 
+TEST_F(BlobParamTableTest, readWithColumns)
+{
+    BlobParamTable& testTable = m_database->getBlobParamTable();
+
+    vector_type<BlobParamTable::Row> writtenRows;
+    fillBlobParamTableRows(writtenRows);
+    testTable.write(writtenRows);
+
+    vector_type<BlobParamTable::Row> readRows;
+    std::vector<string_type> columns{"blobId", "name"};
+    auto reader = testTable.createReader(columns);
+    while (reader.hasNext())
+    {
+        readRows.push_back(reader.next());
+    }
+
+    ASSERT_EQ(writtenRows.size(), readRows.size());
+    for (size_t i = 0; i < writtenRows.size(); ++i)
+    {
+        const auto& written = writtenRows[i];
+        const auto& read = readRows[i];
+        ASSERT_EQ(written.getBlobId(), read.getBlobId());
+        ASSERT_EQ(written.getName(), read.getName());
+        ASSERT_FALSE(read.isBlobSet());
+        ASSERT_FALSE(read.isParametersSet());
+    }
+
+    // throws exception because column with the given name doesn't exist
+    columns = {"blobId", "nonexisting"};
+    ASSERT_THROW((void)testTable.createReader(columns), zserio::SqliteException);
+}
+
 TEST_F(BlobParamTableTest, update)
 {
     BlobParamTable& testTable = m_database->getBlobParamTable();
@@ -260,6 +317,38 @@ TEST_F(BlobParamTableTest, update)
     ASSERT_EQ(1, readRows.size());
 
     checkBlobParamTableRow(updateRow, readRows[0]);
+}
+
+TEST_F(BlobParamTableTest, updateWithColumns)
+{
+    BlobParamTable& testTable = m_database->getBlobParamTable();
+
+    vector_type<BlobParamTable::Row> writtenRows;
+    fillBlobParamTableRows(writtenRows);
+    const auto& firstRow = writtenRows[0];
+    testTable.write(writtenRows);
+
+    const uint64_t updateRowId = firstRow.getBlobId();
+    BlobParamTable::Row updateRow;
+    updateRow.setName("UpdatedName");
+    const std::array<string_type, 1> updateColumns{"name"};
+    const string_type updateCondition = "blobId=" + zserio::toString<allocator_type>(updateRowId);
+    testTable.update(updateRow, updateColumns, updateCondition);
+
+    vector_type<BlobParamTable::Row> readRows;
+    auto reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+    {
+        readRows.push_back(reader.next());
+    }
+    ASSERT_EQ(1, readRows.size());
+    const auto& readRow = readRows[0];
+
+    ASSERT_EQ(updateRow.getName(), readRow.getName());
+
+    ASSERT_EQ(firstRow.getBlob(), readRow.getBlob());
+    ASSERT_EQ(firstRow.getBlobId(), readRow.getBlobId());
+    ASSERT_EQ(firstRow.getParameters(), readRow.getParameters());
 }
 
 } // namespace blob_param_table
