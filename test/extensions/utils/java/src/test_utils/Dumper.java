@@ -20,9 +20,9 @@ public class Dumper
     public static void dumpToFile(Object obj, String fileName) throws IOException
     {
         final Dumper dumper = new Dumper();
-        try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(fileName), "utf-8"))
+        try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(fileName), "utf-8"))
         {
-            fw.write(dumper.toString(obj, 0));
+            osw.write(dumper.toString(obj, 0));
         }
     }
 
@@ -66,7 +66,12 @@ public class Dumper
         do
         {
             Field[] fields = cl.getDeclaredFields();
-            AccessibleObject.setAccessible(fields, true);
+            try
+            {
+                AccessibleObject.setAccessible(fields, true);
+            }
+            catch (java.lang.RuntimeException e)
+            {}
             if (fields.length > 0)
                 r.append("\n");
             // get the names and values of all fields
@@ -78,7 +83,7 @@ public class Dumper
                     if (!first)
                         r.append("\n");
                     first = false;
-                    r.append(indent + f.getName() + "=");
+                    r.append(indent + f.getName() + " = ");
                     try
                     {
                         Class<?> t = f.getType();
@@ -90,17 +95,19 @@ public class Dumper
                     }
                     catch (IllegalAccessException e)
                     {
-                        e.printStackTrace();
+                        r.append(e.getMessage());
                     }
                 }
             }
-            if (fields.length > 0)
-                r.append("\n");
             cl = cl.getSuperclass();
+            if (cl == Object.class)
+                break;
+            if (fields.length > 0)
+                r.append("\n" + indent + "// from " + cl.getCanonicalName());
         } while (cl != null && cl != Object.class);
         --level;
         indent = new String(new char[2 * level]).replace('\0', ' ');
-        r.append(indent + "}");
+        r.append("\n" + indent + "}");
 
         return r.toString();
     }

@@ -13,6 +13,8 @@
     <#assign hasValidatableField=sql_table_has_validatable_field(fields)/>
 </#if>
 
+import java.util.Arrays;
+
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
@@ -161,7 +163,7 @@ public class ${name}
     public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws java.sql.SQLException, java.io.IOException
     {
-        return read(<#if needsParameterProvider>parameterProvider, </#if>"");
+        return read(<#if needsParameterProvider>parameterProvider, </#if>null, null);
     }
 
 <#if withCodeComments>
@@ -182,14 +184,58 @@ public class ${name}
     public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider,</#if>
             java.lang.String condition) throws java.sql.SQLException, java.io.IOException
     {
+        return read(<#if needsParameterProvider>parameterProvider, </#if>null, condition);
+    }
+
+<#if withCodeComments>
+    /**
+     * Reads all columns and rows from the table which fulfill the given condition.
+     *
+        <#if needsParameterProvider>
+     * @param parameterProvider Explicit parameter provider to be used during reading.
+        </#if>
+     * @param colNames list of column names to retreive
+     *
+     * @return Read rows.
+     *
+     * @throws java.sql.SQLException In case of any failure during reading from the database.
+     * @throws java.io.IOException In case of any failure during reading from the database file.
+     */
+</#if>
+    public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider,</#if>
+            java.lang.String[] colNames) throws java.sql.SQLException, java.io.IOException
+    {
+        return read(<#if needsParameterProvider>parameterProvider, </#if>colNames, null);
+    }
+
+<#if withCodeComments>
+    /**
+     * Reads all columns and rows from the table which fulfill the given condition.
+     *
+        <#if needsParameterProvider>
+     * @param parameterProvider Explicit parameter provider to be used during reading.
+        </#if>
+     * @param colNames list of column names to retreive
+     * @param condition SQL condition to use.
+     *
+     * @return Read rows.
+     *
+     * @throws java.sql.SQLException In case of any failure during reading from the database.
+     * @throws java.io.IOException In case of any failure during reading from the database file.
+     */
+</#if>
+    public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider,</#if>
+            java.lang.String[] colNames, java.lang.String condition)
+            throws java.sql.SQLException, java.io.IOException
+    {
         // assemble sql query
-        final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("SELECT " +
-<#list fields as field>
-                "${field.name}<#if field?has_next>, </#if>" +
-</#list>
-                " FROM ");
+        final boolean[] columns = createColumnMapping(colNames);
+        
+        final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("SELECT ");
+        appendColumnsToQuery(sqlQuery, columns, ColumnFormat.NAME);
+        sqlQuery.append(" FROM ");
         appendTableNameToQuery(sqlQuery);
-        if (!condition.isEmpty())
+        if (condition != null)
         {
             sqlQuery.append(" WHERE ");
             sqlQuery.append(condition);
@@ -204,7 +250,7 @@ public class ${name}
         {
             while (resultSet.next())
             {
-                final ${rowName} row = readRow(<#if needsParameterProvider>parameterProvider, </#if>resultSet);
+                final ${rowName} row = readRow(<#if needsParameterProvider>parameterProvider, </#if>columns, resultSet);
                 rows.add(row);
             }
         }
@@ -228,18 +274,35 @@ public class ${name}
     public void write(java.util.List<${rowName}> rows)
             throws java.sql.SQLException, java.io.IOException
     {
+        write(rows, null);
+    }
+
+    <#if withCodeComments>
+    /**
+     * Writes rows to the table.
+     *
+     * Assumes that no other rows with the same primary keys exist, otherwise an exception is thrown.
+     *
+     * @param rows Table rows to write.
+     * @param colNames Table columns to fill.
+     *
+     * @throws java.sql.SQLException In case of any failure during writing to the database.
+     * @throws java.io.IOException In case of any failure during writing to the database file.
+     */
+    </#if>
+    public void write(java.util.List<${rowName}> rows, java.lang.String[] colNames)
+            throws java.sql.SQLException, java.io.IOException
+    {
         // assemble sql query
+        final boolean[] columns = createColumnMapping(colNames);
+
         final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("INSERT INTO ");
         appendTableNameToQuery(sqlQuery);
-        sqlQuery.append(" (" +
-    <#list fields as field>
-                "${field.name}<#if field?has_next>, </#if>" +
-    </#list>
-                ") VALUES (<#rt>
-    <#list fields as field>
-                ?<#if field?has_next>, </#if><#t>
-    </#list>
-                )");<#lt>
+        sqlQuery.append(" (");
+        appendColumnsToQuery(sqlQuery, columns, ColumnFormat.NAME);
+        sqlQuery.append(") VALUES (");
+        appendColumnsToQuery(sqlQuery, columns, ColumnFormat.SQL_PARAMETER);
+        sqlQuery.append(")");
 
         // write rows
         final boolean wasTransactionStarted = startTransaction();
@@ -247,7 +310,7 @@ public class ${name}
         {
             for (${rowName} row : rows)
             {
-                writeRow(row, statement);
+                writeRow(row, columns, statement);
                 statement.addBatch();
             }
             statement.executeBatch();
@@ -270,20 +333,38 @@ public class ${name}
     public void update(${rowName} row, java.lang.String whereCondition)
             throws java.sql.SQLException, java.io.IOException
     {
+        update(row, null, whereCondition);
+    }
+
+    <#if withCodeComments>
+    /**
+     * Updates selected columns in a row of the table.
+     *
+     * @param row Table row to update.
+     * @param colNames List of columns to update.
+     * @param whereCondition SQL where condition to use.
+     *
+     * @throws java.sql.SQLException In case of any failure during database update.
+     * @throws java.io.IOException In case of any failure during updating of the database file.
+     */
+    </#if>
+    public void update(${rowName} row, java.lang.String[] colNames, java.lang.String whereCondition)
+            throws java.sql.SQLException, java.io.IOException
+    {
         // assemble sql query
+        final boolean[] columns = createColumnMapping(colNames);
+
         final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("UPDATE ");
         appendTableNameToQuery(sqlQuery);
-        sqlQuery.append(" SET" +
-    <#list fields as field>
-                " ${field.name}=?<#if field?has_next>,</#if>" +
-    </#list>
-                " WHERE ");
+        sqlQuery.append(" SET ");
+        appendColumnsToQuery(sqlQuery, columns, ColumnFormat.SQL_UPDATE);
+        sqlQuery.append(" WHERE ");
         sqlQuery.append(whereCondition);
 
         // update row
         try (final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString()))
         {
-            writeRow(row, statement);
+            writeRow(row, columns, statement);
             statement.executeUpdate();
         }
     }
@@ -386,6 +467,32 @@ public class ${name}
     }
 </#if>
 
+    private boolean[] createColumnMapping(java.lang.String[] colNames)
+    {
+        boolean[] map = new boolean[columnNames.length];
+        if (colNames == null)
+        {
+            Arrays.fill(map, true);
+        }
+        else
+        {
+            Arrays.fill(map, false);
+            for (String colName : colNames)
+            {
+                int idx = -1;
+                for (int i = 0; i < columnNames.length; ++i)
+                {
+                    if (columnNames[i].equals(colName))
+                        idx = i;
+                }
+                if (idx < 0)
+                    throw new zserio.runtime.ZserioError("Column name: '" + colName + "' doesn't exist in '${name}'!");
+                map[idx] = true;
+            }
+        }
+        return map;
+    }
+
     private void appendTableNameToQuery(java.lang.StringBuilder sqlQuery)
     {
         if (attachedDbName != null)
@@ -394,6 +501,38 @@ public class ${name}
             sqlQuery.append('.');
         }
         sqlQuery.append(tableName);
+    }
+
+    private void appendColumnsToQuery(java.lang.StringBuilder sqlQuery, boolean[] columns, ColumnFormat format)
+    {
+        boolean isFirst = true;
+        for (int i = 0; i < columns.length; ++i)
+        {
+            if (columns[i])
+            {
+                if (!isFirst)
+                {
+                    sqlQuery.append(",");
+                }
+                else
+                {
+                    isFirst = false;
+                }
+                switch (format)
+                {
+                    case NAME:
+                        sqlQuery.append(columnNames[i]);
+                        break;
+                    case SQL_PARAMETER:
+                        sqlQuery.append("?");
+                        break;
+                    case SQL_UPDATE:
+                        sqlQuery.append(columnNames[i]);
+                        sqlQuery.append("=?");
+                        break;
+                }
+            }
+        }
     }
 <#if withWriterCode>
 
@@ -482,40 +621,44 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
     </#list>
 <#lt>);
 </#macro>
-    private static ${rowName} readRow(<#if needsParameterProvider>ParameterProvider parameterProvider, </#if>
+    private static ${rowName} readRow(<#if needsParameterProvider>ParameterProvider parameterProvider, </#if>boolean[] columns,
             java.sql.ResultSet resultSet) throws java.sql.SQLException, java.io.IOException
     {
         final ${rowName} row = new ${rowName}();
+        int index = 1;
 
 <#list fields as field>
         // field ${field.name}
+        if (columns[${field?index}])
+        {
     <#assign valueVarName="value${field.name?cap_first}"/>
     <#if field.sqlTypeData.isBlob>
-        final byte[] ${valueVarName} = resultSet.getBytes(${field?index + 1});
+            final byte[] ${valueVarName} = resultSet.getBytes(index<#sep>++</#sep>);
     <#elseif field.underlyingTypeInfo??>
-        final ${field.underlyingTypeInfo.typeFullName} ${valueVarName} = <#rt>
-                <#lt>resultSet.get${field.underlyingTypeInfo.typeName?cap_first}(${field?index + 1});
+            final ${field.underlyingTypeInfo.typeFullName} ${valueVarName} = <#rt>
+                    <#lt>resultSet.get${field.underlyingTypeInfo.typeName?cap_first}(index<#sep>++</#sep>);
     <#elseif field.requiresBigInt>
-        final long ${valueVarName} = resultSet.getLong(${field?index + 1});
+            final long ${valueVarName} = resultSet.getLong(index<#sep>++</#sep>);
     <#else>
-        final ${field.typeInfo.typeFullName} ${valueVarName} = resultSet.get${field.typeInfo.typeName?cap_first}(${field?index + 1});
+            final ${field.typeInfo.typeFullName} ${valueVarName} = resultSet.get${field.typeInfo.typeName?cap_first}(index<#sep>++</#sep>);
     </#if>
-        if (!resultSet.wasNull())
-        {
+            if (!resultSet.wasNull())
+            {
     <#if field.sqlTypeData.isBlob>
-            final zserio.runtime.io.ByteArrayBitStreamReader reader =
-                    new zserio.runtime.io.ByteArrayBitStreamReader(${valueVarName});
+                final zserio.runtime.io.ByteArrayBitStreamReader reader =
+                        new zserio.runtime.io.ByteArrayBitStreamReader(${valueVarName});
             <@read_blob field, false, 3/>
-            row.set${field.name?cap_first}(blob);
+                row.set${field.name?cap_first}(blob);
     <#elseif field.typeInfo.isEnum>
-            row.set${field.name?cap_first}(${field.typeInfo.typeFullName}.toEnum(${valueVarName}));
+                row.set${field.name?cap_first}(${field.typeInfo.typeFullName}.toEnum(${valueVarName}));
     <#elseif field.typeInfo.isBitmask>
-            row.set${field.name?cap_first}(new ${field.typeInfo.typeFullName}(${valueVarName}));
+                row.set${field.name?cap_first}(new ${field.typeInfo.typeFullName}(${valueVarName}));
     <#elseif field.requiresBigInt>
-            row.set${field.name?cap_first}(java.math.BigInteger.valueOf(${valueVarName}));
+                row.set${field.name?cap_first}(java.math.BigInteger.valueOf(${valueVarName}));
     <#else>
-            row.set${field.name?cap_first}(${valueVarName});
+                row.set${field.name?cap_first}(${valueVarName});
     </#if>
+            }
         }
 
 </#list>
@@ -523,31 +666,36 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
     }
 <#if withWriterCode>
 
-    private static void writeRow(${rowName} row, java.sql.PreparedStatement statement)
+    private static void writeRow(${rowName} row, boolean[] columns, java.sql.PreparedStatement statement)
             throws java.sql.SQLException
     {
+        int index = 1;
+
     <#list fields as field>
         // field ${field.name}
-        if (row.isNull${field.name?cap_first}())
+        if (columns[${field?index}])
         {
-            statement.setNull(${field?index + 1}, java.sql.Types.${field.sqlTypeData.traditionalName});
-        }
-        else
-        {
+            if (row.isNull${field.name?cap_first}())
+            {
+                statement.setNull(index<#sep>++</#sep>, java.sql.Types.${field.sqlTypeData.traditionalName});
+            }
+            else
+            {
         <#if field.sqlTypeData.isBlob>
-            final byte[] blobData = zserio.runtime.io.SerializeUtil.serializeToBytes(row.get${field.name?cap_first}());
-            statement.setBytes(${field?index + 1}, blobData);
+                final byte[] blobData = zserio.runtime.io.SerializeUtil.serializeToBytes(row.get${field.name?cap_first}());
+                statement.setBytes(index<#sep>++</#sep>, blobData);
         <#elseif field.underlyingTypeInfo??>
-            final ${field.underlyingTypeInfo.typeFullName} underlyingValue =
-                    row.get${field.name?cap_first}().getValue();
-            statement.set${field.underlyingTypeInfo.typeName?cap_first}(${field?index + 1}, underlyingValue);
+                final ${field.underlyingTypeInfo.typeFullName} underlyingValue =
+                        row.get${field.name?cap_first}().getValue();
+                statement.set${field.underlyingTypeInfo.typeName?cap_first}(index<#sep>++</#sep>, underlyingValue);
         <#elseif field.requiresBigInt>
-            final long bigIntValue = row.get${field.name?cap_first}().longValue();
-            statement.setLong(${field?index + 1}, bigIntValue);
+                final long bigIntValue = row.get${field.name?cap_first}().longValue();
+                statement.setLong(index<#sep>++</#sep>, bigIntValue);
         <#else>
-            final ${field.typeInfo.typeFullName} value = row.get${field.name?cap_first}();
-            statement.set${field.typeInfo.typeName?cap_first}(${field?index + 1}, value);
+                final ${field.typeInfo.typeFullName} value = row.get${field.name?cap_first}();
+                statement.set${field.typeInfo.typeName?cap_first}(index<#sep>++</#sep>, value);
         </#if>
+            }
         }
         <#if field?has_next>
 
@@ -823,6 +971,20 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
     }
     </#if>
 </#if>
+
+    private enum ColumnFormat
+    {
+        NAME,
+        SQL_PARAMETER,
+        SQL_UPDATE
+    };
+
+    private static final java.lang.String[] columnNames =
+    {
+<#list fields as field>
+        "${field.name}"<#sep>,</#sep>
+</#list>
+    };
 
     private final java.sql.Connection connection;
     private final java.lang.String attachedDbName;

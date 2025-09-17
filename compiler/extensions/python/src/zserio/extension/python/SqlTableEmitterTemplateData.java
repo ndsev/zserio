@@ -166,6 +166,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             name = field.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
+            upperCaseName = PythonSymbolConverter.enumItemToSymbol(name, false);
             typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
 
             isVirtual = field.isVirtual();
@@ -205,6 +206,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getSnakeCaseName()
         {
             return snakeCaseName;
+        }
+
+        public String getUpperCaseName()
+        {
+            return upperCaseName;
         }
 
         public NativeTypeInfoTemplateData getTypeInfo()
@@ -339,6 +345,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String snakeCaseName;
+        private final String upperCaseName;
         private final NativeTypeInfoTemplateData typeInfo;
         private final boolean isVirtual;
         private final List<ParameterTemplateData> parameters;
