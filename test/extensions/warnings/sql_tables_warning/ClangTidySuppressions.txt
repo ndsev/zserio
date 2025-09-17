@@ -1,3 +1,11 @@
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/bad_ordered_primary_key_warning/BadOrderedPrimaryKeyTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/duplicated_primary_key_warning/DuplicatedPrimaryKeyTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/multiple_primary_keys_warning/MultiplePrimaryKeysTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/not_first_primary_key_warning/NotFirstPrimaryKeyTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyTable1.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyTable2.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables_warning/no_primary_key_warning/NoPrimaryKeyTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/sql_tables_warning/bad_ordered_primary_key_warning/BadOrderedPrimaryKeyTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables_warning/duplicated_primary_key_warning/DuplicatedPrimaryKeyTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables_warning/multiple_primary_keys_warning/MultiplePrimaryKeysTable.cpp

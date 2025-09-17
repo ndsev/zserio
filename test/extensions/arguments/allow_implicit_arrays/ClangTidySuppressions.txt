@@ -12,6 +12,8 @@ cert-err58-cpp:cpp/ImplicitArrayInt24Test.cpp
 cert-err58-cpp:cpp/ImplicitArrayUInt8Test.cpp
 cert-err58-cpp:cpp/ImplicitArrayUInt64Test.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp

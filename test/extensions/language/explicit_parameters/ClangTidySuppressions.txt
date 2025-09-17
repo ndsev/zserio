@@ -7,6 +7,15 @@ bugprone-forwarding-reference-overload:gen/explicit_parameters/templated_explici
 
 bugprone-unhandled-self-assignment:gen/explicit_parameters/explicit_blob_param/TestBlob.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/explicit_enum_param/EnumParamTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/explicit_parameters/templated_explicit_param/TestTableWithExplicit_Parameterized.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_blob_param/TestBlob.cpp

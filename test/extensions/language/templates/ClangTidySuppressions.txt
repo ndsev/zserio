@@ -90,6 +90,12 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/struct_long_te
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/struct_template_clash/B_C.h
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/struct_template_clash_across_packages/pkg2/Test.h
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/templates/instantiate_sql_table/U32Table.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/templates/instantiate_type_as_sql_database_field/StringTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/templates/instantiate_type_as_sql_table_field/Test32Table.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/templates/sql_table_templated_field/TemplatedTable_Union.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/templates/sql_table_templated_field/TemplatedTable_uint32.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/templates/choice_templated_enum_selector/TemplatedChoice_EnumFromOne.cpp
 cppcoreguidelines-pro-type-member-init:gen/templates/choice_templated_enum_selector/TemplatedChoice_EnumFromZero.cpp
 cppcoreguidelines-pro-type-member-init:gen/templates/choice_templated_field/TemplatedChoice_Compound_uint32_uint16.cpp

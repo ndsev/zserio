@@ -6,6 +6,9 @@ bugprone-exception-escape:gen/with_writer/ItemChoice.h
 bugprone-unhandled-self-assignment:gen/without_writer/Value.cpp
 bugprone-unhandled-self-assignment:gen/with_writer/Value.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/without_writer/GeoMapTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_writer/GeoMapTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen/without_writer/GeoMapTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/without_writer/ItemChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/without_writer/Item.cpp

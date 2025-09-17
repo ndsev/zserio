@@ -8,6 +8,9 @@ bugprone-unhandled-self-assignment:gen_without_setters/without_writer_code/Value
 
 cert-err58-cpp:cpp/WithoutWriterWithoutSettersCodeTest.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen_with_setters/without_writer_code/GeoMapTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen_without_setters/with_writer_code/GeoMapTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen_with_setters/without_writer_code/GeoMapTable.cpp
 cppcoreguidelines-pro-type-member-init:gen_with_setters/without_writer_code/ItemChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen_with_setters/without_writer_code/Item.cpp

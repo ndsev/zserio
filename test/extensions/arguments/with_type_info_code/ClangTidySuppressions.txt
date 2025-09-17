@@ -24,6 +24,12 @@ cert-err58-cpp:cpp/DebugStringTest.cpp
 cert-err58-cpp:cpp/JsonParamCastTest.cpp
 cert-err58-cpp:cpp/WithTypeInfoCodeTest.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_type_info_code/Fts4Table.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_type_info_code/SqlTable.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_type_info_code/TemplatedSqlTableU8.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_type_info_code/TemplatedSqlTable_uint32.cpp
+cppcoreguidelines-pro-bounds-constant-array-index:gen/with_type_info_code/WithoutRowIdTable.cpp
+
 cppcoreguidelines-pro-type-member-init:gen_string_expressions/type_info_string_expressions/TestChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen_string_expressions/type_info_string_expressions/TestStruct.cpp
 cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/Fts4Table.cpp
