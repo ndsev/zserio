@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -61,6 +62,31 @@ public class BlobParamTableTest
     }
 
     @Test
+    public void writeWithColumns() throws SQLException, IOException, ZserioError
+    {
+        final BlobParamTable testTable = database.getBlobParamTable();
+
+        final List<BlobParamTableRow> writtenRows = new ArrayList<BlobParamTableRow>();
+        writtenRows.add(new BlobParamTableRow());
+        writtenRows.get(0).setName("Pepek");
+        writtenRows.add(new BlobParamTableRow());
+        writtenRows.get(1).setName("Rishi");
+
+        testTable.write(writtenRows, new String[] {"name"});
+
+        final List<BlobParamTableRow> readRows = testTable.read();
+        assertEquals(writtenRows.size(), readRows.size());
+        for (int i = 0; i < readRows.size(); ++i)
+        {
+            BlobParamTableRow readRow = readRows.get(i);
+            assertEquals(i + 1, readRow.getBlobId());
+            assertEquals(writtenRows.get(i).getName(), readRow.getName());
+            assertTrue(readRow.isNullBlob());
+            assertTrue(readRow.isNullParameters());
+        }
+    }
+
+    @Test
     public void readWithoutCondition() throws SQLException, IOException, ZserioError
     {
         final BlobParamTable testTable = database.getBlobParamTable();
@@ -93,6 +119,32 @@ public class BlobParamTableTest
     }
 
     @Test
+    public void readWithColumns() throws SQLException, IOException, ZserioError
+    {
+        final BlobParamTable testTable = database.getBlobParamTable();
+
+        final List<BlobParamTableRow> writtenRows = new ArrayList<BlobParamTableRow>();
+        fillBlobParamTableRows(writtenRows);
+        testTable.write(writtenRows);
+
+        final List<BlobParamTableRow> readRows = testTable.read(new String[] {"blobId", "name"});
+
+        assertEquals(writtenRows.size(), readRows.size());
+        for (int i = 0; i < writtenRows.size(); ++i)
+        {
+            BlobParamTableRow writtenRow = writtenRows.get(i);
+            BlobParamTableRow readRow = readRows.get(i);
+            assertEquals(writtenRow.getBlobId(), readRow.getBlobId());
+            assertEquals(writtenRow.getName(), readRow.getName());
+            assertTrue(readRow.isNullBlob());
+            assertTrue(readRow.isNullParameters());
+        }
+
+        // throw when nonexiting column is requested
+        assertThrows(zserio.runtime.ZserioError.class, () -> testTable.read(new String[] {"xxx"}));
+    }
+
+    @Test
     public void update() throws SQLException, IOException, ZserioError
     {
         final BlobParamTable testTable = database.getBlobParamTable();
@@ -111,6 +163,41 @@ public class BlobParamTableTest
 
         final BlobParamTableRow readRow = readRows.get(0);
         checkBlobParamTableRow(updateRow, readRow);
+    }
+
+    @Test
+    public void updateWithColumns() throws SQLException, IOException, ZserioError
+    {
+        final BlobParamTable testTable = database.getBlobParamTable();
+
+        final List<BlobParamTableRow> writtenRows = new ArrayList<BlobParamTableRow>();
+        fillBlobParamTableRows(writtenRows);
+        testTable.write(writtenRows);
+
+        final int updateRowId = 3;
+        final String updateCondition = "blobId=" + updateRowId;
+        final BlobParamTableRow updateRow = new BlobParamTableRow();
+        updateRow.setName("Gagarin");
+        testTable.update(updateRow, new String[] {"name"}, updateCondition);
+
+        final List<BlobParamTableRow> readRows = testTable.read();
+        assertEquals(writtenRows.size(), readRows.size());
+        for (int i = 0; i < writtenRows.size(); ++i)
+        {
+            final BlobParamTableRow readRow = readRows.get(i);
+            final BlobParamTableRow writtenRow = writtenRows.get(i);
+            if (readRow.getBlobId() == updateRowId)
+            {
+                assertEquals(updateRow.getName(), readRow.getName());
+            }
+            else
+            {
+                assertEquals(writtenRow.getName(), readRow.getName());
+            }
+            assertEquals(writtenRow.getBlob(), readRow.getBlob());
+            assertEquals(writtenRow.getBlobId(), readRow.getBlobId());
+            assertEquals(writtenRow.getParameters(), readRow.getParameters());
+        }
     }
 
     @Test
