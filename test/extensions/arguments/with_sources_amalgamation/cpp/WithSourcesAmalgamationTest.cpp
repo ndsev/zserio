@@ -32,21 +32,28 @@ TEST_F(WithSourcesAmalgamation, checkWithSourcesAmalgamationPackage)
     ASSERT_TRUE(isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Direction.h"));
     ASSERT_TRUE(
             isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/GeoMapTable.h"));
+    ASSERT_TRUE(
+            isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/SecondTable.h"));
     ASSERT_TRUE(isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Group.h"));
     ASSERT_TRUE(
             isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Permission.h"));
     ASSERT_TRUE(isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/WorldDb.h"));
+    ASSERT_TRUE(isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/SecondDb.h"));
 
     ASSERT_FALSE(isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Color.cpp"));
     ASSERT_FALSE(
             isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Direction.cpp"));
     ASSERT_FALSE(
             isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/GeoMapTable.cpp"));
+    ASSERT_FALSE(
+            isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/SecondTable.cpp"));
     ASSERT_FALSE(isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Group.cpp"));
     ASSERT_FALSE(
             isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/Permission.cpp"));
     ASSERT_FALSE(
             isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/WorldDb.cpp"));
+    ASSERT_FALSE(
+            isFilePresent("arguments/with_sources_amalgamation/gen/with_sources_amalgamation/SecondDb.cpp"));
 }
 
 TEST_F(WithSourcesAmalgamation, checkImportedTilePackage)

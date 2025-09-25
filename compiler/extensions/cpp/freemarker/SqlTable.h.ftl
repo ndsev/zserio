@@ -542,6 +542,17 @@ private:
 
 </#if>
     void appendTableNameToQuery(${types.string.name}& sqlQuery) const;
+        
+    static ::std::array<bool, ${fields?size}> createColumnsMapping(::zserio::Span<const ${types.string.name}> columns);
+    
+    enum class ColumnFormat
+    {
+        NAME,
+        SQL_PARAMETER,
+        SQL_UPDATE
+    };
+    static void appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::array<bool, ${fields?size}>& columnsMapping,
+            ColumnFormat format);
 
     ::zserio::SqliteConnection& m_db;
     ::zserio::StringView m_name;

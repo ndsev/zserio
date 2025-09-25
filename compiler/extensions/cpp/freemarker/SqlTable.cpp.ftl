@@ -25,74 +25,6 @@
 
 <@namespace_begin package.path/>
 
-namespace  
-{
-
-::std::array<bool, ${fields?size}> createColumnsMapping(::zserio::Span<const ${types.string.name}> columns)
-{
-    if (columns.empty())
-    {
-        static constexpr ::std::array<bool, ${fields?size}> allColumns = {<#rt>
-                <#lt><#list fields as field>true<#sep>, </#sep></#list>};
-        return allColumns;
-    }
-
-    ::std::array<bool, ${fields?size}> columnsMapping = {};
-    for (const auto& columnName : columns)
-    {
-        const auto it = ::std::find(${name}::columnNames.begin(), ${name}::columnNames.end(), ::zserio::StringView(columnName));
-        if (it == ${name}::columnNames.end())
-        {
-            throw ::zserio::SqliteException("Column name '") << columnName
-                    << "' doesn't exist in '${name}'!";
-        }
-        columnsMapping.at(static_cast<size_t>(it - ${name}::columnNames.begin())) = true;
-    }
-
-    return columnsMapping;
-}
-
-enum class ColumnFormat
-{
-    NAME,
-    SQL_PARAMETER,
-    SQL_UPDATE
-};
-
-void appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::array<bool, ${fields?size}>& columnsMapping, ColumnFormat format)
-{
-    bool isFirst = true;
-    for (size_t i = 0; i < columnsMapping.size(); ++i)
-    {
-        if (columnsMapping[i])
-        {
-            if (isFirst)
-            {
-                isFirst = false;
-            }
-            else
-            {
-                sqlQuery += ", ";
-            }
-            switch (format)
-            {
-                case ColumnFormat::NAME:
-                    sqlQuery += ${name}::columnNames[i];
-                    break;
-                case ColumnFormat::SQL_PARAMETER:
-                    sqlQuery += "?";
-                    break;
-                case ColumnFormat::SQL_UPDATE:
-                    sqlQuery += ${name}::columnNames[i];
-                    sqlQuery += "=?";
-                    break;
-            }
-        }
-    }
-}
-
-} // namespace
-
 <#assign needsParameterProvider=explicitParameters?has_content/>
 <#if withValidationCode>
     <#assign hasPrimaryKeyField=false/>
@@ -899,6 +831,63 @@ void ${name}::appendTableNameToQuery(${types.string.name}& sqlQuery) const
         sqlQuery += '.';
     }
     sqlQuery += m_name;
+}
+
+::std::array<bool, ${fields?size}> ${name}::createColumnsMapping(::zserio::Span<const ${types.string.name}> columns)
+{
+    if (columns.empty())
+    {
+        static constexpr ::std::array<bool, ${fields?size}> allColumns = {<#rt>
+                <#lt><#list fields as field>true<#sep>, </#sep></#list>};
+        return allColumns;
+    }
+
+    ::std::array<bool, ${fields?size}> columnsMapping = {};
+    for (const auto& columnName : columns)
+    {
+        const auto it = ::std::find(${name}::columnNames.begin(), ${name}::columnNames.end(), ::zserio::StringView(columnName));
+        if (it == ${name}::columnNames.end())
+        {
+            throw ::zserio::SqliteException("Column name '") << columnName
+                    << "' doesn't exist in '${name}'!";
+        }
+        columnsMapping.at(static_cast<size_t>(it - ${name}::columnNames.begin())) = true;
+    }
+
+    return columnsMapping;
+}
+
+void ${name}::appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::array<bool, ${fields?size}>& columnsMapping,
+        ColumnFormat format)
+{
+    bool isFirst = true;
+    for (size_t i = 0; i < columnsMapping.size(); ++i)
+    {
+        if (columnsMapping[i])
+        {
+            if (isFirst)
+            {
+                isFirst = false;
+            }
+            else
+            {
+                sqlQuery += ", ";
+            }
+            switch (format)
+            {
+                case ColumnFormat::NAME:
+                    sqlQuery += ${name}::columnNames[i];
+                    break;
+                case ColumnFormat::SQL_PARAMETER:
+                    sqlQuery += "?";
+                    break;
+                case ColumnFormat::SQL_UPDATE:
+                    sqlQuery += ${name}::columnNames[i];
+                    sqlQuery += "=?";
+                    break;
+            }
+        }
+    }
 }
 <#if hasImplicitParameters>
 
