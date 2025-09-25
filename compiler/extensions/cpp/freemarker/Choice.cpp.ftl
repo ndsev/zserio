@@ -100,6 +100,9 @@ ${I}case ${expression}:
         <@.vars[memberActionMacroName] caseMember, packed, indent+1/>
         </#list>
         <#if !isDefaultUnreachable>
+            <#list unhandledEnumItems as item>
+${I}case ${item}:
+            </#list>
 ${I}default:
             <#if defaultMember??>
         <@.vars[memberActionMacroName] defaultMember, packed, indent+1/>

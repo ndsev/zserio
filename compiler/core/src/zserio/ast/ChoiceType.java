@@ -40,6 +40,7 @@ public final class ChoiceType extends CompoundType
         this.selectorExpression = selectorExpression;
         this.choiceCases = choiceCases;
         this.choiceDefault = choiceDefault;
+        this.unhandledEnumItems = new ArrayList<EnumItem>();
     }
 
     @Override
@@ -115,6 +116,16 @@ public final class ChoiceType extends CompoundType
     public boolean isChoiceDefaultUnreachable()
     {
         return isChoiceDefaultUnreachable;
+    }
+
+    /**
+     * In case of enum selector gets all enum items not covered by cases.
+     *
+     * @return List of unhandled enum items.
+     */
+    public List<EnumItem> getUnhandledEnumItems()
+    {
+        return Collections.unmodifiableList(unhandledEnumItems);
     }
 
     private static List<Field> getChoiceFields(List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault)
@@ -338,7 +349,8 @@ public final class ChoiceType extends CompoundType
             final EnumType resolvedEnumType = (EnumType)selectorExpressionType;
 
             final List<EnumItem> availableEnumItems = resolvedEnumType.getItems();
-            final List<EnumItem> unhandledEnumItems = new ArrayList<EnumItem>(resolvedEnumType.getItems());
+            unhandledEnumItems.clear();
+            unhandledEnumItems.addAll(resolvedEnumType.getItems());
 
             for (ChoiceCase choiceCase : choiceCases)
             {
@@ -421,6 +433,7 @@ public final class ChoiceType extends CompoundType
     private final Expression selectorExpression;
     private final List<ChoiceCase> choiceCases;
     private final ChoiceDefault choiceDefault;
+    private final List<EnumItem> unhandledEnumItems;
 
     private boolean isChoiceDefaultUnreachable = false;
 }

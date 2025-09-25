@@ -358,6 +358,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
             case <@choice_tag_name field/>:
                 return ::zserio::makeStringView("${field.name}");
         </#list>
+            case UNDEFINED_CHOICE:
             default:
                 return {};
             }
@@ -418,6 +419,7 @@ void ${name}::initializeChildren()
         <@compound_initialize_children_field field, 2, true/>
         break;
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -475,6 +477,7 @@ void ${name}::initPackingContext(${name}::ZserioPackingContext& context) const
         <@compound_init_packing_context_field field, 2/>
         break;
     </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -495,6 +498,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
         <@compound_bitsizeof_field field, 2/>
         break;
     </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -519,6 +523,7 @@ size_t ${name}::bitSizeOf(${name}::ZserioPackingContext& context, size_t bitPosi
         <@compound_bitsizeof_field field, 2, true/>
         break;
     </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -542,6 +547,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
         <@compound_initialize_offsets_field field, 2/>
         break;
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -566,6 +572,7 @@ size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t
         <@compound_initialize_offsets_field field, 2, true/>
         break;
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -605,8 +612,9 @@ bool ${name}::operator==(const ${name}& other) const
     case <@choice_tag_name field/>:
         return m_objectChoice.get<<@field_cpp_type_name field/>>() == other.m_objectChoice.get<<@field_cpp_type_name field/>>();
     </#list>
+    case UNDEFINED_CHOICE:
     default:
-        return true; // UNDEFINED_CHOICE
+        return true;
     }
 <#else>
     return true;
@@ -645,8 +653,9 @@ bool ${name}::operator<(const ${name}& other) const
     case <@choice_tag_name field/>:
         <@union_less_than_field field, 2/>
     </#list>
+    case UNDEFINED_CHOICE:
     default:
-        return false; // UNDEFINED_CHOICE
+        return false;
     }
 <#else>
     return false;
@@ -669,8 +678,8 @@ uint32_t ${name}::hashCode() const
             result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name field/>>());
             break;
         </#list>
+        case UNDEFINED_CHOICE:
         default:
-            // UNDEFINED_CHOICE
             break;
         }
     }
@@ -692,6 +701,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
         <@compound_write_field field, name, 2/>
         break;
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -710,6 +720,7 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
         <@compound_write_field field, name, 2, true/>
         break;
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -752,6 +763,7 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         <@compound_read_field field, name, 2/>
             </#if>
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -773,6 +785,7 @@ ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if u
         <@compound_read_field field, name, 2, true/>
         </#if>
     </#list>
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
@@ -787,6 +800,7 @@ ${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) con
     case <@choice_tag_name field/>:
         return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name field/>>(m_objectChoice, allocator);
         </#list>
+    case UNDEFINED_CHOICE:
     default:
         return ${types.anyHolder.name}(allocator);
     }

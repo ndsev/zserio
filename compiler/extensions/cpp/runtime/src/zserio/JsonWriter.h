@@ -462,6 +462,13 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
             JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
         }
         break;
+    case CppType::STRUCT:
+    case CppType::CHOICE:
+    case CppType::UNION:
+    case CppType::SQL_TABLE:
+    case CppType::SQL_DATABASE:
+    case CppType::SERVICE:
+    case CppType::PUBSUB:
     default:
         throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '")
                 << typeInfo.getSchemaName() << "'!";

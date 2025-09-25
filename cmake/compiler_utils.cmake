@@ -8,13 +8,21 @@ endfunction()
 # Prepares warnings setup for current target
 function(compiler_get_warnings_setup VARNAME)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(WARNINGS_SETUP "-Wall -Wextra -pedantic -Wconversion -Wno-long-long -Wshadow -Wold-style-cast")
+        set(WARNINGS_SETUP_LIST "-Wall -Wextra -pedantic"
+                "-Wconversion"
+                "-Wno-long-long"
+                "-Wshadow"
+                "-Wold-style-cast"
+                "-Wswitch-enum" # requested in #711
+        )
+        string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP_LIST}")
         # gcc 7.5 reports Wsign-conversion even on static_cast, reportedly fixed in gcc 9.3
         if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "9.3.0")
             set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wsign-conversion")
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(WARNINGS_SETUP_LIST "-Weverything"
+                "-Wswitch-enum" # requested in #711
                 "-Wno-system-headers"
                 "-Wno-c++98-compat"
                 "-Wno-c++98-compat-pedantic"
@@ -31,7 +39,11 @@ function(compiler_get_warnings_setup VARNAME)
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP_LIST}")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        set(WARNINGS_SETUP "/W3 /wd4800")
+        set(WARNINGS_SETUP_LIST "/W3"
+                "/wd4800" # implicit conversion to bool
+                "/w34061" # aka -Wswitch-enum requested in #711
+        )
+        string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP_LIST}")
     endif ()
     set(${VARNAME} "${WARNINGS_SETUP}" PARENT_SCOPE)
 endfunction()

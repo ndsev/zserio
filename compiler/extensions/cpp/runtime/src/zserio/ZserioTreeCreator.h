@@ -384,6 +384,15 @@ AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, 
         return makeAnyEnumValue(std::forward<T>(value), typeInfo, allocator);
     case CppType::BITMASK:
         return makeAnyBitmaskValue(std::forward<T>(value), typeInfo, allocator);
+    case CppType::BYTES:
+    case CppType::BIT_BUFFER:
+    case CppType::STRUCT:
+    case CppType::CHOICE:
+    case CppType::UNION:
+    case CppType::SQL_TABLE:
+    case CppType::SQL_DATABASE:
+    case CppType::SERVICE:
+    case CppType::PUBSUB:
     default:
         return AnyHolder<ALLOC>(std::forward<T>(value), allocator);
     }

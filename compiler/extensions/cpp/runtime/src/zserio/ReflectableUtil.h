@@ -283,6 +283,15 @@ bool ReflectableUtil::valuesEqual(
         return lhsValue->getStringView() == rhsValue->getStringView();
     case CppType::BIT_BUFFER:
         return lhsValue->getBitBuffer() == rhsValue->getBitBuffer();
+    case CppType::ENUM:
+    case CppType::BITMASK:
+    case CppType::STRUCT:
+    case CppType::CHOICE:
+    case CppType::UNION:
+    case CppType::SQL_TABLE:
+    case CppType::SQL_DATABASE:
+    case CppType::SERVICE:
+    case CppType::PUBSUB:
     default:
         throw CppRuntimeException("ReflectableUtil::valuesEqual - Unexpected C++ type!");
     }

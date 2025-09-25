@@ -167,6 +167,7 @@ const ::zserio::ITypeInfo& ReflectableUtilUnion::typeInfo()
                 return ::zserio::makeStringView("reflectableUtilBitmask");
             case CHOICE_reflectableUtilObject:
                 return ::zserio::makeStringView("reflectableUtilObject");
+            case UNDEFINED_CHOICE:
             default:
                 return {};
             }
@@ -320,6 +321,7 @@ const ::zserio::ITypeInfo& ReflectableUtilUnion::typeInfo()
                 return ::zserio::makeStringView("reflectableUtilBitmask");
             case CHOICE_reflectableUtilObject:
                 return ::zserio::makeStringView("reflectableUtilObject");
+            case UNDEFINED_CHOICE:
             default:
                 return {};
             }
@@ -360,6 +362,7 @@ void ReflectableUtilUnion::initializeChildren()
     case CHOICE_reflectableUtilObject:
         m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().initializeChildren();
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
     }
@@ -431,6 +434,7 @@ size_t ReflectableUtilUnion::bitSizeOf(size_t bitPosition) const
     case CHOICE_reflectableUtilObject:
         endBitPosition += m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().bitSizeOf(endBitPosition);
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
     }
@@ -455,6 +459,7 @@ size_t ReflectableUtilUnion::initializeOffsets(size_t bitPosition)
     case CHOICE_reflectableUtilObject:
         endBitPosition = m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().initializeOffsets(endBitPosition);
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
     }
@@ -492,8 +497,9 @@ bool ReflectableUtilUnion::operator==(const ReflectableUtilUnion& other) const
         return m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>() == other.m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>();
     case CHOICE_reflectableUtilObject:
         return m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>() == other.m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>();
+    case UNDEFINED_CHOICE:
     default:
-        return true; // UNDEFINED_CHOICE
+        return true;
     }
 }
 
@@ -537,8 +543,9 @@ bool ReflectableUtilUnion::operator<(const ReflectableUtilUnion& other) const
         {
             return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
         }
+    case UNDEFINED_CHOICE:
     default:
-        return false; // UNDEFINED_CHOICE
+        return false;
     }
 }
 
@@ -560,8 +567,8 @@ uint32_t ReflectableUtilUnion::hashCode() const
         case CHOICE_reflectableUtilObject:
             result = ::zserio::calcHashCode(result, m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>());
             break;
+        case UNDEFINED_CHOICE:
         default:
-            // UNDEFINED_CHOICE
             break;
         }
     }
@@ -584,6 +591,7 @@ void ReflectableUtilUnion::write(::zserio::BitStreamWriter& out) const
     case CHOICE_reflectableUtilObject:
         m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().write(out);
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
     }
@@ -609,6 +617,7 @@ ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::readChoiceTag(::zserio::Bi
         return ::zserio::AnyHolder<>(::test_object::std_allocator::ReflectableUtilBitmask(in), allocator);
     case CHOICE_reflectableUtilObject:
         return ::zserio::AnyHolder<>(::test_object::std_allocator::ReflectableUtilObject(in, allocator), allocator);
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
     }
@@ -624,6 +633,7 @@ ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::readChoiceTag(::zserio::Bi
         return ::zserio::allocatorPropagatingCopy<::test_object::std_allocator::ReflectableUtilBitmask>(m_objectChoice, allocator);
     case CHOICE_reflectableUtilObject:
         return ::zserio::allocatorPropagatingCopy<::test_object::std_allocator::ReflectableUtilObject>(m_objectChoice, allocator);
+    case UNDEFINED_CHOICE:
     default:
         return ::zserio::AnyHolder<>(allocator);
     }

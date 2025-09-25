@@ -7,6 +7,8 @@ import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
+import zserio.ast.EnumItem;
+import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.extension.common.ExpressionFormatter;
@@ -53,6 +55,19 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             defaultMember = null;
         }
 
+        // find all unused enum items for -Wswitch-enum
+        unhandledEnumItems = new ArrayList<String>();
+        if (choiceType.getSelectorExpression().getExprType() == Expression.ExpressionType.ENUM)
+        {
+            final EnumType selEnumType = (EnumType)choiceType.getSelectorExpression().getExprZserioType();
+            for (EnumItem item : choiceType.getUnhandledEnumItems())
+            {
+                final String fullName = CppFullNameFormatter.getFullName(
+                        selEnumType.getPackage().getPackageName(), selEnumType.getName(), item.getName());
+                unhandledEnumItems.add(fullName);
+            }
+        }
+
         isDefaultUnreachable = choiceType.isChoiceDefaultUnreachable();
     }
 
@@ -79,6 +94,11 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public DefaultMember getDefaultMember()
     {
         return defaultMember;
+    }
+
+    public List<String> getUnhandledEnumItems()
+    {
+        return unhandledEnumItems;
     }
 
     public boolean getIsDefaultUnreachable()
@@ -143,5 +163,6 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     private final boolean canUseNativeSwitch;
     private final List<CaseMember> caseMemberList;
     private final DefaultMember defaultMember;
+    private final List<String> unhandledEnumItems;
     private final boolean isDefaultUnreachable;
 }

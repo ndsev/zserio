@@ -11,7 +11,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, detail::CreatorS
         return exception << "BEFORE_ROOT";
     case detail::CreatorState::IN_COMPOUND:
         return exception << "IN_COMPOUND";
-    default: // detail::CreatorState::IN_ARRAY
+    case detail::CreatorState::IN_ARRAY:
+    default:
         return exception << "IN_ARRAY";
     }
 }

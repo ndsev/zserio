@@ -167,6 +167,7 @@ const ::zserio::pmr::ITypeInfo& WalkerUnion::typeInfo()
                 return ::zserio::makeStringView("text");
             case CHOICE_nestedArray:
                 return ::zserio::makeStringView("nestedArray");
+            case UNDEFINED_CHOICE:
             default:
                 return {};
             }
@@ -303,6 +304,7 @@ const ::zserio::pmr::ITypeInfo& WalkerUnion::typeInfo()
                 return ::zserio::makeStringView("text");
             case CHOICE_nestedArray:
                 return ::zserio::makeStringView("nestedArray");
+            case UNDEFINED_CHOICE:
             default:
                 return {};
             }
@@ -407,6 +409,7 @@ size_t WalkerUnion::bitSizeOf(size_t bitPosition) const
     case CHOICE_nestedArray:
         endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOf(*this, endBitPosition);
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
     }
@@ -431,6 +434,7 @@ size_t WalkerUnion::initializeOffsets(size_t bitPosition)
     case CHOICE_nestedArray:
         endBitPosition = m_objectChoice.get<ZserioArrayType_nestedArray>().initializeOffsets(*this, endBitPosition);
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
     }
@@ -468,8 +472,9 @@ bool WalkerUnion::operator==(const WalkerUnion& other) const
         return m_objectChoice.get<::zserio::pmr::string>() == other.m_objectChoice.get<::zserio::pmr::string>();
     case CHOICE_nestedArray:
         return m_objectChoice.get<ZserioArrayType_nestedArray>() == other.m_objectChoice.get<ZserioArrayType_nestedArray>();
+    case UNDEFINED_CHOICE:
     default:
-        return true; // UNDEFINED_CHOICE
+        return true;
     }
 }
 
@@ -513,8 +518,9 @@ bool WalkerUnion::operator<(const WalkerUnion& other) const
         {
             return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
         }
+    case UNDEFINED_CHOICE:
     default:
-        return false; // UNDEFINED_CHOICE
+        return false;
     }
 }
 
@@ -536,8 +542,8 @@ uint32_t WalkerUnion::hashCode() const
         case CHOICE_nestedArray:
             result = ::zserio::calcHashCode(result, m_objectChoice.get<ZserioArrayType_nestedArray>());
             break;
+        case UNDEFINED_CHOICE:
         default:
-            // UNDEFINED_CHOICE
             break;
         }
     }
@@ -560,6 +566,7 @@ void WalkerUnion::write(::zserio::BitStreamWriter& out) const
     case CHOICE_nestedArray:
         m_objectChoice.get<ZserioArrayType_nestedArray>().write(*this, out);
         break;
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
     }
@@ -597,6 +604,7 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::BitStreamReader& in)
 
             return ::zserio::pmr::AnyHolder(::std::move(readField), allocator);
         }
+    case UNDEFINED_CHOICE:
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
     }
@@ -612,6 +620,7 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::BitStreamReader& in)
         return ::zserio::allocatorPropagatingCopy<::zserio::pmr::string>(m_objectChoice, allocator);
     case CHOICE_nestedArray:
         return ::zserio::allocatorPropagatingCopy<ZserioArrayType_nestedArray>(m_objectChoice, allocator);
+    case UNDEFINED_CHOICE:
     default:
         return ::zserio::pmr::AnyHolder(allocator);
     }

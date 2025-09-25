@@ -25,7 +25,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, JsonToken token)
         return exception << "KEY_SEPARATOR";
     case JsonToken::ITEM_SEPARATOR:
         return exception << "ITEM_SEPARATOR";
-    default: // VALUE
+    case JsonToken::VALUE:
+    default:
         return exception << "VALUE";
     }
 }
