@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        choco install zip
+        choco install zip --version=3.0.0.20251001
 
     - name: Set up Java 8
       uses: actions/setup-java@v4

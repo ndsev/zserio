@@ -34,7 +34,7 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        choco install zip
+        choco install zip --version=3.0.0.20251001
 
     - name: "Download Zserio release artifacts"
       uses: actions/download-artifact@v4

@@ -27,7 +27,7 @@ jobs:
       shell: bash
       run: |
         choco install wget
-        choco install zip
+        choco install zip --version=3.0.0.20251001
 
     - name: Set up Java ${{matrix.java-version}}
       uses: actions/setup-java@v4
