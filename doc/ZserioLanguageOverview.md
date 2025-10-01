@@ -85,10 +85,24 @@ Binary      | `111b`, `110b`, `001B`, `-1010b`
 Float16     | `3.14f`, `31.4e-1f`, `314e-2f`
 Float32     | `3.14f`, `31.4e-1f`, `314e-2f`
 Float64     | `3.14`, `0.314e+1`, `0.0314e2`
-String      | `"You"`
+String      | `"You\nand me"`
 
 Hexadecimal digits and the `x` prefix as well as the `b`, `e` and 'f' suffixes are case-insensitive.
 Signing literals can be defined by `-` or `+` prefix. Signs are not applicable for string literals.
+
+### Allowed string escape characters
+
+Character | Meaning
+--------- | -------
+`\u####`  | 16-bit Unicode character where #### are four hex digits
+`\x##`    | 8-bit character specification where ## are two hex digits
+`\0oo` or `\0coo` | 8-bit character specification where o is an octal digit from [0..7] and c is a digit from [0..3]. 
+`\r`      | carriage return
+`\n`      | line feed
+`\f`      | form feed
+`\t`      | horizontal tab
+`\\`      | backslash character
+`\"`      | double quote character
 
 [top](#language-guide)
 
