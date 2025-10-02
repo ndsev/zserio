@@ -13,7 +13,7 @@ final class PythonExtensionVersion
     public static final String PYTHON_EXTENSION_VERSION_STRING = "1.0.6";
 
     /** Expected Zserio core version string. */
-    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.17.0";
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.18.0";
 
     /** Zserio BIN version string. */
     public static final String BIN_VERSION_STRING = "1.0";
