@@ -79,4 +79,4 @@ from zserio import typeinfo
 from zserio import walker
 
 # Zserio Python runtime library version string.
-PYTHON_EXTENSION_RUNTIME_VERSION_STRING = "1.0.6"
+PYTHON_EXTENSION_RUNTIME_VERSION_STRING = "1.1.0"
