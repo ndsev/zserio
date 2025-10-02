@@ -127,6 +127,10 @@ jobs:
       shell: bash
       run: |
         scripts/test.sh cpp-${PACKAGE}
+        echo "DEBUG mingw dependencies"
+        if [[ "${{matrix.mingw-version}}" != "" ]] ; then
+            ldd build/test/extensions/cpp/windows64-mingw/release/ZserioCppTest.exe
+        fi
 
     - name: Run Zserio tests with extra arguments
       shell: bash
