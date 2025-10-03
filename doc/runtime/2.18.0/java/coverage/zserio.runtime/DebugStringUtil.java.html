@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DebugStringUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">DebugStringUtil.java</span></div><h1>DebugStringUtil.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+
+import zserio.runtime.json.JsonReader;
+import zserio.runtime.json.JsonWriter;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.walker.DefaultWalkFilter;
+import zserio.runtime.walker.WalkFilter;
+import zserio.runtime.walker.Walker;
+
+/**
+ * Zserio debug string utilities.
+ * &lt;p&gt;
+ * Note that zserio objects must be generated with &lt;code&gt;-withTypeInfoCode&lt;/code&gt; zserio option to enable
+ * JSON debug string!
+ */
+<span class="nc" id="L32">public final class DebugStringUtil</span>
+{
+    /**
+     * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * This function allows setting of indentation of JSON output together with the walk filter.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonStream(zserioObject, writer, indent, walkFilter);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param writer Writer to use.
+     * @param indent Indent argument for JsonWriter.
+     * @param walkFilter WalkFilter to use by Walker.
+     */
+    public static void toJsonStream(Object zserioObject, Writer writer, int indent, WalkFilter walkFilter)
+    {
+        // do not close the output stream to allow usage e.g. of System.out
+<span class="fc" id="L60">        final JsonWriter jsonWriter = new JsonWriter(writer, indent);</span>
+<span class="fc" id="L61">        final Walker walker = new Walker(jsonWriter, walkFilter);</span>
+<span class="fc" id="L62">        walker.walk(zserioObject);</span>
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * This function allows setting of indentation of JSON output.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * DebugStringUtil.toJsonStream(zserioObject, writer, indent);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param writer Writer to use.
+     * @param indent Indent argument for JsonWriter.
+     */
+    public static void toJsonStream(Object zserioObject, Writer writer, int indent)
+    {
+<span class="fc" id="L87">        toJsonStream(zserioObject, writer, indent, new DefaultWalkFilter());</span>
+<span class="fc" id="L88">    }</span>
+
+    /**
+     * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * This function allows setting of the walk filter.
+     * &lt;p&gt;
+     * The following example shows filtering of arrays up to 5 elements:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonStream(zserioObject, writer, walkFilter);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param writer Writer to use.
+     * @param walkFilter WalkFilter to use by Walker.
+     */
+    public static void toJsonStream(Object zserioObject, Writer writer, WalkFilter walkFilter)
+    {
+<span class="fc" id="L113">        toJsonStream(zserioObject, writer, DEFAULT_INDENT, walkFilter);</span>
+<span class="fc" id="L114">    }</span>
+
+    /**
+     * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * DebugStringUtil.toJsonStream(zserioObject, writer);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param writer Writer to use.
+     */
+    public static void toJsonStream(Object zserioObject, Writer writer)
+    {
+<span class="fc" id="L134">        toJsonStream(zserioObject, writer, DEFAULT_INDENT);</span>
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * &lt;p&gt;
+     * This function allows setting of indentation of JSON output together with the walk filter.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject, indent, walkFilter));
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param indent Indent argument for JsonWriter.
+     * @param walkFilter WalkFilter to use by Walker.
+     *
+     * @return JSON debug string.
+     */
+    public static String toJsonString(Object zserioObject, int indent, WalkFilter walkFilter)
+    {
+<span class="fc" id="L161">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L162">        toJsonStream(zserioObject, stringWriter, indent, walkFilter);</span>
+<span class="fc" id="L163">        return stringWriter.toString();</span>
+    }
+
+    /**
+     * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * &lt;p&gt;
+     * This function allows setting of indentation of JSON output.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject, indent));
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param indent Indent argument for JsonWriter.
+     *
+     * @return JSON debug string.
+     */
+    public static String toJsonString(Object zserioObject, int indent)
+    {
+<span class="fc" id="L187">        return toJsonString(zserioObject, indent, new DefaultWalkFilter());</span>
+    }
+
+    /**
+     * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * &lt;p&gt;
+     * This function allows setting of the walk filter.
+     * &lt;p&gt;
+     * The following example shows filtering of arrays up to 5 elements:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject, walkFilter));
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param walkFilter WalkFilter to use by Walker.
+     *
+     * @return JSON debug string.
+     */
+    public static String toJsonString(Object zserioObject, WalkFilter walkFilter)
+    {
+<span class="fc" id="L212">        return toJsonString(zserioObject, DEFAULT_INDENT, walkFilter);</span>
+    }
+
+    /**
+     * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject));
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     *
+     * @return JSON debug string.
+     */
+    public static String toJsonString(Object zserioObject)
+    {
+<span class="fc" id="L232">        return toJsonString(zserioObject, DEFAULT_INDENT);</span>
+    }
+
+    /**
+     * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * This function allows setting of indentation of JSON output together with the walk filter.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonFile(zserioObject, &quot;FileName.json&quot;, indent, walkFilter);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param fileName Name of file to write.
+     * @param indent Indent argument for JsonWriter.
+     * @param walkFilter WalkFilter to use by Walker.
+     *
+     * @throws IOException When the output file cannot be created correctly.
+     */
+    public static void toJsonFile(Object zserioObject, String fileName, int indent, WalkFilter walkFilter)
+            throws IOException
+    {
+<span class="fc" id="L261">        try (final OutputStream outputStream = new FileOutputStream(fileName);</span>
+<span class="fc" id="L262">                final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))</span>
+        {
+<span class="fc" id="L264">            toJsonStream(zserioObject, writer, indent, walkFilter);</span>
+        }
+<span class="fc" id="L266">    }</span>
+
+    /**
+     * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * This function allows setting of indentation of JSON output.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * DebugStringUtil.toJsonFile(zserioObject, &quot;FileName.json&quot;, indent);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param fileName Name of file to write.
+     * @param indent Indent argument for JsonWriter.
+     *
+     * @throws IOException When the output file cannot be created correctly.
+     */
+    public static void toJsonFile(Object zserioObject, String fileName, int indent) throws IOException
+    {
+<span class="fc" id="L290">        toJsonFile(zserioObject, fileName, indent, new DefaultWalkFilter());</span>
+<span class="fc" id="L291">    }</span>
+
+    /**
+     * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * This function allows setting of the walk filter.
+     * &lt;p&gt;
+     * The following example shows filtering of arrays up to 5 elements:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonFile(zserioObject, &quot;FileName.json&quot;, walkFilter);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param fileName Name of file to write.
+     * @param walkFilter WalkFilter to use by Walker.
+     *
+     * @throws IOException When the output file cannot be created correctly.
+     */
+    public static void toJsonFile(Object zserioObject, String fileName, WalkFilter walkFilter)
+            throws IOException
+    {
+<span class="fc" id="L317">        toJsonFile(zserioObject, fileName, DEFAULT_INDENT, walkFilter);</span>
+<span class="fc" id="L318">    }</span>
+
+    /**
+     * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * DebugStringUtil.toJsonFile(zserioObject, &quot;FileName.json&quot;);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioObject Zserio object to use.
+     * @param fileName Name of file to write.
+     *
+     * @throws IOException When the output file cannot be created correctly.
+     */
+    public static void toJsonFile(Object zserioObject, String fileName) throws IOException
+    {
+<span class="fc" id="L338">        toJsonFile(zserioObject, fileName, DEFAULT_INDENT);</span>
+<span class="fc" id="L339">    }</span>
+
+    /**
+     * Parses JSON debug string from given text stream and creates instance of the requested zserio object.
+     * &lt;p&gt;
+     * The created zserio object is filled according to the data contained in the debug string.
+     * &lt;p&gt;
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import java.io.StringReader;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Reader reader = new StringReader(&quot;{}&quot;);
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.typeInfo(), reader);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param typeInfo Type info of the generated zserio object to create.
+     * @param reader Text stream to use.
+     * @param arguments Arguments of the generated zserio object.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonStream(TypeInfo typeInfo, Reader reader, Object... arguments)
+    {
+<span class="fc" id="L366">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L367">        return jsonReader.read(typeInfo, arguments);</span>
+    }
+
+    /**
+     * Parses JSON debug string from given text stream and creates instance of the requested zserio object.
+     * &lt;p&gt;
+     * The created zserio object is filled according to the data contained in the debug string.
+     * &lt;p&gt;
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import java.io.StringReader;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Reader reader = new StringReader(&quot;{}&quot;);
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.class, reader);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioClass Class instance of the generated zserio object to create.
+     * @param reader Text stream to use.
+     * @param arguments Arguments of the generated zserio object.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonStream(Class&lt;?&gt; zserioClass, Reader reader, Object... arguments)
+    {
+<span class="fc" id="L395">        return fromJsonStream(getTypeInfo(zserioClass), reader, arguments);</span>
+    }
+
+    /**
+     * Parses JSON debug string and creates instance of the requested zserio object.
+     * &lt;p&gt;
+     * The created zserio object is filled according to the data contained in the debug string.
+     * &lt;p&gt;
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.typeInfo(), &quot;{}&quot;);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param typeInfo Type info of the generated zserio object to create.
+     * @param jsonString JSON debug string to parse.
+     * @param arguments Arguments of the generated zserio object.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonString(TypeInfo typeInfo, String jsonString, Object... arguments)
+    {
+<span class="fc" id="L421">        final Reader reader = new StringReader(jsonString);</span>
+<span class="fc" id="L422">        return fromJsonStream(typeInfo, reader, arguments);</span>
+    }
+
+    /**
+     * Parses JSON debug string and creates instance of the requested zserio object.
+     * &lt;p&gt;
+     * The created zserio object is filled according to the data contained in the debug string.
+     * &lt;p&gt;
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.class, &quot;{}&quot;);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioClass Class instance of the generated zserio object to create.
+     * @param jsonString JSON debug string to parse.
+     * @param arguments Arguments of the generated zserio object.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonString(Class&lt;?&gt; zserioClass, String jsonString, Object... arguments)
+    {
+<span class="fc" id="L448">        return fromJsonString(getTypeInfo(zserioClass), jsonString, arguments);</span>
+    }
+
+    /**
+     * Parses JSON debug file and creates instance of the requested zserio object.
+     * &lt;p&gt;
+     * The created zserio object is filled according to the data contained in the debug string.
+     * &lt;p&gt;
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug file.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.typeInfo(), &quot;{}&quot;);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param typeInfo Type info of the generated zserio object to create.
+     * @param fileName Name of the JSON debug file.
+     * @param arguments Arguments of the generated zserio object.
+     *
+     * @return Instance of the requested zserio object.
+     *
+     * @throws FileNotFoundException If given JSON debug file name does not exist.
+     */
+    public static Object fromJsonFile(TypeInfo typeInfo, String fileName, Object... arguments)
+            throws FileNotFoundException
+    {
+<span class="fc" id="L477">        final InputStream inputStream = new FileInputStream(fileName);</span>
+<span class="fc" id="L478">        final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);</span>
+<span class="fc" id="L479">        return fromJsonStream(typeInfo, reader, arguments);</span>
+    }
+
+    /**
+     * Parses JSON debug file and creates instance of the requested zserio object.
+     * &lt;p&gt;
+     * The created zserio object is filled according to the data contained in the debug string.
+     * &lt;p&gt;
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug file.
+     * &lt;p&gt;
+     * Example:
+     * &lt;blockquote&gt;&lt;pre&gt;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.class, &quot;{}&quot;);
+     * &lt;/pre&gt;&lt;/blockquote&gt;
+     *
+     * @param zserioClass Class instance of the generated zserio object to create.
+     * @param fileName Name of the JSON debug file.
+     * @param arguments Arguments of the generated zserio object.
+     *
+     * @return Instance of the requested zserio object.
+     *
+     * @throws FileNotFoundException If given JSON debug file name does not exist.
+     */
+    public static Object fromJsonFile(Class&lt;?&gt; zserioClass, String fileName, Object... arguments)
+            throws FileNotFoundException
+    {
+<span class="fc" id="L508">        return fromJsonFile(getTypeInfo(zserioClass), fileName, arguments);</span>
+    }
+
+    private static TypeInfo getTypeInfo(Class&lt;?&gt; zserioClass)
+    {
+        try
+        {
+<span class="fc" id="L515">            final Method typeInfoMethod = zserioClass.getMethod(&quot;typeInfo&quot;);</span>
+<span class="pc bpc" id="L516" title="1 of 2 branches missed.">            if (!typeInfoMethod.getReturnType().equals(TypeInfo.class))</span>
+<span class="nc" id="L517">                throw new ZserioError(&quot;DebugStringUtil: Zserio object has wrong typeInfo method!&quot;);</span>
+
+<span class="fc" id="L519">            return (TypeInfo)typeInfoMethod.invoke(null);</span>
+        }
+<span class="nc" id="L521">        catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |</span>
+                InvocationTargetException e)
+        {
+<span class="nc" id="L524">            throw new ZserioError(&quot;DebugStringUtil: Zserio object must have type info enabled &quot;</span>
+                    + &quot;(see zserio option -withTypeInfoCode)!&quot;);
+        }
+    }
+
+    private static final int DEFAULT_INDENT = 4;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

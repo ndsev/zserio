@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonReader.java</span></div><h1>JsonReader.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.creator.ZserioTreeCreator;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.ItemInfo;
+import zserio.runtime.typeinfo.JavaType;
+import zserio.runtime.typeinfo.TypeInfo;
+
+/**
+ * Reads zserio object tree defined by a type info from a text stream.
+ */
+public final class JsonReader implements AutoCloseable
+{
+    /**
+     * Constructor.
+     *
+     * @param reader Text stream to read.
+     */
+    public JsonReader(Reader reader)
+<span class="fc" id="L31">    {</span>
+<span class="fc" id="L32">        this.reader = reader;</span>
+<span class="fc" id="L33">        this.creatorAdapter = new CreatorAdapter();</span>
+<span class="fc" id="L34">        this.parser = new JsonParser(reader, creatorAdapter);</span>
+<span class="fc" id="L35">    }</span>
+
+    @Override
+    public void close() throws IOException
+    {
+<span class="fc" id="L40">        reader.close();</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Reads a zserio object tree defined by the given type info from the text steam.
+     *
+     * @param typeInfo Type info defining the expected zserio object tree.
+     * @param arguments Arguments of type defining the expected zserio object tree.
+     *
+     * @return Zserio object tree initialized using the JSON data.
+     */
+    public Object read(TypeInfo typeInfo, Object... arguments)
+    {
+<span class="fc" id="L53">        creatorAdapter.setType(typeInfo, arguments);</span>
+
+        try
+        {
+<span class="fc" id="L57">            parser.parse();</span>
+        }
+<span class="fc" id="L59">        catch (JsonParserError excpt)</span>
+        {
+<span class="fc" id="L61">            throw excpt;</span>
+        }
+<span class="fc" id="L63">        catch (ZserioError excpt)</span>
+        {
+<span class="fc" id="L65">            throw new ZserioError(</span>
+<span class="fc" id="L66">                    excpt.getMessage() + &quot; (JsonParser:&quot; + parser.getLine() + &quot;:&quot; + parser.getColumn() + &quot;)&quot;);</span>
+<span class="fc" id="L67">        }</span>
+
+<span class="fc" id="L69">        return creatorAdapter.get();</span>
+    }
+
+    /**
+     * Adapter for values which are encoded as a JSON object.
+     */
+    private interface ObjectValueAdapter extends JsonParser.Observer
+    {
+        /**
+         * Gets the parsed value.
+         */
+        Object get();
+    }
+
+    /**
+     * The adapter which allows to parse Bit Buffer object from JSON.
+     */
+    private static class BitBufferAdapter implements ObjectValueAdapter
+    {
+        /**
+         * Constructor.
+         */
+        public BitBufferAdapter()
+<span class="fc" id="L92">        {</span>
+<span class="fc" id="L93">            state = State.VISIT_KEY;</span>
+<span class="fc" id="L94">            buffer = null;</span>
+<span class="fc" id="L95">            bitSize = null;</span>
+<span class="fc" id="L96">        }</span>
+
+        /**
+         * Gets the created Bit Buffer object.
+         *
+         * @return Parsed Bit Buffer object.
+         */
+        @Override
+        public BitBuffer get()
+        {
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">            if (buffer == null || bitSize == null)</span>
+<span class="fc" id="L107">                throw new ZserioError(&quot;JsonReader: Unexpected end in Bit Buffer!&quot;);</span>
+
+<span class="fc" id="L109">            final int byteSize = buffer.size();</span>
+<span class="fc" id="L110">            final byte[] array = new byte[byteSize];</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            for (int i = 0; i &lt; byteSize; ++i)</span>
+<span class="fc" id="L112">                array[i] = buffer.get(i);</span>
+
+<span class="fc" id="L114">            return new BitBuffer(array, bitSize);</span>
+        }
+
+        @Override
+        public void beginObject()
+        {
+<span class="fc" id="L120">            throw new ZserioError(&quot;JsonReader: Unexpected begin object in Bit Buffer!&quot;);</span>
+        }
+
+        @Override
+        public void endObject()
+        {
+<span class="nc" id="L126">            throw new ZserioError(&quot;JsonReader: Unexpected end object in Bit Buffer!&quot;);</span>
+        }
+
+        @Override
+        public void beginArray()
+        {
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if (state == State.BEGIN_ARRAY_BUFFER)</span>
+            {
+<span class="fc" id="L134">                state = State.VISIT_VALUE_BUFFER;</span>
+<span class="fc" id="L135">                buffer = new ArrayList&lt;Byte&gt;();</span>
+            }
+            else
+            {
+<span class="nc" id="L139">                throw new ZserioError(&quot;JsonReader: Unexpected begin array in Bit Buffer!&quot;);</span>
+            }
+<span class="fc" id="L141">        }</span>
+
+        @Override
+        public void endArray()
+        {
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">            if (state == State.VISIT_VALUE_BUFFER)</span>
+            {
+<span class="fc" id="L148">                state = State.VISIT_KEY;</span>
+            }
+            else
+            {
+<span class="nc" id="L152">                throw new ZserioError(&quot;JsonReader: Unexpected end array in Bit Buffer!&quot;);</span>
+            }
+<span class="fc" id="L154">        }</span>
+
+        @Override
+        public void visitKey(String key)
+        {
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">            if (state == State.VISIT_KEY)</span>
+            {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">                if (key.equals(&quot;buffer&quot;))</span>
+<span class="fc" id="L162">                    state = State.BEGIN_ARRAY_BUFFER;</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">                else if (key.equals(&quot;bitSize&quot;))</span>
+<span class="fc" id="L164">                    state = State.VISIT_VALUE_BITSIZE;</span>
+                else
+<span class="nc" id="L166">                    throw new ZserioError(&quot;JsonReader: Unknown key '&quot; + key + &quot;' in Bit Buffer!&quot;);</span>
+            }
+            else
+            {
+<span class="nc" id="L170">                throw new ZserioError(&quot;JsonReader: Unexpected key '&quot; + key + &quot;' in Bit Buffer!&quot;);</span>
+            }
+<span class="fc" id="L172">        }</span>
+
+        @Override
+        public void visitValue(Object value)
+        {
+<span class="pc bpc" id="L177" title="1 of 4 branches missed.">            if (state == State.VISIT_VALUE_BUFFER &amp;&amp; value instanceof BigInteger)</span>
+            {
+                // bit buffer stores 8-bit unsigned values in byte type
+<span class="fc" id="L180">                final BigInteger intValue = (BigInteger)value;</span>
+<span class="fc bfc" id="L181" title="All 4 branches covered.">                if (intValue.compareTo(BigInteger.ZERO) &lt; 0 || intValue.compareTo(BigInteger.valueOf(255)) &gt; 0)</span>
+                {
+<span class="fc" id="L183">                    throw new ZserioError(&quot;JsonReader: Cannot create byte for Bit Buffer from value '&quot; +</span>
+<span class="fc" id="L184">                            value.toString() + &quot;'!&quot;);</span>
+                }
+<span class="fc" id="L186">                buffer.add(((BigInteger)value).byteValue());</span>
+<span class="fc" id="L187">            }</span>
+<span class="pc bpc" id="L188" title="2 of 4 branches missed.">            else if (state == State.VISIT_VALUE_BITSIZE &amp;&amp; value instanceof BigInteger)</span>
+            {
+                try
+                {
+<span class="fc" id="L192">                    bitSize = ((BigInteger)value).longValueExact();</span>
+                }
+<span class="fc" id="L194">                catch (ArithmeticException excpt)</span>
+                {
+<span class="fc" id="L196">                    throw new ZserioError(&quot;JsonReader: Cannot create long for Bit Buffer size from value '&quot; +</span>
+<span class="fc" id="L197">                                    value.toString() + &quot;'!&quot;,</span>
+                            excpt);
+<span class="fc" id="L199">                }</span>
+<span class="fc" id="L200">                state = State.VISIT_KEY;</span>
+            }
+            else
+            {
+<span class="nc" id="L204">                throw new ZserioError(&quot;JsonReader: Unexpected value '&quot; + value + &quot;' in Bit Buffer!&quot;);</span>
+            }
+<span class="fc" id="L206">        }</span>
+
+<span class="fc" id="L208">        private enum State</span>
+        {
+<span class="fc" id="L210">            VISIT_KEY,</span>
+<span class="fc" id="L211">            BEGIN_ARRAY_BUFFER,</span>
+<span class="fc" id="L212">            VISIT_VALUE_BUFFER,</span>
+<span class="fc" id="L213">            VISIT_VALUE_BITSIZE</span>
+        }
+
+        private State state;
+        private List&lt;Byte&gt; buffer;
+        private Long bitSize;
+    }
+
+    /**
+     * The adapter which allows to parse bytes object from JSON.
+     */
+    private static class BytesAdapter implements ObjectValueAdapter
+    {
+        /**
+         * Constructor.
+         */
+        public BytesAdapter()
+<span class="fc" id="L230">        {</span>
+<span class="fc" id="L231">            state = State.VISIT_KEY;</span>
+<span class="fc" id="L232">            buffer = null;</span>
+<span class="fc" id="L233">        }</span>
+
+        /**
+         * Gets the created bytes object.
+         *
+         * @return Parsed bytes object.
+         */
+        @Override
+        public byte[] get()
+        {
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">            if (buffer == null)</span>
+<span class="nc" id="L244">                throw new ZserioError(&quot;JsonReader: Unexpected end in bytes!&quot;);</span>
+
+<span class="fc" id="L246">            final byte[] bytes = new byte[buffer.size()];</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">            for (int i = 0; i &lt; bytes.length; ++i)</span>
+<span class="fc" id="L248">                bytes[i] = buffer.get(i);</span>
+
+<span class="fc" id="L250">            return bytes;</span>
+        }
+
+        @Override
+        public void beginObject()
+        {
+<span class="fc" id="L256">            throw new ZserioError(&quot;JsonReader: Unexpected begin object in bytes!&quot;);</span>
+        }
+
+        @Override
+        public void endObject()
+        {
+<span class="nc" id="L262">            throw new ZserioError(&quot;JsonReader: Unexpected end object in bytes!&quot;);</span>
+        }
+
+        @Override
+        public void beginArray()
+        {
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">            if (state == State.BEGIN_ARRAY_BUFFER)</span>
+            {
+<span class="fc" id="L270">                state = State.VISIT_VALUE_BUFFER;</span>
+<span class="fc" id="L271">                buffer = new ArrayList&lt;Byte&gt;();</span>
+            }
+            else
+            {
+<span class="nc" id="L275">                throw new ZserioError(&quot;JsonReader: Unexpected begin array in bytes!&quot;);</span>
+            }
+<span class="fc" id="L277">        }</span>
+
+        @Override
+        public void endArray()
+        {
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">            if (state == State.VISIT_VALUE_BUFFER)</span>
+            {
+<span class="fc" id="L284">                state = State.VISIT_KEY;</span>
+            }
+            else
+            {
+<span class="nc" id="L288">                throw new ZserioError(&quot;JsonReader: Unexpected end array in bytes!&quot;);</span>
+            }
+<span class="fc" id="L290">        }</span>
+
+        @Override
+        public void visitKey(String key)
+        {
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">            if (state == State.VISIT_KEY)</span>
+            {
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">                if (key.equals(&quot;buffer&quot;))</span>
+<span class="fc" id="L298">                    state = State.BEGIN_ARRAY_BUFFER;</span>
+                else
+<span class="nc" id="L300">                    throw new ZserioError(&quot;JsonReader: Unknown key '&quot; + key + &quot;' in bytes!&quot;);</span>
+            }
+            else
+            {
+<span class="nc" id="L304">                throw new ZserioError(&quot;JsonReader: Unexpected key '&quot; + key + &quot;' in bytes!&quot;);</span>
+            }
+<span class="fc" id="L306">        }</span>
+
+        @Override
+        public void visitValue(Object value)
+        {
+<span class="pc bpc" id="L311" title="2 of 4 branches missed.">            if (state == State.VISIT_VALUE_BUFFER &amp;&amp; value instanceof BigInteger)</span>
+            {
+                // bit buffer stores 8-bit unsigned values in byte type
+<span class="fc" id="L314">                final BigInteger intValue = (BigInteger)value;</span>
+<span class="fc bfc" id="L315" title="All 4 branches covered.">                if (intValue.compareTo(BigInteger.ZERO) &lt; 0 || intValue.compareTo(BigInteger.valueOf(255)) &gt; 0)</span>
+                {
+<span class="fc" id="L317">                    throw new ZserioError(</span>
+<span class="fc" id="L318">                            &quot;JsonReader: Cannot create byte for bytes from value '&quot; + value.toString() + &quot;'!&quot;);</span>
+                }
+<span class="fc" id="L320">                buffer.add(((BigInteger)value).byteValue());</span>
+<span class="fc" id="L321">            }</span>
+            else
+            {
+<span class="nc" id="L324">                throw new ZserioError(&quot;JsonReader: Unexpected value '&quot; + value + &quot;' in bytes!&quot;);</span>
+            }
+<span class="fc" id="L326">        }</span>
+
+<span class="fc" id="L328">        private enum State</span>
+        {
+<span class="fc" id="L330">            VISIT_KEY,</span>
+<span class="fc" id="L331">            BEGIN_ARRAY_BUFFER,</span>
+<span class="fc" id="L332">            VISIT_VALUE_BUFFER,</span>
+        }
+
+        private State state;
+        private List&lt;Byte&gt; buffer;
+    }
+
+    /**
+     * The adapter which allows to use ZserioTreeCreator as an JsonReader observer.
+     */
+    private static class CreatorAdapter implements JsonParser.Observer
+    {
+        /**
+         * Constructor.
+         */
+        public CreatorAdapter()
+<span class="fc" id="L348">        {</span>
+<span class="fc" id="L349">            creator = null;</span>
+<span class="fc" id="L350">            keyStack = new Stack&lt;String&gt;();</span>
+<span class="fc" id="L351">            object = null;</span>
+<span class="fc" id="L352">            objectValueAdapter = null;</span>
+<span class="fc" id="L353">        }</span>
+
+        /**
+         * Sets type which shall be created next. Resets the current object.
+         *
+         * @param typeInfo Type info of the type which is to be created.
+         * @param arguments Arguments of type defining the expected zserio object tree.
+         */
+        public void setType(TypeInfo typeInfo, Object... arguments)
+        {
+<span class="fc" id="L363">            creator = new ZserioTreeCreator(typeInfo, arguments);</span>
+<span class="fc" id="L364">            object = null;</span>
+<span class="fc" id="L365">        }</span>
+
+        /**
+         * Gets the created zserio object tree.
+         *
+         * @return Zserio object tree.
+         */
+        public Object get()
+        {
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">            if (object == null)</span>
+<span class="nc" id="L375">                throw new ZserioError(&quot;JsonReader: Zserio tree not created!&quot;);</span>
+
+<span class="fc" id="L377">            return object;</span>
+        }
+
+        @Override
+        public void beginObject()
+        {
+<span class="fc bfc" id="L383" title="All 2 branches covered.">            if (objectValueAdapter != null)</span>
+            {
+<span class="nc" id="L385">                objectValueAdapter.beginObject();</span>
+            }
+            else
+            {
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">                if (creator == null)</span>
+<span class="nc" id="L390">                    throw new ZserioError(&quot;JsonReader: Adapter not initialized!&quot;);</span>
+
+<span class="fc bfc" id="L392" title="All 2 branches covered.">                if (keyStack.isEmpty())</span>
+                {
+<span class="fc" id="L394">                    creator.beginRoot();</span>
+                }
+                else
+                {
+<span class="fc" id="L398">                    final String lastKey = keyStack.peek();</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">                    if (!lastKey.isEmpty())</span>
+                    {
+<span class="fc" id="L401">                        final JavaType javaType = creator.getFieldType(lastKey).getJavaType();</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">                        if (javaType == JavaType.BIT_BUFFER)</span>
+<span class="fc" id="L403">                            objectValueAdapter = new BitBufferAdapter();</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">                        else if (javaType == JavaType.BYTES)</span>
+<span class="fc" id="L405">                            objectValueAdapter = new BytesAdapter();</span>
+                        else
+<span class="fc" id="L407">                            creator.beginCompound(lastKey);</span>
+<span class="fc" id="L408">                    }</span>
+                    else
+                    {
+<span class="fc" id="L411">                        final JavaType javaType = creator.getElementType().getJavaType();</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">                        if (javaType == JavaType.BIT_BUFFER)</span>
+<span class="fc" id="L413">                            objectValueAdapter = new BitBufferAdapter();</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">                        else if (javaType == JavaType.BYTES)</span>
+<span class="fc" id="L415">                            objectValueAdapter = new BytesAdapter();</span>
+                        else
+<span class="fc" id="L417">                            creator.beginCompoundElement();</span>
+                    }
+                }
+            }
+<span class="fc" id="L421">        }</span>
+
+        @Override
+        public void endObject()
+        {
+<span class="fc bfc" id="L426" title="All 2 branches covered.">            if (objectValueAdapter != null)</span>
+            {
+<span class="fc" id="L428">                final Object objectValue = objectValueAdapter.get();</span>
+<span class="fc" id="L429">                objectValueAdapter = null;</span>
+<span class="fc" id="L430">                visitValue(objectValue);</span>
+<span class="fc" id="L431">            }</span>
+            else
+            {
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">                if (creator == null)</span>
+<span class="nc" id="L435">                    throw new ZserioError(&quot;JsonReader: Adapter not initialized!&quot;);</span>
+
+<span class="fc bfc" id="L437" title="All 2 branches covered.">                if (keyStack.isEmpty())</span>
+                {
+<span class="fc" id="L439">                    object = creator.endRoot();</span>
+<span class="fc" id="L440">                    creator = null;</span>
+                }
+                else
+                {
+<span class="fc" id="L444">                    final String lastKey = keyStack.peek();</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">                    if (!lastKey.isEmpty())</span>
+                    {
+<span class="fc" id="L447">                        creator.endCompound();</span>
+<span class="fc" id="L448">                        keyStack.pop(); // finish member</span>
+                    }
+                    else
+                    {
+<span class="fc" id="L452">                        creator.endCompoundElement();</span>
+                    }
+                }
+            }
+<span class="fc" id="L456">        }</span>
+
+        @Override
+        public void beginArray()
+        {
+<span class="fc bfc" id="L461" title="All 2 branches covered.">            if (objectValueAdapter != null)</span>
+            {
+<span class="fc" id="L463">                objectValueAdapter.beginArray();</span>
+            }
+            else
+            {
+<span class="pc bpc" id="L467" title="1 of 2 branches missed.">                if (creator == null)</span>
+<span class="nc" id="L468">                    throw new ZserioError(&quot;JsonReader: Adapter not initialized!&quot;);</span>
+
+<span class="fc bfc" id="L470" title="All 2 branches covered.">                if (keyStack.isEmpty())</span>
+<span class="fc" id="L471">                    throw new ZserioError(&quot;JsonReader: ZserioTreeCreator expects json object!&quot;);</span>
+
+<span class="fc" id="L473">                creator.beginArray(keyStack.peek());</span>
+
+<span class="fc" id="L475">                keyStack.push(&quot;&quot;);</span>
+            }
+<span class="fc" id="L477">        }</span>
+
+        @Override
+        public void endArray()
+        {
+<span class="fc bfc" id="L482" title="All 2 branches covered.">            if (objectValueAdapter != null)</span>
+            {
+<span class="fc" id="L484">                objectValueAdapter.endArray();</span>
+            }
+            else
+            {
+<span class="pc bpc" id="L488" title="1 of 2 branches missed.">                if (creator == null)</span>
+<span class="nc" id="L489">                    throw new ZserioError(&quot;JsonReader: Adapter not initialized!&quot;);</span>
+
+<span class="fc" id="L491">                creator.endArray();</span>
+
+<span class="fc" id="L493">                keyStack.pop(); // finish array</span>
+<span class="fc" id="L494">                keyStack.pop(); // finish member</span>
+            }
+<span class="fc" id="L496">        }</span>
+
+        @Override
+        public void visitKey(String key)
+        {
+<span class="fc bfc" id="L501" title="All 2 branches covered.">            if (objectValueAdapter != null)</span>
+            {
+<span class="fc" id="L503">                objectValueAdapter.visitKey(key);</span>
+            }
+            else
+            {
+<span class="pc bpc" id="L507" title="1 of 2 branches missed.">                if (creator == null)</span>
+<span class="nc" id="L508">                    throw new ZserioError(&quot;JsonReader: Adapter not initialized!&quot;);</span>
+
+<span class="fc" id="L510">                keyStack.push(key);</span>
+            }
+<span class="fc" id="L512">        }</span>
+
+        @Override
+        public void visitValue(Object value)
+        {
+<span class="fc bfc" id="L517" title="All 2 branches covered.">            if (objectValueAdapter != null)</span>
+            {
+<span class="fc" id="L519">                objectValueAdapter.visitValue(value);</span>
+            }
+            else
+            {
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">                if (creator == null)</span>
+<span class="nc" id="L524">                    throw new ZserioError(&quot;JsonReader: Adapter not initialized!&quot;);</span>
+
+<span class="fc bfc" id="L526" title="All 2 branches covered.">                if (keyStack.isEmpty())</span>
+<span class="fc" id="L527">                    throw new ZserioError(&quot;JsonReader: ZserioTreeCreator expects json object!&quot;);</span>
+
+<span class="fc" id="L529">                final String lastKey = keyStack.peek();</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">                if (!lastKey.isEmpty())</span>
+                {
+<span class="fc" id="L532">                    final TypeInfo expectedTypeInfo = creator.getFieldType(lastKey);</span>
+<span class="fc" id="L533">                    creator.setValue(lastKey, convertValue(value, expectedTypeInfo));</span>
+<span class="fc" id="L534">                    keyStack.pop(); // finish member</span>
+<span class="fc" id="L535">                }</span>
+                else
+                {
+<span class="fc" id="L538">                    final TypeInfo expectedTypeInfo = creator.getElementType();</span>
+<span class="fc" id="L539">                    creator.addValueElement(convertValue(value, expectedTypeInfo));</span>
+                }
+            }
+<span class="fc" id="L542">        }</span>
+
+        private static Object convertValue(Object value, TypeInfo typeInfo)
+        {
+<span class="fc bfc" id="L546" title="All 2 branches covered.">            if (value == null)</span>
+<span class="fc" id="L547">                return null;</span>
+
+<span class="fc" id="L549">            final JavaType expectedJavaType = typeInfo.getJavaType();</span>
+<span class="pc bpc" id="L550" title="1 of 4 branches missed.">            switch (expectedJavaType)</span>
+            {
+            case ENUM:
+<span class="fc bfc" id="L553" title="All 2 branches covered.">                if (value instanceof String)</span>
+<span class="fc" id="L554">                    return createEnum((String)value, typeInfo);</span>
+<span class="pc bpc" id="L555" title="1 of 2 branches missed.">                if (value instanceof BigInteger)</span>
+<span class="fc" id="L556">                    return createEnum((BigInteger)value, typeInfo);</span>
+                break;
+
+            case BITMASK:
+<span class="fc bfc" id="L560" title="All 2 branches covered.">                if (value instanceof String)</span>
+<span class="fc" id="L561">                    return createBitmask((String)value, typeInfo);</span>
+<span class="pc bpc" id="L562" title="1 of 2 branches missed.">                if (value instanceof BigInteger)</span>
+<span class="fc" id="L563">                    return createBitmask((BigInteger)value, typeInfo);</span>
+                break;
+
+            case FLOAT:
+<span class="nc bnc" id="L567" title="All 2 branches missed.">                if (value instanceof Double)</span>
+<span class="nc" id="L568">                    return ((Double)value).floatValue();</span>
+                break;
+
+            default:
+<span class="fc bfc" id="L572" title="All 2 branches covered.">                if (value instanceof BigInteger)</span>
+<span class="fc" id="L573">                    return convertNumber((BigInteger)value, typeInfo, expectedJavaType);</span>
+                break;
+            }
+
+            // possible type mismatch =&gt; just leave it to creator, it will check and report better message
+<span class="fc" id="L578">            return value;</span>
+        }
+
+        private static Object createEnum(String stringValue, TypeInfo typeInfo)
+        {
+<span class="fc bfc" id="L583" title="All 2 branches covered.">            if (!stringValue.isEmpty())</span>
+            {
+<span class="fc" id="L585">                final char firstChar = stringValue.charAt(0);</span>
+<span class="pc bpc" id="L586" title="5 of 10 branches missed.">                if ((firstChar &gt;= 'A' &amp;&amp; firstChar &lt;= 'Z') || (firstChar &gt;= 'a' &amp;&amp; firstChar &lt;= 'z') ||</span>
+                        firstChar == '_')
+                {
+<span class="fc" id="L589">                    final BigInteger value = parseEnumStringValue(stringValue, typeInfo);</span>
+<span class="fc bfc" id="L590" title="All 2 branches covered.">                    if (value != null)</span>
+<span class="fc" id="L591">                        return createEnum(value, typeInfo);</span>
+                }
+                // else it's a no match
+            }
+
+<span class="fc" id="L596">            throw new ZserioError(&quot;JsonReader: Cannot create enum '&quot; + typeInfo.getSchemaName() +</span>
+                    &quot;' from string value '&quot; + stringValue + &quot;'!&quot;);
+        }
+
+        private static Object createEnum(BigInteger value, TypeInfo typeInfo)
+        {
+            try
+            {
+<span class="fc" id="L604">                final Class&lt;?&gt; enumClass = typeInfo.getJavaClass();</span>
+<span class="fc" id="L605">                final TypeInfo enumUnderlyingTypeInfo = typeInfo.getUnderlyingType();</span>
+<span class="fc" id="L606">                final Class&lt;?&gt; enumUnderlyingClass = enumUnderlyingTypeInfo.getJavaClass();</span>
+<span class="fc" id="L607">                final Method toEnum = enumClass.getMethod(&quot;toEnum&quot;, enumUnderlyingClass);</span>
+<span class="fc" id="L608">                final JavaType enumUnderlyingJavaType = enumUnderlyingTypeInfo.getJavaType();</span>
+
+<span class="fc" id="L610">                return toEnum.invoke(null, convertNumber(value, typeInfo, enumUnderlyingJavaType));</span>
+            }
+<span class="nc" id="L612">            catch (ClassCastException | SecurityException | IllegalAccessException | IllegalArgumentException |</span>
+                    InvocationTargetException | NoSuchMethodException excpt)
+            {
+<span class="nc" id="L615">                throw new ZserioError(&quot;JsonReader: Cannot create enum '&quot; + typeInfo.getSchemaName() +</span>
+<span class="nc" id="L616">                                &quot;' from value '&quot; + value.toString() + &quot;'!&quot;,</span>
+                        excpt);
+            }
+        }
+
+        private static Object createBitmask(String stringValue, TypeInfo typeInfo)
+        {
+<span class="fc bfc" id="L623" title="All 2 branches covered.">            if (!stringValue.isEmpty())</span>
+            {
+<span class="fc" id="L625">                final char firstChar = stringValue.charAt(0);</span>
+<span class="pc bpc" id="L626" title="5 of 10 branches missed.">                if ((firstChar &gt;= 'A' &amp;&amp; firstChar &lt;= 'Z') || (firstChar &gt;= 'a' &amp;&amp; firstChar &lt;= 'z') ||</span>
+                        firstChar == '_')
+                {
+<span class="fc" id="L629">                    final BigInteger value = parseBitmaskStringValue(stringValue, typeInfo);</span>
+<span class="fc bfc" id="L630" title="All 2 branches covered.">                    if (value != null)</span>
+<span class="fc" id="L631">                        return createBitmask(value, typeInfo);</span>
+<span class="fc" id="L632">                }</span>
+<span class="pc bpc" id="L633" title="1 of 4 branches missed.">                else if (firstChar &gt;= '0' &amp;&amp; firstChar &lt;= '9') // bitmask can be only unsigned</span>
+                {
+<span class="fc" id="L635">                    final BigInteger value = parseBitmaskNumericStringValue(stringValue);</span>
+<span class="pc bpc" id="L636" title="1 of 2 branches missed.">                    if (value != null)</span>
+<span class="fc" id="L637">                        return createBitmask(value, typeInfo);</span>
+                }
+            }
+
+<span class="fc" id="L641">            throw new ZserioError(&quot;JsonReader: Cannot create bitmask '&quot; + typeInfo.getSchemaName() +</span>
+                    &quot;' from string value '&quot; + stringValue + &quot;'!&quot;);
+        }
+
+        private static Object createBitmask(BigInteger value, TypeInfo typeInfo)
+        {
+            try
+            {
+<span class="fc" id="L649">                final Class&lt;?&gt; bitmaskClass = typeInfo.getJavaClass();</span>
+<span class="fc" id="L650">                final TypeInfo bitmaskUnderlyingTypeInfo = typeInfo.getUnderlyingType();</span>
+<span class="fc" id="L651">                final Class&lt;?&gt; bitmaskUnderlyingClass = bitmaskUnderlyingTypeInfo.getJavaClass();</span>
+<span class="fc" id="L652">                final Class&lt;?&gt;[] parameterType = new Class&lt;?&gt;[] {bitmaskUnderlyingClass};</span>
+<span class="fc" id="L653">                final Constructor&lt;?&gt; constructor = bitmaskClass.getConstructor(parameterType);</span>
+<span class="fc" id="L654">                final JavaType bitmaskUnderlyingJavaType = bitmaskUnderlyingTypeInfo.getJavaType();</span>
+
+<span class="fc" id="L656">                return constructor.newInstance(convertNumber(value, typeInfo, bitmaskUnderlyingJavaType));</span>
+            }
+<span class="nc" id="L658">            catch (ClassCastException | InstantiationException | SecurityException | IllegalAccessException |</span>
+                    IllegalArgumentException | InvocationTargetException | NoSuchMethodException excpt)
+            {
+<span class="nc" id="L661">                throw new ZserioError(&quot;JsonReader: Cannot create bitmask '&quot; + typeInfo.getSchemaName() +</span>
+<span class="nc" id="L662">                                &quot;' from value '&quot; + value.toString() + &quot;'!&quot;,</span>
+                        excpt);
+            }
+        }
+
+        private static BigInteger parseEnumStringValue(String stringValue, TypeInfo typeInfo)
+        {
+<span class="fc bfc" id="L669" title="All 2 branches covered.">            for (ItemInfo itemInfo : typeInfo.getEnumItems())</span>
+            {
+<span class="fc bfc" id="L671" title="All 2 branches covered.">                if (stringValue.equals(itemInfo.getSchemaName()))</span>
+<span class="fc" id="L672">                    return itemInfo.getValue();</span>
+<span class="fc" id="L673">            }</span>
+
+<span class="fc" id="L675">            return null;</span>
+        }
+
+        private static BigInteger parseBitmaskStringValue(String stringValue, TypeInfo typeInfo)
+        {
+<span class="fc" id="L680">            BigInteger value = BigInteger.ZERO;</span>
+<span class="fc" id="L681">            final String[] identifiers = stringValue.split(&quot;\\|&quot;);</span>
+<span class="fc bfc" id="L682" title="All 2 branches covered.">            for (String identifierWithSpaces : identifiers)</span>
+            {
+<span class="fc" id="L684">                final String identifier = identifierWithSpaces.trim();</span>
+<span class="fc" id="L685">                boolean match = false;</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">                for (ItemInfo itemInfo : typeInfo.getBitmaskValues())</span>
+                {
+<span class="fc bfc" id="L688" title="All 2 branches covered.">                    if (identifier.equals(itemInfo.getSchemaName()))</span>
+                    {
+<span class="fc" id="L690">                        match = true;</span>
+<span class="fc" id="L691">                        value = value.or(itemInfo.getValue());</span>
+<span class="fc" id="L692">                        break;</span>
+                    }
+<span class="fc" id="L694">                }</span>
+
+<span class="fc bfc" id="L696" title="All 2 branches covered.">                if (!match)</span>
+<span class="fc" id="L697">                    return null;</span>
+            }
+
+<span class="fc" id="L700">            return value;</span>
+        }
+
+        private static BigInteger parseBitmaskNumericStringValue(String stringValue)
+        {
+<span class="fc" id="L705">            int numberLen = 1;</span>
+<span class="pc bpc" id="L706" title="1 of 4 branches missed.">            while (stringValue.charAt(numberLen) &gt;= '0' &amp;&amp; stringValue.charAt(numberLen) &lt;= '9')</span>
+<span class="fc" id="L707">                numberLen++;</span>
+            try
+            {
+<span class="fc" id="L710">                return new BigInteger(stringValue.substring(0, numberLen));</span>
+            }
+<span class="nc" id="L712">            catch (NumberFormatException excpt)</span>
+            {
+<span class="nc" id="L714">                return null;</span>
+            }
+        }
+
+        private static Object convertNumber(BigInteger value, TypeInfo typeInfo, JavaType expectedJavaType)
+        {
+<span class="pc bpc" id="L720" title="2 of 5 branches missed.">            switch (expectedJavaType)</span>
+            {
+            case BYTE:
+<span class="fc" id="L723">                return createByte(value, typeInfo);</span>
+
+            case SHORT:
+<span class="fc" id="L726">                return createShort(value, typeInfo);</span>
+
+            case INT:
+<span class="nc" id="L729">                return createInt(value, typeInfo);</span>
+
+            case LONG:
+<span class="fc" id="L732">                return createLong(value, typeInfo);</span>
+
+            default:
+<span class="nc" id="L735">                return value;</span>
+            }
+        }
+
+        private static byte createByte(BigInteger value, TypeInfo typeInfo)
+        {
+            try
+            {
+<span class="fc" id="L743">                return value.byteValueExact();</span>
+            }
+<span class="nc" id="L745">            catch (ArithmeticException excpt)</span>
+            {
+<span class="nc" id="L747">                throw new ZserioError(&quot;JsonReader: Cannot create byte '&quot; + typeInfo.getSchemaName() +</span>
+<span class="nc" id="L748">                                &quot;' from value '&quot; + value.toString() + &quot;'!&quot;,</span>
+                        excpt);
+            }
+        }
+
+        private static short createShort(BigInteger value, TypeInfo typeInfo)
+        {
+            try
+            {
+<span class="fc" id="L757">                return value.shortValueExact();</span>
+            }
+<span class="nc" id="L759">            catch (ArithmeticException excpt)</span>
+            {
+<span class="nc" id="L761">                throw new ZserioError(&quot;JsonReader: Cannot create short '&quot; + typeInfo.getSchemaName() +</span>
+<span class="nc" id="L762">                                &quot;' from value '&quot; + value.toString() + &quot;'!&quot;,</span>
+                        excpt);
+            }
+        }
+
+        private static int createInt(BigInteger value, TypeInfo typeInfo)
+        {
+            try
+            {
+<span class="nc" id="L771">                return value.intValueExact();</span>
+            }
+<span class="nc" id="L773">            catch (ArithmeticException excpt)</span>
+            {
+<span class="nc" id="L775">                throw new ZserioError(&quot;JsonReader: Cannot create int '&quot; + typeInfo.getSchemaName() +</span>
+<span class="nc" id="L776">                                &quot;' from value '&quot; + value.toString() + &quot;'!&quot;,</span>
+                        excpt);
+            }
+        }
+
+        private static long createLong(BigInteger value, TypeInfo typeInfo)
+        {
+            try
+            {
+<span class="fc" id="L785">                return value.longValueExact();</span>
+            }
+<span class="fc" id="L787">            catch (ArithmeticException excpt)</span>
+            {
+<span class="fc" id="L789">                throw new ZserioError(&quot;JsonReader: Cannot create long '&quot; + typeInfo.getSchemaName() +</span>
+<span class="fc" id="L790">                                &quot;' from value '&quot; + value.toString() + &quot;'!&quot;,</span>
+                        excpt);
+            }
+        }
+
+        private ZserioTreeCreator creator;
+        private final Stack&lt;String&gt; keyStack;
+        private Object object;
+        private ObjectValueAdapter objectValueAdapter;
+    }
+
+    private final Reader reader;
+    private final CreatorAdapter creatorAdapter;
+    private final JsonParser parser;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
