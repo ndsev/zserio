@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FloatUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">FloatUtil.java</span></div><h1>FloatUtil.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+/**
+ * The class provides help methods for manipulation with float numbers.
+ *
+ * The following float formats defined by IEEE 754 standard are supported:
+ *
+ * - half precision float point format (https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
+ * - single precision float point format (https://en.wikipedia.org/wiki/Single-precision_floating-point_format)
+ * - double precision float point format (https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
+ */
+<span class="nc" id="L12">public final class FloatUtil</span>
+{
+    /**
+     * Converts 16-bit float stored in short value to 32-bit float.
+     *
+     * @param float16Value Half precision float value stored in short to convert.
+     *
+     * @return Converted single precision float.
+     */
+    public static float convertShortToFloat(short float16Value)
+    {
+        // decompose half precision float (float16)
+<span class="fc" id="L24">        final short sign16Shifted = (short)(float16Value &amp; FLOAT16_SIGN_MASK);</span>
+<span class="fc" id="L25">        final short exponent16 =</span>
+                (short)((float16Value &amp; FLOAT16_EXPONENT_MASK) &gt;&gt; FLOAT16_EXPONENT_BIT_POSITION);
+<span class="fc" id="L27">        final short significand16 = (short)(float16Value &amp; FLOAT16_SIGNIFICAND_MASK);</span>
+
+        // calculate significand for single precision float (float32)
+<span class="fc" id="L30">        int significand32 = ((int)significand16)</span>
+                &lt;&lt; (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS);
+
+        // calculate exponent for single precision float (float32)
+        int exponent32;
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (exponent16 == 0)</span>
+        {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">            if (significand32 != 0)</span>
+            {
+                // subnormal (denormal) number will be normalized
+<span class="fc" id="L40">                exponent32 = 1 - FLOAT16_EXPONENT_BIAS + FLOAT32_EXPONENT_BIAS; // exp is initialized by -14</span>
+                // shift significand until leading bit overflows into exponent bit
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                while ((significand32 &amp; (FLOAT32_SIGNIFICAND_MASK + 1)) == 0)</span>
+                {
+<span class="fc" id="L44">                    exponent32--;</span>
+<span class="fc" id="L45">                    significand32 &lt;&lt;= 1;</span>
+                }
+                // mask out overflowed leading bit from significand (normalized has implicit leading bit 1)
+<span class="fc" id="L48">                significand32 &amp;= FLOAT32_SIGNIFICAND_MASK;</span>
+            }
+            else
+            {
+                // zero
+<span class="fc" id="L53">                exponent32 = 0;</span>
+            }
+        }
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        else if (exponent16 == FLOAT16_EXPONENT_INFINITY_NAN)</span>
+        {
+            // infinity or NaN
+<span class="fc" id="L59">            exponent32 = FLOAT32_EXPONENT_INFINITY_NAN;</span>
+        }
+        else
+        {
+            // normal number
+<span class="fc" id="L64">            exponent32 = exponent16 - FLOAT16_EXPONENT_BIAS + FLOAT32_EXPONENT_BIAS;</span>
+        }
+
+        // compose single precision float (float32)
+<span class="fc" id="L68">        final int sign32Shifted = (int)(sign16Shifted)</span>
+                &lt;&lt; (FLOAT32_SIGN_BIT_POSITION - FLOAT16_SIGN_BIT_POSITION);
+<span class="fc" id="L70">        final int exponent32Shifted = exponent32 &lt;&lt; FLOAT32_EXPONENT_BIT_POSITION;</span>
+<span class="fc" id="L71">        final int float32Value = sign32Shifted | exponent32Shifted | significand32;</span>
+
+        // convert it to float
+<span class="fc" id="L74">        return convertIntToFloat(float32Value);</span>
+    }
+
+    /**
+     * Converts 32-bit float to 16-bit float stored in short value.
+     *
+     * @param float32 Single precision float to convert.
+     *
+     * @return Converted half precision float value stored in short.
+     */
+    public static short convertFloatToShort(float float32)
+    {
+<span class="fc" id="L86">        final int float32Value = convertFloatToInt(float32);</span>
+
+        // decompose single precision float (float32)
+<span class="fc" id="L89">        final int sign32Shifted = (float32Value &amp; FLOAT32_SIGN_MASK);</span>
+<span class="fc" id="L90">        final int exponent32 = (float32Value &amp; FLOAT32_EXPONENT_MASK) &gt;&gt; FLOAT32_EXPONENT_BIT_POSITION;</span>
+<span class="fc" id="L91">        final int significand32 = (float32Value &amp; FLOAT32_SIGNIFICAND_MASK);</span>
+
+        // calculate significand for half precision float (float16)
+<span class="fc" id="L94">        short significand16 =</span>
+                (short)((significand32 &gt;&gt; (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS)));
+
+        // calculate exponent for half precision float (float16)
+<span class="fc" id="L98">        boolean needsRounding = false;</span>
+        short exponent16;
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (exponent32 == 0)</span>
+        {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            if (significand32 != 0)</span>
+            {
+                // subnormal (denormal) number will be zero
+<span class="fc" id="L105">                significand16 = 0;</span>
+            }
+<span class="fc" id="L107">            exponent16 = 0;</span>
+        }
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        else if (exponent32 == FLOAT32_EXPONENT_INFINITY_NAN)</span>
+        {
+            // infinity or NaN
+<span class="fc" id="L112">            exponent16 = FLOAT16_EXPONENT_INFINITY_NAN;</span>
+        }
+        else
+        {
+            // normal number
+<span class="fc" id="L117">            final short signedExponent16 = (short)(exponent32 - FLOAT32_EXPONENT_BIAS + FLOAT16_EXPONENT_BIAS);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (signedExponent16 &gt; FLOAT16_EXPONENT_INFINITY_NAN)</span>
+            {
+                // exponent overflow, set infinity or NaN
+<span class="fc" id="L121">                exponent16 = FLOAT16_EXPONENT_INFINITY_NAN;</span>
+            }
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            else if (signedExponent16 &lt;= 0)</span>
+            {
+                // exponent underflow
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                if (signedExponent16 &lt;= (short)(-FLOAT16_SIGNIFICAND_NUM_BITS))</span>
+                {
+                    // too big underflow, set to zero
+<span class="fc" id="L129">                    exponent16 = 0;</span>
+<span class="fc" id="L130">                    significand16 = 0;</span>
+                }
+                else
+                {
+                    // we can still use subnormal numbers
+<span class="fc" id="L135">                    exponent16 = 0;</span>
+<span class="fc" id="L136">                    final int fullSignificand32 = significand32 | (FLOAT32_SIGNIFICAND_MASK + 1);</span>
+<span class="fc" id="L137">                    final int significandShift = 1 - signedExponent16;</span>
+<span class="fc" id="L138">                    significand16 = (short)(fullSignificand32 &gt;&gt;</span>
+                            (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS + significandShift));
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                    needsRounding =</span>
+                            ((fullSignificand32 &gt;&gt;
+                                     (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS +
+                                             significandShift - 1)) &amp;
+                                    0x01) != 0;
+<span class="fc" id="L146">                }</span>
+            }
+            else
+            {
+                // exponent ok
+<span class="fc" id="L151">                exponent16 = signedExponent16;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                needsRounding =</span>
+                        ((significand32 &gt;&gt; (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS - 1)) &amp;
+                                0x01) != 0;
+            }
+        }
+
+        // compose half precision float (float16)
+<span class="fc" id="L159">        final short sign16Shifted =</span>
+                (short)(sign32Shifted &gt;&gt;&gt; (FLOAT32_SIGN_BIT_POSITION - FLOAT16_SIGN_BIT_POSITION));
+<span class="fc" id="L161">        final short exponent16Shifted = (short)(exponent16 &lt;&lt; FLOAT16_EXPONENT_BIT_POSITION);</span>
+<span class="fc" id="L162">        short float16Value = (short)(sign16Shifted | exponent16Shifted | significand16);</span>
+
+        // check rounding
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        if (needsRounding)</span>
+<span class="fc" id="L166">            float16Value += (short)1; // might overflow to infinity</span>
+
+<span class="fc" id="L168">        return float16Value;</span>
+    }
+
+    /**
+     * Converts 32-bit float stored in int value to 32-bit float.
+     *
+     * @param float32Value Single precision float value stored in int to convert.
+     *
+     * @return Converted single precision float.
+     */
+    public static float convertIntToFloat(int float32Value)
+    {
+<span class="fc" id="L180">        return Float.intBitsToFloat(float32Value);</span>
+    }
+
+    /**
+     * Converts 32-bit float to 32-bit float stored in int value.
+     *
+     * @param float32 Single precision float to convert.
+     *
+     * @return Converted single precision float value stored in int.
+     */
+    public static int convertFloatToInt(float float32)
+    {
+<span class="fc" id="L192">        return Float.floatToIntBits(float32);</span>
+    }
+
+    /**
+     * Converts 64-bit float (double) stored in long value to 64-bit float (double).
+     *
+     * @param float64Value Double precision float value stored in long to convert.
+     *
+     * @return Converted double precision float.
+     */
+    public static double convertLongToDouble(long float64Value)
+    {
+<span class="fc" id="L204">        return Double.longBitsToDouble(float64Value);</span>
+    }
+
+    /**
+     * Converts 64-bit float (double) to 64-bit float (double) stored in long value.
+     *
+     * @param float64 Double precision float to convert.
+     *
+     * @return Converted double precision float value stored in long.
+     */
+    public static long convertDoubleToLong(double float64)
+    {
+<span class="fc" id="L216">        return Double.doubleToLongBits(float64);</span>
+    }
+
+    private static final short FLOAT16_SIGN_MASK = (short)0x8000;
+    private static final short FLOAT16_EXPONENT_MASK = (short)0x7C00;
+    private static final short FLOAT16_SIGNIFICAND_MASK = (short)0x03FF;
+
+    private static final short FLOAT16_SIGN_BIT_POSITION = 15;
+    private static final short FLOAT16_EXPONENT_BIT_POSITION = 10;
+
+    private static final short FLOAT16_SIGNIFICAND_NUM_BITS = FLOAT16_EXPONENT_BIT_POSITION;
+
+    private static final short FLOAT16_EXPONENT_INFINITY_NAN = (short)0x001F;
+    private static final short FLOAT16_EXPONENT_BIAS = 15;
+
+    private static final int FLOAT32_SIGN_MASK = 0x80000000;
+    private static final int FLOAT32_EXPONENT_MASK = 0x7F800000;
+    private static final int FLOAT32_SIGNIFICAND_MASK = 0x007FFFFF;
+
+    private static final int FLOAT32_SIGN_BIT_POSITION = 31;
+    private static final int FLOAT32_EXPONENT_BIT_POSITION = 23;
+
+    private static final int FLOAT32_SIGNIFICAND_NUM_BITS = FLOAT32_EXPONENT_BIT_POSITION;
+
+    private static final int FLOAT32_EXPONENT_INFINITY_NAN = 0x00FF;
+    private static final int FLOAT32_EXPONENT_BIAS = 127;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

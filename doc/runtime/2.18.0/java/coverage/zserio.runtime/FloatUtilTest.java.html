@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FloatUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">FloatUtilTest.java</span></div><h1>FloatUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L7">public class FloatUtilTest</span>
+{
+    @Test
+    public void convertShortToFloat()
+    {
+        // plus zero
+<span class="fc" id="L13">        final short float16ValuePlusZero = createFloat16Value((short)0, (short)0, (short)0); // +0.0</span>
+<span class="fc" id="L14">        checkFloat16ToFloat32Conversion(float16ValuePlusZero, 0.0f);</span>
+
+        // minus zero
+<span class="fc" id="L17">        final short float16ValueMinusZero = createFloat16Value((short)1, (short)0, (short)0); // -0.0</span>
+<span class="fc" id="L18">        checkFloat16ToFloat32Conversion(float16ValueMinusZero, -0.0f);</span>
+
+        // plus infinity
+<span class="fc" id="L21">        final short float16ValuePlusInfinity = createFloat16Value((short)0, (short)0x1F, (short)0); // +INF</span>
+<span class="fc" id="L22">        final int float32ValuePlusInfinity = createFloat32Value(0, 0xFF, 0); // +INF</span>
+<span class="fc" id="L23">        checkFloat16ToFloat32Conversion(float16ValuePlusInfinity, float32ValuePlusInfinity);</span>
+
+        // minus infinity
+<span class="fc" id="L26">        final short float16ValueMinusInfinity = createFloat16Value((short)1, (short)0x1F, (short)0); // -INF</span>
+<span class="fc" id="L27">        final int float32ValueMinusInfinity = createFloat32Value(1, 0xFF, 0); // -INF</span>
+<span class="fc" id="L28">        checkFloat16ToFloat32Conversion(float16ValueMinusInfinity, float32ValueMinusInfinity);</span>
+
+        // quiet NaN (Java uses only the 1st significand bit in NaN)
+<span class="fc" id="L31">        final short float16ValueQuietNan = createFloat16Value((short)0, (short)0x1F, (short)0x3FF); // +NaN</span>
+<span class="fc" id="L32">        final int float32ValueQuietNan = createFloat32Value(0, 0xFF, 0x400000); // +NaN</span>
+<span class="fc" id="L33">        checkFloat16ToFloat32Conversion(float16ValueQuietNan, float32ValueQuietNan);</span>
+
+        // signaling NaN (Java uses only quiet NaN)
+        // -NaN
+<span class="fc" id="L37">        final short float16ValueSignalingNan = createFloat16Value((short)1, (short)0x1F, (short)0x3FF);</span>
+<span class="fc" id="L38">        checkFloat16ToFloat32Conversion(float16ValueSignalingNan, float32ValueQuietNan);</span>
+
+        // normal numbers
+<span class="fc" id="L41">        final short float16ValueOne = createFloat16Value((short)0, (short)15, (short)0); // 1.0</span>
+<span class="fc" id="L42">        checkFloat16ToFloat32Conversion(float16ValueOne, 1.0f);</span>
+
+        // 1.0 + 2^-10
+<span class="fc" id="L45">        final short float16ValueOnePlus = createFloat16Value((short)0, (short)15, (short)0x01);</span>
+        // 1.0 + 2^-10
+<span class="fc" id="L47">        final int float32ValueOnePlus = createFloat32Value(0, 127, 0x2000);</span>
+<span class="fc" id="L48">        checkFloat16ToFloat32Conversion(float16ValueOnePlus, float32ValueOnePlus);</span>
+
+        // 2^15 (1 + 2^-1 + ... + 2^-10)
+<span class="fc" id="L51">        final short float16ValueMax = createFloat16Value((short)0, (short)30, (short)0x3FF);</span>
+<span class="fc" id="L52">        checkFloat16ToFloat32Conversion(float16ValueMax, 65504.0f);</span>
+
+        // subnormal numbers
+        // 2^-14 (2^-10)
+<span class="fc" id="L56">        final short float16ValueMinSubnormal = createFloat16Value((short)0, (short)0, (short)1);</span>
+        // 2^-24
+<span class="fc" id="L58">        final int float32ValueMinSubnormal = createFloat32Value(0, 103, 0);</span>
+<span class="fc" id="L59">        checkFloat16ToFloat32Conversion(float16ValueMinSubnormal, float32ValueMinSubnormal);</span>
+
+        // 2^-14 (2^-1 + ... + 2^-10)
+<span class="fc" id="L62">        final short float16ValueMaxSubnormal = createFloat16Value((short)0, (short)0, (short)0x3FF);</span>
+        // 2^-15 (1 + 2^-1 + ... + 2^-9)
+<span class="fc" id="L64">        final int float32ValueMaxSubnormal = createFloat32Value(0, 112, 0x7FC000);</span>
+<span class="fc" id="L65">        checkFloat16ToFloat32Conversion(float16ValueMaxSubnormal, float32ValueMaxSubnormal);</span>
+<span class="fc" id="L66">    }</span>
+
+    @Test
+    public void convertFloatToShort()
+    {
+        // plus zero
+<span class="fc" id="L72">        final short float16ValuePlusZero = createFloat16Value((short)0, (short)0, (short)0); // +0.0</span>
+<span class="fc" id="L73">        checkFloat32ToFloat16Conversion(0.0f, float16ValuePlusZero);</span>
+
+        // minus zero
+<span class="fc" id="L76">        final short float16ValueMinusZero = createFloat16Value((short)1, (short)0, (short)0); // -0.0</span>
+<span class="fc" id="L77">        checkFloat32ToFloat16Conversion(-0.0f, float16ValueMinusZero);</span>
+
+        // plus infinity
+<span class="fc" id="L80">        final int float32ValuePlusInfinity = createFloat32Value(0, 0xFF, 0); // +INF</span>
+<span class="fc" id="L81">        final short float16ValuePlusInfinity = createFloat16Value((short)0, (short)0x1F, (short)0); // +INF</span>
+<span class="fc" id="L82">        checkFloat32ToFloat16Conversion(float32ValuePlusInfinity, float16ValuePlusInfinity);</span>
+
+        // minus infinity
+<span class="fc" id="L85">        final int float32ValueMinusInfinity = createFloat32Value(1, 0xFF, 0); // -INF</span>
+<span class="fc" id="L86">        final short float16ValueMinusInfinity = createFloat16Value((short)1, (short)0x1F, (short)0); // -INF</span>
+<span class="fc" id="L87">        checkFloat32ToFloat16Conversion(float32ValueMinusInfinity, float16ValueMinusInfinity);</span>
+
+        // quiet NaN (Java uses only the 1st significand bit in NaN)
+<span class="fc" id="L90">        final int float32ValueQuietNan = createFloat32Value(0, 0xFF, 0x7FE000); // +NaN</span>
+<span class="fc" id="L91">        final short float16ValueQuietNan = createFloat16Value((short)0, (short)0x1F, (short)0x200); // +NaN</span>
+<span class="fc" id="L92">        checkFloat32ToFloat16Conversion(float32ValueQuietNan, float16ValueQuietNan);</span>
+
+        // signaling NaN (Java uses only quiet NaN)
+<span class="fc" id="L95">        final int float32ValueSignalingNan = createFloat32Value(1, 0xFF, 0x7FE000); // -NaN</span>
+<span class="fc" id="L96">        checkFloat32ToFloat16Conversion(float32ValueSignalingNan, float16ValueQuietNan);</span>
+
+        // normal numbers
+<span class="fc" id="L99">        final short float16ValueOne = createFloat16Value((short)0, (short)15, (short)0); // 1.0</span>
+<span class="fc" id="L100">        checkFloat32ToFloat16Conversion(1.0f, float16ValueOne);</span>
+
+<span class="fc" id="L102">        final int float32ValueOnePlus = createFloat32Value(0, 127, 0x2000); // 1.0 + 2^-10</span>
+<span class="fc" id="L103">        final short float16ValueOnePlus = createFloat16Value((short)0, (short)15, (short)0x01); // 1.0 + 2^-10</span>
+<span class="fc" id="L104">        checkFloat32ToFloat16Conversion(float32ValueOnePlus, float16ValueOnePlus);</span>
+
+<span class="fc" id="L106">        final short float16ValueMax =</span>
+<span class="fc" id="L107">                createFloat16Value((short)0, (short)30, (short)0x3FF); // 2^15 (1 + 2^-1 + ... + 2^-10)</span>
+<span class="fc" id="L108">        checkFloat32ToFloat16Conversion(65504.0f, float16ValueMax);</span>
+
+        // normal numbers converted to zero
+<span class="fc" id="L111">        final int float32ValueUnderflow = createFloat32Value(0, 102, 0); // 2^-25</span>
+<span class="fc" id="L112">        checkFloat32ToFloat16Conversion(float32ValueUnderflow, float16ValuePlusZero);</span>
+
+        // normal numbers converted to subnormal numbers
+<span class="fc" id="L115">        final int float32ValueMinUnderflow = createFloat32Value(0, 103, 1); // 2^-24 (1 + 2^-23)</span>
+<span class="fc" id="L116">        final short float16ValueMinSubnormal = createFloat16Value((short)0, (short)0, (short)1); // 2^-24</span>
+<span class="fc" id="L117">        checkFloat32ToFloat16Conversion(float32ValueMinUnderflow, float16ValueMinSubnormal);</span>
+
+        // normal numbers converted to subnormal numbers with rounding
+<span class="fc" id="L120">        final int float32ValueMinUnderflowRounding = createFloat32Value(0, 104, 0x200000); // 2^-23 (1 + 2^-2)</span>
+<span class="fc" id="L121">        final short float16ValueMinSubnormalRounding =</span>
+<span class="fc" id="L122">                createFloat16Value((short)0, (short)0, (short)0x3); // 2^-14 (2^-9 + 2^-10)</span>
+<span class="fc" id="L123">        checkFloat32ToFloat16Conversion(float32ValueMinUnderflowRounding, float16ValueMinSubnormalRounding);</span>
+
+        // normal numbers converted to infinity
+<span class="fc" id="L126">        final int float32ValueOverflow = createFloat32Value(0, 144, 0); // 2^17</span>
+<span class="fc" id="L127">        checkFloat32ToFloat16Conversion(float32ValueOverflow, float16ValuePlusInfinity);</span>
+
+        // normal numbers converted with rounding
+<span class="fc" id="L130">        final int float32ValueRounding = createFloat32Value(0, 127, 0x401000); // 1 + 2^-1 + 2^-11</span>
+<span class="fc" id="L131">        final short float16ValueRounding =</span>
+<span class="fc" id="L132">                createFloat16Value((short)0, (short)15, (short)0x201); // 1 + 2^-1 + 2^-10</span>
+<span class="fc" id="L133">        checkFloat32ToFloat16Conversion(float32ValueRounding, float16ValueRounding);</span>
+
+        // subnormal numbers
+<span class="fc" id="L136">        final int float32ValueMinSubnormal = createFloat32Value(0, 0, 1); // 2^-126 (2^-23)</span>
+<span class="fc" id="L137">        checkFloat32ToFloat16Conversion(float32ValueMinSubnormal, float16ValuePlusZero);</span>
+
+        // 2^-126 (2^-1 + ... + 2^-23)
+<span class="fc" id="L140">        final int float32ValueMaxSubnormal = createFloat32Value(0, 0, 0x007FFFFF);</span>
+<span class="fc" id="L141">        checkFloat32ToFloat16Conversion(float32ValueMaxSubnormal, float16ValuePlusZero);</span>
+<span class="fc" id="L142">    }</span>
+
+    @Test
+    public void convertIntToFloat()
+    {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (TestFloat32Element testElement : TEST_FLOAT32_DATA)</span>
+        {
+<span class="fc" id="L149">            final int float32Value =</span>
+<span class="fc" id="L150">                    createFloat32Value(testElement.sign, testElement.exponent, testElement.significand);</span>
+<span class="fc" id="L151">            final float convertedFloat = FloatUtil.convertIntToFloat(float32Value);</span>
+
+<span class="fc" id="L153">            assertEquals(Float.toString(testElement.expectedFloat), Float.toString(convertedFloat));</span>
+        }
+<span class="fc" id="L155">    }</span>
+
+    @Test
+    public void convertFloatToInt()
+    {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (TestFloat32Element testElement : TEST_FLOAT32_DATA)</span>
+        {
+<span class="fc" id="L162">            final int convertedFloatValue = FloatUtil.convertFloatToInt(testElement.expectedFloat);</span>
+<span class="fc" id="L163">            final int expectedFloatValue =</span>
+<span class="fc" id="L164">                    createFloat32Value(testElement.sign, testElement.exponent, testElement.significand);</span>
+
+<span class="fc" id="L166">            assertEquals(expectedFloatValue, convertedFloatValue);</span>
+        }
+<span class="fc" id="L168">    }</span>
+
+    @Test
+    public void convertLongToDouble()
+    {
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (TestFloat64Element testElement : TEST_FLOAT64_DATA)</span>
+        {
+<span class="fc" id="L175">            final long float64Value =</span>
+<span class="fc" id="L176">                    createFloat64Value(testElement.sign, testElement.exponent, testElement.significand);</span>
+<span class="fc" id="L177">            final double convertedDouble = FloatUtil.convertLongToDouble(float64Value);</span>
+
+<span class="fc" id="L179">            assertEquals(Double.toString(testElement.expectedDouble), Double.toString(convertedDouble));</span>
+        }
+<span class="fc" id="L181">    }</span>
+
+    @Test
+    public void convertDoubleToLong()
+    {
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        for (TestFloat64Element testElement : TEST_FLOAT64_DATA)</span>
+        {
+<span class="fc" id="L188">            final long convertedDoubleValue = FloatUtil.convertDoubleToLong(testElement.expectedDouble);</span>
+<span class="fc" id="L189">            final long expectedDoubleValue =</span>
+<span class="fc" id="L190">                    createFloat64Value(testElement.sign, testElement.exponent, testElement.significand);</span>
+
+<span class="fc" id="L192">            assertEquals(expectedDoubleValue, convertedDoubleValue);</span>
+        }
+<span class="fc" id="L194">    }</span>
+
+    private static short createFloat16Value(short sign, short exponent, short significand)
+    {
+<span class="fc" id="L198">        return (short)((sign &lt;&lt; FLOAT16_SIGN_BIT_POSITION) | (exponent &lt;&lt; FLOAT16_EXPONENT_BIT_POSITION) |</span>
+                significand);
+    }
+
+    private static int createFloat32Value(int sign, int exponent, int significand)
+    {
+
+<span class="fc" id="L205">        return (sign &lt;&lt; FLOAT32_SIGN_BIT_POSITION) | (exponent &lt;&lt; FLOAT32_EXPONENT_BIT_POSITION) | significand;</span>
+    }
+
+    private static long createFloat64Value(long sign, long exponent, long significand)
+    {
+
+<span class="fc" id="L211">        return (sign &lt;&lt; FLOAT64_SIGN_BIT_POSITION) | (exponent &lt;&lt; FLOAT64_EXPONENT_BIT_POSITION) | significand;</span>
+    }
+
+    private static void checkFloat16ToFloat32Conversion(short float16Value, int expectedFloat32Value)
+    {
+<span class="fc" id="L216">        final float float32 = FloatUtil.convertShortToFloat(float16Value);</span>
+<span class="fc" id="L217">        assertEquals(expectedFloat32Value, Float.floatToIntBits(float32));</span>
+<span class="fc" id="L218">    }</span>
+
+    private static void checkFloat16ToFloat32Conversion(short float16Value, float expectedFloat32)
+    {
+<span class="fc" id="L222">        assertEquals(</span>
+<span class="fc" id="L223">                Float.toString(expectedFloat32), Float.toString(FloatUtil.convertShortToFloat(float16Value)));</span>
+<span class="fc" id="L224">    }</span>
+
+    private static void checkFloat32ToFloat16Conversion(int float32Value, short expectedFloat16Value)
+    {
+<span class="fc" id="L228">        final float float32 = Float.intBitsToFloat(float32Value);</span>
+<span class="fc" id="L229">        assertEquals(expectedFloat16Value, FloatUtil.convertFloatToShort(float32));</span>
+<span class="fc" id="L230">    }</span>
+
+    private static void checkFloat32ToFloat16Conversion(float float32, short expectedFloat16Value)
+    {
+<span class="fc" id="L234">        assertEquals(expectedFloat16Value, FloatUtil.convertFloatToShort(float32));</span>
+<span class="fc" id="L235">    }</span>
+
+    private static class TestFloat32Element
+    {
+        public TestFloat32Element(int sign, int exponent, int significand, float expectedFloat)
+<span class="fc" id="L240">        {</span>
+<span class="fc" id="L241">            this.sign = sign;</span>
+<span class="fc" id="L242">            this.exponent = exponent;</span>
+<span class="fc" id="L243">            this.significand = significand;</span>
+<span class="fc" id="L244">            this.expectedFloat = expectedFloat;</span>
+<span class="fc" id="L245">        }</span>
+
+        public int sign;
+        public int exponent;
+        public int significand;
+        public float expectedFloat;
+    };
+
+    private static class TestFloat64Element
+    {
+        public TestFloat64Element(long sign, long exponent, long significand, double expectedDouble)
+<span class="fc" id="L256">        {</span>
+<span class="fc" id="L257">            this.sign = sign;</span>
+<span class="fc" id="L258">            this.exponent = exponent;</span>
+<span class="fc" id="L259">            this.significand = significand;</span>
+<span class="fc" id="L260">            this.expectedDouble = expectedDouble;</span>
+<span class="fc" id="L261">        }</span>
+
+        public long sign;
+        public long exponent;
+        public long significand;
+        public double expectedDouble;
+    };
+
+<span class="fc" id="L269">    private static final TestFloat32Element TEST_FLOAT32_DATA[] = {</span>
+            new TestFloat32Element(0, 0, 0, 0.0f),
+            new TestFloat32Element(1, 0, 0, -0.0f),
+            new TestFloat32Element(0, 127, 0, +1.0f),
+            new TestFloat32Element(1, 127, 0, -1.0f),
+            // 2^1 (1 + 2^-1 + 2^-2)
+            new TestFloat32Element(0, 128, 0x600000, 3.5f),
+            // 2^-1 (1 + 2^-1 + 2^-2)
+            new TestFloat32Element(0, 126, 0x600000, 0.875f),
+            // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+            new TestFloat32Element(0, 130, 0x1E0000, 9.875f),
+            // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+            new TestFloat32Element(0, 126, 0x1E0000, 0.6171875f),
+    };
+
+<span class="fc" id="L284">    private static final TestFloat64Element TEST_FLOAT64_DATA[] = {</span>
+            new TestFloat64Element(0, 0, 0, 0.0),
+            new TestFloat64Element(1, 0, 0, -0.0),
+            new TestFloat64Element(0, 1023, 0, +1.0f),
+            new TestFloat64Element(1, 1023, 0, -1.0f),
+            // 2^1 (1 + 2^-1 + 2^-2)
+            new TestFloat64Element(0, 1024, 0xC000000000000L, 3.5f),
+            // 2^-1 (1 + 2^-1 + 2^-2)
+            new TestFloat64Element(0, 1022, 0xC000000000000L, 0.875f),
+            // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+            new TestFloat64Element(0, 1026, 0x3C00000000000L, 9.875f),
+            // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+            new TestFloat64Element(0, 1022, 0x3C00000000000L, 0.6171875f),
+    };
+
+    private static final short FLOAT16_SIGN_BIT_POSITION = 15;
+    private static final short FLOAT16_EXPONENT_BIT_POSITION = 10;
+
+    private static final int FLOAT32_SIGN_BIT_POSITION = 31;
+    private static final int FLOAT32_EXPONENT_BIT_POSITION = 23;
+
+    private static final long FLOAT64_SIGN_BIT_POSITION = 63;
+    private static final long FLOAT64_EXPONENT_BIT_POSITION = 52;
+};
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
