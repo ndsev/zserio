@@ -63,12 +63,11 @@ def dump(obj: Any, indent_level: int = 0, visited=None) -> str:
     return ret
 
 
-def writeReadTest(clazz: Type[Any], data: Any):
+def readTest(bitBuffer: Any, clazz: Type[Any], data: Any, *args):
     bitSize = data.bitsizeof()
-    bitBuffer = zserio.serialize(data)
     assert bitSize == bitBuffer.bitsize
 
-    readData = zserio.deserialize(clazz, bitBuffer)
+    readData = zserio.deserialize(clazz, bitBuffer, *args)
 
     if readData != data:
         pp = pprint.PrettyPrinter(indent=4)
@@ -79,6 +78,11 @@ def writeReadTest(clazz: Type[Any], data: Any):
         pp.pprint(vars(data))
 
     assert readData == data
+
+
+def writeReadTest(clazz: Type[Any], data: Any, *args):
+    bitBuffer = zserio.serialize(data)
+    readTest(bitBuffer, clazz, data, *args)
 
 
 def hashTest(value: Any, hashValue: int, equalValue: Any, diffValue: Any = None, diffHashValue: int = 0):
