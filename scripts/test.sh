@@ -3,9 +3,141 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_test_tools.sh"
 
+capitalize_test_name()
+{
+    exit_if_argc_ne $# 2
+    local STR="$1"; shift
+    local OUT_VAR="$1"; shift
+    
+    local WORDS=(${STR//_/ }) # split at _
+    local OUT="${WORDS[@]^}" # capitalize and join
+    OUT="${OUT/Uint/UInt}"
+    OUT="${OUT/Varint/VarInt}"
+    OUT="${OUT/Varuint/VarUInt}"
+    OUT="${OUT// /}" # remove spaces
+    eval "${OUT_VAR}=${OUT}"
+}
+
+# Compares zs and test files and prints missing tests
+print_missing_tests()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local PLATFORM="$1"; shift
+
+    local EXT=".${PLATFORM}"
+    if [[ ${EXT} == ".python" ]] ; then
+        EXT=".py"
+    fi
+    local STARTING_POINT="${ZSERIO_PROJECT_ROOT}/test"    
+    local TEST_SUITES_ARR=(
+        $(${FIND} "${STARTING_POINT}/data/" -mindepth 2 -maxdepth 2 -type d -printf "%P\\n" | sort)
+    )
+    local MISSING_TS_ARR=()
+    local COMMON_TS_ARR=()
+    local MISSING_COUNT=0
+    for TS in ${TEST_SUITES_ARR[@]} ; do
+        local TS1="${TS##*/}" # remove prefix
+        #echo "-> ${TS}" # de
+        capitalize_test_name ${TS1} TEST_NAME
+        local TEST_NAME="${TEST_NAME}Test${EXT}"
+        local ZS_STARTING_POINT="${STARTING_POINT}/data/${TS}/zs"
+        local TS_STARTING_POINT="${STARTING_POINT}/extensions/${TS}/${PLATFORM}"
+        if [ ! -d "${TS_STARTING_POINT}" ] || [ -z "$( ls -A ${TS_STARTING_POINT} )" ] ; then
+            MISSING_TS_ARR+=(${TS})
+        elif [ -f "${TS_STARTING_POINT}/${TEST_NAME}" ] ||
+             [ -f "${TS_STARTING_POINT}/${TS1}/${TEST_NAME}" ] ; then
+            COMMON_TS_ARR+=(${TS})
+        else
+            local MISSING_ARR=()
+            # iterate subfolders
+            local DIR_NAME_ARR=(
+                $(${FIND} "${ZS_STARTING_POINT}" -mindepth 1 -maxdepth 1 -type d -printf "%f\\n")
+            )
+            for DIR_NAME in ${DIR_NAME_ARR[@]} ; do
+                capitalize_test_name ${DIR_NAME} TEST_NAME
+                TEST_NAME="${TEST_NAME}Test${EXT}"
+                #echo "DIR_NAME ${DIR_NAME}"
+                if [ ! -f "${TS_STARTING_POINT}/${TEST_NAME}" ] &&
+                   [ ! -f "${TS_STARTING_POINT}/${TS1}/${TEST_NAME}" ] &&
+                   [ ! -f "${TS_STARTING_POINT}/${TS1}/${DIR_NAME}/${TEST_NAME}" ] ;
+                then
+                    # iterate zs files
+                    local ZS_NAME_ARR=(
+                        $(${FIND} "${ZS_STARTING_POINT}/${DIR_NAME}" -mindepth 1 -maxdepth 1 -name "*.zs" -printf "%f\\n")
+                    )
+                    #echo " ${TEST_NAME} not found, recurse"
+                    for ZS_NAME in ${ZS_NAME_ARR[@]} ; do
+                        #echo "  ${ZS_NAME}"
+                        local BASE="${ZS_NAME%.zs}"
+                        capitalize_test_name ${BASE} TEST_NAME
+                        TEST_NAME="${TEST_NAME}Test${EXT}"
+                        if [ ! -f "${TS_STARTING_POINT}/${TEST_NAME}" ] &&
+                           [ ! -f "${TS_STARTING_POINT}/${DIR_NAME}/${TEST_NAME}" ] &&
+                           [ ! -f "${TS_STARTING_POINT}/${DIR_NAME}/${BASE}/${TEST_NAME}" ] &&
+                           [ ! -f "${TS_STARTING_POINT}/${TS1}/${DIR_NAME}/${TEST_NAME}" ] ;
+                        then
+                            #echo "   ${TEST_NAME} not found"
+                            MISSING_ARR+=("${TEST_NAME}")  
+                            MISSING_COUNT=$((MISSING_COUNT+1))                            
+                        fi
+                    done
+                fi
+            done
+            # iterate zs files except those having folder
+            ZS_NAME_ARR=(
+                $(${FIND} "${ZS_STARTING_POINT}" -mindepth 1 -maxdepth 1 -name "*.zs" -printf "%f\\n")
+            )
+            for ZS_NAME in ${ZS_NAME_ARR[@]} ; do
+                #echo "FNAME ${ZS_NAME}"
+                local BASE="${ZS_NAME%.zs}"
+                capitalize_test_name ${BASE} TEST_NAME
+                TEST_NAME="${TEST_NAME}Test${EXT}"
+                if [ ! -d "${ZS_STARTING_POINT}/${BASE}" ] &&
+                   [ ! -f "${TS_STARTING_POINT}/${TEST_NAME}" ] &&
+                   [ ! -f "${TS_STARTING_POINT}/${TS1}/${TEST_NAME}" ] &&
+                   [ ! -f "${TS_STARTING_POINT}/${BASE}/${TEST_NAME}" ];
+                then
+                    #echo " ${TEST_NAME} not found"
+                    MISSING_ARR+=(${TEST_NAME})  
+                    MISSING_COUNT=$((MISSING_COUNT+1))
+                fi
+            done
+            # print missing tests
+            if [ ${#MISSING_ARR[@]} -gt 0 ] ; then
+                echo "Missing tests in ${TS}:"
+                for MISS in ${MISSING_ARR[@]} ; do
+                    echo "  ${MISS}"
+                done
+                echo
+            fi
+        fi
+    done
+    if [ ${#COMMON_TS_ARR[@]} -gt 0 ] ; then
+        echo "Ignored test suites with shared implementation:"
+        for COM in ${COMMON_TS_ARR[@]} ; do
+            echo "  ${COM}"
+        done
+        echo
+    fi
+    if [ ${#MISSING_TS_ARR[@]} -gt 0 ] ; then
+        echo "Missing test suites:"
+        for MISS in ${MISSING_TS_ARR[@]} ; do
+            echo "  ${MISS}"
+        done
+        echo
+    fi
+
+    echo "Summary:"
+    echo "${MISSING_COUNT} tests missing" 
+    echo "${#MISSING_TS_ARR[@]} test suites missing"
+    return 0
+}
+
 # Gets test suites matching the provided patterns.
 get_test_suites()
 {
+    exit_if_argc_ne $# 3
     local TEST_DATA_ROOT="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local PATTERNS=("${MSYS_WORKAROUND_TEMP[@]}")
@@ -726,6 +858,7 @@ parse_arguments()
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
+    local SWITCH_MISSING_OUT="$1"; shift
     local SWITCH_TEST_SUITES_ARRAY_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
@@ -735,6 +868,7 @@ parse_arguments()
     eval ${PARAM_CORE_OUT}=0
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
+    eval ${SWITCH_MISSING_OUT}=0
 
     local NUM_PARAMS=0
     local NUM_PATTERNS=0
@@ -757,6 +891,11 @@ parse_arguments()
 
             "-p" | "--purge")
                 eval ${SWITCH_PURGE_OUT}=1
+                shift
+                ;;
+
+            "-m" | "--missing")
+                eval ${SWITCH_MISSING_OUT}=1
                 shift
                 ;;
 
@@ -808,20 +947,24 @@ parse_arguments()
     done
 
     local NUM_CPP_TARGETS=0
+    local NUM_TEST_TARGETS=0
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
             "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
+                NUM_TEST_TARGETS=$((NUM_TEST_TARGETS + 1))
                 ;;
 
             "java")
                 eval ${PARAM_JAVA_OUT}=1
+                NUM_TEST_TARGETS=$((NUM_TEST_TARGETS + 1))
                 ;;
 
             "python")
                 eval ${PARAM_PYTHON_OUT}=1
+                NUM_TEST_TARGETS=$((NUM_TEST_TARGETS + 1))
                 ;;
 
             "xml")
@@ -865,6 +1008,13 @@ parse_arguments()
         return 1
     fi
 
+    if [[ ${!SWITCH_MISSING_OUT} &&
+          ${NUM_TEST_TARGETS} -ne 1 ]] ; then
+        stderr_echo "For -m specify exactly one target (cpp-* / java / python)"
+        echo
+        return 1
+    fi
+
     return 0
 }
 
@@ -884,10 +1034,11 @@ main()
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
+    local SWITCH_MISSING
     local SWITCH_TEST_PATTERN_ARRAY=()
     # note that "$@" must have qoutes to prevent expansion of include/exclude patterns
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_CORE \
-        PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_PATTERN_ARRAY "$@"
+        PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE SWITCH_MISSING SWITCH_TEST_PATTERN_ARRAY "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -944,6 +1095,18 @@ main()
 
     # extensions need absolute paths
     convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
+
+    # print missing tests
+    if [[ ${SWITCH_MISSING} == 1 ]] ; then
+        local PLATFORM="cpp"
+        if [[ ${PARAM_JAVA} != 0 ]] ; then
+            PLATFORM="java"
+        elif [[ ${PARAM_PYTHON} != 0 ]] ; then
+            PLATFORM="python"
+        fi
+        print_missing_tests "${ZSERIO_PROJECT_ROOT}" ${PLATFORM}
+        return 0
+    fi
 
     # purge if requested and then create test output directory
     local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
