@@ -1008,8 +1008,8 @@ parse_arguments()
         return 1
     fi
 
-    if [[ ${!SWITCH_MISSING_OUT} &&
-          ${NUM_TEST_TARGETS} -ne 1 ]] ; then
+    if [[ ${!SWITCH_MISSING_OUT} != 0 &&
+          ${NUM_TEST_TARGETS} != 1 ]] ; then
         stderr_echo "For -m specify exactly one target (cpp-* / java / python)"
         echo
         return 1
