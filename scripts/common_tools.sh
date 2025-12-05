@@ -1057,8 +1057,8 @@ get_host_platform()
         local CURRENT_ARCH
         CURRENT_ARCH=`wmic OS get OSArchitecture 2> /dev/null`
         if [ $? -ne 0 ] ; then
-            # wmic failed, assume it's Windows XP 32bit
-            NATIVE_TARGET="windows32"
+            # wmic failed, assume it's Windows 11 64b
+            NATIVE_TARGET="windows64"
         else
             case "${CURRENT_ARCH}" in
             *64-bit*)
