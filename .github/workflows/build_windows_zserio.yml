@@ -12,6 +12,7 @@ jobs:
         - { os: "windows-2022", java-version: "8" }
         - { os: "windows-2022", java-version: "11" }
         - { os: "windows-2022", java-version: "17" }
+        - { os: "windows-2022", java-version: "21" }
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-java${{matrix.java-version}}
@@ -37,7 +38,7 @@ jobs:
 
     - name: Install clang format
       shell: bash
-      run: | 
+      run: |
         choco install llvm --version=14.0.0 --allow-downgrade
 
     - name: Install specific version of Java static code analysis tool (spotbugs)

@@ -12,6 +12,7 @@ jobs:
         - { os: "windows-2022", java-version: "8" }
         - { os: "windows-2022", java-version: "11" }
         - { os: "windows-2022", java-version: "17" }
+        - { os: "windows-2022", java-version: "21" }
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-java${{matrix.java-version}}

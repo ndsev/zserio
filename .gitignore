@@ -16,3 +16,4 @@ __pycache__
 /compiler/core/src/.vscode/
 /compiler/extensions/java/.vscode/
 /compiler/extensions/python/.vscode/
+/compiler/extensions/doc/.vscode/
