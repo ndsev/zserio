@@ -1,5 +1,8 @@
 package zserio.extension.cpp.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import zserio.ast.PackageName;
 import zserio.extension.cpp.TypesContext;
 
@@ -64,12 +67,18 @@ public class NativeRuntimeAllocType extends NativeRuntimeType
     private NativeRuntimeAllocType(TypesContext.NativeTypeDefinition nativeTypeDefinition,
             TypesContext.AllocatorDefinition allocatorDefinition, PackageName packageName, String name)
     {
-        super(packageName, name);
-
+        super(packageName, name, makeSystemIncludes(nativeTypeDefinition, allocatorDefinition));
         needsAllocatorArgument = nativeTypeDefinition.needsAllocatorArgument();
-        if (needsAllocatorArgument)
-            addSystemIncludeFile(allocatorDefinition.getAllocatorSystemInclude());
-        addSystemIncludeFile(nativeTypeDefinition.getSystemInclude());
+    }
+
+    private static List<String> makeSystemIncludes(TypesContext.NativeTypeDefinition nativeTypeDefinition,
+            TypesContext.AllocatorDefinition allocatorDefinition)
+    {
+        final List<String> includes = new ArrayList<String>();
+        if (nativeTypeDefinition.needsAllocatorArgument())
+            includes.add(allocatorDefinition.getAllocatorSystemInclude());
+        includes.add(nativeTypeDefinition.getSystemInclude());
+        return includes;
     }
 
     private final boolean needsAllocatorArgument;

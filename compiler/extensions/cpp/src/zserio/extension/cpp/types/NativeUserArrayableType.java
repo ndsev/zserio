@@ -1,5 +1,9 @@
 package zserio.extension.cpp.types;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import zserio.ast.PackageName;
 
 /**
@@ -10,10 +14,18 @@ public class NativeUserArrayableType extends NativeUserType implements CppNative
     public NativeUserArrayableType(PackageName packageName, String name, String includeFileName,
             boolean isSimpleType, NativeArrayTraits arrayTraits)
     {
-        super(packageName, name, includeFileName, isSimpleType);
+        super(packageName, name, isSimpleType, arrayTraits.getSystemIncludeFiles(),
+                makeUserIncludes(includeFileName, arrayTraits));
 
         this.arrayTraits = arrayTraits;
-        addIncludeFiles(arrayTraits);
+    }
+
+    public static Collection<String> makeUserIncludes(String includeFileName, NativeArrayTraits arrayTraits)
+    {
+        final Collection<String> includes = new ArrayList<String>();
+        includes.add(includeFileName);
+        includes.addAll(arrayTraits.getUserIncludeFiles());
+        return includes;
     }
 
     @Override
@@ -22,5 +34,5 @@ public class NativeUserArrayableType extends NativeUserType implements CppNative
         return arrayTraits;
     }
 
-    private NativeArrayTraits arrayTraits;
+    private final NativeArrayTraits arrayTraits;
 }

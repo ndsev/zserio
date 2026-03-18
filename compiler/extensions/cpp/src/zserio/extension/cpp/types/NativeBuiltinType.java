@@ -9,10 +9,10 @@ public class NativeBuiltinType extends NativeType implements CppNativeArrayableT
 {
     public NativeBuiltinType(String builtinTypeName, NativeArrayTraits arrayTraits)
     {
-        super(PackageName.EMPTY, builtinTypeName);
+        super(PackageName.EMPTY, builtinTypeName, true, arrayTraits.getSystemIncludeFiles(),
+                arrayTraits.getUserIncludeFiles());
 
         this.arrayTraits = arrayTraits;
-        addIncludeFiles(arrayTraits);
     }
 
     @Override

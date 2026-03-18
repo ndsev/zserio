@@ -1,5 +1,7 @@
 package zserio.extension.cpp.types;
 
+import java.util.Collections;
+
 import zserio.extension.cpp.TypesContext;
 
 public final class NativeBytesType extends NativeRuntimeType implements CppNativeArrayableType
@@ -7,7 +9,7 @@ public final class NativeBytesType extends NativeRuntimeType implements CppNativ
     public NativeBytesType(TypesContext typesContext, NativeIntegralType uint8Type)
     {
         super(typesContext.getVector().getPackage(), getName(typesContext, uint8Type),
-                typesContext.getVector().getSystemInclude(), false);
+                Collections.singleton(typesContext.getVector().getSystemInclude()), false);
 
         if (typesContext.getVector().needsAllocatorArgument())
             addSystemIncludeFile(typesContext.getAllocatorDefinition().getAllocatorSystemInclude());

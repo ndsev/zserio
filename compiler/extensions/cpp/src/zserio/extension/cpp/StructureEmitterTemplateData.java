@@ -13,4 +13,12 @@ public final class StructureEmitterTemplateData extends CompoundTypeTemplateData
     {
         super(context, structureType);
     }
+
+    public static StructureEmitterTemplateData create(TemplateDataContext context, StructureType structureType)
+            throws ZserioExtensionException
+    {
+        final StructureEmitterTemplateData self = new StructureEmitterTemplateData(context, structureType);
+        self.init(context, structureType);
+        return self;
+    }
 }

@@ -1,5 +1,7 @@
 package zserio.extension.cpp.types;
 
+import java.util.Collections;
+
 import zserio.ast.PackageName;
 
 /**
@@ -23,7 +25,7 @@ public class NativeArrayTraits extends NativeRuntimeType
 
     public NativeArrayTraits(String name, TYPE arrayTraitsType)
     {
-        super(name, "zserio/ArrayTraits.h");
+        super(name, Collections.singleton("zserio/ArrayTraits.h"));
 
         switch (arrayTraitsType)
         {
@@ -67,7 +69,7 @@ public class NativeArrayTraits extends NativeRuntimeType
 
     public NativeArrayTraits(PackageName packageName, String name, String systemIncludeFile)
     {
-        super(packageName, name, systemIncludeFile);
+        super(packageName, name, Collections.singleton(systemIncludeFile));
 
         this.isTemplated = false;
         this.requiresElementFixedBitSize = false;

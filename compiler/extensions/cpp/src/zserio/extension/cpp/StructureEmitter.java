@@ -19,7 +19,8 @@ public final class StructureEmitter extends CppDefaultEmitter
     @Override
     public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
-        final Object templateData = new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
+        final Object templateData =
+                StructureEmitterTemplateData.create(getTemplateDataContext(), structureType);
 
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, structureType);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);

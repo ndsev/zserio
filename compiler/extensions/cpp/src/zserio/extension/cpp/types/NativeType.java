@@ -1,5 +1,6 @@
 package zserio.extension.cpp.types;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -14,16 +15,26 @@ public class NativeType implements CppNativeType
 {
     public NativeType(PackageName packageName, String name)
     {
-        this(packageName, name, packageName.isEmpty());
+        this(packageName, name, packageName.isEmpty(), null, null);
     }
 
     public NativeType(PackageName packageName, String name, boolean isSimple)
+    {
+        this(packageName, name, isSimple, null, null);
+    }
+
+    public NativeType(PackageName packageName, String name, boolean isSimple, Collection<String> systemIncludes,
+            Collection<String> userIncludes)
     {
         this.packageName = packageName;
         this.name = name;
         this.systemIncludeFiles = new TreeSet<String>();
         this.userIncludeFiles = new TreeSet<String>();
         this.isSimple = isSimple;
+        if (systemIncludes != null)
+            this.systemIncludeFiles.addAll(systemIncludes);
+        if (userIncludes != null)
+            this.userIncludeFiles.addAll(userIncludes);
     }
 
     @Override
@@ -62,19 +73,19 @@ public class NativeType implements CppNativeType
         return Collections.unmodifiableSortedSet(userIncludeFiles);
     }
 
-    protected void addSystemIncludeFile(String include)
+    protected final void addSystemIncludeFile(String include)
     {
         if (include != null)
             systemIncludeFiles.add(include);
     }
 
-    protected void addUserIncludeFile(String include)
+    protected final void addUserIncludeFile(String include)
     {
         if (include != null)
             userIncludeFiles.add(include);
     }
 
-    protected void addIncludeFiles(CppNativeType other)
+    protected final void addIncludeFiles(CppNativeType other)
     {
         for (String systemInclude : other.getSystemIncludeFiles())
         {

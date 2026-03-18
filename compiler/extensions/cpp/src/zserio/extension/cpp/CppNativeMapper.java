@@ -1,5 +1,7 @@
 package zserio.extension.cpp;
 
+import java.util.Collections;
+
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
@@ -65,7 +67,8 @@ public final class CppNativeMapper
         uniquePtrType = new NativeRuntimeAllocType(typesContext.getUniquePtr(), allocatorDefinition);
         heapOptionalHolderType =
                 new NativeRuntimeAllocType(typesContext.getHeapOptionalHolder(), allocatorDefinition);
-        inplaceOptionalHolderType = new NativeRuntimeType("InplaceOptionalHolder", "zserio/OptionalHolder.h");
+        inplaceOptionalHolderType = new NativeRuntimeType(
+                "InplaceOptionalHolder", Collections.singleton("zserio/OptionalHolder.h"));
 
         stringType = new NativeRuntimeAllocArrayableType(
                 typesContext.getString(), allocatorDefinition, "char", typesContext.getStringArrayTraits());

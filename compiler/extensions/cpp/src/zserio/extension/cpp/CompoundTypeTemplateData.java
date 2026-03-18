@@ -10,13 +10,16 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for compound types.
  */
-public class CompoundTypeTemplateData extends UserTypeTemplateData
+public abstract class CompoundTypeTemplateData extends UserTypeTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
         super(context, compoundType, compoundType);
+    }
 
+    public void init(TemplateDataContext context, CompoundType compoundType) throws ZserioExtensionException
+    {
         usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(compoundType);
 
         final List<Field> fieldTypeList = compoundType.getFields();
@@ -83,15 +86,15 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
-    private final boolean usedInPackedArray;
+    private boolean usedInPackedArray;
 
-    private final List<CompoundFieldTemplateData> fieldList;
-    private final CompoundParameterTemplateData compoundParametersData;
-    private final CompoundFunctionTemplateData compoundFunctionsData;
-    private final CompoundConstructorTemplateData compoundConstructorsData;
+    private List<CompoundFieldTemplateData> fieldList;
+    private CompoundParameterTemplateData compoundParametersData;
+    private CompoundFunctionTemplateData compoundFunctionsData;
+    private CompoundConstructorTemplateData compoundConstructorsData;
 
-    private final boolean isPackable;
-    private final boolean needsChildrenInitialization;
+    private boolean isPackable;
+    private boolean needsChildrenInitialization;
 
-    private final TemplateInstantiationTemplateData templateInstantiation;
+    private TemplateInstantiationTemplateData templateInstantiation;
 }

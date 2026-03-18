@@ -1,5 +1,8 @@
 package zserio.extension.cpp.types;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import zserio.ast.PackageName;
 
 /**
@@ -7,31 +10,25 @@ import zserio.ast.PackageName;
  */
 public class NativeRuntimeType extends NativeType
 {
-    public NativeRuntimeType(PackageName packageName, String name)
+    public NativeRuntimeType(String name, Collection<String> systemIncludes)
     {
-        super(packageName, name);
+        this(name, systemIncludes, false);
     }
 
-    public NativeRuntimeType(String name, String systemIncludeFile)
+    public NativeRuntimeType(String name, Collection<String> systemIncludes, boolean isSimple)
     {
-        this(name, systemIncludeFile, false);
+        this(ZSERIO_PACKAGE_NAME, name, systemIncludes, isSimple);
     }
 
-    public NativeRuntimeType(String name, String systemIncludeFile, boolean isSimple)
+    public NativeRuntimeType(PackageName packageName, String name, Collection<String> systemIncludes)
     {
-        this(ZSERIO_PACKAGE_NAME, name, systemIncludeFile, isSimple);
+        super(packageName, name, false, systemIncludes, null);
     }
 
-    public NativeRuntimeType(PackageName packageName, String name, String systemIncludeFile)
+    public NativeRuntimeType(
+            PackageName packageName, String name, Collection<String> systemIncludes, boolean isSimple)
     {
-        this(packageName, name, systemIncludeFile, false);
-    }
-
-    public NativeRuntimeType(PackageName packageName, String name, String systemIncludeFile, boolean isSimple)
-    {
-        super(packageName, name, isSimple);
-
-        addSystemIncludeFile(systemIncludeFile);
+        super(packageName, name, isSimple, systemIncludes, null);
     }
 
     private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();

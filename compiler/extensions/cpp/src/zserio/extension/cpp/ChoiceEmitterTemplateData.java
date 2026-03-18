@@ -23,40 +23,53 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             throws ZserioExtensionException
     {
         super(context, choiceType);
+    }
+
+    public static ChoiceEmitterTemplateData create(TemplateDataContext context, ChoiceType choiceType)
+            throws ZserioExtensionException
+    {
+        final ChoiceEmitterTemplateData self = new ChoiceEmitterTemplateData(context, choiceType);
+        self.init(context, choiceType);
+        return self;
+    }
+
+    public void init(TemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
+    {
+        super.init(context, choiceType);
 
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final ExpressionFormatter cppObjectIndirectExpressionFormatter =
                 context.getIndirectExpressionFormatter(this, "m_object");
 
         final Expression expression = choiceType.getSelectorExpression();
-        selectorExpression = cppExpressionFormatter.formatGetter(expression);
+        this.selectorExpression = cppExpressionFormatter.formatGetter(expression);
 
-        objectIndirectSelectorExpression = cppObjectIndirectExpressionFormatter.formatGetter(expression);
+        this.objectIndirectSelectorExpression = cppObjectIndirectExpressionFormatter.formatGetter(expression);
 
         // TODO[Mi-L@]: Consider using switch also on bitmask (using valueof).
-        canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
+        this.canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
                 expression.getExprType() != Expression.ExpressionType.BITMASK &&
                 choiceType.getChoiceCases().size() > 0;
 
-        caseMemberList = new ArrayList<CaseMember>();
+        this.caseMemberList = new ArrayList<CaseMember>();
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
-            caseMemberList.add(new CaseMember(context, choiceType, choiceCaseType, this));
+            this.caseMemberList.add(new CaseMember(context, choiceType, choiceCaseType, this));
         }
 
         final ChoiceDefault choiceDefaultType = choiceType.getChoiceDefault();
         if (choiceDefaultType != null)
         {
-            defaultMember = new DefaultMember(context, choiceType, choiceDefaultType, this);
+            this.defaultMember = new DefaultMember(context, choiceType, choiceDefaultType, this);
         }
         else
         {
-            defaultMember = null;
+            this.defaultMember = null;
         }
 
         // find all unused enum items for -Wswitch-enum
-        unhandledEnumItems = new ArrayList<String>();
+        this.unhandledEnumItems = new ArrayList<String>();
         if (choiceType.getSelectorExpression().getExprType() == Expression.ExpressionType.ENUM)
         {
             final EnumType selEnumType = (EnumType)choiceType.getSelectorExpression().getExprZserioType();
@@ -64,11 +77,11 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             {
                 final String fullName = CppFullNameFormatter.getFullName(
                         selEnumType.getPackage().getPackageName(), selEnumType.getName(), item.getName());
-                unhandledEnumItems.add(fullName);
+                this.unhandledEnumItems.add(fullName);
             }
         }
 
-        isDefaultUnreachable = choiceType.isChoiceDefaultUnreachable();
+        this.isDefaultUnreachable = choiceType.isChoiceDefaultUnreachable();
     }
 
     public String getSelectorExpression()
@@ -158,11 +171,11 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         private final CompoundFieldTemplateData compoundField;
     }
 
-    private final String selectorExpression;
-    private final String objectIndirectSelectorExpression;
-    private final boolean canUseNativeSwitch;
-    private final List<CaseMember> caseMemberList;
-    private final DefaultMember defaultMember;
-    private final List<String> unhandledEnumItems;
-    private final boolean isDefaultUnreachable;
+    private String selectorExpression;
+    private String objectIndirectSelectorExpression;
+    private boolean canUseNativeSwitch;
+    private List<CaseMember> caseMemberList;
+    private DefaultMember defaultMember;
+    private List<String> unhandledEnumItems;
+    private boolean isDefaultUnreachable;
 }
