@@ -800,6 +800,7 @@ Usage:
 Arguments:
     -h, --help            Show this help.
     -e, --help-env        Show help for enviroment variables.
+    -m, --missing         Show missing tests.
     -c, --clean           Clean package instead of build.
     -p, --purge           Purge test build directory.
     -o <dir>, --output-directory <dir>

@@ -69,8 +69,8 @@ jobs:
 
     # END PULL REQUEST
 
-    - name: Install sonar-scanner and build-wrapper
-      uses: SonarSource/sonarcloud-github-c-cpp@v2
+    - name: Install build wrapper
+      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
 
     - name: Set up Java 8
       uses: actions/setup-java@v3
@@ -79,7 +79,8 @@ jobs:
         java-version: 8
 
     - name: Install dependencies
-      run: sudo apt-get install cmake doxygen graphviz
+      run: |
+        sudo apt-get install cmake doxygen graphviz
 
     - name: Build Zserio compiler with C++ extension
       run: |
@@ -101,24 +102,46 @@ jobs:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
         CMAKE_BUILD_OPTIONS: "-j4"
 
-    - name: Run sonar-scanner
+    - name: Run SonarCloud analysis
+      if: github.event.workflow_run.event != 'pull_request'
+      uses: SonarSource/sonarqube-scan-action@v7
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        sonar-scanner \
-            --define sonar.projectKey="ndsev_zserio" \
-            --define sonar.organization="ndsev" \
-            --define sonar.sourceEncoding="UTF-8" \
-            --define sonar.sources="compiler/extensions/cpp/runtime/src,build/test/extensions/cpp/linux64-gcc/release" \
-            --define sonar.inclusions="**/*.h,**/*.cpp" \
-            --define sonar.exclusions="**/CMakeFiles/**/*" \
-            --define sonar.tests="compiler/extensions/cpp/runtime/test,test" \
-            --define sonar.test.inclusions="compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp" \
-            --define sonar.scm.exclusions.disabled="true" \
-            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json" \
-            --define sonar.scm.revision="${{ github.event.workflow_run.head_sha }}" \
-            --define sonar.branch.name="${{ github.event.workflow_run.head_branch }}" \
-            --define sonar.pullrequest.key="${{ env.PULL_REQUEST_KEY }}" \
-            --define sonar.pullrequest.branch="${{ env.PULL_REQUEST_BRANCH }}" \
-            --define sonar.pullrequest.base="${{ env.PULL_REQUEST_BASE }}"
+        SONAR_TOKEN: ${{ secrets.SONAR_ZSERIO_TOKEN }}
+      with:
+        args: >
+          "-Dsonar.projectKey=ndsev_zserio"
+          "-Dsonar.organization=ndsev"
+          "-Dsonar.sourceEncoding=UTF-8"
+          "-Dsonar.sources=compiler/extensions/cpp/runtime/src,build/test/extensions/cpp/linux64-gcc/release"
+          "-Dsonar.inclusions=**/*.h,**/*.cpp"
+          "-Dsonar.exclusions=**/CMakeFiles/**/*"
+          "-Dsonar.tests=compiler/extensions/cpp/runtime/test,test"
+          "-Dsonar.test.inclusions=compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp"
+          "-Dsonar.scm.exclusions.disabled=true"
+          "-Dsonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+          "-Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}"
+          "-Dsonar.branch.name=${{ github.event.workflow_run.head_branch }}"
+
+    - name: Run SonarCloud analysis on PR
+      if: github.event.workflow_run.event == 'pull_request'
+      uses: SonarSource/sonarqube-scan-action@v7
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_ZSERIO_TOKEN }}
+      with:
+        args: >
+          "-Dsonar.projectKey=ndsev_zserio"
+          "-Dsonar.organization=ndsev"
+          "-Dsonar.sourceEncoding=UTF-8"
+          "-Dsonar.sources=compiler/extensions/cpp/runtime/src,build/test/extensions/cpp/linux64-gcc/release"
+          "-Dsonar.inclusions=**/*.h,**/*.cpp"
+          "-Dsonar.exclusions=**/CMakeFiles/**/*"
+          "-Dsonar.tests=compiler/extensions/cpp/runtime/test,test"
+          "-Dsonar.test.inclusions=compiler/**/test/**/*.h,compiler/**/test/**/.cpp,test/**/*.h,test/**/*.cpp"
+          "-Dsonar.scm.exclusions.disabled=true"
+          "-Dsonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+          "-Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}"
+          "-Dsonar.pullrequest.key=${{ env.PULL_REQUEST_KEY }}"
+          "-Dsonar.pullrequest.branch=${{ env.PULL_REQUEST_BRANCH }}"
+          "-Dsonar.pullrequest.base=${{ env.PULL_REQUEST_BASE }}"
