@@ -21,7 +21,7 @@ final class ChoiceEmitter extends PythonDefaultEmitter
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
         final ChoiceEmitterTemplateData templateData =
-                new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
+                ChoiceEmitterTemplateData.create(getTemplateDataContext(), choiceType);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
     }
 

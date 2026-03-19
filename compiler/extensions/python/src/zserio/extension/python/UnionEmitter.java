@@ -21,7 +21,7 @@ final class UnionEmitter extends PythonDefaultEmitter
     public void beginUnion(UnionType unionType) throws ZserioExtensionException
     {
         final UnionEmitterTemplateData templateData =
-                new UnionEmitterTemplateData(getTemplateDataContext(), unionType);
+                UnionEmitterTemplateData.create(getTemplateDataContext(), unionType);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, unionType);
     }
 

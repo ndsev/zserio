@@ -21,7 +21,7 @@ final class StructureEmitter extends PythonDefaultEmitter
     public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
         final StructureEmitterTemplateData templateData =
-                new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
+                StructureEmitterTemplateData.create(getTemplateDataContext(), structureType);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
     }
 

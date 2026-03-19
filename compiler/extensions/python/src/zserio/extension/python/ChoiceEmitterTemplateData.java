@@ -21,6 +21,19 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             throws ZserioExtensionException
     {
         super(context, choiceType);
+    }
+
+    public static ChoiceEmitterTemplateData create(TemplateDataContext context, ChoiceType choiceType)
+            throws ZserioExtensionException
+    {
+        final ChoiceEmitterTemplateData self = new ChoiceEmitterTemplateData(context, choiceType);
+        self.init(context, choiceType);
+        return self;
+    }
+
+    public void init(TemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
+    {
+        super.init(context, choiceType);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         final Expression selectorExpression = choiceType.getSelectorExpression();
@@ -111,8 +124,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         private final CompoundFieldTemplateData compoundField;
     }
 
-    private final String selector;
-    private final List<CaseMember> caseMemberList;
-    private final DefaultMember defaultMember;
-    private final boolean isDefaultUnreachable;
+    private String selector;
+    private List<CaseMember> caseMemberList;
+    private DefaultMember defaultMember;
+    private boolean isDefaultUnreachable;
 }

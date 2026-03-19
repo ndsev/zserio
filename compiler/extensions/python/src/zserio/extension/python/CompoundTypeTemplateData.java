@@ -10,13 +10,16 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Base class for compound types template data for FreeMarker.
  */
-public class CompoundTypeTemplateData extends UserTypeTemplateData
+public abstract class CompoundTypeTemplateData extends UserTypeTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
         super(context, compoundType, compoundType);
+    }
 
+    public void init(TemplateDataContext context, CompoundType compoundType) throws ZserioExtensionException
+    {
         importPackage("typing");
         importPackage("zserio");
 
@@ -73,11 +76,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
-    private final boolean usedInPackedArray;
-    private final boolean withRangeCheckCode;
-    private final CompoundParameterTemplateData compoundParametersData;
-    private final CompoundFunctionTemplateData compoundFunctionsData;
-    private final List<CompoundFieldTemplateData> fieldList;
-    private final boolean isPackable;
-    private final TemplateInstantiationTemplateData templateInstantiation;
+    private boolean usedInPackedArray;
+    private boolean withRangeCheckCode;
+    private CompoundParameterTemplateData compoundParametersData;
+    private CompoundFunctionTemplateData compoundFunctionsData;
+    private List<CompoundFieldTemplateData> fieldList;
+    private boolean isPackable;
+    private TemplateInstantiationTemplateData templateInstantiation;
 }
