@@ -59,6 +59,10 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
     <property name="3rdparty.junit.jar_file"
         value="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
 
+    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
+        <javaversion atleast="21"/>
+    </condition>
+
     <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
         <include name="${3rdparty.antlr4.jar_file_name}"/>
         <include name="${3rdparty.freemarker.jar_file_name}"/>
@@ -126,6 +130,14 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
 
         <javac destdir="${zserio_core.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
             <src path="${zserio_core.antlr.gen_dir}"/>
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="${xlint.ignore_this_escape}"/>
+            <compilerarg value="-Werror"/>
+            <classpath>
+                <fileset refid="3rdparty.jar_files_ref"/>
+            </classpath>
+        </javac>
+        <javac destdir="${zserio_core.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
             <src path="${zserio_core.src_dir}"/>
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
