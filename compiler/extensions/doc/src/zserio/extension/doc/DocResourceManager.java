@@ -2,8 +2,8 @@ package zserio.extension.doc;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -176,14 +176,15 @@ final class DocResourceManager
 
         try
         {
-            final URL url = new URL(destination);
-            return url.getProtocol().equals(LOCAL_FILE_SCHEME);
+            final URI uri = new URI(destination);
+            final String scheme = uri.getScheme();
+            return scheme == null || scheme.equals(LOCAL_FILE_SCHEME);
         }
-        catch (MalformedURLException e)
-        {}
-
-        // not an URL, supposing that it's local resource
-        return true;
+        catch (URISyntaxException e)
+        {
+            // not an URL, supposing that it's local resource
+            return true;
+        }
     }
 
     private Path getCurrentSourceDir(AstLocation location)
