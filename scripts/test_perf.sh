@@ -46,6 +46,10 @@ generate_java_files()
     <property name="test_perf.src_dir" location="${HOST_BUILD_DIR}/src"/>
     <property name="test_perf.gen_dir" location="${HOST_BUILD_DIR}/gen"/>
 
+    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
+        <javaversion atleast="21"/>
+    </condition>
+
     <target name="prepare">
         <mkdir dir="\${test_perf.classes_dir}"/>
     </target>
@@ -57,6 +61,7 @@ generate_java_files()
         <javac destdir="\${test_perf.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Xlint:-cast"/>
+            <compilerarg value="\${xlint.ignore_this_escape}"/>
             <compilerarg value="-Werror"/>
             <classpath>
                 <pathelement location="\${runtime.jar_file}"/>

@@ -77,6 +77,9 @@ generate_ant_file()
     <condition property="spotbugs.resource" value="edu/umd/cs/findbugs/anttask/tasks.properties">
         <isset property="spotbugs.home_dir"/>
     </condition>
+    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
+        <javaversion atleast="21"/>
+    </condition>
 
     <target name="prepare">
         <mkdir dir="\${test_zs.classes_dir}"/>
@@ -90,6 +93,7 @@ generate_ant_file()
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Xlint:-cast"/>
             <compilerarg value="-Xlint:-deprecation"/>
+            <compilerarg value="\${xlint.ignore_this_escape}"/>
             <compilerarg value="-Werror"/>
             <classpath>
                 <pathelement location="\${runtime.jar_file}"/>

@@ -115,7 +115,7 @@ public class ValidationBitStreamReaderTest
             changedStream[0] |= 0x40;
             changedStream[0] |= 0x0C;
             changedStream[1] |= 0x70;
-            changedStream[2] |= 0xF0;
+            changedStream[2] |= (byte)0xF0;
             changedStream[3] |= 0x7C;
             changedStream[3] |= 0x03;
 
@@ -155,9 +155,9 @@ public class ValidationBitStreamReaderTest
             System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);
             // put rubbish to the skipped dummy bits and at the end
             changedStream[0] |= 0x7F;
-            changedStream[1] |= 0x80;
+            changedStream[1] |= (byte)0x80;
             changedStream[1] |= 0x1F;
-            changedStream[2] |= 0xE0;
+            changedStream[2] |= (byte)0xE0;
             changedStream[2] |= 0x03;
 
             try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))
@@ -248,8 +248,8 @@ public class ValidationBitStreamReaderTest
             System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);
             // change NaN to binary represantation which is not used by writer
             changedStream[0] |= 0x40;
-            changedStream[1] |= 0xFF;
-            changedStream[2] |= 0x80;
+            changedStream[1] |= (byte)0xFF;
+            changedStream[2] |= (byte)0x80;
 
             try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))
             {
@@ -277,8 +277,8 @@ public class ValidationBitStreamReaderTest
             System.arraycopy(originalStream, 0, changedStream, 0, changedStream.length);
             // change NaN to binary representation which is not used by writer
             changedStream[0] |= 0x40;
-            changedStream[1] |= 0xFF;
-            changedStream[2] |= 0x80;
+            changedStream[1] |= (byte)0xFF;
+            changedStream[2] |= (byte)0x80;
 
             try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))
             {

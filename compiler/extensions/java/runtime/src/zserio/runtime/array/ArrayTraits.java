@@ -115,17 +115,11 @@ public interface ArrayTraits
      */
     public static abstract class IntegralArrayTraitsBase implements IntegralArrayTraits
     {
-        /**
-         * Constructor.
-         */
-        public IntegralArrayTraitsBase()
-        {
-            this.packedArrayTraits = new PackedArrayTraits.IntegralPackedArrayTraits(this);
-        }
-
         @Override
         public PackedArrayTraits getPackedArrayTraits()
         {
+            if (packedArrayTraits == null)
+                packedArrayTraits = new PackedArrayTraits.IntegralPackedArrayTraits(this);
             return packedArrayTraits;
         }
 
@@ -141,7 +135,7 @@ public interface ArrayTraits
             return read(reader);
         }
 
-        private final PackedArrayTraits packedArrayTraits;
+        private PackedArrayTraits packedArrayTraits;
     }
 
     /**

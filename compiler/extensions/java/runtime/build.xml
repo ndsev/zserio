@@ -78,6 +78,9 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <condition property="is64bit">
         <equals arg1="${os.arch}" arg2="x86_64"/>
     </condition>
+    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
+        <javaversion atleast="21"/>
+    </condition>
 
     <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
     <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
@@ -155,6 +158,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Xdoclint:all/public"/>
+            <compilerarg value="-Xdoclint:-missing"/>
             <compilerarg value="-Werror"/>
             <src path="${zserio_java_runtime.src_dir}"/>
             <patternset refid="zserio_java_runtime.sources_patterns"/>
@@ -268,6 +272,7 @@ Command hints to reformat source manually using clang-format tool (in case of fo
                 includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Xlint:-cast"/>
+            <compilerarg value="${xlint.ignore_this_escape}"/>
             <compilerarg value="-Werror"/>
             <classpath>
                 <pathelement path="${zserio_java_runtime.jar_file}"/>
@@ -328,7 +333,7 @@ Command hints to reformat source manually using clang-format tool (in case of fo
     <target name="test.run" depends="test.spotbugs">
         <mkdir dir="${zserio_java_runtime.test.results_dir}"/>
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml"
-                classpath="${zserio_java_runtime.3rdparty.jar_dir}/jacocoant-0.8.8.jar"/>
+                classpath="${zserio_java_runtime.3rdparty.jar_dir}/jacocoant-0.8.14.jar"/>
         <jacoco:coverage destfile="${zserio_java_runtime.test.coverage_file}" append="false"
                 excludes="*${zserio_java_runtime.test.src_test_object_subdir}*">
             <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="true"

@@ -652,7 +652,7 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
                 final int shift = 8 - (initialOffset + nBits);
                 final int mask = -1 >>> (32 - nBits);
                 partialByte &= ~(mask << shift);
-                partialByte |= ((value & mask) << shift);
+                partialByte |= (int)((value & mask) << shift);
                 buffer[bytePosition] = (byte)partialByte;
                 bitOffset = initialOffset + nBits;
                 nBits = 0;
@@ -662,7 +662,7 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
                 final int sliceBits = 8 - initialOffset;
                 final int mask = -1 >>> (32 - sliceBits);
                 partialByte &= ~mask;
-                partialByte |= ((value >> (nBits - sliceBits)) & mask);
+                partialByte |= (int)((value >> (nBits - sliceBits)) & mask);
                 buffer[bytePosition++] = (byte)partialByte;
                 nBits -= sliceBits;
             }
@@ -692,7 +692,7 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
             final int shift = 8 - nBits;
             final int mask = -1 >>> (32 - nBits);
             partialByte &= ~(mask << shift);
-            partialByte |= (value & mask) << shift;
+            partialByte |= (int)((value & mask) << shift);
             buffer[--bytePosition] = (byte)partialByte;
             bitOffset = nBits;
         }

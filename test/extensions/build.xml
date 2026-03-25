@@ -54,6 +54,9 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <condition property="spotbugs.resource" value="edu/umd/cs/findbugs/anttask/tasks.properties">
         <isset property="spotbugs.home_dir"/>
     </condition>
+    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
+        <javaversion atleast="21"/>
+    </condition>
 
     <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
     <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
@@ -190,6 +193,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 includeAntRuntime="false">
                 <compilerarg value="-Xlint:all"/>
                 <compilerarg value="-Xlint:-cast"/>
+                <compilerarg value="${xlint.ignore_this_escape}"/>
                 <compilerarg value="-Werror"/>
                 <classpath>
                     <pathelement location="${runtime.jar_file}"/>
