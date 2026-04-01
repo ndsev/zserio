@@ -342,6 +342,8 @@ private:
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
 
+        testArrayInvalidSize<ArrayT>(owner);
+
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
@@ -378,6 +380,8 @@ private:
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
 
+        testArrayInvalidSize<ArrayT>(owner);
+
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
@@ -413,6 +417,8 @@ private:
     void testArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
+
+        testArrayInvalidSize<ArrayT>(owner);
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -456,6 +462,8 @@ private:
     void testArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
+
+        testArrayInvalidSize<ArrayT>(owner);
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -550,6 +558,8 @@ private:
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
 
+        testPackedArrayInvalidSize<ArrayT>(owner);
+
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
@@ -588,6 +598,8 @@ private:
     void testPackedArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
+
+        testPackedArrayInvalidSize<ArrayT>(owner);
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -628,6 +640,8 @@ private:
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
 
+        testPackedArrayInvalidSize<ArrayT>(owner);
+
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
@@ -666,6 +680,8 @@ private:
     void testPackedArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
         using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
+
+        testPackedArrayInvalidSize<ArrayT>(owner);
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -729,6 +745,30 @@ private:
         ASSERT_EQ(array.getRawArray(), arrayCopyWithPropagateAllocator.getRawArray());
 
         testArrayNoInitCopiesAndMoves(array);
+    }
+
+    template <typename ARRAY, typename OWNER>
+    void testArrayInvalidSize(OWNER& owner)
+    {
+        const size_t bigSize = 1U << 30U; // for NORMAL array
+        const std::array<uint8_t, 100> buffer{
+                0xFF, 0xFF, 0xFF, 0x3F, // big array size for AUTO array
+        };
+        zserio::BitStreamReader reader(buffer.data(), buffer.size());
+        ARRAY array;
+        ASSERT_THROW(arrayRead(array, owner, reader, bigSize), CppRuntimeException);
+    }
+
+    template <typename ARRAY, typename OWNER>
+    void testPackedArrayInvalidSize(OWNER& owner)
+    {
+        const size_t bigSize = 1U << 30U; // for NORMAL array
+        const std::array<uint8_t, 100> buffer{
+                0xFF, 0xFF, 0xFF, 0x3F, // big array size for AUTO array
+        };
+        zserio::BitStreamReader reader(buffer.data(), buffer.size());
+        ARRAY array;
+        ASSERT_THROW(arrayReadPacked(array, owner, reader, bigSize), CppRuntimeException);
     }
 
     template <typename RAW_ARRAY>

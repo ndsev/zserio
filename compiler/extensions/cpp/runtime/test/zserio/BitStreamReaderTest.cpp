@@ -173,4 +173,17 @@ TEST_F(BitStreamReaderTest, getBufferBitSize)
     ASSERT_EQ(m_byteBuffer.size() * 8, m_reader.getBufferBitSize());
 }
 
+TEST_F(BitStreamReaderTest, invalidVarSize)
+{
+    const std::array<uint8_t, 5> buffer{
+            127, // varSize bigger than buffer size
+    };
+    zserio::BitStreamReader reader(buffer.data(), buffer.size());
+    ASSERT_THROW(reader.readBytes(), CppRuntimeException);
+    reader.setBitPosition(0);
+    ASSERT_THROW(reader.readString(), CppRuntimeException);
+    reader.setBitPosition(0);
+    ASSERT_THROW(reader.readBitBuffer(), CppRuntimeException);
+}
+
 } // namespace zserio

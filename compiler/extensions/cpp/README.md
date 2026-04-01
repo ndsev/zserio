@@ -40,6 +40,14 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 [Functional Safety](#functional-safety)
 
+&nbsp; &nbsp; &nbsp; &nbsp; [C++ Runtime Library](#c-runtime-library)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [C++ Generated Code](#c-generated-code)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Exceptions](#exceptions)
+
+&nbsp; &nbsp; &nbsp; &nbsp; [Out of Memory Allocation Errors](#out-of-memory-allocation-errors)
+
 [Compatibility Check](#compatibility-check)
 
 [Optimizations](#optimizations)
@@ -398,11 +406,15 @@ a `zserio::CppRuntimeException` during parsing of binary data:
 
 | Module | Method | Exception Message | Description |
 | ------ | ------ | ----------------- | ----------- |
+| `Array.h` | `readImpl()` | "Array: Array size exceeds available buffer!" | Throws when array element size is constant and stored array size is greater than the remaining bits in the stream. |
 | `BitStreamReader.cpp` | constructor | "BitStreamReader: Buffer size exceeded limit '[MAX_BUFFER_SIZE]' bytes!" | Throws if provided buffer is bigger that 536870908 bytes (cca 511MB) on 32-bit OS or 2**64/8-4 bytes on 64-bit OS. |
 | `BitStreamReader.cpp` | constructor | "BitStreamReader: Wrong buffer bit size ('[BUFFER_SIZE]' < '[SPECIFIED_BYTE_SIZE]')!" | Throws if provided buffer is smaller than specified bit size. This could happen only in case of wrong arguments. |
 | `BitStreamReader.cpp` | `throwNumBitsIsNotValid()` | "BitStreamReader: ReadBits #[NUM_BITS] is not valid, reading from stream failed!" | Throws if `readBits()`, `readSignedBits()`, `readBits64()` or `readSignedBits64()` has been called with wrong (too big) `numBits` argument. This could happen only in case of data inconsistency, e.g. if dynamic bit field has length bigger than 32 or 64 bits respectively. |
 | `BitStreamReader.cpp` | `throwEof()` | "BitStreamReader: Reached eof(), reading from stream failed!" | Throws if the end of the underlying buffer has been reached (reading beyond stream). This can happen in two cases: either due to data inconsistency or if the buffer size is set to 0 and data reading is requested. Data inconsistency can occur, for example, if the defined array length is greater than the actual data stored in the stream. |
 | `BitStreamReader.cpp` | `readVarSize()` | "BitStreamReader: Read value '[VARSIZE_VALUE]' is out of range for varsize type!" | Throws if `varsize` value stored in stream is bigger than 2147483647. This could happen only in case of data inconsistency when `varsize` value stored in the stream is wrong. |
+| `BitStreamReader.cpp` | `readBytes()` | "BitStreamReader: Byte array size exceeds available buffer!" | Throws when the stored byte array size is greater than remaining bits in the stream. |
+| `BitStreamReader.cpp` | `readBitBiffer()` | "BitStreamReader: Bit buffer size exceeds available buffer!" | Throws when the stored bit buffer size is greater than remaining bits in the stream. |
+| `BitStreamReader.cpp` | `readString()` | "BitStreamReader: String size exceeds available buffer!" | Throws when the stored string size is greater than remaining bits in the stream. |
 | `OptionalHolder.h` | `throwNonPresentException()` | "Trying to access value of non-present optional field!" | Throws if optional value is not present during access. This could happen only in case of data inconsistency when optional field is not present in the stream and there is a reference to it in some expression. |
 | Generated Sources | Object read constructor | "Read: Wrong offset for field [COMPOUND_NAME].[FIELD_NAME]: [STREAM_BYTE_POSITION] != [OFFSET_VALUE]!" | Throws in case of wrong offset. This could happen only in case of data inconsistency when offset value stored in the stream is wrong. |
 | Generated Sources | Object read constructor | "Read: Constraint violated at [COMPOUND_NAME].[FIELD_NAME]!" | Throws in case of wrong constraint. This could happen only in case of data inconsistency when some constraint is violated. |
@@ -411,6 +423,23 @@ a `zserio::CppRuntimeException` during parsing of binary data:
 | Generated Sources | Bitmask constructor | "Value for bitmask [NAME] out of bounds: [VALUE]!" | Throws if value stored in stream is bigger than bitmask upper bound. This could happen only in case of data inconsistency when bitmask value stored in the stream is wrong. |
 | Generated Sources | `valueToEnum` | "Unknown value for enumeration [NAME]: [VALUE]!" | Throws in case of unknown enumeration value. This could happen only in case of data inconsistency when enumeration value stored in the stream is wrong. |
 
+### Out of Memory Allocation Errors
+
+Zserio tries to prevent out of memory allocation errors which could happen when stored array sizes contain
+invalid values. It does so by checking initial array allocations against maximum allowed value
+`maxArrayPrealloc`. This value can be configured in the
+[`zserio::BitStreamReader`](https://zserio.org/doc/runtime/latest/cpp/classzserio_1_1BitStreamReader.html)
+constructor or passed directly to the
+[`zserio::deserialize()`](https://zserio.org/doc/runtime/latest/cpp/SerializeUtil_8h.html) methods.
+
+Please note that even with this check, Zserio cannot always guarantee data validity if the incoming stream is
+corrupted. We recommend using checksums at the application level to defend against such corruption.
+
+> [!CAUTION]
+Earlier Zserio versions (up to and including version 2.18.0) did not include this check. However now, it is
+set to 128KB by default to ensure protection in all cases. If stored array elements exceed this limit the array
+will be reallocated but this can have an effect on the overall performance, so please don't forget to choose
+a suitable limit for your application!
 
 ## Compatibility Check
 

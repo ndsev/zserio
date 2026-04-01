@@ -181,11 +181,14 @@ TEST(SerializeUtilTest, deserializeNestedObject)
     // without allocator
     {
         const BitBuffer bitBuffer(buffer.data(), buffer.size() * 8);
-        const test_object::std_allocator::SerializeNested serializeNested =
-                deserialize<test_object::std_allocator::SerializeNested>(bitBuffer, param);
+        const auto serializeNested = deserialize<test_object::std_allocator::SerializeNested>(bitBuffer, param);
         ASSERT_EQ(param, serializeNested.getParam());
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeNested2 = deserialize<test_object::std_allocator::SerializeNested>(
+                bitBuffer, ArrayPreallocation(1024), param);
+        ASSERT_EQ(serializeNested, serializeNested2);
 
         const BitBuffer wrongBitBuffer(buffer.data(), buffer.size() * 8 - 1);
         ASSERT_THROW(deserialize<test_object::std_allocator::SerializeNested>(wrongBitBuffer, param),
@@ -196,11 +199,15 @@ TEST(SerializeUtilTest, deserializeNestedObject)
     {
         const std::allocator<uint8_t> allocator;
         const BitBuffer bitBuffer(buffer.data(), buffer.size() * 8, allocator);
-        const test_object::std_allocator::SerializeNested serializeNested =
+        const auto serializeNested =
                 deserialize<test_object::std_allocator::SerializeNested>(bitBuffer, param, allocator);
         ASSERT_EQ(param, serializeNested.getParam());
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeNested2 = deserialize<test_object::std_allocator::SerializeNested>(
+                bitBuffer, ArrayPreallocation(1024), param, allocator);
+        ASSERT_EQ(serializeNested, serializeNested2);
 
         const BitBuffer wrongBitBuffer(buffer.data(), buffer.size() * 8 - 1, allocator);
         ASSERT_THROW(deserialize<test_object::std_allocator::SerializeNested>(wrongBitBuffer, param, allocator),
@@ -212,11 +219,15 @@ TEST(SerializeUtilTest, deserializeNestedObject)
         const pmr::PropagatingPolymorphicAllocator<> allocator;
         const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(
                 buffer.data(), buffer.size() * 8, allocator);
-        const test_object::polymorphic_allocator::SerializeNested serializeNested =
+        const auto serializeNested =
                 deserialize<test_object::polymorphic_allocator::SerializeNested>(bitBuffer, param, allocator);
         ASSERT_EQ(param, serializeNested.getParam());
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeNested2 = deserialize<test_object::polymorphic_allocator::SerializeNested>(
+                bitBuffer, ArrayPreallocation(1024), param, allocator);
+        ASSERT_EQ(serializeNested, serializeNested2);
 
         const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> wrongBitBuffer(
                 buffer.data(), buffer.size() * 8 - 1, allocator);
@@ -232,26 +243,33 @@ TEST(SerializeUtilTest, deserializeObject)
     // without allocator
     {
         const BitBuffer bitBuffer(buffer.data(), buffer.size() * 8);
-        const test_object::std_allocator::SerializeObject serializeObject =
-                deserialize<test_object::std_allocator::SerializeObject>(bitBuffer);
+        const auto serializeObject = deserialize<test_object::std_allocator::SerializeObject>(bitBuffer);
         ASSERT_EQ(0x12, serializeObject.getParam());
         const test_object::std_allocator::SerializeNested& serializeNested = serializeObject.getNested();
         ASSERT_EQ(0x12, serializeNested.getParam());
         ASSERT_EQ(0x02, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeObject2 =
+                deserialize<test_object::std_allocator::SerializeObject>(bitBuffer, ArrayPreallocation(1024));
+        ASSERT_EQ(serializeObject, serializeObject2);
     }
 
     // with std allocator
     {
         const std::allocator<uint8_t> allocator;
         const BitBuffer bitBuffer(buffer.data(), buffer.size() * 8, allocator);
-        const test_object::std_allocator::SerializeObject serializeObject =
+        const auto serializeObject =
                 deserialize<test_object::std_allocator::SerializeObject>(bitBuffer, allocator);
         ASSERT_EQ(0x12, serializeObject.getParam());
         const test_object::std_allocator::SerializeNested& serializeNested = serializeObject.getNested();
         ASSERT_EQ(0x12, serializeNested.getParam());
         ASSERT_EQ(0x02, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeObject2 = deserialize<test_object::std_allocator::SerializeObject>(
+                bitBuffer, ArrayPreallocation(1024), allocator);
+        ASSERT_EQ(serializeObject, serializeObject2);
     }
 
     // with polymorphic allocator
@@ -259,7 +277,7 @@ TEST(SerializeUtilTest, deserializeObject)
         const pmr::PropagatingPolymorphicAllocator<> allocator;
         const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(
                 buffer.data(), buffer.size() * 8, allocator);
-        const test_object::polymorphic_allocator::SerializeObject serializeObject =
+        const auto serializeObject =
                 deserialize<test_object::polymorphic_allocator::SerializeObject>(bitBuffer, allocator);
         ASSERT_EQ(0x12, serializeObject.getParam());
         const test_object::polymorphic_allocator::SerializeNested& serializeNested =
@@ -267,6 +285,10 @@ TEST(SerializeUtilTest, deserializeObject)
         ASSERT_EQ(0x12, serializeNested.getParam());
         ASSERT_EQ(0x02, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeObject2 = deserialize<test_object::polymorphic_allocator::SerializeObject>(
+                bitBuffer, ArrayPreallocation(1024), allocator);
+        ASSERT_EQ(serializeObject, serializeObject2);
     }
 }
 
@@ -440,6 +462,11 @@ TEST(SerializeUtilTest, deserializeNestedObjectFromBytes)
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
 
+        const test_object::std_allocator::SerializeNested serializeNested2 =
+                deserializeFromBytes<test_object::std_allocator::SerializeNested>(
+                        buffer, ArrayPreallocation(1024), param);
+        ASSERT_EQ(serializeNested, serializeNested2);
+
         const vector<uint8_t> wrongBuffer = {0x00, 0xDE, 0xAD, 0xCA, 0xFE};
         ASSERT_THROW(deserializeFromBytes<test_object::std_allocator::SerializeNested>(wrongBuffer, param),
                 CppRuntimeException);
@@ -449,11 +476,15 @@ TEST(SerializeUtilTest, deserializeNestedObjectFromBytes)
     {
         const std::allocator<uint8_t> allocator;
         const vector<uint8_t> buffer({0x01, 0xDE, 0xAD, 0xCA, 0xFE}, allocator);
-        const test_object::std_allocator::SerializeNested serializeNested =
+        const auto serializeNested =
                 deserializeFromBytes<test_object::std_allocator::SerializeNested>(buffer, param, allocator);
         ASSERT_EQ(param, serializeNested.getParam());
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeNested2 = deserializeFromBytes<test_object::std_allocator::SerializeNested>(
+                buffer, ArrayPreallocation(1024), param, allocator);
+        ASSERT_EQ(serializeNested, serializeNested2);
 
         const vector<uint8_t> wrongBuffer = {0x00, 0xDE, 0xAD, 0xCA, 0xFE};
         ASSERT_THROW(deserializeFromBytes<test_object::std_allocator::SerializeNested>(wrongBuffer, param),
@@ -472,6 +503,10 @@ TEST(SerializeUtilTest, deserializeNestedObjectFromBytes)
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
 
+        const auto serializeNested2 = deserializeFromBytes<test_object::polymorphic_allocator::SerializeNested>(
+                buffer, ArrayPreallocation(1024), param, allocator);
+        ASSERT_EQ(serializeNested, serializeNested2);
+
         const vector<uint8_t> wrongBuffer = {0x00, 0xDE, 0xAD, 0xCA, 0xFE};
         ASSERT_THROW(
                 deserializeFromBytes<test_object::polymorphic_allocator::SerializeNested>(wrongBuffer, param),
@@ -484,26 +519,33 @@ TEST(SerializeUtilTest, deserializeObjectFromBytes)
     // without allocator
     {
         const vector<uint8_t> buffer({0x12, 0x02, 0xDE, 0xAD, 0xCA, 0xFE});
-        const test_object::std_allocator::SerializeObject serializeObject =
-                deserializeFromBytes<test_object::std_allocator::SerializeObject>(buffer);
+        const auto serializeObject = deserializeFromBytes<test_object::std_allocator::SerializeObject>(buffer);
         ASSERT_EQ(0x12, serializeObject.getParam());
         const test_object::std_allocator::SerializeNested& serializeNested = serializeObject.getNested();
         ASSERT_EQ(0x12, serializeNested.getParam());
         ASSERT_EQ(0x02, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeObject2 = deserializeFromBytes<test_object::std_allocator::SerializeObject>(
+                buffer, ArrayPreallocation(1024));
+        ASSERT_EQ(serializeObject, serializeObject2);
     }
 
     // with std allocator
     {
         const std::allocator<uint8_t> allocator;
         const vector<uint8_t> buffer({0x12, 0x02, 0xDE, 0xAD, 0xCA, 0xFE}, allocator);
-        const test_object::std_allocator::SerializeObject serializeObject =
+        const auto serializeObject =
                 deserializeFromBytes<test_object::std_allocator::SerializeObject>(buffer, allocator);
         ASSERT_EQ(0x12, serializeObject.getParam());
         const test_object::std_allocator::SerializeNested& serializeNested = serializeObject.getNested();
         ASSERT_EQ(0x12, serializeNested.getParam());
         ASSERT_EQ(0x02, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeObject2 = deserializeFromBytes<test_object::std_allocator::SerializeObject>(
+                buffer, ArrayPreallocation(1024), allocator);
+        ASSERT_EQ(serializeObject, serializeObject2);
     }
 
     // with polymorphic allocator
@@ -511,7 +553,7 @@ TEST(SerializeUtilTest, deserializeObjectFromBytes)
         const pmr::PropagatingPolymorphicAllocator<> allocator;
         const vector<uint8_t, pmr::PropagatingPolymorphicAllocator<>> buffer(
                 {0x12, 0x02, 0xDE, 0xAD, 0xCA, 0xFE}, allocator);
-        const test_object::polymorphic_allocator::SerializeObject serializeObject =
+        const auto serializeObject =
                 deserializeFromBytes<test_object::polymorphic_allocator::SerializeObject>(buffer, allocator);
         ASSERT_EQ(0x12, serializeObject.getParam());
         const test_object::polymorphic_allocator::SerializeNested& serializeNested =
@@ -519,6 +561,10 @@ TEST(SerializeUtilTest, deserializeObjectFromBytes)
         ASSERT_EQ(0x12, serializeNested.getParam());
         ASSERT_EQ(0x02, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
+
+        const auto serializeObject2 = deserializeFromBytes<test_object::polymorphic_allocator::SerializeObject>(
+                buffer, ArrayPreallocation(1024), allocator);
+        ASSERT_EQ(serializeObject, serializeObject2);
     }
 }
 

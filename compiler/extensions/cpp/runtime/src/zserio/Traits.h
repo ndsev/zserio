@@ -10,13 +10,18 @@
 namespace zserio
 {
 
-// forward declaration
+// forward declarations
 class BitStreamReader;
+
 struct PropagateAllocatorT;
+
 template <typename>
 class BasicPackingContextNode;
+
 template <typename, size_t>
 class Span;
+
+class ArrayPreallocation;
 
 namespace detail
 {
@@ -119,6 +124,19 @@ struct is_first_allocator : std::false_type
 
 template <typename T, typename... ARGS>
 struct is_first_allocator<T, ARGS...> : is_allocator<T>
+{};
+/** \} */
+
+/**
+ * Trait used to check whether the first type of ARGS is an ArrayAllocation.
+ * \{
+ */
+template <typename... ARGS>
+struct is_first_array_preallocation : std::false_type
+{};
+
+template <typename T, typename... ARGS>
+struct is_first_array_preallocation<T, ARGS...> : std::is_same<typename std::decay<T>::type, ArrayPreallocation>
 {};
 /** \} */
 

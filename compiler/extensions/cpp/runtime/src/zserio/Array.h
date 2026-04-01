@@ -1021,12 +1021,36 @@ private:
         return endBitPosition;
     }
 
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+    static size_t estimatedElementSize(OwnerType& owner)
+    {
+        return detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<!ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+    static size_t estimatedElementSize(OwnerType&)
+    {
+        return 0;
+    }
+
     void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
     {
-        size_t readLength = readArrayLength(owner, in, arrayLength);
+        const size_t readLength = readArrayLength(owner, in, arrayLength);
+        const size_t elementSize = estimatedElementSize(owner);
+        if (in.getBitPosition() + readLength * elementSize > in.getBufferBitSize())
+        {
+            throw CppRuntimeException("Array: Array size exceeds available buffer!");
+        }
 
+        size_t reserve = readLength;
+        if (reserve * sizeof(typename RawArray::value_type) > in.getMaxArrayPreallocation())
+        {
+            reserve = in.getMaxArrayPreallocation() / sizeof(typename RawArray::value_type);
+        }
         m_rawArray.clear();
-        m_rawArray.reserve(readLength);
+        m_rawArray.reserve(reserve);
         for (size_t index = 0; index < readLength; ++index)
         {
             alignAndCheckOffset(in, owner, index);
@@ -1112,13 +1136,18 @@ private:
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
-        size_t readLength = readArrayLength(owner, in, arrayLength);
+        const size_t readLength = readArrayLength(owner, in, arrayLength);
+        size_t reserve = readLength;
+        if (reserve * sizeof(typename RawArray::value_type) > in.getMaxArrayPreallocation())
+        {
+            reserve = in.getMaxArrayPreallocation() / sizeof(typename RawArray::value_type);
+        }
 
         m_rawArray.clear();
 
         if (readLength > 0)
         {
-            m_rawArray.reserve(readLength);
+            m_rawArray.reserve(reserve);
 
             PackingContext context;
 

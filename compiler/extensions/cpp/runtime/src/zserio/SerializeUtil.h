@@ -192,10 +192,39 @@ BasicBitBuffer<ALLOC> serialize(T enumValue, const ALLOC& allocator = ALLOC())
  * \throw CppRuntimeException When deserialization fails.
  */
 template <typename T, typename ALLOC, typename... ARGS>
-typename std::enable_if<!std::is_enum<T>::value, T>::type deserialize(
-        const BasicBitBuffer<ALLOC>& bitBuffer, ARGS&&... arguments)
+typename std::enable_if<!std::is_enum<T>::value && !is_first_array_preallocation<ARGS...>::value, T>::type
+deserialize(const BasicBitBuffer<ALLOC>& bitBuffer, ARGS&&... arguments)
 {
     BitStreamReader reader(bitBuffer);
+    return T(reader, std::forward<ARGS>(arguments)...);
+}
+
+/**
+ * Deserializes given bit buffer to instance of generated object.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     const zserio::BitBuffer bitBuffer = zserio::serialize(object);
+ *     SomeZserioObject readObject = zserio::deserialize<SomeZserioObject>(bitBuffer,
+ *             zserio::ArrayPreallocation(1024*1024));
+ * \endcode
+ *
+ * \param bitBuffer Bit buffer to use.
+ * \param maxArrayPrealloc maximum preallocated capacity for arrays.
+ * \param arguments Object's actual parameters together with allocator for object's read constructor (optional).
+ *
+ * \return Generated object created from the given bit buffer.
+ *
+ * \throw CppRuntimeException When deserialization fails.
+ */
+template <typename T, typename ALLOC, typename... ARGS>
+typename std::enable_if<!std::is_enum<T>::value, T>::type deserialize(
+        const BasicBitBuffer<ALLOC>& bitBuffer, ArrayPreallocation maxArrayPrealloc, ARGS&&... arguments)
+{
+    BitStreamReader reader(bitBuffer, maxArrayPrealloc);
     return T(reader, std::forward<ARGS>(arguments)...);
 }
 
@@ -346,10 +375,42 @@ vector<uint8_t, ALLOC> serializeToBytes(T enumValue, const ALLOC& allocator = AL
  * \throw CppRuntimeException When deserialization fails.
  */
 template <typename T, typename... ARGS>
-typename std::enable_if<!std::is_enum<T>::value, T>::type deserializeFromBytes(
-        Span<const uint8_t> buffer, ARGS&&... arguments)
+typename std::enable_if<!std::is_enum<T>::value && !is_first_array_preallocation<ARGS...>::value, T>::type
+deserializeFromBytes(Span<const uint8_t> buffer, ARGS&&... arguments)
 {
     BitStreamReader reader(buffer);
+    return T(reader, std::forward<ARGS>(arguments)...);
+}
+
+/**
+ * Deserializes given vector of bytes to instance of generated object.
+ *
+ * This method can potentially use all bits of the last byte even if not all of them were written during
+ * serialization (because there is no way how to specify exact number of bits). Thus, it could allow reading
+ * behind stream (possibly in case of damaged data).
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     const zserio::vector<uint8_t> buffer = zserio::serializeToBytes(object);
+ *     SomeZserioObject readObject = zserio::deserializeFromBytes<SomeZserioObject>(buffer,
+ *             zserio::ArrayPreallocation(1024*1024));
+ * \endcode
+ *
+ * \param bitBuffer Vector of bytes to use.
+ * \param arguments Object's actual parameters together with allocator for object's read constructor (optional).
+ *
+ * \return Generated object created from the given vector of bytes.
+ *
+ * \throw CppRuntimeException When deserialization fails.
+ */
+template <typename T, typename... ARGS>
+typename std::enable_if<!std::is_enum<T>::value, T>::type deserializeFromBytes(
+        Span<const uint8_t> buffer, ArrayPreallocation maxArrayPrealloc, ARGS&&... arguments)
+{
+    BitStreamReader reader(buffer, maxArrayPrealloc);
     return T(reader, std::forward<ARGS>(arguments)...);
 }
 
@@ -424,10 +485,41 @@ void serializeToFile(T& object, const std::string& fileName, ARGS&&... arguments
  * \throw CppRuntimeException When deserialization fails.
  */
 template <typename T, typename... ARGS>
-T deserializeFromFile(const std::string& fileName, ARGS&&... arguments)
+typename std::enable_if<!is_first_array_preallocation<ARGS...>::value, T>::type deserializeFromFile(
+        const std::string& fileName, ARGS&&... arguments)
 {
     const BitBuffer bitBuffer = readBufferFromFile(fileName);
     return deserialize<T>(bitBuffer, std::forward<ARGS>(arguments)...);
+}
+
+/**
+ * Deserializes given file contents to instance of generated object.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     const std::string fileName = "FileName.bin";
+ *     SomeZserioObject object;
+ *     zserio::serializeToFile(object, fileName);
+ *     SomeZserioObject readObject = zserio::deserializeFromFile<SomeZserioObject>(fileName,
+ *             zserio::ArrayPreallocation(1024*1024));
+ * \endcode
+ *
+ * \note Please note that BitBuffer is always allocated using 'std::allocator<uint8_t>'.
+ *
+ * \param fileName File to use.
+ * \param arguments Object's arguments (optional).
+ *
+ * \return Generated object created from the given file contents.
+ *
+ * \throw CppRuntimeException When deserialization fails.
+ */
+template <typename T, typename... ARGS>
+T deserializeFromFile(const std::string& fileName, ArrayPreallocation maxArrayPrealloc, ARGS&&... arguments)
+{
+    const BitBuffer bitBuffer = readBufferFromFile(fileName);
+    return deserialize<T>(bitBuffer, maxArrayPrealloc, std::forward<ARGS>(arguments)...);
 }
 
 } // namespace zserio

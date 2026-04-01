@@ -93,6 +93,9 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:10
 # This multiple inheritance is intended and we think that to avoid it would mean much more obscure design.
 fuchsia-multiple-inheritance:src/zserio/Reflectable.h:2026
 
+# Strong type class wrapper should use implicit conversion.
+google-explicit-constructor:src/zserio/BitStreamReader.h:43
+
 # This is necessary for implementation of low level implementation to mimic standard C++17 abstractions.
 google-explicit-constructor:src/zserio/OptionalHolder.h:231
 google-explicit-constructor:src/zserio/OptionalHolder.h:241
@@ -174,6 +177,6 @@ google-explicit-constructor:test/zserio/TrackingAllocator.h:79
 performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:58
 performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:78
 
-# Need to use C headers until we switch to std headers for all types. C headers are undeprecated in C++23 anyways. 
+# Need to use C headers until we switch to std headers for all types. C headers are undeprecated in C++23 anyways.
 modernize-deprecated-headers:src/zserio/Types.h:4
 modernize-deprecated-headers:src/zserio/Types.h:10
