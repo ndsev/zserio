@@ -553,7 +553,7 @@ public class ArrayTest
         final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {-10, -10, -10, -10, -10, -10, -10});
         final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
         final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize + /* alignment */ 4;
-        testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
+        testPackedArrayConst(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // one-element array
         final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {-10});
@@ -637,7 +637,7 @@ public class ArrayTest
         final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {1, 1, 1, 1, 1, 1, 1});
         final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
         final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize + /* alignment */ 4;
-        testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
+        testPackedArrayConst(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // one-element array
         final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {1});
@@ -1035,14 +1035,32 @@ public class ArrayTest
                     final Array readArray = new Array(readRawArray, arrayTraits, ArrayType.NORMAL);
                     readArray.read(reader, rawArray.size());
                     assertEquals(array, readArray);
+
+                    if (rawArray.size() > 0)
+                    {
+                        reader.setBitPosition(bitPosition);
+                        assertThrows(IOException.class, () -> readArray.read(reader, 10 * rawArray.size()));
+                    }
                 }
             }
+        }
+    }
+
+    private static void testInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
+            throws IOException
+    {
+        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
+            assertThrows(Exception.class, () -> array.read(reader));
         }
     }
 
     private static void testArrayAuto(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             int expectedBitSizeOf) throws IOException
     {
+        testInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1147,6 +1165,12 @@ public class ArrayTest
                             readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
                     readArray.read(reader, rawArray.size());
                     assertEquals(array, readArray);
+
+                    if (rawArray.size() > 0)
+                    {
+                        reader.setBitPosition(bitPosition);
+                        assertThrows(IOException.class, () -> readArray.read(reader, 10 * rawArray.size()));
+                    }
                 }
             }
         }
@@ -1156,6 +1180,7 @@ public class ArrayTest
             OffsetChecker offsetChecker, OffsetInitializer offsetInitializer, int expectedBitSizeOf)
             throws IOException
     {
+        testInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1200,7 +1225,19 @@ public class ArrayTest
     private static void testPackedArray(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             int bitSizeOf, int alignedBitSizeOf) throws IOException
     {
-        testPackedArrayNormal(rawArray, readRawArray, arrayTraits, bitSizeOf);
+        testPackedArray(rawArray, readRawArray, arrayTraits, bitSizeOf, alignedBitSizeOf, false);
+    }
+
+    private static void testPackedArrayConst(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
+            int bitSizeOf, int alignedBitSizeOf) throws IOException
+    {
+        testPackedArray(rawArray, readRawArray, arrayTraits, bitSizeOf, alignedBitSizeOf, true);
+    }
+
+    private static void testPackedArray(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
+            int bitSizeOf, int alignedBitSizeOf, boolean equalElements) throws IOException
+    {
+        testPackedArrayNormal(rawArray, readRawArray, arrayTraits, bitSizeOf, equalElements);
         final int autoSizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray.size());
         final int autoBitSizeOf =
                 (bitSizeOf != UNKNOWN_BITSIZE) ? autoSizeBitSizeOf + bitSizeOf : UNKNOWN_BITSIZE;
@@ -1209,8 +1246,8 @@ public class ArrayTest
 
         final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();
         final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();
-        testPackedArrayAligned(
-                rawArray, readRawArray, arrayTraits, offsetChecker, offsetInitializer, alignedBitSizeOf);
+        testPackedArrayAligned(rawArray, readRawArray, arrayTraits, offsetChecker, offsetInitializer,
+                alignedBitSizeOf, equalElements);
         final int autoAlignedBitSizeOf =
                 (alignedBitSizeOf != UNKNOWN_BITSIZE) ? autoSizeBitSizeOf + alignedBitSizeOf : UNKNOWN_BITSIZE;
         testPackedArrayAlignedAuto(
@@ -1218,7 +1255,7 @@ public class ArrayTest
     }
 
     private static void testPackedArrayNormal(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
-            int expectedBitSizeOf) throws IOException
+            int expectedBitSizeOf, boolean equalElements) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
@@ -1245,14 +1282,35 @@ public class ArrayTest
                     final Array readArray = new Array(readRawArray, arrayTraits, ArrayType.NORMAL);
                     readArray.readPacked(reader, rawArray.size());
                     assertEquals(array, readArray);
+
+                    if (rawArray.size() > 0 && !equalElements)
+                    {
+                        // equal elements are packed into 0 bits so unlimited read is possible
+                        reader.setBitPosition(bitPosition);
+                        assertThrows(
+                                IOException.class, () -> readArray.readPacked(reader, 10 * rawArray.size()));
+                    }
                 }
             }
+        }
+    }
+
+    private static void testPackedInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
+            throws IOException
+    {
+        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
+            // can throw IOException, EOFException, ArrayOutOfBoundsException
+            assertThrows(Exception.class, () -> array.readPacked(reader));
         }
     }
 
     private static void testPackedArrayAuto(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             int expectedBitSizeOf) throws IOException
     {
+        testPackedInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1305,7 +1363,7 @@ public class ArrayTest
 
     private static void testPackedArrayAligned(RawArray rawArray, RawArray readRawArray,
             ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
-            int expectedBitSizeOf) throws IOException
+            int expectedBitSizeOf, boolean equalElements) throws IOException
     {
         final Array array =
                 new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
@@ -1334,6 +1392,14 @@ public class ArrayTest
                             readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
                     readArray.readPacked(reader, rawArray.size());
                     assertEquals(array, readArray);
+
+                    if (rawArray.size() > 0 && !equalElements)
+                    {
+                        // equal elements pack into 0 bits so unlimited read is possible
+                        reader.setBitPosition(bitPosition);
+                        assertThrows(
+                                IOException.class, () -> readArray.readPacked(reader, 10 * rawArray.size()));
+                    }
                 }
             }
         }
@@ -1343,6 +1409,7 @@ public class ArrayTest
             ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
             int expectedBitSizeOf) throws IOException
     {
+        testPackedInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {

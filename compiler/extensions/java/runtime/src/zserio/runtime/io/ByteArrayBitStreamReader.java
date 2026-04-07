@@ -239,6 +239,10 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     public byte[] readBytes() throws IOException
     {
         final int length = readVarSize();
+        if (getBitPosition() + 8L * length > getBufferBitSize())
+        {
+            throw new IOException("ByteArrayBitStreamReader: Byte array size exceeds available buffer!");
+        }
         final byte[] bytesValue = new byte[length];
         if (bitOffset != 0)
         {
@@ -259,6 +263,10 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     public String readString() throws IOException
     {
         final int length = readVarSize();
+        if (getBitPosition() + 8L * length > getBufferBitSize())
+        {
+            throw new IOException("ByteArrayBitStreamReader: String size exceeds available buffer!");
+        }
         final byte[] readBuffer = new byte[length];
         if (bitOffset != 0)
         {
@@ -575,6 +583,10 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     public BitBuffer readBitBuffer() throws IOException
     {
         final int bitSize = readVarSize();
+        if (getBitPosition() + bitSize > getBufferBitSize())
+        {
+            throw new IOException("ByteArrayBitStreamReader: BitBuffer size exceeds available buffer!");
+        }
         final int numBytesToRead = bitSize / 8;
         final byte numRestBits = (byte)(bitSize - numBytesToRead * 8);
         final int byteSize = (bitSize + 7) / 8;

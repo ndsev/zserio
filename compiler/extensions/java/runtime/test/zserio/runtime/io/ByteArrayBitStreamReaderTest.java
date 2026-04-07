@@ -723,6 +723,20 @@ public class ByteArrayBitStreamReaderTest
         }
     }
 
+    @Test
+    public void invalidVarSize() throws IOException
+    {
+        final byte[] data = {127, 0, 0, 0, 0};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            assertThrows(IOException.class, () -> reader.readBytes());
+            reader.setBitPosition(0);
+            assertThrows(IOException.class, () -> reader.readString());
+            reader.setBitPosition(0);
+            assertThrows(IOException.class, () -> reader.readBitBuffer());
+        }
+    }
+
     private interface WriteReadTestable
     {
         // don't use BitStreamWriter so that this tests solely the reader

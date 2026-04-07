@@ -285,6 +285,15 @@ public final class Array
             readSize = reader.readVarSize();
         }
 
+        if (arrayTraits.isBitSizeOfConstant())
+        {
+            final int elementSize = arrayTraits.bitSizeOf(reader.getBitPosition(), ArrayElement.Dummy);
+            if (reader.getBitPosition() + (long)readSize * elementSize > reader.getBufferBitSize())
+            {
+                throw new IOException("Array: Array size exceeds buffer length!");
+            }
+        }
+
         rawArray.reset(readSize);
 
         for (int index = 0; index < readSize; ++index)
