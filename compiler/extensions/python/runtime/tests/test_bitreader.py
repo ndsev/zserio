@@ -234,3 +234,14 @@ class BitStreamReaderTest(unittest.TestCase):
         self.assertEqual(1, reader.bitposition)
         reader.alignto(4)
         self.assertEqual(4, reader.bitposition)
+
+    def test_invalid_varsize(self):
+        reader = BitStreamReader(bytes([0x7F, 0, 0, 0, 0]))  # varSize bigger than buffer size
+        with self.assertRaises(PythonRuntimeException):
+            reader.read_bytes()
+        reader.bitposition = 0
+        with self.assertRaises(PythonRuntimeException):
+            reader.read_string()
+        reader.bitposition = 0
+        with self.assertRaises(PythonRuntimeException):
+            reader.read_bitbuffer()

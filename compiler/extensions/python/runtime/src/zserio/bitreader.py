@@ -492,6 +492,8 @@ class BitStreamReader:
 
         length = self.read_varsize()
         begin_bitposition = self._bitposition
+        if begin_bitposition + length * 8 > self._bitsize:
+            raise PythonRuntimeException("BitStreamReader: Reading beyond the stream end!")
 
         if (begin_bitposition & 0x07) != 0:
             # we are not aligned to byte
@@ -517,6 +519,9 @@ class BitStreamReader:
 
         length = self.read_varsize()
         begin_bitposition = self._bitposition
+        if begin_bitposition + length * 8 > self._bitsize:
+            raise PythonRuntimeException("BitStreamReader: Reading beyond the stream end!")
+
         if (begin_bitposition & 0x07) != 0:
             # we are not aligned to byte
             value = bytearray()
@@ -550,6 +555,9 @@ class BitStreamReader:
         """
 
         bitsize = self.read_varsize()
+        if self._bitposition + bitsize > self._bitsize:
+            raise PythonRuntimeException("BitStreamReader: Reading beyond the stream end!")
+
         num_bytes_to_read = bitsize // 8
         num_rest_bits = bitsize - num_bytes_to_read * 8
         bytesize = (bitsize + 7) // 8

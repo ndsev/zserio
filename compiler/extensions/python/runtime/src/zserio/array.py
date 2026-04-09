@@ -333,6 +333,11 @@ class Array:
             else:
                 read_size = size
 
+            if self._array_traits.HAS_BITSIZEOF_CONSTANT:
+                element_size = self._array_traits.bitsizeof()
+                if reader.bitposition + read_size * element_size > reader.buffer_bitsize:
+                    raise PythonRuntimeException("BitStreamReader: Reading beyond the stream end!")
+
             if self._check_offset_method is not None:
                 check_offset = self._check_offset_method
                 reader_alignto = reader.alignto

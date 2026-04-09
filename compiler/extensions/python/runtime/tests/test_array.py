@@ -647,7 +647,18 @@ class ArrayTest(unittest.TestCase):
             read_array.read(reader, len(array_values))
             self.assertEqual(array, read_array, i)
 
+            reader.bitposition = i
+            with self.assertRaises(PythonRuntimeException):
+                read_array.read(reader, 10 * len(array_values))
+
+    def _test_auto_array_invalid_size(self, array_traits):
+        reader = BitStreamReader(bytes([0xFF, 0xFF, 0xFF, 0x3F, 0]))  # big array size
+        with self.assertRaises(PythonRuntimeException):
+            Array.from_reader(array_traits, reader, is_auto=True)
+
     def _test_array_auto(self, array_traits, array_values, expected_bitsize):
+        self._test_auto_array_invalid_size(array_traits)
+
         for i in range(8):
             array = Array(array_traits, array_values, is_auto=True)
 
@@ -716,7 +727,13 @@ class ArrayTest(unittest.TestCase):
             read_array.read(reader, len(array_values))
             self.assertEqual(array, read_array, i)
 
+            reader.bitposition = i
+            with self.assertRaises(PythonRuntimeException):
+                read_array.read(reader, 10 * len(array_values))
+
     def _test_array_aligned_auto(self, array_traits, array_values, expected_bitsize):
+        self._test_auto_array_invalid_size(array_traits)
+
         for i in range(8):
             array = Array(
                 array_traits,
@@ -795,6 +812,11 @@ class ArrayTest(unittest.TestCase):
                 with self.assertRaises(PythonRuntimeException):
                     read_array.read(reader)
 
+    def _test_packed_auto_array_invalid_size(self, array_traits):
+        reader = BitStreamReader(bytes([0xFF, 0xFF, 0xFF, 0x3F, 0]))  # big array size
+        with self.assertRaises(PythonRuntimeException):
+            Array.from_reader_packed(array_traits, reader, is_auto=True)
+
     def _test_packed_array_normal(self, array_traits, array_values, expected_bitsize):
         for i in range(8):
             array = Array(array_traits, array_values)
@@ -823,7 +845,14 @@ class ArrayTest(unittest.TestCase):
             read_array.read_packed(reader, len(array_values))
             self.assertEqual(array, read_array, i)
 
+            if len(set(array_values)) > 1:  # constant elements are encoded in 0 bits so eof read never occurs
+                reader.bitposition = i
+                with self.assertRaises(PythonRuntimeException):
+                    read_array.read_packed(reader, 10 * len(array_values))
+
     def _test_packed_array_auto(self, array_traits, array_values, expected_bitsize):
+        self._test_packed_auto_array_invalid_size(array_traits)
+
         for i in range(8):
             array = Array(array_traits, array_values, is_auto=True)
 
@@ -894,7 +923,14 @@ class ArrayTest(unittest.TestCase):
             read_array.read_packed(reader, len(array_values))
             self.assertEqual(array, read_array, i)
 
+            if len(set(array_values)) > 1:  # constant elements are encoded in 0 bits so eof read never occurs
+                reader.bitposition = i
+                with self.assertRaises(PythonRuntimeException):
+                    read_array.read_packed(reader, 10 * len(array_values))
+
     def _test_packed_array_aligned_auto(self, array_traits, array_values, expected_bitsize):
+        self._test_packed_auto_array_invalid_size(array_traits)
+
         for i in range(8):
             array = Array(
                 array_traits,
