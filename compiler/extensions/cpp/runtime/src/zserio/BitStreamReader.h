@@ -287,7 +287,7 @@ public:
     {
         const size_t len = static_cast<size_t>(readVarSize());
         const BitPosType beginBitPosition = getBitPosition();
-        if (beginBitPosition + 8 * len > getBufferBitSize())
+        if (beginBitPosition + 8ULL * len > getBufferBitSize())
         {
             throw CppRuntimeException("BitStreamReader: Byte array size exceeds available buffer!");
         }
@@ -323,7 +323,7 @@ public:
     {
         const size_t len = static_cast<size_t>(readVarSize());
         const BitPosType beginBitPosition = getBitPosition();
-        if (beginBitPosition + 8 * len > getBufferBitSize())
+        if (beginBitPosition + 8ULL * len > getBufferBitSize())
         {
             throw CppRuntimeException("BitStreamReader: String size exceeds available buffer!");
         }
@@ -369,7 +369,7 @@ public:
     {
         const size_t bitSize = static_cast<size_t>(readVarSize());
         const BitPosType beginBitPosition = getBitPosition();
-        if (beginBitPosition + bitSize > getBufferBitSize())
+        if (beginBitPosition + static_cast<uint64_t>(bitSize) > getBufferBitSize())
         {
             throw CppRuntimeException("BitStreamReader: Bit buffer size exceeds available buffer!");
         }

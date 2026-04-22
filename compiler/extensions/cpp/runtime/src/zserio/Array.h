@@ -1023,29 +1023,28 @@ private:
 
     template <typename ARRAY_TRAITS_ = ArrayTraits,
             typename std::enable_if<ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    static size_t estimatedElementSize(OwnerType& owner)
+    static void checkReadArraySize(OwnerType& owner, BitStreamReader& in, size_t readLength)
     {
-        return detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
+        const size_t elementSize = detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
+        if (in.getBitPosition() + readLength * static_cast<uint64_t>(elementSize) > in.getBufferBitSize())
+        {
+            throw CppRuntimeException("Array: Array size exceeds available buffer!");
+        }
     }
 
     template <typename ARRAY_TRAITS_ = ArrayTraits,
             typename std::enable_if<!ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    static size_t estimatedElementSize(OwnerType&)
-    {
-        return 0;
-    }
+    static void checkReadArraySize(OwnerType&, BitStreamReader&, size_t)
+    {}
 
     void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
     {
         const size_t readLength = readArrayLength(owner, in, arrayLength);
-        const size_t elementSize = estimatedElementSize(owner);
-        if (in.getBitPosition() + readLength * elementSize > in.getBufferBitSize())
-        {
-            throw CppRuntimeException("Array: Array size exceeds available buffer!");
-        }
+        checkReadArraySize(owner, in, readLength);
 
         size_t reserve = readLength;
-        if (reserve * sizeof(typename RawArray::value_type) > in.getMaxArrayPreallocation())
+        if (reserve * static_cast<uint64_t>(sizeof(typename RawArray::value_type)) >
+                in.getMaxArrayPreallocation())
         {
             reserve = in.getMaxArrayPreallocation() / sizeof(typename RawArray::value_type);
         }
@@ -1138,7 +1137,8 @@ private:
 
         const size_t readLength = readArrayLength(owner, in, arrayLength);
         size_t reserve = readLength;
-        if (reserve * sizeof(typename RawArray::value_type) > in.getMaxArrayPreallocation())
+        if (reserve * static_cast<uint64_t>(sizeof(typename RawArray::value_type)) >
+                in.getMaxArrayPreallocation())
         {
             reserve = in.getMaxArrayPreallocation() / sizeof(typename RawArray::value_type);
         }

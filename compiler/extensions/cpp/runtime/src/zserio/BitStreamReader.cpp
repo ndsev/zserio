@@ -12,8 +12,8 @@ namespace zserio
 namespace
 {
 
-// max size calculated to prevent overflows in internal comparisons
-const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
+// max size calculated to prevent "bitIndex + numBits" overflows
+const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - sizeof(size_t);
 
 using BitPosType = BitStreamReader::BitPosType;
 using ReaderContext = BitStreamReader::ReaderContext;
