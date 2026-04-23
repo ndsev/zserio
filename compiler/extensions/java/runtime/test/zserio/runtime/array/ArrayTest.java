@@ -1049,11 +1049,12 @@ public class ArrayTest
     private static void testInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        final byte[] data = {(byte)0xff, 0x3f, 0};
+        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
             final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
-            assertThrows(Exception.class, () -> array.read(reader));
+            Throwable exception = assertThrows(Throwable.class, () -> array.read(reader));
+            assertTrue(exception instanceof IOException || exception instanceof OutOfMemoryError);
         }
     }
 
@@ -1298,12 +1299,14 @@ public class ArrayTest
     private static void testPackedInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        final byte[] data = {(byte)0xff, 0x3f, 0};
+        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
             final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
-            // can throw IOException, EOFException, ArrayOutOfBoundsException
-            assertThrows(Exception.class, () -> array.readPacked(reader));
+            Throwable exception = assertThrows(Throwable.class, () -> array.readPacked(reader));
+            assertTrue(exception instanceof IOException || exception instanceof OutOfMemoryError ||
+                    (exception instanceof ArrayIndexOutOfBoundsException &&
+                            arrayTraits instanceof ArrayTraits.BitFieldBigIntegerArrayTraits));
         }
     }
 
