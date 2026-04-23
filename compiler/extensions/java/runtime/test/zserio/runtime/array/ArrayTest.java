@@ -1049,11 +1049,16 @@ public class ArrayTest
     private static void testInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        final byte[] data = {(byte)0xff, 0x3f, 0};
+        final boolean is64bit = System.getProperty("sun.arch.data.model").equals("64");
+        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
             final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
-            assertThrows(Exception.class, () -> array.read(reader));
+            // can throw IOException, EOFException, OutOfMemoryError
+            if (!is64bit && !arrayTraits.isBitSizeOfConstant())
+                assertThrows(OutOfMemoryError.class, () -> array.read(reader));
+            else
+                assertThrows(IOException.class, () -> array.read(reader));
         }
     }
 
@@ -1298,12 +1303,17 @@ public class ArrayTest
     private static void testPackedInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        final byte[] data = {(byte)0xff, 0x3f, 0};
+        final boolean is64bit = System.getProperty("sun.arch.data.model").equals("64");
+        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
             final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
-            // can throw IOException, EOFException, ArrayOutOfBoundsException
-            assertThrows(Exception.class, () -> array.readPacked(reader));
+            if (!is64bit)
+                assertThrows(OutOfMemoryError.class, () -> array.readPacked(reader));
+            else if (arrayTraits instanceof ArrayTraits.BitFieldBigIntegerArrayTraits)
+                assertThrows(ArrayIndexOutOfBoundsException.class, () -> array.readPacked(reader));
+            else
+                assertThrows(IOException.class, () -> array.readPacked(reader));
         }
     }
 
