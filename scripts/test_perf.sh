@@ -523,7 +523,7 @@ if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
     // calculate blob memory size
     TrackerMemoryResource memoryResource;
     const allocator_type allocator(&memoryResource);
-    zserio::BitStreamReader blobReader(bitBuffer);
+    zserio::BitStreamReader blobReader(bitBuffer, zserio::ArrayPreallocation(1024*1024*1024));
     auto memoryBlob = zserio::allocate_unique<${BLOB_CLASS_FULL_NAME}>(allocator, blobReader, allocator);
     const size_t blobMemorySize = memoryResource.getAllocatedSize();
     const size_t blobDeallocMemorySize = memoryResource.getDeallocatedSize();
@@ -545,7 +545,7 @@ if [[ "${TEST_CONFIG}" != "WRITE" ]] ; then
 EOF
 else
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
-    zserio::BitStreamReader reader(bitBuffer);
+    zserio::BitStreamReader reader(bitBuffer, zserio::ArrayPreallocation(1024*1024*1024));
     auto readBlob = ${BLOB_CLASS_FULL_NAME}(reader);
 EOF
 fi
@@ -568,13 +568,13 @@ EOF
     case "${TEST_CONFIG}" in
         "READ")
             cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
-        zserio::BitStreamReader reader(bitBuffer);
+        zserio::BitStreamReader reader(bitBuffer, zserio::ArrayPreallocation(1024*1024*1024));
         readBlobs.emplace_back(reader);
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
-        zserio::BitStreamReader reader(bitBuffer);
+        zserio::BitStreamReader reader(bitBuffer, zserio::ArrayPreallocation(1024*1024*1024));
         readBlobs.emplace_back(reader);
         zserio::BitStreamWriter writer(bitBuffer);
         readBlobs.back().write(writer);
