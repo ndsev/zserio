@@ -1049,7 +1049,7 @@ public class ArrayTest
     private static void testInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
+        final byte[] data = {(byte)0xff, 0x3f, 0};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
             final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
@@ -1298,7 +1298,7 @@ public class ArrayTest
     private static void testPackedInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
+        final byte[] data = {(byte)0xff, 0x3f, 0};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
             final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
