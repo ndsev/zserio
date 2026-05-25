@@ -53,6 +53,60 @@ get_old_sources()
     return 0
 }
 
+# Update dependency bootstrap in old sources if they still rely on pkg_resources.
+update_old_sources_python_requirements_check()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local OLD_VERSION_DIR="$1"; shift
+
+    local OLD_COMMON_TOOLS="${OLD_VERSION_DIR}/scripts/common_tools.sh"
+    if ! grep "import pkg_resources" "${OLD_COMMON_TOOLS}" > /dev/null ; then
+        return 0
+    fi
+
+    python - "${ZSERIO_PROJECT_ROOT}/scripts/common_tools.sh" "${OLD_COMMON_TOOLS}" <<'PYTHON'
+import re
+import sys
+
+current_common_tools_path, old_common_tools_path = sys.argv[1:]
+
+
+def read_text(path):
+    with open(path, "r", encoding="utf-8") as text_file:
+        return text_file.read()
+
+
+def replace_check_python_requirements(current_common_tools, old_common_tools):
+    pattern = re.compile(
+        r"check_python_requirements\(\)\n\{\n.*?\n\}\n\n"
+        r"(?=# Detect path to python virtualenv activate scripts)",
+        re.DOTALL,
+    )
+
+    current_match = pattern.search(current_common_tools)
+    old_match = pattern.search(old_common_tools)
+    if current_match is None or old_match is None:
+        raise RuntimeError("Failed to locate check_python_requirements in common_tools.sh")
+
+    return pattern.sub(current_match.group(0), old_common_tools, count=1)
+
+
+current_common_tools = read_text(current_common_tools_path)
+old_common_tools = read_text(old_common_tools_path)
+updated_common_tools = replace_check_python_requirements(current_common_tools, old_common_tools)
+
+with open(old_common_tools_path, "w", encoding="utf-8", newline="") as text_file:
+    text_file.write(updated_common_tools)
+PYTHON
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to update python requirements check in old sources!"
+        return 1
+    fi
+
+    return 0
+}
+
 # Copy new release into directory with old sources.
 copy_new_release()
 {
@@ -276,6 +330,12 @@ main()
     # get old version sources
     local OLD_VERSION_DIR="${TEST_OUT_DIR}/${OLD_VERSION_BRANCH}"
     get_old_sources "${OLD_VERSION_DIR}" "${OLD_VERSION_BRANCH}"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    # Keep compatibility tests runnable on current Python without restoring workflow-level setuptools installs.
+    update_old_sources_python_requirements_check "${ZSERIO_PROJECT_ROOT}" "${OLD_VERSION_DIR}"
     if [ $? -ne 0 ] ; then
         return 1
     fi
