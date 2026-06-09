@@ -159,9 +159,9 @@ set_global_python_variables()
         fi
 
         # check that python pip and virtualenv modules are installed
-        local PYTHON_REQUIREMENTS=("virtualenv" "pip" "packaging")
-        check_python_requirements "${PYTHON}" PYTHON_REQUIREMENTS[@]
+        "${PYTHON}" -m pip show virtualenv > /dev/null 2>&1
         if [ $? -ne 0 ] ; then
+            stderr_echo "Cannot find pip or virtualenv using ${PYTHON}!"
             return 1
         fi
     fi
