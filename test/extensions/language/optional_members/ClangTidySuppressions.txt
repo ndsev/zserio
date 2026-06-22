@@ -28,3 +28,6 @@ readability-make-member-function-const:gen/optional_members/optional_expression/
 readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp
 readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp
 readability-make-member-function-const:gen/optional_members/optional_recursion_in_template/Block_uint8.cpp
+readability-make-member-function-const:gen/optional_members/optional_with_default/Field.cpp
+
+readability-simplify-boolean-expr:gen/optional_members/optional_with_default/Field.cpp
