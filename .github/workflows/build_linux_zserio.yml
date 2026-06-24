@@ -40,9 +40,14 @@ jobs:
         sudo apt-get install clang-format-14
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
+      continue-on-error: true
       run: |
-        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip \
-            -P "${RUNNER_WORKSPACE}"
+        for i in {1..3}; do
+          if [ $i -ne 1 ]; then sleep 10; fi
+          wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip \
+            -P "${RUNNER_WORKSPACE}" || continue
+          break
+        done
         unzip "${RUNNER_WORKSPACE}"/spotbugs-4.8.2.zip -d "${RUNNER_WORKSPACE}"
 
     - name: "Checkout"

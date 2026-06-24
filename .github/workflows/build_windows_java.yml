@@ -53,9 +53,14 @@ jobs:
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
       shell: bash
+      continue-on-error: true
       run: |
-        wget -P "${RUNNER_WORKSPACE}" \
-            https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip
+        for i in {1..3}; do
+          if [ $i -ne 1 ]; then sleep 10; fi
+          wget -P "${RUNNER_WORKSPACE}" \
+            https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip || continue
+          break
+        done
         unzip "${RUNNER_WORKSPACE}\spotbugs-4.8.2.zip" -d "${RUNNER_WORKSPACE}"
 
     - name: "Convert environment variables to POSIX paths"

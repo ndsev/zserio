@@ -32,9 +32,14 @@ jobs:
         java-version: "8"
 
     - name: Install specific version of HTML validator (v.Nu)
+      continue-on-error: true
       run: |
-        wget https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip \
-            -P "${RUNNER_WORKSPACE}"
+        for i in {1..3}; do
+          if [ $i -ne 1 ]; then sleep 10; fi
+          wget https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip \
+            -P "${RUNNER_WORKSPACE}" || continue
+          break
+        done
         unzip "${RUNNER_WORKSPACE}"/vnu.jar_20.6.30.zip -d "${RUNNER_WORKSPACE}"
         mv "${RUNNER_WORKSPACE}"/dist "${RUNNER_WORKSPACE}"/vnu-20.6.30
 
