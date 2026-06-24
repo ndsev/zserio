@@ -3,6 +3,8 @@ package zserio.runtime.io;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
@@ -83,6 +85,28 @@ public class SerializeUtilTest
         final BitBuffer wrongBitBuffer =
                 new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 39);
         assertThrows(ZserioError.class, () -> SerializeUtil.deserialize(SerializeNested.class, wrongBitBuffer));
+    }
+
+    @Test
+    public void deserializeParameterizedObjectWithPreallocatedSize()
+    {
+        final BitBuffer bitBuffer =
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 40);
+        final byte param = 0x12;
+        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =
+                new SerializeUtil.PreallocatedArraySize(16);
+        assertThrows(ZserioError.class,
+                () -> SerializeUtil.deserialize(SerializeNested.class, bitBuffer, preallocatedArraySize));
+        final SerializeNested serializeNested =
+                SerializeUtil.deserialize(SerializeNested.class, bitBuffer, preallocatedArraySize, param);
+        assertEquals(param, serializeNested.getParam());
+        assertEquals(0x01, serializeNested.getOffset());
+        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());
+
+        final BitBuffer wrongBitBuffer =
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 39);
+        assertThrows(ZserioError.class,
+                () -> SerializeUtil.deserialize(SerializeNested.class, wrongBitBuffer, preallocatedArraySize));
     }
 
     @Test
@@ -168,6 +192,28 @@ public class SerializeUtilTest
     }
 
     @Test
+    public void deserializeParameterizedObjectFromBytesWithPreallocatedSize()
+    {
+        final byte[] buffer = new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};
+        final byte param = 0x12;
+        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =
+                new SerializeUtil.PreallocatedArraySize(16);
+        assertThrows(ZserioError.class,
+                () -> SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer, preallocatedArraySize));
+        final SerializeNested serializeNested =
+                SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer, preallocatedArraySize, param);
+        assertEquals(param, serializeNested.getParam());
+        assertEquals(0x01, serializeNested.getOffset());
+        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());
+
+        final byte[] wrongBuffer = new byte[] {(byte)0x00, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};
+        assertThrows(ZserioError.class,
+                ()
+                        -> SerializeUtil.deserializeFromBytes(
+                                SerializeNested.class, wrongBuffer, preallocatedArraySize));
+    }
+
+    @Test
     public void deserializeObjectFromBytes()
     {
         final byte[] buffer =
@@ -189,10 +235,59 @@ public class SerializeUtilTest
         final long optionalValue = 0xDEADCAFEL;
         final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);
         final SerializeObject serializeObject = new SerializeObject(param, serializeNested);
+        final File file = new File("SerializationTest.bin");
+        SerializeUtil.serializeToFile(serializeObject, file);
+        final SerializeObject readSerializeObject =
+                SerializeUtil.deserializeFromFile(SerializeObject.class, file);
+        assertEquals(serializeObject, readSerializeObject);
+    }
+
+    @Test
+    public void serializeToFileFromFileWithPreallocatedSize()
+    {
+        final byte param = 0x12;
+        final short offset = 0;
+        final long optionalValue = 0xDEADCAFEL;
+        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);
+        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);
+        final File file = new File("SerializationTest.bin");
+        SerializeUtil.serializeToFile(serializeObject, file);
+        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =
+                new SerializeUtil.PreallocatedArraySize(16);
+        final SerializeObject readSerializeObject =
+                SerializeUtil.deserializeFromFile(SerializeObject.class, file, preallocatedArraySize);
+        assertEquals(serializeObject, readSerializeObject);
+    }
+
+    @Test
+    public void serializeToFileFromString()
+    {
+        final byte param = 0x12;
+        final short offset = 0;
+        final long optionalValue = 0xDEADCAFEL;
+        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);
+        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);
         final String fileName = "SerializationTest.bin";
         SerializeUtil.serializeToFile(serializeObject, fileName);
         final SerializeObject readSerializeObject =
                 SerializeUtil.deserializeFromFile(SerializeObject.class, fileName);
+        assertEquals(serializeObject, readSerializeObject);
+    }
+
+    @Test
+    public void serializeToFileFromStringWithPreallocatedSize()
+    {
+        final byte param = 0x12;
+        final short offset = 0;
+        final long optionalValue = 0xDEADCAFEL;
+        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);
+        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);
+        final String fileName = "SerializationTest.bin";
+        SerializeUtil.serializeToFile(serializeObject, fileName);
+        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =
+                new SerializeUtil.PreallocatedArraySize(16);
+        final SerializeObject readSerializeObject =
+                SerializeUtil.deserializeFromFile(SerializeObject.class, fileName, preallocatedArraySize);
         assertEquals(serializeObject, readSerializeObject);
     }
 }

@@ -32,6 +32,15 @@ public interface RawArray
     public void reset(int capacity);
 
     /**
+     * Resize the raw array.
+     *
+     * The elements in the original array will be copied to the new resized array.
+     *
+     * @param size Desired size of the raw array after resizing.
+     */
+    public void resize(int size);
+
+    /**
      * Gets the underlying raw array.
      *
      * @param <T> Java array type to be returned.
@@ -104,6 +113,12 @@ public interface RawArray
             rawArray = new byte[capacity];
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -173,6 +188,12 @@ public interface RawArray
             rawArray = new short[capacity];
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -238,6 +259,12 @@ public interface RawArray
         public void reset(int capacity)
         {
             rawArray = new int[capacity];
+        }
+
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
         }
 
         @SuppressWarnings("unchecked")
@@ -309,6 +336,12 @@ public interface RawArray
             rawArray = new long[capacity];
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -376,6 +409,12 @@ public interface RawArray
         public void reset(int capacity)
         {
             rawArray = new BigInteger[capacity];
+        }
+
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
         }
 
         @SuppressWarnings("unchecked")
@@ -447,6 +486,12 @@ public interface RawArray
             rawArray = new float[capacity];
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -514,6 +559,12 @@ public interface RawArray
         public void reset(int capacity)
         {
             rawArray = new double[capacity];
+        }
+
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
         }
 
         @SuppressWarnings("unchecked")
@@ -585,6 +636,12 @@ public interface RawArray
             rawArray = new boolean[capacity];
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -652,6 +709,12 @@ public interface RawArray
         public void reset(int capacity)
         {
             rawArray = new byte[capacity][];
+        }
+
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
         }
 
         @SuppressWarnings("unchecked")
@@ -724,6 +787,12 @@ public interface RawArray
             rawArray = new String[capacity];
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -792,6 +861,12 @@ public interface RawArray
         public void reset(int capacity)
         {
             rawArray = new BitBuffer[capacity];
+        }
+
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
         }
 
         @SuppressWarnings("unchecked")
@@ -872,6 +947,12 @@ public interface RawArray
             rawArray = (E[])java.lang.reflect.Array.newInstance(elementClass, capacity);
         }
 
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getRawArray()
@@ -942,6 +1023,12 @@ public interface RawArray
         public int size()
         {
             return (rawArray == null) ? 0 : rawArray.length;
+        }
+
+        @Override
+        public void resize(int size)
+        {
+            rawArray = Arrays.copyOf(rawArray, size);
         }
 
         @SuppressWarnings("unchecked")

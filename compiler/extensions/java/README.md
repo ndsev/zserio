@@ -32,6 +32,8 @@ For a **quick start** see the [Java Tutorial](https://github.com/ndsev/zserio-tu
 
 [Optimizations](#optimizations)
 
+[Out of Memory Allocation Errors](#out-of-memory-allocation-errors)
+
 ## Supported Java Versions
 
 Zserio Java generator supports the Java SE 8 (LTS), the Java SE 11 (LTS), the Java SE 17 (LTS) and the Java SE 21 (LTS).
@@ -148,3 +150,21 @@ Such optimizations can be done because Zserio relays on the fact that the entire
 generation. Therefore, splitting schema into two parts and generating them independently cannot guarantee
 correct functionality. This can lead to a problem especially for templates, if a template is defined
 in one part and instantiated in the other.
+
+## Out of Memory Allocation Errors
+
+Zserio tries to prevent out of memory allocation errors which could happen when stored array sizes contain
+invalid values. It does so by checking initial array size allocations against maximum allowed value
+`maxPreallocatedArraySize`. This value can be configured in the
+[`zserio.runtime.io.ByteArrayBitStreamReader`](https://zserio.org/doc/runtime/latest/java/zserio/runtime/io/ByteArrayBitStreamReader.html)
+constructor or passed directly to the
+[`zserio.runtime.io.SerializeUtil.deserialize`](https://zserio.org/doc/runtime/latest/java/zserio/runtime/io/SerializeUtil.html) methods.
+
+Please note that even with this check, Zserio cannot always guarantee data validity if the incoming stream is
+corrupted. We recommend using checksums at the application level to defend against such corruption.
+
+> [!CAUTION]
+Earlier Zserio versions (up to and including version 2.18.1) did not include this check. However now, it is
+set to 1024 elements by default to ensure protection in all cases. If stored array elements exceed this limit
+the array will be reallocated but this can have an effect on the overall performance, so please don't forget
+to choose a suitable limit for your application!

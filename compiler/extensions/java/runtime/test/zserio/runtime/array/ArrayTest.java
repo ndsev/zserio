@@ -1044,24 +1044,20 @@ public class ArrayTest
                 }
             }
         }
-    }
 
-    private static void testInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
-            throws IOException
-    {
-        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
+        // test invalid array length
+        final byte[] data = {(byte)0x00};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
-            final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
-            Throwable exception = assertThrows(Throwable.class, () -> array.read(reader));
-            assertTrue(exception instanceof IOException || exception instanceof OutOfMemoryError);
+            final Array emptyArray = new Array(readRawArray, arrayTraits, ArrayType.NORMAL);
+            final int maxArraySize = Integer.MAX_VALUE;
+            assertThrows(IOException.class, () -> emptyArray.read(reader, maxArraySize));
         }
     }
 
     private static void testArrayAuto(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             int expectedBitSizeOf) throws IOException
     {
-        testInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1088,6 +1084,14 @@ public class ArrayTest
                     assertEquals(array, readArray);
                 }
             }
+        }
+
+        // test invalid array length, 0x83 0xFF 0xFF 0xFF 0xFF is encoded the VARSIZE maximum
+        final byte[] data = {(byte)0x83, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0x00};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array emptyArray = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
+            assertThrows(IOException.class, () -> emptyArray.read(reader));
         }
     }
 
@@ -1175,13 +1179,22 @@ public class ArrayTest
                 }
             }
         }
+
+        // test invalid array length
+        final byte[] data = {(byte)0x00};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array emptyArray =
+                    new Array(readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
+            final int maxArraySize = Integer.MAX_VALUE;
+            assertThrows(IOException.class, () -> emptyArray.read(reader, maxArraySize));
+        }
     }
 
     private static void testArrayAlignedAuto(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             OffsetChecker offsetChecker, OffsetInitializer offsetInitializer, int expectedBitSizeOf)
             throws IOException
     {
-        testInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1214,6 +1227,15 @@ public class ArrayTest
                     assertEquals(array, readArray);
                 }
             }
+        }
+
+        // test invalid array length, 0x83 0xFF 0xFF 0xFF 0xFF is encoded the VARSIZE maximum
+        final byte[] data = {(byte)0x83, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0x00};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array emptyArray =
+                    new Array(readRawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
+            assertThrows(IOException.class, () -> emptyArray.read(reader));
         }
     }
 
@@ -1294,26 +1316,20 @@ public class ArrayTest
                 }
             }
         }
-    }
 
-    private static void testPackedInvalidArrayLength(RawArray readRawArray, ArrayTraits arrayTraits)
-            throws IOException
-    {
-        final byte[] data = {(byte)0xff, (byte)0xff, (byte)0xff, 0x3f, 0};
+        // test invalid array length
+        final byte[] data = {(byte)0xFF};
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {
-            final Array array = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
-            Throwable exception = assertThrows(Throwable.class, () -> array.readPacked(reader));
-            assertTrue(exception instanceof IOException || exception instanceof OutOfMemoryError ||
-                    (exception instanceof ArrayIndexOutOfBoundsException &&
-                            arrayTraits instanceof ArrayTraits.BitFieldBigIntegerArrayTraits));
+            final Array emptyArray = new Array(readRawArray, arrayTraits, ArrayType.NORMAL);
+            final int maxArraySize = Integer.MAX_VALUE;
+            assertThrows(Throwable.class, () -> emptyArray.readPacked(reader, maxArraySize));
         }
     }
 
     private static void testPackedArrayAuto(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             int expectedBitSizeOf) throws IOException
     {
-        testPackedInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1341,6 +1357,14 @@ public class ArrayTest
                     assertEquals(array, readArray);
                 }
             }
+        }
+
+        // test invalid array length, 0x83 0xFF 0xFF 0xFF 0xFF is encoded the VARSIZE maximum
+        final byte[] data = {(byte)0x83, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array emptyArray = new Array(readRawArray, arrayTraits, ArrayType.AUTO);
+            assertThrows(IOException.class, () -> emptyArray.readPacked(reader));
         }
     }
 
@@ -1406,13 +1430,22 @@ public class ArrayTest
                 }
             }
         }
+
+        // test invalid array length
+        final byte[] data = {(byte)0xFF};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array emptyArray =
+                    new Array(readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
+            final int maxArraySize = Integer.MAX_VALUE;
+            assertThrows(IOException.class, () -> emptyArray.readPacked(reader, maxArraySize));
+        }
     }
 
     private static void testPackedArrayAlignedAuto(RawArray rawArray, RawArray readRawArray,
             ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
             int expectedBitSizeOf) throws IOException
     {
-        testPackedInvalidArrayLength(readRawArray, arrayTraits);
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
@@ -1441,6 +1474,15 @@ public class ArrayTest
                     assertEquals(array, readArray);
                 }
             }
+        }
+
+        // test invalid array length, 0x83 0xFF 0xFF 0xFF 0xFF is encoded the VARSIZE maximum
+        final byte[] data = {(byte)0x83, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            final Array emptyArray =
+                    new Array(readRawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
+            assertThrows(IOException.class, () -> emptyArray.readPacked(reader));
         }
     }
 

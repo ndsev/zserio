@@ -18,9 +18,21 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
      */
     public ByteArrayBitStreamReader(final byte[] bytes)
     {
+        this(bytes, MAX_PREALLOCATED_ARRAY_SIZE_DEFAULT);
+    }
+
+    /**
+     * Constructs object containing given bytes with a given byte order and a maximum preallocated array size.
+     *
+     * @param bytes Array of bytes to construct from.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     */
+    public ByteArrayBitStreamReader(final byte[] bytes, int maxPreallocatedArraySize)
+    {
         this.buffer = new byte[bytes.length];
         System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);
         this.lastByteBits = 8;
+        this.maxPreallocatedArraySize = maxPreallocatedArraySize;
     }
 
     /**
@@ -30,23 +42,48 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
      */
     public ByteArrayBitStreamReader(final BitBuffer bitBuffer)
     {
-        buffer = bitBuffer.getBuffer();
-        final byte lastBits = (byte)(bitBuffer.getBitSize() % 8);
-        lastByteBits = lastBits == 0 ? 8 : lastBits;
+        this(bitBuffer, MAX_PREALLOCATED_ARRAY_SIZE_DEFAULT);
     }
 
     /**
-     * Constructs object containing given bytes with a given byte order with exact bit size.
+     * Constructs object using given bit buffer and a maximum preallocated array size.
+     *
+     * @param bitBuffer Bit buffer to construct from.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     */
+    public ByteArrayBitStreamReader(final BitBuffer bitBuffer, int maxPreallocatedArraySize)
+    {
+        buffer = bitBuffer.getBuffer();
+        final byte lastBits = (byte)(bitBuffer.getBitSize() % 8);
+        lastByteBits = lastBits == 0 ? 8 : lastBits;
+        this.maxPreallocatedArraySize = maxPreallocatedArraySize;
+    }
+
+    /**
+     * Constructs object containing given bytes with exact bit size.
      *
      * @param bytes Array of bytes to construct from.
      * @param bitSize Size of the buffer in bits.
      */
     public ByteArrayBitStreamReader(final byte[] bytes, long bitSize)
     {
+        this(bytes, bitSize, MAX_PREALLOCATED_ARRAY_SIZE_DEFAULT);
+    }
+
+    /**
+     * Constructs object containing given bytes with exact bit size and a maximum preallocated array size.
+     *
+     * @param bytes Array of bytes to construct from.
+     * @param bitSize Size of the buffer in bits.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     */
+    public ByteArrayBitStreamReader(final byte[] bytes, long bitSize, int maxPreallocatedArraySize)
+    {
         this.buffer = new byte[bytes.length];
         System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);
         final byte lastBits = (byte)(bitSize % 8);
         lastByteBits = lastBits == 0 ? 8 : lastBits;
+        this.maxPreallocatedArraySize = maxPreallocatedArraySize;
     }
 
     @Override
@@ -627,6 +664,12 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public int getMaxPreallocatedArraySize()
+    {
+        return maxPreallocatedArraySize;
+    }
+
+    @Override
     public void close() throws IOException
     {
         // nothing to do
@@ -706,8 +749,13 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
                     " but requested was " + length + ".");
     }
 
-    private int read(final byte[] dest, final int offset, final int length)
+    private int read(final byte[] dest, final int offset, final int length) throws IOException
     {
+        if (bytePosition + length - 1 >= buffer.length)
+            throw new IOException("ByteArrayBitStreamReader: Unable to read " + length +
+                    " bytes on offset position " + bytePosition +
+                    ". It's beyond end of the stream with length " + buffer.length + ".");
+
         System.arraycopy(buffer, bytePosition, dest, offset, length);
         bytePosition += length;
         return length;
@@ -729,7 +777,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     {
         if (bytePosition >= buffer.length)
             throw new IOException("ByteArrayBitStreamReader: Unable to read byte on offset position " +
-                    (bytePosition + 1) + ". It's beyond end of the stream with length " + buffer.length + ".");
+                    bytePosition + ". It's beyond end of the stream with length " + buffer.length + ".");
 
         return buffer[bytePosition++];
     }
@@ -819,9 +867,15 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
 
     private static final long VARSIZE_MAX_VALUE = (1 << 31) - 1;
 
+    /** Default for the maximum array size used for the initial preallocation during reading. */
+    private static final int MAX_PREALLOCATED_ARRAY_SIZE_DEFAULT = 1024;
+
     /**
      * The underlying byte array.
      */
     private final byte[] buffer;
     private final byte lastByteBits;
+
+    /** The maximum array size used for the initial preallocation during reading. */
+    private final int maxPreallocatedArraySize;
 }

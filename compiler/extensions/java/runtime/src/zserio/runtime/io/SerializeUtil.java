@@ -22,6 +22,38 @@ import zserio.runtime.ZserioError;
 public final class SerializeUtil
 {
     /**
+     * Wrapper class for the preallocated array size.
+     *
+     * This class is used for deserialize methods to distinguish between optional additional arguments needed
+     * for reader constructor and the preallocated array size. This is ambiguous if the first optional
+     * argument is an integer.
+     */
+    public static final class PreallocatedArraySize
+    {
+        /**
+         * Constructor from the preallocated array size.
+         *
+         * @param preallocatedArraySize The preallocated array size in the number of elements.
+         */
+        PreallocatedArraySize(int preallocatedArraySize)
+        {
+            this.preallocatedArraySize = preallocatedArraySize;
+        }
+
+        /**
+         * Gets the preallocated array size.
+         *
+         * @return The preallocated array size in the number of elements.
+         */
+        int get()
+        {
+            return preallocatedArraySize;
+        }
+
+        private int preallocatedArraySize;
+    }
+
+    /**
      * Serializes generated object to the bit buffer.
      * <p>
      * Before serialization, the method calls initializeOffsets() on the given zserio object.
@@ -74,6 +106,33 @@ public final class SerializeUtil
     public static <T> T deserialize(Class<T> clazz, BitBuffer bitBuffer, Object... arguments)
     {
         return deserializeFromBytes(clazz, bitBuffer.getBuffer(), arguments);
+    }
+
+    /**
+     * Deserializes bit buffer to the generated object using a specified preallocated array size.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.io.SerializeUtil;
+     *
+     * final SomeZserioObject object = new SomeZserioObject();
+     * final BitBuffer bitBuffer = SerializeUtil.serialize(object);
+     * final SomeZserioObject readObject = SerializeUtil.deserialize(SomeZserioObject.class, bitBuffer,
+     *         new SerializeUtil.PreallocatedArraySize(16384));
+     * </pre></blockquote>
+     *
+     * @param <T> Type of generated object.
+     * @param clazz Class instance of the generated object to deserialize.
+     * @param bitBuffer Bit buffer which represents generated object in binary format.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     * @param arguments Additional arguments needed for reader constructor (optional).
+     *
+     * @return Generated object created from given bit buffer.
+     */
+    public static <T> T deserialize(Class<T> clazz, BitBuffer bitBuffer,
+            PreallocatedArraySize maxPreallocatedArraySize, Object... arguments)
+    {
+        return deserializeFromBytes(clazz, bitBuffer.getBuffer(), maxPreallocatedArraySize, arguments);
     }
 
     /**
@@ -139,6 +198,46 @@ public final class SerializeUtil
     public static <T> T deserializeFromBytes(Class<T> clazz, byte[] buffer, Object... arguments)
     {
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+        {
+            return deserializeFromReader(clazz, reader, arguments);
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioError("SerializeUtil: " + exception, exception);
+        }
+    }
+
+    /**
+     * Deserializes byte array to the generated object using a specified preallocated array size.
+     * <p>
+     * This method can potentially use all bits of the last byte even if not all of them were written during
+     * serialization (because there is no way how to specify exact number of bits). Thus, it could allow reading
+     * behind stream (possibly in case of damaged data).
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.io.SerializeUtil;
+     *
+     * final SomeZserioObject object = new SomeZserioObject();
+     * final byte[] buffer = SerializeUtil.serializeToBytes(object);
+     * final SomeZserioObject readObject =
+     *         SerializeUtil.deserializeFromBytes(SomeZserioObject.class, buffer,
+     *         new SerializeUtil.PreallocatedArraySize(16384));
+     * </pre></blockquote>
+     *
+     * @param <T> Type of generated object.
+     * @param clazz Class instance of the generated object to deserialize.
+     * @param buffer Byte array which represents generated object in binary format.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     * @param arguments Additional arguments needed for reader constructor (optional).
+     *
+     * @return Generated object created from given byte array.
+     */
+    public static <T> T deserializeFromBytes(
+            Class<T> clazz, byte[] buffer, PreallocatedArraySize maxPreallocatedArraySize, Object... arguments)
+    {
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(
+                     buffer, maxPreallocatedArraySize.get()))
         {
             return deserializeFromReader(clazz, reader, arguments);
         }
@@ -237,6 +336,37 @@ public final class SerializeUtil
     }
 
     /**
+     * Deserializes file to the generated object using a file name and a specified preallocated array size.
+     * <p>
+     * This is a convenient method for users to easily read given generated object from file.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.io.SerializeUtil;
+     *
+     * final String fileName = "FileName.bin";
+     * final SomeZserioObject object = new SomeZserioObject();
+     * SerializeUtil.serializeToFile(object, fileName);
+     * final SomeZserioObject readObject =
+     *         SerializeUtil.deserializeFromFile(SomeZserioObject.class, fileName,
+     *         new SerializeUtil.PreallocatedArraySize(16384));
+     * </pre></blockquote>
+     *
+     * @param <T> Type of generated object.
+     * @param clazz Class instance of the generated object to deserialize.
+     * @param fileName Name of the file which represents generated object in binary format.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     * @param arguments Additional arguments needed for reader constructor (optional).
+     *
+     * @return Generated object created from given file contents.
+     */
+    public static <T> T deserializeFromFile(Class<T> clazz, String fileName,
+            PreallocatedArraySize maxPreallocatedArraySize, Object... arguments)
+    {
+        return deserializeFromFile(clazz, new File(fileName), maxPreallocatedArraySize, arguments);
+    }
+
+    /**
      * Deserializes file to the generated object.
      * <p>
      * This is a convenient method for users to easily read given generated object from file.
@@ -264,6 +394,49 @@ public final class SerializeUtil
         {
             final byte[] fileContent = Files.readAllBytes(file.toPath());
             try (final BitStreamReader reader = new ByteArrayBitStreamReader(fileContent))
+            {
+                return deserializeFromReader(clazz, reader, arguments);
+            }
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioError("SerializeUtil: " + exception, exception);
+        }
+    }
+
+    /**
+     * Deserializes file to the generated object using a specified preallocated array size.
+     * <p>
+     * This is a convenient method for users to easily read given generated object from file.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.io.SerializeUtil;
+     *
+     * final String fileName = "FileName.bin";
+     * final SomeZserioObject object = new SomeZserioObject();
+     * SerializeUtil.serializeToFile(object, fileName);
+     * final SomeZserioObject readObject =
+     *         SerializeUtil.deserializeFromFile(SomeZserioObject.class, fileName,
+     *         new SerializeUtil.PreallocatedArraySize(16384));
+     * </pre></blockquote>
+     *
+     * @param <T> Type of generated object.
+     * @param clazz Class instance of the generated object to deserialize.
+     * @param file File which represents generated object in binary format.
+     * @param maxPreallocatedArraySize Maximum size of a preallocated array during reading.
+     * @param arguments Additional arguments needed for reader constructor (optional).
+     *
+     * @return Generated object created from given file contents.
+     */
+    public static <T> T deserializeFromFile(
+            Class<T> clazz, File file, PreallocatedArraySize maxPreallocatedArraySize, Object... arguments)
+    {
+        try
+        {
+            final byte[] fileContent = Files.readAllBytes(file.toPath());
+            try (final BitStreamReader reader = new ByteArrayBitStreamReader(
+                         fileContent, maxPreallocatedArraySize.get()))
             {
                 return deserializeFromReader(clazz, reader, arguments);
             }

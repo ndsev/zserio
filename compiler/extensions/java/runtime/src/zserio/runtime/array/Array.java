@@ -294,7 +294,7 @@ public final class Array
             }
         }
 
-        rawArray.reset(readSize);
+        resetRawArray(readSize, reader);
 
         for (int index = 0; index < readSize; ++index)
         {
@@ -305,7 +305,7 @@ public final class Array
             }
 
             final ArrayElement element = arrayTraits.read(reader, index);
-            rawArray.setElement(element, index);
+            setElementToRawArray(element, index, readSize);
         }
     }
 
@@ -338,8 +338,7 @@ public final class Array
         checkIfPackable();
 
         final int readSize = (arrayType == ArrayType.AUTO) ? reader.readVarSize() : size;
-
-        rawArray.reset(readSize);
+        resetRawArray(readSize, reader);
 
         if (readSize > 0)
         {
@@ -354,7 +353,7 @@ public final class Array
                 }
 
                 final ArrayElement element = packedArrayTraits.read(context, reader, index);
-                rawArray.setElement(element, index);
+                setElementToRawArray(element, index, readSize);
             }
         }
     }
@@ -425,6 +424,24 @@ public final class Array
 
         if (arrayType == ArrayType.IMPLICIT)
             throw new UnsupportedOperationException("Array: Implicit array cannot be packed!");
+    }
+
+    private void resetRawArray(int readSize, BitStreamReader reader)
+    {
+        final int maxPreallocatedArraySize = reader.getMaxPreallocatedArraySize();
+        final int reservedSize = (readSize > maxPreallocatedArraySize) ? maxPreallocatedArraySize : readSize;
+        rawArray.reset(reservedSize);
+    }
+
+    private void setElementToRawArray(ArrayElement element, int index, int readSize)
+    {
+        final int arraySize = rawArray.size();
+        if (index >= arraySize)
+        {
+            final int newArraySize = (index * 2 > readSize) ? readSize : index * 2;
+            rawArray.resize(newArraySize);
+        }
+        rawArray.setElement(element, index);
     }
 
     private final RawArray rawArray;

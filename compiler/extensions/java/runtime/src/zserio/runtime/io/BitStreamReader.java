@@ -302,4 +302,11 @@ public interface BitStreamReader extends Closeable
      * @return Buffer bit size.
      */
     long getBufferBitSize();
+
+    /**
+     * Gets maximum size of the preallocated array.
+     *
+     * @return Maximum array size used for the initial preallocation during reading.
+     */
+    int getMaxPreallocatedArraySize();
 }

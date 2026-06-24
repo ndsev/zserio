@@ -32,6 +32,25 @@ public class ByteArrayBitStreamReaderTest
     }
 
     @Test
+    public void bitBufferAndMaxConstructor() throws IOException
+    {
+        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x80}, 17);
+        final int maxPreallocatedArraySize = 65536;
+
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer, maxPreallocatedArraySize))
+        {
+            assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
+            assertEquals(maxPreallocatedArraySize, reader.getMaxPreallocatedArraySize());
+            assertEquals(0xAEE, reader.readBits(12));
+            assertEquals(0x0A, reader.readBits(4));
+            assertEquals(0x01, reader.readBits(1));
+
+            // check eof
+            assertThrows(IOException.class, () -> reader.readBits(1));
+        }
+    }
+
+    @Test
     public void bitBufferConstructorOverflow() throws IOException
     {
         final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);
@@ -62,6 +81,27 @@ public class ByteArrayBitStreamReaderTest
     }
 
     @Test
+    public void bitAndMaxConstructor() throws IOException
+    {
+        final long bitSize = 17;
+        final byte[] buffer = new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x80};
+        final int maxPreallocatedArraySize = 65536;
+
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(
+                     buffer, bitSize, maxPreallocatedArraySize))
+        {
+            assertEquals(bitSize, reader.getBufferBitSize());
+            assertEquals(maxPreallocatedArraySize, reader.getMaxPreallocatedArraySize());
+            assertEquals(0xAEE, reader.readBits(12));
+            assertEquals(0x0A, reader.readBits(4));
+            assertEquals(0x01, reader.readBits(1));
+
+            // check eof
+            assertThrows(IOException.class, () -> reader.readBits(1));
+        }
+    }
+
+    @Test
     public void bitConstructorOverflow() throws IOException
     {
         final long bitSize = 19;
@@ -71,6 +111,54 @@ public class ByteArrayBitStreamReaderTest
             assertEquals(bitSize, reader.getBufferBitSize());
 
             assertThrows(IOException.class, () -> reader.readBits(20));
+        }
+    }
+
+    @Test
+    public void byteConstructor() throws IOException
+    {
+        final byte[] buffer = new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x81};
+
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+        {
+            assertEquals(8L * buffer.length, reader.getBufferBitSize());
+            assertEquals(0xAEE, reader.readBits(12));
+            assertEquals(0x0A, reader.readBits(4));
+            assertEquals(0x81, reader.readBits(8));
+
+            // check eof
+            assertThrows(IOException.class, () -> reader.readBits(1));
+        }
+    }
+
+    @Test
+    public void byteAndMaxConstructor() throws IOException
+    {
+        final byte[] buffer = new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x81};
+        final int maxPreallocatedArraySize = 65536;
+
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, maxPreallocatedArraySize))
+        {
+            assertEquals(8L * buffer.length, reader.getBufferBitSize());
+            assertEquals(maxPreallocatedArraySize, reader.getMaxPreallocatedArraySize());
+            assertEquals(0xAEE, reader.readBits(12));
+            assertEquals(0x0A, reader.readBits(4));
+            assertEquals(0x81, reader.readBits(8));
+
+            // check eof
+            assertThrows(IOException.class, () -> reader.readBits(1));
+        }
+    }
+
+    @Test
+    public void byteConstructorOverflow() throws IOException
+    {
+        final byte[] buffer = new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xF1};
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+        {
+            assertEquals(8L * buffer.length, reader.getBufferBitSize());
+
+            assertThrows(IOException.class, () -> reader.readBits(8 * buffer.length + 1));
         }
     }
 
@@ -746,6 +834,7 @@ public class ByteArrayBitStreamReaderTest
 
     private abstract static class SampleWriteReadTest implements WriteReadTestable
     {
+        @Override
         public void write(ImageOutputStream writer) throws IOException
         {
             writer.writeBits(6, 4);
