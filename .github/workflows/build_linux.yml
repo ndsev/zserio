@@ -2,7 +2,7 @@ name: Linux
 
 on:
   push:
-    branches: [ master, '*-ci' ]
+    branches: [ master ]
   pull_request:
     branches: [ master, '*-ci' ]
   workflow_dispatch:
