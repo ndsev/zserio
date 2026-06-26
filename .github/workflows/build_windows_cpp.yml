@@ -80,11 +80,13 @@ jobs:
         for i in {1..3}; do
           if [ $i -ne 1 ]; then sleep 10; fi
           choco install wget || continue
-          choco install doxygen.portable || continue
+          choco install doxygen.install || continue
           choco install graphviz || continue
           choco install zip --version=3.0.0.20251001 || continue
           break
         done
+        # doxygen.portable is unreliable and doxygen.install doesn't set shim exe
+        echo "/c/Program Files/doxygen/bin" >> $GITHUB_PATH
 
     - name: Set up Java 8
       uses: actions/setup-java@v4
