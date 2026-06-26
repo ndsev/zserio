@@ -9,11 +9,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "windows-2022", python-version: "3.9" }
-        - { os: "windows-2022", python-version: "3.10" }
-        - { os: "windows-2022", python-version: "3.11" }
-        - { os: "windows-2022", python-version: "3.12" }
-        - { os: "windows-2022", python-version: "3.13" }
+        - { os: "windows-2025", python-version: "3.9" }
+        - { os: "windows-2025", python-version: "3.10" }
+        - { os: "windows-2025", python-version: "3.11" }
+        - { os: "windows-2025", python-version: "3.12" }
+        - { os: "windows-2025", python-version: "3.13" }
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-python${{matrix.python-version}}
@@ -41,20 +41,17 @@ jobs:
         reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\Setup"
 
     - name: Install dependencies
-      shell: bash
-      continue-on-error: true
+      shell: cmd # need cmd with admin rights to install app links
       run: |
-        choco feature disable -n=showDownloadProgress
-        for i in {1..3}; do
-          if [ $i -ne 1 ]; then sleep 10; fi
-          choco install doxygen.install || continue
-          choco install graphviz || continue
-          choco install wget || continue
-          choco install zip --version=3.0.0.20251001 || continue
-          break
-        done
-        # doxygen.portable is unreliable and doxygen.install doesn't set shim exe
-        echo "/c/Program Files/doxygen/bin" >> $GITHUB_PATH
+        winget install wget --accept-source-agreements --accept-package-agreements --disable-interactivity
+        winget install doxygen --accept-source-agreements --accept-package-agreements --disable-interactivity
+        winget install graphviz --accept-source-agreements --accept-package-agreements --disable-interactivity
+        winget install gnuwin32.zip --accept-source-agreements --accept-package-agreements --disable-interactivity
+        winget install gnuwin32.unzip --accept-source-agreements --accept-package-agreements --disable-interactivity
+        dir "%LOCALAPPDATA%/Microsoft/WinGet/Links"
+        echo %LOCALAPPDATA%/Microsoft/WinGet/Links>>%GITHUB_PATH%
+        dir "C:\Program Files (x86)\GnuWin32\bin"
+        echo C:\Program Files (x86)\GnuWin32\bin>>%GITHUB_PATH%
 
     - name: Set up Java 8
       uses: actions/setup-java@v4

@@ -29,12 +29,17 @@ jobs:
 
   release:
     needs: [cpp, java, python, doc, xml]
-    runs-on: "windows-2022"
+    runs-on: "windows-2025"
     steps:
     - name: Install dependencies
-      shell: bash
+      shell: cmd # need cmd with admin rights to install app links
       run: |
-        choco install zip --version=3.0.0.20251001
+        winget install gnuwin32.zip --accept-source-agreements --accept-package-agreements --disable-interactivity
+        winget install gnuwin32.unzip --accept-source-agreements --accept-package-agreements --disable-interactivity
+        dir "%LOCALAPPDATA%/Microsoft/WinGet/Links"
+        echo %LOCALAPPDATA%/Microsoft/WinGet/Links>>%GITHUB_PATH%
+        dir "C:\Program Files (x86)\GnuWin32\bin"
+        echo C:\Program Files (x86)\GnuWin32\bin>>%GITHUB_PATH%
 
     - name: "Download Zserio release artifacts"
       uses: actions/download-artifact@v4
