@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "windows-2025" }
+        - { os: "windows-2022" }
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}
@@ -20,9 +20,19 @@ jobs:
       run: |
         echo "XMLLINT_ENABLED=1" >> ${GITHUB_ENV}
 
+    - name: Install winget
+      uses: Cyberboss/install-winget@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Install dependencies
       shell: cmd # need cmd with admin rights to install app links
       run: |
+        set /a delay=%RANDOM% %% 16
+        echo Pausing for %delay% seconds...
+        ping 127.0.0.1 -n %delay% > nul
+        winget source update -n winget
+        winget settings --enable BypassCertificatePinningForMicrosoftStore
         winget install gnuwin32.zip --accept-source-agreements --accept-package-agreements --disable-interactivity
         winget install gnuwin32.unzip --accept-source-agreements --accept-package-agreements --disable-interactivity
         dir "%LOCALAPPDATA%/Microsoft/WinGet/Links"

@@ -9,11 +9,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: "windows-2025", python-version: "3.9" }
-        - { os: "windows-2025", python-version: "3.10" }
-        - { os: "windows-2025", python-version: "3.11" }
-        - { os: "windows-2025", python-version: "3.12" }
-        - { os: "windows-2025", python-version: "3.13" }
+        - { os: "windows-2022", python-version: "3.9" }
+        - { os: "windows-2022", python-version: "3.10" }
+        - { os: "windows-2022", python-version: "3.11" }
+        - { os: "windows-2022", python-version: "3.12" }
+        - { os: "windows-2022", python-version: "3.13" }
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-python${{matrix.python-version}}
@@ -40,9 +40,19 @@ jobs:
         echo "req query HKLM/.../VisualStudio/Setup"
         reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\Setup"
 
+    - name: Install winget
+      uses: Cyberboss/install-winget@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Install dependencies
       shell: cmd # need cmd with admin rights to install app links
       run: |
+        set /a delay=%RANDOM% %% 16
+        echo Pausing for %delay% seconds...
+        ping 127.0.0.1 -n %delay% > nul
+        winget source update -n winget
+        winget settings --enable BypassCertificatePinningForMicrosoftStore
         winget install wget --accept-source-agreements --accept-package-agreements --disable-interactivity
         winget install doxygen --accept-source-agreements --accept-package-agreements --disable-interactivity
         winget install graphviz --accept-source-agreements --accept-package-agreements --disable-interactivity
@@ -52,6 +62,10 @@ jobs:
         echo %LOCALAPPDATA%/Microsoft/WinGet/Links>>%GITHUB_PATH%
         dir "C:\Program Files (x86)\GnuWin32\bin"
         echo C:\Program Files (x86)\GnuWin32\bin>>%GITHUB_PATH%
+        dir "C:\Program Files\doxygen\bin"
+        echo C:\Program Files\doxygen\bin>>%GITHUB_PATH%
+        dir "C:\Program Files\Graphviz\bin"
+        echo C:\Program Files\Graphviz\bin>>%GITHUB_PATH%
 
     - name: Set up Java 8
       uses: actions/setup-java@v4
