@@ -43,10 +43,15 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        choco install doxygen.portable
+        #choco install doxygen.portable #often gives errors
         choco install graphviz
         choco install wget
         choco install zip --version=3.0.0.20251001
+
+        wget -P "${RUNNER_WORKSPACE}" \
+            https://github.com/doxygen/doxygen/releases/download/Release_1_17_0/doxygen-1.17.0.windows.x64.bin.zip
+        unzip "${RUNNER_WORKSPACE}/doxygen-1.17.0.windows.x64.bin.zip" -d "${RUNNER_WORKSPACE}/doxygen"
+        echo "${RUNNER_WORKSPACE}/doxygen" >> $GITHUB_PATH
 
     - name: Set up Java 8
       uses: actions/setup-java@v4
