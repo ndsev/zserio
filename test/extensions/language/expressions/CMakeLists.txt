@@ -23,6 +23,7 @@ add_custom_test(expressions
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CastUInt64ToUInt8Test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CastUInt8ToUInt64Test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ConstTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DivisionOperatorTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumerationTypeTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FieldTypeTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FieldTypeWithClashTest.cpp

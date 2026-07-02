@@ -26,6 +26,7 @@ google-explicit-constructor:gen/expressions/bitmask_type/Colors.h
 google-explicit-constructor:gen/expressions/expressions_in_templates/ColorB.h
 google-explicit-constructor:gen/expressions/isset_operator/TestBitmask.h
 
+hicpp-signed-bitwise:gen/expressions/division_operator/DivisionFunction.cpp
 hicpp-signed-bitwise:gen/expressions/expressions_in_templates/LeftShiftExpressions_uint32.cpp
 hicpp-signed-bitwise:gen/expressions/left_shift_operator/LeftShiftOperator.cpp
 
