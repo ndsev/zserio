@@ -319,7 +319,11 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     @Override
     public BinaryExpressionFormatting getDivide(Expression expr)
     {
-        return new BinaryExpressionFormatting(" // ");
+        // simulate behavior from other languages (#718)
+        if (expr.getExprType() == Expression.ExpressionType.INTEGER)
+            return new BinaryExpressionFormatting(" // ");
+        else
+            return new BinaryExpressionFormatting(" / ");
     }
 
     @Override
