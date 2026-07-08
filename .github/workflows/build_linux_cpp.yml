@@ -29,6 +29,11 @@ jobs:
         - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Release" }
         - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
 
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "17", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "17", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "17", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "17", build-type: "Debug" }
+
     runs-on: ${{matrix.os}}
     name: "\
       ${{matrix.os}}-${{matrix.platform}}-\
@@ -64,8 +69,9 @@ jobs:
             echo "LLVM_PROFDATA_BIN=llvm-profdata-${{matrix.clang-version}}" >> ${GITHUB_ENV}
             echo "LLVM_COV_BIN=llvm-cov-${{matrix.clang-version}}" >> ${GITHUB_ENV}
           fi
-          if [[ ! ( "${{matrix.platform}}" == "32" && "${{matrix.clang-version}}" != "" ) ]] ; then
+          if [[ ! ( "${{matrix.platform}}" == "32" && "${{matrix.clang-version}}" != "" ) && "${{matrix.clang-version}}" != "21" ]] ; then
             # sanitizers do not work with clang 32-bit when cross-compiling
+            # enable sanitizer in clang-21 after fixing #726
             # https://github.com/ndsev/zserio/issues/473
             echo "SANITIZERS_ENABLED=1" >> ${GITHUB_ENV}
           fi
@@ -99,8 +105,11 @@ jobs:
     - name: Install clang ${{matrix.clang-version}} compiler
       if: ${{ matrix.clang-version != '' }}
       run: |
-        sudo apt-get install clang-${{matrix.clang-version}}
-        sudo apt-get install llvm-${{matrix.clang-version}}
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${{matrix.clang-version}}
+        # install asan library
+        sudo apt install -y libclang-rt-${{matrix.clang-version}}-dev
 
     # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
     - name: Reduce ASLR entropy as a temporary workaround
