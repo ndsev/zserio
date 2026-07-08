@@ -752,7 +752,7 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
 
 </#if>
     int result = SQLITE_ERROR;
-    
+
     int index = 1;
     <#list fields as field>
     // field ${field.name}
@@ -884,6 +884,8 @@ void ${name}::appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::
                 case ColumnFormat::SQL_UPDATE:
                     sqlQuery += ${name}::columnNames[i];
                     sqlQuery += "=?";
+                    break;
+                default:
                     break;
             }
         }
