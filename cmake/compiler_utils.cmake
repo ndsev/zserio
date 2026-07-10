@@ -107,12 +107,20 @@ function(compiler_get_warnings_as_errors_setup VARNAME)
             )
             string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
         endif ()
-        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "14.0.0")
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "14.0.0")
             set(WARNINGS_SETUP_LIST
                 "-Wno-error=reserved-identifier" # identifier is reserved because it starts with '_' ...
                 "-Wno-error=deprecated-copy-with-dtor" # definition of implicit copy constructor is deprecated
             )
             string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
+        endif ()
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "16.0.0")
+            # ignore unsafe-buffer-usage. We don't have access to std::span to fix it.
+            set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wno-error=unsafe-buffer-usage")
+            # this warning is for C++17 and up only
+            set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wno-error=deprecated-redundant-constexpr-static-def")
+            # fix clang-tidy-14 error on clang-21 produced commands.json
+            set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wno-error=unknown-warning-option")
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         if (ZSERIO_ENABLE_WERROR)
