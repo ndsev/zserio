@@ -29,10 +29,10 @@ jobs:
         - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Release" }
         - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
 
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "17", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "17", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "17", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "17", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "11", build-type: "Debug" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "11", build-type: "Release" }
+        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "11", build-type: "Debug" }
 
     runs-on: ${{matrix.os}}
     name: "\

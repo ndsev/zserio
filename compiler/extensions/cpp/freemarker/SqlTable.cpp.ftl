@@ -875,7 +875,6 @@ void ${name}::appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::
             }
             switch (format)
             {
-                default:
                 case ColumnFormat::NAME:
                     sqlQuery += ${name}::columnNames[i];
                     break;
@@ -885,6 +884,8 @@ void ${name}::appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::
                 case ColumnFormat::SQL_UPDATE:
                     sqlQuery += ${name}::columnNames[i];
                     sqlQuery += "=?";
+                    break;
+                default:
                     break;
             }
         }
