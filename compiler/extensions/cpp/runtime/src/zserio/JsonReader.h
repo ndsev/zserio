@@ -174,7 +174,7 @@ private:
     InplaceOptionalHolder<BasicZserioTreeCreator<ALLOC>> m_creator;
     vector<string<ALLOC>, ALLOC> m_keyStack;
     IBasicReflectablePtr<ALLOC> m_object;
-    unique_ptr<IObjectValueAdapter<ALLOC>, RebindAlloc<ALLOC, IObjectValueAdapter<ALLOC>>> m_objectValueAdapter;
+    std::shared_ptr<IObjectValueAdapter<ALLOC>> m_objectValueAdapter;
 };
 
 } // namespace detail
@@ -506,7 +506,20 @@ void CreatorAdapter<ALLOC>::beginObject()
 {
     if (m_objectValueAdapter)
     {
+#if defined(_MSC_VER) && (_MSC_VER >= 1920 && _MSC_VER < 1930)
+        // catch and rethrow exceptions here to avoid access violation error
+        // in msvc v142 release build
+        try
+        {
+            m_objectValueAdapter->beginObject();
+        }
+        catch (...)
+        {
+            throw;
+        }
+#else
         m_objectValueAdapter->beginObject();
+#endif
     }
     else
     {
@@ -527,12 +540,12 @@ void CreatorAdapter<ALLOC>::beginObject()
                 if (cppType == CppType::BIT_BUFFER)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else
                 {
@@ -545,12 +558,12 @@ void CreatorAdapter<ALLOC>::beginObject()
                 if (cppType == CppType::BIT_BUFFER)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else
                 {
