@@ -62,12 +62,15 @@ struct UniquePtrDeleter : public AllocatorHolder<ALLOC_T>
     }
 
     /**
-     * Constructor from deleter to another type.
+     * DISABLED - Constructor from deleter to another type.
+     *
+     * This was originally used in JsonReader to cast polymorphic
+     * types but it leads to only releasing memory of the base class and
+     * it is correctly flagged by ASAN in clang-21. For polymorphic types
+     * use std::shared_ptr.
      */
     template <typename ALLOC_U>
-    UniquePtrDeleter(const UniquePtrDeleter<ALLOC_U>& deleter) :
-            UniquePtrDeleter(deleter.get_allocator())
-    {}
+    UniquePtrDeleter(const UniquePtrDeleter<ALLOC_U>& deleter) = delete;
 
     void operator()(T* ptr)
     {

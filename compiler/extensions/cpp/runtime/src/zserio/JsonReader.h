@@ -174,7 +174,7 @@ private:
     InplaceOptionalHolder<BasicZserioTreeCreator<ALLOC>> m_creator;
     vector<string<ALLOC>, ALLOC> m_keyStack;
     IBasicReflectablePtr<ALLOC> m_object;
-    unique_ptr<IObjectValueAdapter<ALLOC>, RebindAlloc<ALLOC, IObjectValueAdapter<ALLOC>>> m_objectValueAdapter;
+    std::shared_ptr<IObjectValueAdapter<ALLOC>> m_objectValueAdapter;
 };
 
 } // namespace detail
@@ -527,12 +527,12 @@ void CreatorAdapter<ALLOC>::beginObject()
                 if (cppType == CppType::BIT_BUFFER)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else
                 {
@@ -545,12 +545,12 @@ void CreatorAdapter<ALLOC>::beginObject()
                 if (cppType == CppType::BIT_BUFFER)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
                     m_objectValueAdapter =
-                            allocate_unique<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
+                            std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else
                 {
