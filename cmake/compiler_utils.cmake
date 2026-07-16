@@ -218,7 +218,10 @@ function(compiler_get_undefined_sanitizer_setup VARNAME)
         "nullability"
     )
     string(REPLACE ";" "," SANITIZE_OPTIONS "${SANITIZE_OPTIONS_LIST}")
-    set(${VARNAME} "-fsanitize=${SANITIZE_OPTIONS} -fno-sanitize-recover=${SANITIZE_OPTIONS}" PARENT_SCOPE)
+    # SQLite does bad function pointer casting which triggers
+    # runtime error: call to function agginfoFree through pointer to incorrect function type
+    # we use -fno-sanitize=function to suppress it
+    set(${VARNAME} "-fsanitize=${SANITIZE_OPTIONS} -fno-sanitize-recover=${SANITIZE_OPTIONS} -fno-sanitize=function" PARENT_SCOPE)
 endfunction()
 
 # A function to enable UndefinedBehaviourSanitizer.
