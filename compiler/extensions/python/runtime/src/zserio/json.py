@@ -1272,6 +1272,11 @@ class JsonReader:
                     return JsonReader._CreatorAdapter._bitmask_from_string(value, type_info)
                 else:
                     return type_info.py_type.from_value(value)
+            elif type_info.py_type == float:
+                if isinstance(value, int):
+                    return float(value)
+                else:
+                    return value
             else:
                 return value
 
