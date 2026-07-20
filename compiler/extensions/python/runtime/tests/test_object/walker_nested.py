@@ -6,16 +6,13 @@ from __future__ import annotations
 import typing
 import zserio
 
+
 class WalkerNested:
-    def __init__(
-            self,
-            text_: str = str()) -> None:
+    def __init__(self, text_: str = str()) -> None:
         self._text_ = text_
 
     @classmethod
-    def from_reader(
-            cls: typing.Type['WalkerNested'],
-            zserio_reader: zserio.BitStreamReader) -> 'WalkerNested':
+    def from_reader(cls: typing.Type["WalkerNested"], zserio_reader: zserio.BitStreamReader) -> "WalkerNested":
         self = object.__new__(cls)
 
         self.read(zserio_reader)
@@ -26,21 +23,18 @@ class WalkerNested:
     def type_info() -> zserio.typeinfo.TypeInfo:
         field_list: typing.List[zserio.typeinfo.MemberInfo] = [
             zserio.typeinfo.MemberInfo(
-                'text', zserio.typeinfo.TypeInfo('string', str),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'text'
-                }
+                "text",
+                zserio.typeinfo.TypeInfo("string", str),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "text"},
             )
         ]
-        attribute_list = {
-            zserio.typeinfo.TypeAttribute.FIELDS : field_list
-        }
+        attribute_list = {zserio.typeinfo.TypeAttribute.FIELDS: field_list}
 
         return zserio.typeinfo.TypeInfo("test_object.WalkerNested", WalkerNested, attributes=attribute_list)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, WalkerNested):
-            return (self._text_ == other._text_)
+            return self._text_ == other._text_
 
         return False
 

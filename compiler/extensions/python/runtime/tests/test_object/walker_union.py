@@ -8,13 +8,15 @@ import zserio
 
 import test_object.walker_nested
 
+
 class WalkerUnion:
     def __init__(
-            self,
-            *,
-            value_: typing.Union[int, None] = None,
-            text_: typing.Union[str, None] = None,
-            nested_array_: typing.Union[typing.List[test_object.walker_nested.WalkerNested], None] = None) -> None:
+        self,
+        *,
+        value_: typing.Union[int, None] = None,
+        text_: typing.Union[str, None] = None,
+        nested_array_: typing.Union[typing.List[test_object.walker_nested.WalkerNested], None] = None,
+    ) -> None:
         self._choice_tag: int = self.UNDEFINED_CHOICE
         self._choice: typing.Any = None
         if value_ is not None:
@@ -29,12 +31,14 @@ class WalkerUnion:
             if self._choice_tag != self.UNDEFINED_CHOICE:
                 raise zserio.PythonRuntimeException("Calling constructor of union WalkerUnion is ambiguous!")
             self._choice_tag = self.CHOICE_NESTED_ARRAY
-            self._choice = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_nested_array()), nested_array_, is_auto=True)
+            self._choice = zserio.array.Array(
+                zserio.array.ObjectArrayTraits(self._ZserioElementFactory_nested_array()),
+                nested_array_,
+                is_auto=True,
+            )
 
     @classmethod
-    def from_reader(
-            cls: typing.Type['WalkerUnion'],
-            zserio_reader: zserio.BitStreamReader) -> 'WalkerUnion':
+    def from_reader(cls: typing.Type["WalkerUnion"], zserio_reader: zserio.BitStreamReader) -> "WalkerUnion":
         self = object.__new__(cls)
 
         self.read(zserio_reader)
@@ -45,36 +49,34 @@ class WalkerUnion:
     def type_info() -> zserio.typeinfo.TypeInfo:
         field_list: typing.List[zserio.typeinfo.MemberInfo] = [
             zserio.typeinfo.MemberInfo(
-                'value', zserio.typeinfo.TypeInfo('uint32', int),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'value'
-                }
+                "value",
+                zserio.typeinfo.TypeInfo("uint32", int),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "value"},
             ),
             zserio.typeinfo.MemberInfo(
-                'text', zserio.typeinfo.TypeInfo('string', str),
-                attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'text'
-                }
+                "text",
+                zserio.typeinfo.TypeInfo("string", str),
+                attributes={zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "text"},
             ),
             zserio.typeinfo.MemberInfo(
-                'nestedArray', test_object.walker_nested.WalkerNested.type_info(),
+                "nestedArray",
+                test_object.walker_nested.WalkerNested.type_info(),
                 attributes={
-                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME : 'nested_array',
-                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH : None
-                }
-            )
+                    zserio.typeinfo.MemberAttribute.PROPERTY_NAME: "nested_array",
+                    zserio.typeinfo.MemberAttribute.ARRAY_LENGTH: None,
+                },
+            ),
         ]
         attribute_list = {
-            zserio.typeinfo.TypeAttribute.FIELDS : field_list,
-            zserio.typeinfo.TypeAttribute.SELECTOR : None
+            zserio.typeinfo.TypeAttribute.FIELDS: field_list,
+            zserio.typeinfo.TypeAttribute.SELECTOR: None,
         }
 
         return zserio.typeinfo.TypeInfo("test_object.WalkerUnion", WalkerUnion, attributes=attribute_list)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, WalkerUnion):
-            return (self._choice_tag == other._choice_tag and
-                    self._choice == other._choice)
+            return self._choice_tag == other._choice_tag and self._choice == other._choice
 
         return False
 
@@ -117,7 +119,11 @@ class WalkerUnion:
     @nested_array.setter
     def nested_array(self, nested_array_: typing.List[test_object.walker_nested.WalkerNested]) -> None:
         self._choice_tag = self.CHOICE_NESTED_ARRAY
-        self._choice = zserio.array.Array(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_nested_array()), nested_array_, is_auto=True)
+        self._choice = zserio.array.Array(
+            zserio.array.ObjectArrayTraits(self._ZserioElementFactory_nested_array()),
+            nested_array_,
+            is_auto=True,
+        )
 
     @property
     def choice_tag(self) -> int:
@@ -163,7 +169,11 @@ class WalkerUnion:
         elif self._choice_tag == self.CHOICE_TEXT:
             self._choice = zserio_reader.read_string()
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
-            self._choice = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._ZserioElementFactory_nested_array()), zserio_reader, is_auto=True)
+            self._choice = zserio.array.Array.from_reader(
+                zserio.array.ObjectArrayTraits(self._ZserioElementFactory_nested_array()),
+                zserio_reader,
+                is_auto=True,
+            )
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
@@ -183,7 +193,9 @@ class WalkerUnion:
         IS_OBJECT_PACKABLE = False
 
         @staticmethod
-        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_nested.WalkerNested:
+        def create(
+            zserio_reader: zserio.BitStreamReader, zserio_index: int
+        ) -> test_object.walker_nested.WalkerNested:
             del zserio_index
             return test_object.walker_nested.WalkerNested.from_reader(zserio_reader)
 

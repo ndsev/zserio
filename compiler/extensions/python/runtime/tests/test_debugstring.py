@@ -87,6 +87,53 @@ class ParameterizedDummyObject:
         self._text_ = text_
 
 
+class FloatValueObject:
+    def __init__(self, first_: float = 0, second_: float = 0) -> None:
+        self._first_ = first_
+        self._second_ = second_
+
+    @staticmethod
+    def type_info() -> TypeInfo:
+        field_list = [
+            MemberInfo(
+                "first",
+                TypeInfo("float", float),
+                attributes={MemberAttribute.PROPERTY_NAME: "first"},
+            ),
+            MemberInfo(
+                "second",
+                TypeInfo("float", float),
+                attributes={MemberAttribute.PROPERTY_NAME: "second"},
+            ),
+        ]
+        attribute_list = {
+            TypeAttribute.FIELDS: field_list,
+            TypeAttribute.PARAMETERS: [],
+        }
+
+        return TypeInfo(
+            "FloatValueObject",
+            FloatValueObject,
+            attributes=attribute_list,
+        )
+
+    @property
+    def first(self) -> float:
+        return self._first_
+
+    @first.setter
+    def first(self, first_: float) -> None:
+        self._first_ = first_
+
+    @property
+    def second(self) -> float:
+        return self._second_
+
+    @second.setter
+    def second(self, second_: float) -> None:
+        self._second_ = second_
+
+
 class DebugStringTest(unittest.TestCase):
 
     def test_to_json_stream_default(self):
@@ -197,6 +244,14 @@ class DebugStringTest(unittest.TestCase):
         self.assertTrue(isinstance(obj, ParameterizedDummyObject))
         self.assertEqual(10, obj.param)
         self.assertEqual("something", obj.text)
+
+    def test_json_string_round_trip(self):
+        obj1 = FloatValueObject(13.5, 0)
+        json = to_json_string(obj1)
+        # should correctly parse int value as float
+        obj2 = from_json_string(FloatValueObject, json)
+        self.assertEqual(obj1.first, obj2.first)
+        self.assertEqual(obj2.second, obj2.second)
 
     def test_from_json_file(self):
         with open(self.TEST_FILE_NAME, "w", encoding="utf-8") as text_io:
