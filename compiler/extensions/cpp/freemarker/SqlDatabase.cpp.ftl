@@ -55,7 +55,7 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
                 ${types.string.name}(attachedDbIt->second, get_allocator_ref()));
         if (!emplaceResult.second)
         {
-            throw ::zserio::SqliteException("${name}::${name}: can't insert ") << tableName.c_str() << 
+            throw ::zserio::SqliteException("${name}::${name}: can't insert ") << tableName.c_str() <<
                     " into Database Relocation Map!";
         }
     }
@@ -236,13 +236,27 @@ void ${name}::initTables()
 
 void ${name}::attachDatabase(::zserio::StringView fileName, ::zserio::StringView attachedDbName)
 {
+    bool validName =
+        std::all_of(attachedDbName.begin(), attachedDbName.end(), [](char chr) {
+            return chr == '_' || std::isalnum(chr) > 0;
+        });
+    if (!validName)
+    {
+        throw ::zserio::SqliteException("${name}::attachDatabase: attached DB name contains invalid characters");
+    }
+
     ${types.string.name} sqlQuery(get_allocator_ref());
-    sqlQuery += "ATTACH DATABASE '";
-    sqlQuery += fileName;
-    sqlQuery += "' AS ";
+    sqlQuery += "ATTACH DATABASE ? AS ";
     sqlQuery += attachedDbName;
 
-    m_db.executeUpdate(sqlQuery);
+    std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
+    sqlite3_bind_text(&*statement, 1, fileName.data(), static_cast<int>(fileName.size()), SQLITE_TRANSIENT);
+    int result = sqlite3_step(statement.get());
+    if (result != SQLITE_DONE)
+    {
+        throw ::zserio::SqliteException("${name}::attachDatabase: sqlite3_step failed: ")
+                << ::zserio::SqliteErrorCode(result);
+    }
 
     m_attachedDbList.push_back(::zserio::stringViewToString(attachedDbName, get_allocator_ref()));
 }
