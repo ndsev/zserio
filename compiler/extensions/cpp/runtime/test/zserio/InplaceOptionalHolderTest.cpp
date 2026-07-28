@@ -400,4 +400,30 @@ TEST_F(InplaceOptionalHolderTest, constGet)
     ASSERT_EQ(intValue, optionalObject->getValue());
 }
 
+struct NothrowMoveCtor
+{
+    NothrowMoveCtor() = default;
+    NothrowMoveCtor(NothrowMoveCtor&&) noexcept
+    {}
+};
+
+struct ThrowMoveCtor
+{
+    ThrowMoveCtor() = default;
+    ThrowMoveCtor(ThrowMoveCtor&&)
+    {}
+};
+
+TEST_F(InplaceOptionalHolderTest, nothrowMoveConstructible)
+{
+    static_assert(std::is_nothrow_move_constructible<zserio::InplaceOptionalHolder<NothrowMoveCtor>>::value,
+            "IsNothrowMove");
+    static_assert(std::is_nothrow_move_assignable<zserio::InplaceOptionalHolder<NothrowMoveCtor>>::value,
+            "IsNothrowMove");
+    static_assert(!std::is_nothrow_move_constructible<zserio::InplaceOptionalHolder<ThrowMoveCtor>>::value,
+            "!IsNothrowMove");
+    static_assert(!std::is_nothrow_move_assignable<zserio::InplaceOptionalHolder<ThrowMoveCtor>>::value,
+            "!IsNothrowMove");
+}
+
 } // namespace zserio

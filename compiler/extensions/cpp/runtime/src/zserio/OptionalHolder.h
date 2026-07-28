@@ -614,7 +614,7 @@ public:
      *
      * \return Reference to the current storage.
      */
-    in_place_storage& operator=(in_place_storage&& other)
+    in_place_storage& operator=(in_place_storage&& other) noexcept(std::is_nothrow_move_constructible<T>::value)
     {
         new (&m_inPlace) T(std::move(*other.getObject()));
         other.getObject()->~T(); // ensure that destructor of object in original storage is called
@@ -629,7 +629,8 @@ public:
      *
      * \return Reference to the current storage.
      */
-    in_place_storage& assign(NoInitT, in_place_storage&& other)
+    in_place_storage& assign(NoInitT, in_place_storage&& other) noexcept(
+            std::is_nothrow_move_constructible<T>::value)
     {
         new (&m_inPlace) T(NoInit, std::move(*other.getObject()));
         other.getObject()->~T(); // ensure that destructor of object in original storage is called
@@ -714,7 +715,7 @@ public:
      *
      * \param val Value to store in the holder.
      */
-    inplace_optional_holder(T&& val)
+    inplace_optional_holder(T&& val) noexcept(std::is_nothrow_constructible<T>::value)
     {
         new (m_storage.getStorage()) T(std::move(val));
         m_hasValue = true;
@@ -728,7 +729,7 @@ public:
      */
     template <typename U = T,
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder(NoInitT, T&& val)
+    inplace_optional_holder(NoInitT, T&& val) noexcept(std::is_nothrow_move_constructible<T>::value)
     {
         new (m_storage.getStorage()) T(NoInit, std::move(val));
         m_hasValue = true;
@@ -770,7 +771,7 @@ public:
      * \param other Other holder to move.
      */
     inplace_optional_holder(inplace_optional_holder&& other) noexcept(
-            std::is_nothrow_move_constructible<in_place_storage<T>>::value)
+            std::is_nothrow_move_assignable<in_place_storage<T>>::value)
     {
         if (other.hasValue())
         {
@@ -788,7 +789,7 @@ public:
     template <typename U = T,
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     inplace_optional_holder(NoInitT, inplace_optional_holder&& other) noexcept(
-            std::is_nothrow_move_constructible<in_place_storage<T>>::value)
+            std::is_nothrow_move_assignable<in_place_storage<T>>::value)
     {
         if (other.hasValue())
         {
@@ -871,7 +872,8 @@ public:
      *
      * \return Reference to the current holder.
      */
-    inplace_optional_holder& operator=(inplace_optional_holder&& other)
+    inplace_optional_holder& operator=(inplace_optional_holder&& other) noexcept(
+            std::is_nothrow_move_assignable<in_place_storage<T>>::value)
     {
         if (this != &other)
         {
@@ -896,7 +898,8 @@ public:
      */
     template <typename U = T,
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder& assign(NoInitT, inplace_optional_holder&& other)
+    inplace_optional_holder& assign(NoInitT, inplace_optional_holder&& other) noexcept(
+            std::is_nothrow_move_assignable<in_place_storage<T>>::value)
     {
         if (this != &other)
         {

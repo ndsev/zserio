@@ -73,7 +73,7 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:274
 # This is false positive, the member is initialized.
 cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:70
 # This is aligned storage which we want to leave uninitialized.
-cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:693
+cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:694
 
 # This is necessary for implementation of low level implementation of AnyHolder and OptionalHolder to mimic
 # standard C++17 'any' and 'optional' abstractions.
@@ -81,8 +81,8 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:832
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:838
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:868
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:875
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:657
-cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:667
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:658
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:668
 # This is necessary for implementation of reading and writing to the file.
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:19
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:49
@@ -100,9 +100,9 @@ google-explicit-constructor:src/zserio/BitStreamReader.h:43
 google-explicit-constructor:src/zserio/OptionalHolder.h:231
 google-explicit-constructor:src/zserio/OptionalHolder.h:241
 google-explicit-constructor:src/zserio/OptionalHolder.h:251
-google-explicit-constructor:src/zserio/OptionalHolder.h:698
-google-explicit-constructor:src/zserio/OptionalHolder.h:706
-google-explicit-constructor:src/zserio/OptionalHolder.h:717
+google-explicit-constructor:src/zserio/OptionalHolder.h:699
+google-explicit-constructor:src/zserio/OptionalHolder.h:707
+google-explicit-constructor:src/zserio/OptionalHolder.h:718
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:46
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:71
 google-explicit-constructor:src/zserio/Span.h:114
@@ -163,6 +163,10 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:2
 
 # Intentional tests.
 cppcoreguidelines-pro-type-reinterpret-cast:test/zserio/SqliteConnectionTest.cpp:320
+
+# Just a test for move ctor should not define all other ctors
+cppcoreguidelines-special-member-functions:test/zserio/InplaceOptionalHolderTest.cpp:403
+cppcoreguidelines-special-member-functions:test/zserio/InplaceOptionalHolderTest.cpp:410
 
 # Intentional tests. It is necessary for readability.
 google-build-using-namespace:test/zserio/ReflectableTest.cpp:22
