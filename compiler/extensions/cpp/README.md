@@ -68,10 +68,10 @@ Zserio C++ generator supports the following platforms:
 
 Zserio C++ generator supports the following C++ compilers:
 
-- g++ 7.5.0
-- clang 14.0.0
-- MinGW 7.5.0
-- MSVC 2017
+- g++ 7.5.0, 11.4.0
+- clang 14.0.6, 21.1.8
+- MinGW 7.5.0, 9.4.0
+- MSVC 2017, 2019
 
 Although newer C++ compilers are not tested, they should work as well as long as they are backward compatible.
 
