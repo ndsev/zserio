@@ -6,6 +6,7 @@ bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_par
 bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional_in_template/Holder.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param_with_optional/ExtraValue.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/array_element_param/Block.h
+bugprone-forwarding-reference-overload:gen/parameterized_types/enumeration_param/EnumerationParam.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/multiple_params/Data13.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/nested_parameterized_field/TopLevel.h
 bugprone-forwarding-reference-overload:gen/parameterized_types/param_with_optional/ExtraValue.h
@@ -44,6 +45,7 @@ cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_par
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param/Block.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/bytes_param/Parameterized.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
+cppcoreguidelines-pro-type-member-init:gen/parameterized_types/enumeration_param/EnumerationParam.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/extern_param/Parameterized.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
 cppcoreguidelines-pro-type-member-init:gen/parameterized_types/grand_child_param/Item.cpp
@@ -104,6 +106,7 @@ readability-make-member-function-const:gen/parameterized_types/array_element_par
 readability-make-member-function-const:gen/parameterized_types/bytes_param/Parameterized.cpp
 readability-make-member-function-const:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
 readability-make-member-function-const:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp
+readability-make-member-function-const:gen/parameterized_types/enumeration_param/EnumerationParam.cpp
 readability-make-member-function-const:gen/parameterized_types/extern_param/Parameterized.cpp
 readability-make-member-function-const:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
 readability-make-member-function-const:gen/parameterized_types/fixed_and_variable_param/LimitHolder.cpp

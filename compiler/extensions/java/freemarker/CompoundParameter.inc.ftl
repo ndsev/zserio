@@ -67,8 +67,8 @@ this.<@parameter_member_name parameter/> == that.<@parameter_member_name paramet
     <#elseif parameter.typeInfo.isBytes>
 ((this.<@parameter_member_name parameter/> == null) ? that.<@parameter_member_name parameter/> == null : java.util.Arrays.equals(<@parameter_member_name parameter/>, that.<@parameter_member_name parameter/>))<#rt>
     <#elseif parameter.typeInfo.isEnum>
-        <#-- enum type: compare by getValue() and == -->
-((this.<@parameter_member_name parameter/> == null) ? that.<@parameter_member_name parameter/> == null : this.<@parameter_member_name parameter/>.getValue() == that.<@parameter_member_name parameter/>.getValue())<#rt>
+        <#-- enum type: compare by == (enumerations are singletons) -->
+(this.<@parameter_member_name parameter/> == that.<@parameter_member_name parameter/>)<#rt>
     <#else>
         <#-- compare with equals() but account for possible null -->
 ((this.<@parameter_member_name parameter/> == null) ? that.<@parameter_member_name parameter/> == null : this.<@parameter_member_name parameter/>.equals(that.<@parameter_member_name parameter/>))<#rt>

@@ -22,6 +22,7 @@ add_custom_test(parameterized_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayElementParamWithOptionalTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BytesParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicBitfieldParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumerationParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExternParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FixedAndVariableParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/GrandChildParamTest.cpp
