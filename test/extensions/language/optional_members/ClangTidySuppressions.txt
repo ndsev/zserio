@@ -1,3 +1,4 @@
+bugprone-forwarding-reference-overload:gen/optional_members/optional_enumeration/Container.h
 bugprone-forwarding-reference-overload:gen/optional_members/optional_expression/BlackColor.h
 bugprone-forwarding-reference-overload:gen/optional_members/optional_recursion_in_template/OptionalRecursionInTemplate.h
 

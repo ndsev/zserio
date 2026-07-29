@@ -21,6 +21,7 @@ add_custom_test(optional_members
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/AutoOptionalTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalArrayRecursionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalEnumerationTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalExpressionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalExpressionWithRemovedEnumItemTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalRecursionTest.cpp

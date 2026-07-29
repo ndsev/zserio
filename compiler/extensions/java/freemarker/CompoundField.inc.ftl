@@ -320,8 +320,8 @@ java.lang.Double.doubleToLongBits(<@compound_get_field field/>) == java.lang.Dou
     <#elseif field.typeInfo.isBytes>
 ((<@compound_get_field field/> == null) ? that.<@compound_get_field field/> == null : java.util.Arrays.equals(<@compound_get_field field/>, that.<@compound_get_field field/>))<#rt>
     <#elseif field.typeInfo.isEnum>
-        <#-- enum type: compare by getValue() and == -->
-((<@compound_get_field field/> == null) ? that.<@compound_get_field field/> == null : <@compound_get_field field/>.getValue() == that.<@compound_get_field field/>.getValue())<#rt>
+        <#-- enum type: compare by == (enumerations are singletons) -->
+(<@compound_get_field field/> == that.<@compound_get_field field/>)<#rt>
     <#else>
         <#-- complex type: compare by equals() but check for possible null -->
 ((<@compound_get_field field/> == null) ? that.<@compound_get_field field/> == null : <@compound_get_field field/>.equals(that.<@compound_get_field field/>))<#rt>
