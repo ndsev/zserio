@@ -96,7 +96,7 @@ Character | Meaning
 --------- | -------
 `\u####`  | 16-bit Unicode character where #### are four hex digits
 `\x##`    | 8-bit character specification where ## are two hex digits
-`\0oo` or `\0coo` | 8-bit character specification where o is an octal digit from [0..7] and c is a digit from [0..3]. 
+`\0oo` or `\0coo` | 8-bit character specification where o is an octal digit from [0..7] and c is a digit from [0..3].
 `\r`      | carriage return
 `\n`      | line feed
 `\f`      | form feed
@@ -595,7 +595,7 @@ struct ItemCount
 
 The return type of a function has to be a standard integer or compound type, and the function parameter list
 must be empty. The function body may contain nothing but a return statement with an expression matching
-the return type. 
+the return type.
 
 The return expression can refer to compound parameters:
 
@@ -687,7 +687,7 @@ struct ImplicitArray
 };
 ```
 
-Implicit arrays of compound elements are currently not allowed. 
+Implicit arrays of compound elements are currently not allowed.
 
 The length of the `list` array can be referenced as `lengthof(list)`, see
 [lengthof Operator](#lengthof-operator).
@@ -731,7 +731,7 @@ An array type can be packed indicated by a `packed` keyword. The only supported 
 - compound types which contain at least one field of integer type, enumeration, bitmask types or inner packable arrays
 - all union types (even if do not contain any packable fields because selector is always packable integer type)
 
-In delta compression only the element differences are stored which leads to a reduced element bit size. 
+In delta compression only the element differences are stored which leads to a reduced element bit size.
 
 **Example**
 ```
@@ -899,6 +899,27 @@ The semantics of expression and the precedence rules for operators is the same a
 otherwise. Zserio has a number of special operators which will be explained in detail below.
 
 The following Java operators have no counterpart in zserio: `++`, `--`, `>>>` and `instanceof`.
+
+## Expressions Evaluation
+
+Apart from operator precedence, Zserio language does not specify exactly how expressions are evaluated. Instead,
+expression evaluation follows the rules of the target language, which might occasionally lead to inconsistent
+behavior across languages.
+
+**Example**
+```
+uint32   value1 = 2147483648;  // 2^31
+uint32   value2 = 2147483648;  // 2^31
+
+function uint32 getSum()
+{
+    return value1 + value2;
+}
+```
+
+The return expression will be compiled as-is. If `uint32` is mapped to `std::uint32_t` in C++,
+it will produce an overflow, resulting in a return value of `0`. Other languages that do not have 32-bit
+unsigned integer types, like Java or Python, may not overflow, resulting in a return value of `4294967296`.
 
 ### Unary Operators
 
