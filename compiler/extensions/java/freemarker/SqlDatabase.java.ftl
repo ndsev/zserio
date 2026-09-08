@@ -324,23 +324,16 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
 </#list>
     }
 
-    private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
-    {
-        try (final java.sql.Statement statement = connection.createStatement())
-        {
-            statement.executeUpdate(sql);
-        }
-    }
-
     private void attachDatabase(java.lang.String dbFileName, java.lang.String attachedDbName)
             throws java.sql.SQLException
     {
-        final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("ATTACH DATABASE '");
-        sqlQuery.append(new java.io.File(dbFileName).toString());
-        sqlQuery.append("' AS ");
-        sqlQuery.append(attachedDbName);
-        executeUpdate(sqlQuery.toString());
-
+        final String sqlQuery = "ATTACH DATABASE ? AS ?";
+        try (java.sql.PreparedStatement stmt = connection.prepareStatement(sqlQuery))
+        {
+            stmt.setString(1, new java.io.File(dbFileName).toString());
+            stmt.setString(2, attachedDbName);
+            stmt.executeUpdate();
+        }
         attachedDbList.add(attachedDbName);
     }
 
@@ -348,8 +341,12 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
     {
         for (java.lang.String attachedDbName : attachedDbList)
         {
-            final java.lang.String sqlQuery = "DETACH DATABASE " + attachedDbName;
-            executeUpdate(sqlQuery);
+            final java.lang.String sqlQuery = "DETACH DATABASE ?";
+            try (java.sql.PreparedStatement stmt = connection.prepareStatement(sqlQuery))
+            {
+                stmt.setString(1, attachedDbName);
+                stmt.executeUpdate();
+            }
         }
     }
 <#if withWriterCode>
