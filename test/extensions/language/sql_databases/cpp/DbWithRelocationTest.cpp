@@ -185,5 +185,16 @@ TEST_F(DbWithRelocationTest, attachedDatabases)
     ASSERT_EQ(0, m_attachedDatabasesNames.count("main"));
 }
 
+TEST_F(DbWithRelocationTest, invalidDbName)
+{
+    const string_type dbName = "language/sql_databases/db_with_relocation_test_invalid_db_name.sqlite";
+    EuropeDb::TRelocationMap reloc1{
+            {"inval id", "language/sql_databases/db_with_relocation_test_invalid1.sqlite"}};
+    EuropeDb::TRelocationMap reloc2{
+            {"in?valid", "language/sql_databases/db_with_relocation_test_invalid2.sqlite"}};
+    ASSERT_NO_THROW({ EuropeDb db(dbName, reloc1); });
+    ASSERT_NO_THROW({ EuropeDb db(dbName, reloc2); });
+}
+
 } // namespace db_with_relocation
 } // namespace sql_databases
