@@ -359,14 +359,22 @@ class ${name}:
         return column_map
 
     def _get_table_name_in_query(self) -> str:
-        return (self._attached_db_name + "." + self._table_name) if self._attached_db_name else self._table_name
+        if self._attached_db_name:
+            return ("\"" + self._attached_db_name + "\".\"" + self._table_name + "\"")
+        else:
+            return ("\"" + self._table_name + "\"")
 
     def _get_columns_in_query(self, column_map: typing.List[bool], fmt: _ColumnFormat) -> str:
         columns = []
 
     <#list fields as field>
         if column_map[${field?index}]:
-            columns.append("${field.name}" if fmt == self._ColumnFormat.NAME else "${field.name}=?" if fmt == self._ColumnFormat.SQL_UPDATE else "?")
+            if fmt == self._ColumnFormat.NAME:
+                columns.append("\"${field.name}\"")
+            elif fmt == self._ColumnFormat.SQL_UPDATE:
+                columns.append("\"${field.name}\"=?")
+            else:
+                columns.append("?")
     </#list>
 
         return ",".join(columns)
@@ -383,7 +391,7 @@ class ${name}:
         sql_query += ("(" +
         <#list fields as field>
             <#if !field.isVirtual>
-                     "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
+                     "\"${field.name}\"<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
                      <#lt><#if field.sqlConstraint??> + " " + ${field.sqlConstraint}</#if><#if field_has_next> + ","</#if> +
             </#if>
         </#list>

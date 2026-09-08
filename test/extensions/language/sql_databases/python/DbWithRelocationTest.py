@@ -104,18 +104,39 @@ class DbWithRelocationTest(SqlDatabases.TestCase):
         self.assertTrue(len(updatedRows), numReadRows)
 
     def testAttachedDatabases(self):
-        attachedDatabaseNames = [
-            "main",
-            "AmericaDb_" + self.RELOCATED_SLOVAKIA_TABLE_NAME,
-            "AmericaDb_" + self.RELOCATED_CZECHIA_TABLE_NAME,
+        attachedDbNames = [
+            self._americaDb.DATABASE_NAME + "_" + self.RELOCATED_SLOVAKIA_TABLE_NAME,
         ]
+        self.assertTrue(self._checkAttachedDatabases(self._americaDb, attachedDbNames))
+
+    def _checkAttachedDatabases(self, db, attachedDbNames):
         sqlQuery = "PRAGMA database_list"
-        rows = self._americaDb.connection.cursor().execute(sqlQuery)
+        rows = db.connection.cursor().execute(sqlQuery)
+        count = 0
         for row in rows:
-            self.assertIn(row[1], attachedDatabaseNames)
-            attachedDatabaseNames.remove(row[1])
-        self.assertEqual(1, len(attachedDatabaseNames))
-        self.assertNotIn("main", attachedDatabaseNames)
+            if row[1] == "main":
+                continue
+            if row[1] not in attachedDbNames:
+                return False
+            count += 1
+        return count == len(attachedDbNames)
+
+    def testBadDbName(self):
+        baseDir = getApiDir(os.path.dirname(__file__))
+        dbFileName = os.path.join(baseDir, "db_with_relocation_test_bad_db_name.sqlite")
+        reloc = {
+            "prob lem?atic": os.path.join(baseDir, "db_with_relocation_test_bad_db_name1.sqlite"),
+        }
+        db1 = self.api.EuropeDb.from_file(dbFileName, reloc)
+        attachedDbNames = [db1.DATABASE_NAME + "_" + next(iter(reloc))]
+        self.assertTrue(self._checkAttachedDatabases(db1, attachedDbNames))
+
+        reloc = {
+            "SELECT * FROM sqlite_master": os.path.join(baseDir, "db_with_relocation_test_bad_db_name2.sqlite"),
+        }
+        db2 = self.api.EuropeDb.from_file(dbFileName, reloc)
+        attachedDbNames = [db2.DATABASE_NAME + "_" + next(iter(reloc))]
+        self.assertTrue(self._checkAttachedDatabases(db2, attachedDbNames))
 
     @staticmethod
     def _isTableInDb(database, tableName):
