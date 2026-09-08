@@ -188,6 +188,18 @@ public class DbWithRelocationTest
         assertFalse(attachedDatabaseNames.contains("main"));
     }
 
+    @Test
+    public void checkInvalidDbName()
+    {
+        final String dbName = "db_with_relocation_test_invalid_db_name.sqlite";
+        final Map<String, String> reloc1 = new HashMap<String, String>();
+        reloc1.put("inval id", "db_with_relocation_test_invalid1.sqlite");
+        final Map<String, String> reloc2 = new HashMap<String, String>();
+        reloc2.put("in?valid", "db_with_relocation_test_invalid1.sqlite");
+        assertAll(() -> { new EuropeDb(dbName, reloc1); });
+        assertAll(() -> { new EuropeDb(dbName, reloc2); });
+    }
+
     private static boolean isRelocatedTableInDb(String relocatedTableName, SqlDatabase db) throws SQLException
     {
         // check if database does contain relocated table

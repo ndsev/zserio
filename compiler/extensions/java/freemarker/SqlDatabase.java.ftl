@@ -335,12 +335,13 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
     private void attachDatabase(java.lang.String dbFileName, java.lang.String attachedDbName)
             throws java.sql.SQLException
     {
-        final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("ATTACH DATABASE '");
-        sqlQuery.append(new java.io.File(dbFileName).toString());
-        sqlQuery.append("' AS ");
-        sqlQuery.append(attachedDbName);
-        executeUpdate(sqlQuery.toString());
-
+        final String sqlQuery = "ATTACH DATABASE ? AS ?";
+        try (java.sql.PreparedStatement stmt = connection.prepareStatement(sqlQuery))
+        {
+            stmt.setString(1, new java.io.File(dbFileName).toString());
+            stmt.setString(2, attachedDbName);
+            stmt.executeUpdate();
+        }
         attachedDbList.add(attachedDbName);
     }
 
