@@ -217,11 +217,9 @@ class ${name}:
 
     @staticmethod
     def _attach_database(cursor: typing.Any, db_filename: str, db_name: str) -> None:
-        sql_query = "ATTACH DATABASE '"
-        sql_query += db_filename
-        sql_query += "' AS "
-        sql_query += db_name
-        cursor.execute(sql_query)
+        sql_query = "ATTACH DATABASE ? AS ?"
+        params = (db_filename, db_name)
+        cursor.execute(sql_query, params)
 
     def _detach_databases(self) -> None:
         for attached_db_name in self._attached_db_name_list:

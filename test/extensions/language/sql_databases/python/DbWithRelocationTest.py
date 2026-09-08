@@ -1,5 +1,6 @@
 import os
 
+import zserio
 import SqlDatabases
 from testutils import getApiDir
 
@@ -116,6 +117,27 @@ class DbWithRelocationTest(SqlDatabases.TestCase):
             attachedDatabaseNames.remove(row[1])
         self.assertEqual(1, len(attachedDatabaseNames))
         self.assertNotIn("main", attachedDatabaseNames)
+
+    def testInvalidDbName(self):
+        dbFileName = os.path.join(
+            getApiDir(os.path.dirname(__file__)), "db_with_relocation_test_invalid_db_name.sqlite"
+        )
+
+        reloc1 = {
+            "inval id": dbFileName,
+        }
+        try:
+            self.api.EuropeDb.from_file(dbFileName, reloc1)
+        except zserio.PythonRuntimeException:
+            self.fail("testInvalidDbName raised an exception")
+
+        reloc2 = {
+            "in?valid": dbFileName,
+        }
+        try:
+            self.api.EuropeDb.from_file(dbFileName, reloc2)
+        except zserio.PythonRuntimeException:
+            self.fail("testInvalidDbName raised an exception")
 
     @staticmethod
     def _isTableInDb(database, tableName):
