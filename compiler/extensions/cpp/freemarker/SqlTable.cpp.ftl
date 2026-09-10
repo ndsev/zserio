@@ -804,7 +804,7 @@ void ${name}::appendCreateTableToQuery(${types.string.name}& sqlQuery) const
         <#assign firstNonVirtualField=true/>
         <#list fields as field>
             <#if !field.isVirtual>
-    sqlQuery += "<#if !firstNonVirtualField>, </#if>${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>";
+    sqlQuery += "<#if !firstNonVirtualField>, </#if>\"${field.name}\"<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>";
                 <#if field.sqlConstraint??>
     sqlQuery += ' ';
     sqlQuery += ${field.sqlConstraint};
@@ -827,10 +827,13 @@ void ${name}::appendTableNameToQuery(${types.string.name}& sqlQuery) const
 {
     if (!m_attachedDbName.empty())
     {
+        sqlQuery += "\"";
         sqlQuery += m_attachedDbName;
-        sqlQuery += '.';
+        sqlQuery += "\".";
     }
+    sqlQuery += "\"";
     sqlQuery += m_name;
+    sqlQuery += "\"";
 }
 
 ::std::array<bool, ${fields?size}> ${name}::createColumnsMapping(::zserio::Span<const ${types.string.name}> columns)
@@ -876,14 +879,17 @@ void ${name}::appendColumnsToQuery(${types.string.name}& sqlQuery, const ::std::
             switch (format)
             {
                 case ColumnFormat::NAME:
+                    sqlQuery += "\"";
                     sqlQuery += ${name}::columnNames[i];
+                    sqlQuery += "\"";
                     break;
                 case ColumnFormat::SQL_PARAMETER:
                     sqlQuery += "?";
                     break;
                 case ColumnFormat::SQL_UPDATE:
+                    sqlQuery += "\"";
                     sqlQuery += ${name}::columnNames[i];
-                    sqlQuery += "=?";
+                    sqlQuery += "\"=?";
                     break;
                 default:
                     break;

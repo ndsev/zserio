@@ -40,10 +40,7 @@ public:
         tableToDbFileNameRelocationMap.insert(std::make_pair(m_relocatedCzechiaTableName, m_europeDbFileName));
         m_americaDb.reset(new AmericaDb(m_americaDbFileName, tableToDbFileNameRelocationMap));
         m_americaDb->createSchema();
-
-        m_attachedDatabasesNames.insert("main");
-        m_attachedDatabasesNames.insert("AmericaDb_" + m_relocatedSlovakiaTableName);
-        m_attachedDatabasesNames.insert("AmericaDb_" + m_relocatedCzechiaTableName);
+        m_attachedDatabaseName = "AmericaDb_" + m_relocatedCzechiaTableName;
     }
 
 protected:
@@ -64,6 +61,24 @@ protected:
         return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
+    template <typename DATABASE>
+    bool checkAttachedDatabases(DATABASE& db, const std::vector<string_type>& check)
+    {
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                db.connection().prepareStatement("PRAGMA database_list"));
+        int found = 0;
+        while (sqlite3_step(statement.get()) == SQLITE_ROW)
+        {
+            const char* name = reinterpret_cast<const char*>(sqlite3_column_text(statement.get(), 1));
+            if (string_type(name) == "main")
+                continue;
+            if (!std::count(check.begin(), check.end(), name))
+                return false;
+            ++found;
+        }
+        return found == check.size();
+    }
+
     const string_type m_europeDbFileName;
     const string_type m_americaDbFileName;
     const string_type m_relocatedSlovakiaTableName;
@@ -72,7 +87,7 @@ protected:
     std::unique_ptr<EuropeDb> m_europeDb;
     std::unique_ptr<AmericaDb> m_americaDb;
 
-    std::set<string_type> m_attachedDatabasesNames;
+    string_type m_attachedDatabaseName;
 };
 
 TEST_F(DbWithRelocationTest, tableGetters)
@@ -171,29 +186,27 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
 
 TEST_F(DbWithRelocationTest, attachedDatabases)
 {
-    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
-            m_americaDb->connection().prepareStatement("PRAGMA database_list"));
-
-    while (sqlite3_step(statement.get()) == SQLITE_ROW)
-    {
-        const char* databaseName = reinterpret_cast<const char*>(sqlite3_column_text(statement.get(), 1));
-        ASSERT_EQ(1, m_attachedDatabasesNames.count(databaseName));
-        m_attachedDatabasesNames.erase(databaseName);
-    }
-
-    ASSERT_EQ(1, m_attachedDatabasesNames.size());
-    ASSERT_EQ(0, m_attachedDatabasesNames.count("main"));
+    // relocatedSlovakiaTableName not listed as it resides in the same database
+    std::vector<string_type> check{m_attachedDatabaseName};
+    ASSERT_TRUE(checkAttachedDatabases(*m_americaDb, check));
 }
 
-TEST_F(DbWithRelocationTest, invalidDbName)
+TEST_F(DbWithRelocationTest, badDbName)
 {
-    const string_type dbName = "language/sql_databases/db_with_relocation_test_invalid_db_name.sqlite";
+    const string_type dbName = "language/sql_databases/db_with_relocation_test_bad_db_name.sqlite";
+
     EuropeDb::TRelocationMap reloc1{
-            {"inval id", "language/sql_databases/db_with_relocation_test_invalid1.sqlite"}};
+            {"prob lem?atic", "language/sql_databases/db_with_relocation_test_bad1.sqlite"}};
+    EuropeDb db1(dbName, reloc1);
+    std::vector<string_type> check{
+            zserio::stringViewToString(db1.databaseName(), db1.get_allocator()) + "_" + reloc1.begin()->first};
+    ASSERT_TRUE(checkAttachedDatabases(db1, check));
+
     EuropeDb::TRelocationMap reloc2{
-            {"in?valid", "language/sql_databases/db_with_relocation_test_invalid2.sqlite"}};
-    ASSERT_NO_THROW({ EuropeDb db(dbName, reloc1); });
-    ASSERT_NO_THROW({ EuropeDb db(dbName, reloc2); });
+            {"SELECT * FROM sqlite_master", "language/sql_databases/db_with_relocation_test_bad2.sqlite"}};
+    EuropeDb db2(dbName, reloc2);
+    check = {zserio::stringViewToString(db2.databaseName(), db2.get_allocator()) + "_" + reloc2.begin()->first};
+    ASSERT_TRUE(checkAttachedDatabases(db2, check));
 }
 
 } // namespace db_with_relocation

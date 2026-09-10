@@ -236,9 +236,7 @@ void ${name}::initTables()
 
 void ${name}::attachDatabase(::zserio::StringView fileName, ::zserio::StringView attachedDbName)
 {
-    ${types.string.name} sqlQuery(get_allocator_ref());
-    sqlQuery += "ATTACH DATABASE ? AS ?";
-
+    const ::zserio::StringView sqlQuery = "ATTACH DATABASE ? AS ?";
     std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
     sqlite3_bind_text(statement.get(), 1, fileName.data(), static_cast<int>(fileName.size()), SQLITE_TRANSIENT);
     sqlite3_bind_text(statement.get(), 2, attachedDbName.data(), static_cast<int>(attachedDbName.size()), SQLITE_TRANSIENT);
@@ -254,19 +252,13 @@ void ${name}::attachDatabase(::zserio::StringView fileName, ::zserio::StringView
 
 void ${name}::detachDatabases()
 {
+    const ::zserio::StringView sqlQuery = "DETACH DATABASE ?";
     for (const auto& attachedDb : m_attachedDbList)
     {
-        try
-        {
-            ${types.string.name} sqlQuery(get_allocator_ref());
-            sqlQuery += "DETACH DATABASE ";
-            sqlQuery += attachedDb;
-            m_db.executeUpdate(sqlQuery);
-        }
-        catch (const ::zserio::SqliteException&)
-        {
-            // ignore since we have no logging sub-system and we need to prevent exception in SQLDatabase destructor
-        }
+        std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
+        sqlite3_bind_text(statement.get(), 1, attachedDb.data(), static_cast<int>(attachedDb.size()), SQLITE_TRANSIENT);
+        // ignore result since we have no logging sub-system and we need to prevent exception in SQLDatabase destructor
+        sqlite3_step(statement.get());
     }
     m_attachedDbList.clear();
 }

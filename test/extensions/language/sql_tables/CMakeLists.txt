@@ -19,6 +19,7 @@ add_custom_test(sql_tables
     DEPENDS
         sql_tables_zs
     SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BadNameTableTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobFieldWithChildrenInitializationTableTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobOffsetsParamTableTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobParamTableTest.cpp
