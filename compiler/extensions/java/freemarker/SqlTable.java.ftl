@@ -230,7 +230,7 @@ public class ${name}
     {
         // assemble sql query
         final boolean[] columns = createColumnMapping(colNames);
-        
+
         final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("SELECT ");
         appendColumnsToQuery(sqlQuery, columns, ColumnFormat.NAME);
         sqlQuery.append(" FROM ");
@@ -497,10 +497,13 @@ public class ${name}
     {
         if (attachedDbName != null)
         {
+            sqlQuery.append("\"");
             sqlQuery.append(attachedDbName);
-            sqlQuery.append('.');
+            sqlQuery.append("\".");
         }
+        sqlQuery.append("\"");
         sqlQuery.append(tableName);
+        sqlQuery.append("\"");
     }
 
     private void appendColumnsToQuery(java.lang.StringBuilder sqlQuery, boolean[] columns, ColumnFormat format)
@@ -521,14 +524,17 @@ public class ${name}
                 switch (format)
                 {
                     case NAME:
+                        sqlQuery.append("\"");
                         sqlQuery.append(columnNames[i]);
+                        sqlQuery.append("\"");
                         break;
                     case SQL_PARAMETER:
                         sqlQuery.append("?");
                         break;
                     case SQL_UPDATE:
+                        sqlQuery.append("\"");
                         sqlQuery.append(columnNames[i]);
-                        sqlQuery.append("=?");
+                        sqlQuery.append("\"=?");
                         break;
                 }
             }
@@ -578,7 +584,7 @@ public class ${name}
                 "(" +
         <#list fields as field>
             <#if !field.isVirtual>
-                "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
+                "\"${field.name}\"<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
                     <#lt><#if field.sqlConstraint??> + " " + ${field.sqlConstraint}</#if><#if field?has_next> + ","</#if> +
             </#if>
         </#list>

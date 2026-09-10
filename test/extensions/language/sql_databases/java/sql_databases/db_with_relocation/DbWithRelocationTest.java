@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -104,10 +105,10 @@ public class DbWithRelocationTest
     public void checkRelocatedSlovakiaTable() throws SQLException, IOException
     {
         // check that americaDb does not contain relocated table
-        assertFalse(isRelocatedTableInDb(RELOCATED_SLOVAKIA_TABLE_NAME, americaDb));
+        assertFalse(isTableInDb(RELOCATED_SLOVAKIA_TABLE_NAME, americaDb));
 
         // check that europeDb does contain relocated table
-        assertTrue(isRelocatedTableInDb(RELOCATED_SLOVAKIA_TABLE_NAME, europeDb));
+        assertTrue(isTableInDb(RELOCATED_SLOVAKIA_TABLE_NAME, europeDb));
 
         // write to relocated table
         final int updateTileId = 1;
@@ -138,10 +139,10 @@ public class DbWithRelocationTest
     public void checkRelocatedCzechiaTable() throws SQLException, IOException
     {
         // check that americaDb does not contain relocated table
-        assertFalse(isRelocatedTableInDb(RELOCATED_CZECHIA_TABLE_NAME, americaDb));
+        assertFalse(isTableInDb(RELOCATED_CZECHIA_TABLE_NAME, americaDb));
 
         // check that europeDb does contain relocated table
-        assertTrue(isRelocatedTableInDb(RELOCATED_CZECHIA_TABLE_NAME, europeDb));
+        assertTrue(isTableInDb(RELOCATED_CZECHIA_TABLE_NAME, europeDb));
 
         // write to relocated table
         final int updateTileId = 1;
@@ -169,52 +170,64 @@ public class DbWithRelocationTest
     }
 
     @Test
-    public void checkAttachedDatabases() throws SQLException
+    public void attachedDatabases() throws SQLException
+    {
+        // relocatedSlovakiaTableName not listed as it resides in the same database
+        List<String> check = Arrays.asList("AmericaDb_" + RELOCATED_SLOVAKIA_TABLE_NAME);
+        assertTrue(checkAttachedDatabases(americaDb.connection(), check));
+    }
+
+    @Test
+    public void badDbName() throws SQLException
+    {
+        final String dbName = "db_with_relocation_test_bad_db_name.sqlite";
+
+        final Map<String, String> reloc1 = new HashMap<String, String>();
+        reloc1.put("prob lem?atic", "db_with_relocation_test_bad1.sqlite");
+        EuropeDb db1 = new EuropeDb(dbName, reloc1);
+        List<String> check = Arrays.asList("EuropeDb_" + (String)reloc1.keySet().toArray()[0]);
+        assertTrue(checkAttachedDatabases(db1.connection(), check));
+        db1.close();
+
+        final Map<String, String> reloc2 = new HashMap<String, String>();
+        reloc2.put("SELECT * FROM sqlite_master", "db_with_relocation_test_bad2.sqlite");
+        EuropeDb db2 = new EuropeDb(dbName, reloc2);
+        check = Arrays.asList("EuropeDb_" + (String)reloc2.keySet().toArray()[0]);
+        assertTrue(checkAttachedDatabases(db2.connection(), check));
+        db2.close();
+    }
+
+    private boolean checkAttachedDatabases(Connection connection, List<String> attachedDbNames)
+            throws SQLException
     {
         final String sqlQuery = "PRAGMA database_list";
-        try (final PreparedStatement statement = americaDb.connection().prepareStatement(sqlQuery);
+        int count = 0;
+        try (final PreparedStatement statement = connection.prepareStatement(sqlQuery);
                 final ResultSet resultSet = statement.executeQuery();)
         {
             while (resultSet.next())
             {
                 final String databaseName = resultSet.getString(2);
-                assertFalse(resultSet.wasNull());
-                assertTrue(attachedDatabaseNames.contains(databaseName));
-                attachedDatabaseNames.remove(databaseName);
+                if (databaseName.equals("main"))
+                    continue;
+                if (resultSet.wasNull() || !attachedDbNames.contains(databaseName))
+                    return false;
+                ++count;
             }
         }
-
-        assertEquals(1, attachedDatabaseNames.size());
-        assertFalse(attachedDatabaseNames.contains("main"));
+        return count == attachedDbNames.size();
     }
 
-    @Test
-    public void checkInvalidDbName()
-    {
-        final String dbName = "db_with_relocation_test_invalid_db_name.sqlite";
-        final Map<String, String> reloc1 = new HashMap<String, String>();
-        reloc1.put("inval id", "db_with_relocation_test_invalid1.sqlite");
-        final Map<String, String> reloc2 = new HashMap<String, String>();
-        reloc2.put("in?valid", "db_with_relocation_test_invalid1.sqlite");
-        assertAll(() -> { new EuropeDb(dbName, reloc1); });
-        assertAll(() -> { new EuropeDb(dbName, reloc2); });
-    }
-
-    private static boolean isRelocatedTableInDb(String relocatedTableName, SqlDatabase db) throws SQLException
+    private static boolean isTableInDb(String tableName, SqlDatabase db) throws SQLException
     {
         // check if database does contain relocated table
         final String sqlQuery =
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + relocatedTableName + "'";
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
 
         try (final PreparedStatement statement = db.connection().prepareStatement(sqlQuery);
                 final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
-                return false;
-
-            // read table name
-            final String tableName = resultSet.getString(1);
-            if (resultSet.wasNull() || !tableName.equals(relocatedTableName))
                 return false;
         }
 
@@ -251,9 +264,6 @@ public class DbWithRelocationTest
 
     private static final int NUM_ALL_EUROPE_DB_TABLES = 1;
     private static final int NUM_ALL_AMERICA_DB_TABLES = 4;
-
-    private static final Set<String> attachedDatabaseNames = new HashSet<String>(Arrays.asList(
-            "main", "AmericaDb_" + RELOCATED_SLOVAKIA_TABLE_NAME, "AmericaDb_" + RELOCATED_CZECHIA_TABLE_NAME));
 
     private final File europeDbFile = new File(EUROPE_DB_FILE_NAME);
     private final File americaDbFile = new File(AMERICA_DB_FILE_NAME);

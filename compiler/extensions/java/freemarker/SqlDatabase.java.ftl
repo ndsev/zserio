@@ -324,14 +324,6 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
 </#list>
     }
 
-    private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
-    {
-        try (final java.sql.Statement statement = connection.createStatement())
-        {
-            statement.executeUpdate(sql);
-        }
-    }
-
     private void attachDatabase(java.lang.String dbFileName, java.lang.String attachedDbName)
             throws java.sql.SQLException
     {
@@ -349,8 +341,12 @@ public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriter
     {
         for (java.lang.String attachedDbName : attachedDbList)
         {
-            final java.lang.String sqlQuery = "DETACH DATABASE " + attachedDbName;
-            executeUpdate(sqlQuery);
+            final java.lang.String sqlQuery = "DETACH DATABASE ?";
+            try (java.sql.PreparedStatement stmt = connection.prepareStatement(sqlQuery))
+            {
+                stmt.setString(1, attachedDbName);
+                stmt.executeUpdate();
+            }
         }
     }
 <#if withWriterCode>
