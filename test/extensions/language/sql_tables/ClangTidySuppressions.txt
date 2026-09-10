@@ -9,6 +9,7 @@ bugprone-signed-char-misuse:gen/sql_tables/templated_sql_table/TestTable_int8.cp
 bugprone-unhandled-self-assignment:gen/sql_tables/blob_offsets_param_table/ParameterizedBlob.cpp
 bugprone-unhandled-self-assignment:gen/sql_tables/blob_param_table/ParameterizedBlob.cpp
 
+cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/bad_name_table/BadNameTable.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/blob_param_table/BlobParamTable.cpp
@@ -33,6 +34,7 @@ cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/templated_sql_t
 cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/templated_sql_table/TestTable_varuint.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:gen/sql_tables/without_pk_table/WithoutPkTable.cpp
 
+cppcoreguidelines-pro-type-member-init:gen/sql_tables/bad_name_table/BadNameTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
@@ -64,6 +66,7 @@ cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTa
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/templated_sql_table/TestTable_varuint.cpp
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/without_pk_table/WithoutPkTable.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/BadNameTableTest.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:cpp/BlobOffsetsParamTableTest.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:cpp/BlobParamTableTest.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:cpp/ColumnParamTableTest.cpp

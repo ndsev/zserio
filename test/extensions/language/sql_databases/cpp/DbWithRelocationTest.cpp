@@ -66,14 +66,18 @@ protected:
     {
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 db.connection().prepareStatement("PRAGMA database_list"));
-        int found = 0;
+        size_t found = 0;
         while (sqlite3_step(statement.get()) == SQLITE_ROW)
         {
             const char* name = reinterpret_cast<const char*>(sqlite3_column_text(statement.get(), 1));
             if (string_type(name) == "main")
+            {
                 continue;
+            }
             if (!std::count(check.begin(), check.end(), name))
+            {
                 return false;
+            }
             ++found;
         }
         return found == check.size();

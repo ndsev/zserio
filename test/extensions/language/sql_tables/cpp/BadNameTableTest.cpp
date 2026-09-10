@@ -65,7 +65,8 @@ TEST_F(BadNameTableTest, tableOperations)
     row.setSelect(35);
     row.setWhere(11);
     row.setOrder(5);
-    testTable.write(std::vector<BadNameTable::Row>(1, row));
+    std::vector<BadNameTable::Row> rows{row};
+    testTable.write(rows);
     row.setOrder(99);
     testTable.update(row, "TRUE");
     auto reader = testTable.createReader();
