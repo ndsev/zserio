@@ -30,5 +30,13 @@ TEST(DivisionOperatorTest, divideIntByInt)
     ASSERT_EQ(fun.funcDivideIntByInt(), 3);
 }
 
+TEST(DivisionOperatorTest, negativeRounding)
+{
+    const DivisionFunction fun;
+    ASSERT_EQ(fun.funcPositiveByNegativeRounding(), -1);
+    ASSERT_EQ(fun.funcNegativeByPositiveRounding(), -1);
+    ASSERT_EQ(fun.funcNegativeByNegativeRounding(), 1);
+}
+
 } // namespace division_operator
 } // namespace expressions

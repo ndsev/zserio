@@ -35,4 +35,13 @@ public class DivisionOperatorTest
         final DivisionFunction fun = new DivisionFunction((short)10, (byte)2);
         assertEquals(fun.funcDivideIntByInt(), 3);
     }
+
+    @Test
+    public void negativeRounding()
+    {
+        final DivisionFunction fun = new DivisionFunction();
+        assertEquals(fun.funcPositiveByNegativeRounding(), -1);
+        assertEquals(fun.funcNegativeByPositiveRounding(), -1);
+        assertEquals(fun.funcNegativeByNegativeRounding(), 1);
+    }
 }

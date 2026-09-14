@@ -17,3 +17,9 @@ class DivisionOperatorTest(Expressions.TestCase):
     def testDivideIntByInt(self):
         fun = self.api.DivisionFunction(10, 2)
         self.assertAlmostEqual(fun.divide_int_by_int(), 3, places=5)
+
+    def testNegativeRounding(self):
+        fun = self.api.DivisionFunction()
+        self.assertEqual(fun.positive_by_negative_rounding(), -1)
+        self.assertEqual(fun.negative_by_positive_rounding(), -1)
+        self.assertEqual(fun.negative_by_negative_rounding(), 1)

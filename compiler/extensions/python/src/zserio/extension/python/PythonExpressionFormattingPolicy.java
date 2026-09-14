@@ -320,8 +320,9 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     public BinaryExpressionFormatting getDivide(Expression expr)
     {
         // simulate behavior from other languages (#718)
+        // don't use // division as it is incompatible with other languages (#152)
         if (expr.getExprType() == Expression.ExpressionType.INTEGER)
-            return new BinaryExpressionFormatting(" // ");
+            return new BinaryExpressionFormatting("(int)(", " / ", ")");
         else
             return new BinaryExpressionFormatting(" / ");
     }
