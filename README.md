@@ -185,6 +185,15 @@ Note that Zserio doesn't provide any Pub/Sub server. There are various implement
 (e.g. [mosquitto](https://github.com/eclipse/mosquitto)) and it's the responsibility of the user's Pub/Sub
 client implementation to communicate with the appropriate server.
 
+## Community
+
+A few community projects built around Zserio:
+
+* [VS Code language support](https://github.com/4og/zserio-language-support) - highlighting, syntax checking, and symbol navigation
+* [go-zserio](https://github.com/woven-by-toyota/go-zserio) - Go support
+* [zserio-cmake-helper](https://github.com/Klebert-Engineering/zserio-cmake-helper) - CMake helper
+* [zswag](https://github.com/ndsev/zswag) - REST/OpenAPI access for Zserio services
+
 ## Contributions
 
 Contributions are very welcome but we encourage to open a
