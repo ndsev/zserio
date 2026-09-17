@@ -10,7 +10,7 @@ package zserio.extension.doc;
 final class DocExtensionVersion
 {
     /** Documentation extension version string. */
-    public static final String DOC_EXTENSION_VERSION_STRING = "1.0.9";
+    public static final String DOC_EXTENSION_VERSION_STRING = "1.0.10";
 
     /** Expected Zserio core version string. */
     public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.19.0";
