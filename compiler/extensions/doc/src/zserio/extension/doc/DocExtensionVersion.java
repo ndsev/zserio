@@ -13,5 +13,5 @@ final class DocExtensionVersion
     public static final String DOC_EXTENSION_VERSION_STRING = "1.0.9";
 
     /** Expected Zserio core version string. */
-    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.18.2";
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.19.0";
 }
