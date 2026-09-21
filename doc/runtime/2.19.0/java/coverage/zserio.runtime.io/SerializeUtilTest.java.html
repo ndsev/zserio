@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SerializeUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">SerializeUtilTest.java</span></div><h1>SerializeUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.File;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
+
+import test_object.SerializeEnum;
+import test_object.SerializeNested;
+import test_object.SerializeObject;
+
+<span class="fc" id="L16">public class SerializeUtilTest</span>
+{
+    @Test
+    public void serializeEnum()
+    {
+<span class="fc" id="L21">        final SerializeEnum serializeEnum = SerializeEnum.VALUE3;</span>
+<span class="fc" id="L22">        final BitBuffer bitBuffer = SerializeUtil.serialize(serializeEnum);</span>
+<span class="fc" id="L23">        final int expectedBitsize = 8;</span>
+<span class="fc" id="L24">        assertEquals(expectedBitsize, bitBuffer.getBitSize());</span>
+<span class="fc" id="L25">        assertEquals((byte)0x02, bitBuffer.getBuffer()[0]);</span>
+<span class="fc" id="L26">    }</span>
+
+    @Test
+    public void serializeParameterizedObject()
+    {
+<span class="fc" id="L31">        final byte param = 0x12;</span>
+<span class="fc" id="L32">        final short offset = 0;</span>
+<span class="fc" id="L33">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L34">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L35">        final BitBuffer bitBuffer = SerializeUtil.serialize(serializeNested);</span>
+<span class="fc" id="L36">        final int expectedBitsize = 40;</span>
+<span class="fc" id="L37">        assertEquals(expectedBitsize, bitBuffer.getBitSize());</span>
+<span class="fc" id="L38">        assertEquals((byte)0x01, bitBuffer.getBuffer()[0]);</span>
+<span class="fc" id="L39">        assertEquals((byte)0xDE, bitBuffer.getBuffer()[1]);</span>
+<span class="fc" id="L40">        assertEquals((byte)0xAD, bitBuffer.getBuffer()[2]);</span>
+<span class="fc" id="L41">        assertEquals((byte)0xCA, bitBuffer.getBuffer()[3]);</span>
+<span class="fc" id="L42">        assertEquals((byte)0xFE, bitBuffer.getBuffer()[4]);</span>
+<span class="fc" id="L43">    }</span>
+
+    @Test
+    public void serializeObject()
+    {
+<span class="fc" id="L48">        final byte param = 0x12;</span>
+<span class="fc" id="L49">        final short offset = 0;</span>
+<span class="fc" id="L50">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L51">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L52">        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);</span>
+<span class="fc" id="L53">        final BitBuffer bitBuffer = SerializeUtil.serialize(serializeObject);</span>
+<span class="fc" id="L54">        final int expectedBitsize = 48;</span>
+<span class="fc" id="L55">        assertEquals(expectedBitsize, bitBuffer.getBitSize());</span>
+<span class="fc" id="L56">        assertEquals((byte)0x12, bitBuffer.getBuffer()[0]);</span>
+<span class="fc" id="L57">        assertEquals((byte)0x02, bitBuffer.getBuffer()[1]);</span>
+<span class="fc" id="L58">        assertEquals((byte)0xDE, bitBuffer.getBuffer()[2]);</span>
+<span class="fc" id="L59">        assertEquals((byte)0xAD, bitBuffer.getBuffer()[3]);</span>
+<span class="fc" id="L60">        assertEquals((byte)0xCA, bitBuffer.getBuffer()[4]);</span>
+<span class="fc" id="L61">        assertEquals((byte)0xFE, bitBuffer.getBuffer()[5]);</span>
+<span class="fc" id="L62">    }</span>
+
+    @Test
+    public void deserializeEnum()
+    {
+<span class="fc" id="L67">        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0x02}, 8);</span>
+<span class="fc" id="L68">        final SerializeEnum serializeEnum = SerializeUtil.deserialize(SerializeEnum.class, bitBuffer);</span>
+<span class="fc" id="L69">        assertEquals(SerializeEnum.VALUE3, serializeEnum);</span>
+<span class="fc" id="L70">    }</span>
+
+    @Test
+    public void deserializeParameterizedObject()
+    {
+<span class="fc" id="L75">        final BitBuffer bitBuffer =</span>
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 40);
+<span class="fc" id="L77">        final byte param = 0x12;</span>
+<span class="pc" id="L78">        assertThrows(ZserioError.class, () -&gt; SerializeUtil.deserialize(SerializeNested.class, bitBuffer));</span>
+<span class="fc" id="L79">        final SerializeNested serializeNested =</span>
+<span class="fc" id="L80">                SerializeUtil.deserialize(SerializeNested.class, bitBuffer, param);</span>
+<span class="fc" id="L81">        assertEquals(param, serializeNested.getParam());</span>
+<span class="fc" id="L82">        assertEquals(0x01, serializeNested.getOffset());</span>
+<span class="fc" id="L83">        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());</span>
+
+<span class="fc" id="L85">        final BitBuffer wrongBitBuffer =</span>
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 39);
+<span class="pc" id="L87">        assertThrows(ZserioError.class, () -&gt; SerializeUtil.deserialize(SerializeNested.class, wrongBitBuffer));</span>
+<span class="fc" id="L88">    }</span>
+
+    @Test
+    public void deserializeParameterizedObjectWithPreallocatedSize()
+    {
+<span class="fc" id="L93">        final BitBuffer bitBuffer =</span>
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 40);
+<span class="fc" id="L95">        final byte param = 0x12;</span>
+<span class="fc" id="L96">        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =</span>
+                new SerializeUtil.PreallocatedArraySize(16);
+<span class="fc" id="L98">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L99">                () -&gt; SerializeUtil.deserialize(SerializeNested.class, bitBuffer, preallocatedArraySize));</span>
+<span class="fc" id="L100">        final SerializeNested serializeNested =</span>
+<span class="fc" id="L101">                SerializeUtil.deserialize(SerializeNested.class, bitBuffer, preallocatedArraySize, param);</span>
+<span class="fc" id="L102">        assertEquals(param, serializeNested.getParam());</span>
+<span class="fc" id="L103">        assertEquals(0x01, serializeNested.getOffset());</span>
+<span class="fc" id="L104">        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());</span>
+
+<span class="fc" id="L106">        final BitBuffer wrongBitBuffer =</span>
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 39);
+<span class="fc" id="L108">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L109">                () -&gt; SerializeUtil.deserialize(SerializeNested.class, wrongBitBuffer, preallocatedArraySize));</span>
+<span class="fc" id="L110">    }</span>
+
+    @Test
+    public void deserializeObject()
+    {
+<span class="fc" id="L115">        final BitBuffer bitBuffer = new BitBuffer(</span>
+                new byte[] {(byte)0x12, (byte)0x02, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 48);
+<span class="fc" id="L117">        final SerializeObject serializeObject = SerializeUtil.deserialize(SerializeObject.class, bitBuffer);</span>
+<span class="fc" id="L118">        assertEquals(0x12, serializeObject.getParam());</span>
+<span class="fc" id="L119">        final SerializeNested serializeNested = serializeObject.getNested();</span>
+<span class="fc" id="L120">        assertEquals(0x12, serializeNested.getParam());</span>
+<span class="fc" id="L121">        assertEquals(0x02, serializeNested.getOffset());</span>
+<span class="fc" id="L122">        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());</span>
+<span class="fc" id="L123">    }</span>
+
+    @Test
+    public void serializeEnumToBytes()
+    {
+<span class="fc" id="L128">        final SerializeEnum serializeEnum = SerializeEnum.VALUE3;</span>
+<span class="fc" id="L129">        final byte[] buffer = SerializeUtil.serializeToBytes(serializeEnum);</span>
+<span class="fc" id="L130">        assertEquals(1, buffer.length);</span>
+<span class="fc" id="L131">        assertEquals((byte)0x02, buffer[0]);</span>
+<span class="fc" id="L132">    }</span>
+
+    @Test
+    public void serializeParameterizedObjectToBytes()
+    {
+<span class="fc" id="L137">        final byte param = 0x12;</span>
+<span class="fc" id="L138">        final short offset = 0;</span>
+<span class="fc" id="L139">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L140">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L141">        final byte[] buffer = SerializeUtil.serializeToBytes(serializeNested);</span>
+<span class="fc" id="L142">        assertEquals(5, buffer.length);</span>
+<span class="fc" id="L143">        assertEquals((byte)0x01, buffer[0]);</span>
+<span class="fc" id="L144">        assertEquals((byte)0xDE, buffer[1]);</span>
+<span class="fc" id="L145">        assertEquals((byte)0xAD, buffer[2]);</span>
+<span class="fc" id="L146">        assertEquals((byte)0xCA, buffer[3]);</span>
+<span class="fc" id="L147">        assertEquals((byte)0xFE, buffer[4]);</span>
+<span class="fc" id="L148">    }</span>
+
+    @Test
+    public void serializeObjectToBytes()
+    {
+<span class="fc" id="L153">        final byte param = 0x12;</span>
+<span class="fc" id="L154">        final short offset = 0;</span>
+<span class="fc" id="L155">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L156">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L157">        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);</span>
+<span class="fc" id="L158">        final byte[] buffer = SerializeUtil.serializeToBytes(serializeObject);</span>
+<span class="fc" id="L159">        assertEquals(6, buffer.length);</span>
+<span class="fc" id="L160">        assertEquals((byte)0x12, buffer[0]);</span>
+<span class="fc" id="L161">        assertEquals((byte)0x02, buffer[1]);</span>
+<span class="fc" id="L162">        assertEquals((byte)0xDE, buffer[2]);</span>
+<span class="fc" id="L163">        assertEquals((byte)0xAD, buffer[3]);</span>
+<span class="fc" id="L164">        assertEquals((byte)0xCA, buffer[4]);</span>
+<span class="fc" id="L165">        assertEquals((byte)0xFE, buffer[5]);</span>
+<span class="fc" id="L166">    }</span>
+
+    @Test
+    public void deserializeEnumFromBytes()
+    {
+<span class="fc" id="L171">        final byte[] buffer = new byte[] {(byte)0x02};</span>
+<span class="fc" id="L172">        final SerializeEnum serializeEnum = SerializeUtil.deserializeFromBytes(SerializeEnum.class, buffer);</span>
+<span class="fc" id="L173">        assertEquals(SerializeEnum.VALUE3, serializeEnum);</span>
+<span class="fc" id="L174">    }</span>
+
+    @Test
+    public void deserializeParameterizedObjectFromBytes()
+    {
+<span class="fc" id="L179">        final byte[] buffer = new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};</span>
+<span class="fc" id="L180">        final byte param = 0x12;</span>
+<span class="fc" id="L181">        assertThrows(</span>
+<span class="nc" id="L182">                ZserioError.class, () -&gt; SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer));</span>
+<span class="fc" id="L183">        final SerializeNested serializeNested =</span>
+<span class="fc" id="L184">                SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer, param);</span>
+<span class="fc" id="L185">        assertEquals(param, serializeNested.getParam());</span>
+<span class="fc" id="L186">        assertEquals(0x01, serializeNested.getOffset());</span>
+<span class="fc" id="L187">        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());</span>
+
+<span class="fc" id="L189">        final byte[] wrongBuffer = new byte[] {(byte)0x00, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};</span>
+<span class="fc" id="L190">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L191">                () -&gt; SerializeUtil.deserializeFromBytes(SerializeNested.class, wrongBuffer));</span>
+<span class="fc" id="L192">    }</span>
+
+    @Test
+    public void deserializeParameterizedObjectFromBytesWithPreallocatedSize()
+    {
+<span class="fc" id="L197">        final byte[] buffer = new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};</span>
+<span class="fc" id="L198">        final byte param = 0x12;</span>
+<span class="fc" id="L199">        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =</span>
+                new SerializeUtil.PreallocatedArraySize(16);
+<span class="fc" id="L201">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L202">                () -&gt; SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer, preallocatedArraySize));</span>
+<span class="fc" id="L203">        final SerializeNested serializeNested =</span>
+<span class="fc" id="L204">                SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer, preallocatedArraySize, param);</span>
+<span class="fc" id="L205">        assertEquals(param, serializeNested.getParam());</span>
+<span class="fc" id="L206">        assertEquals(0x01, serializeNested.getOffset());</span>
+<span class="fc" id="L207">        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());</span>
+
+<span class="fc" id="L209">        final byte[] wrongBuffer = new byte[] {(byte)0x00, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};</span>
+<span class="fc" id="L210">        assertThrows(ZserioError.class,</span>
+                ()
+<span class="nc" id="L212">                        -&gt; SerializeUtil.deserializeFromBytes(</span>
+                                SerializeNested.class, wrongBuffer, preallocatedArraySize));
+<span class="fc" id="L214">    }</span>
+
+    @Test
+    public void deserializeObjectFromBytes()
+    {
+<span class="fc" id="L219">        final byte[] buffer =</span>
+                new byte[] {(byte)0x12, (byte)0x02, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};
+<span class="fc" id="L221">        final SerializeObject serializeObject =</span>
+<span class="fc" id="L222">                SerializeUtil.deserializeFromBytes(SerializeObject.class, buffer);</span>
+<span class="fc" id="L223">        assertEquals(0x12, serializeObject.getParam());</span>
+<span class="fc" id="L224">        final SerializeNested serializeNested = serializeObject.getNested();</span>
+<span class="fc" id="L225">        assertEquals(0x12, serializeNested.getParam());</span>
+<span class="fc" id="L226">        assertEquals(0x02, serializeNested.getOffset());</span>
+<span class="fc" id="L227">        assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());</span>
+<span class="fc" id="L228">    }</span>
+
+    @Test
+    public void serializeToFileFromFile()
+    {
+<span class="fc" id="L233">        final byte param = 0x12;</span>
+<span class="fc" id="L234">        final short offset = 0;</span>
+<span class="fc" id="L235">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L236">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L237">        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);</span>
+<span class="fc" id="L238">        final File file = new File(&quot;SerializationTest.bin&quot;);</span>
+<span class="fc" id="L239">        SerializeUtil.serializeToFile(serializeObject, file);</span>
+<span class="fc" id="L240">        final SerializeObject readSerializeObject =</span>
+<span class="fc" id="L241">                SerializeUtil.deserializeFromFile(SerializeObject.class, file);</span>
+<span class="fc" id="L242">        assertEquals(serializeObject, readSerializeObject);</span>
+<span class="fc" id="L243">    }</span>
+
+    @Test
+    public void serializeToFileFromFileWithPreallocatedSize()
+    {
+<span class="fc" id="L248">        final byte param = 0x12;</span>
+<span class="fc" id="L249">        final short offset = 0;</span>
+<span class="fc" id="L250">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L251">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L252">        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);</span>
+<span class="fc" id="L253">        final File file = new File(&quot;SerializationTest.bin&quot;);</span>
+<span class="fc" id="L254">        SerializeUtil.serializeToFile(serializeObject, file);</span>
+<span class="fc" id="L255">        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =</span>
+                new SerializeUtil.PreallocatedArraySize(16);
+<span class="fc" id="L257">        final SerializeObject readSerializeObject =</span>
+<span class="fc" id="L258">                SerializeUtil.deserializeFromFile(SerializeObject.class, file, preallocatedArraySize);</span>
+<span class="fc" id="L259">        assertEquals(serializeObject, readSerializeObject);</span>
+<span class="fc" id="L260">    }</span>
+
+    @Test
+    public void serializeToFileFromString()
+    {
+<span class="fc" id="L265">        final byte param = 0x12;</span>
+<span class="fc" id="L266">        final short offset = 0;</span>
+<span class="fc" id="L267">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L268">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L269">        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);</span>
+<span class="fc" id="L270">        final String fileName = &quot;SerializationTest.bin&quot;;</span>
+<span class="fc" id="L271">        SerializeUtil.serializeToFile(serializeObject, fileName);</span>
+<span class="fc" id="L272">        final SerializeObject readSerializeObject =</span>
+<span class="fc" id="L273">                SerializeUtil.deserializeFromFile(SerializeObject.class, fileName);</span>
+<span class="fc" id="L274">        assertEquals(serializeObject, readSerializeObject);</span>
+<span class="fc" id="L275">    }</span>
+
+    @Test
+    public void serializeToFileFromStringWithPreallocatedSize()
+    {
+<span class="fc" id="L280">        final byte param = 0x12;</span>
+<span class="fc" id="L281">        final short offset = 0;</span>
+<span class="fc" id="L282">        final long optionalValue = 0xDEADCAFEL;</span>
+<span class="fc" id="L283">        final SerializeNested serializeNested = new SerializeNested(param, offset, optionalValue);</span>
+<span class="fc" id="L284">        final SerializeObject serializeObject = new SerializeObject(param, serializeNested);</span>
+<span class="fc" id="L285">        final String fileName = &quot;SerializationTest.bin&quot;;</span>
+<span class="fc" id="L286">        SerializeUtil.serializeToFile(serializeObject, fileName);</span>
+<span class="fc" id="L287">        final SerializeUtil.PreallocatedArraySize preallocatedArraySize =</span>
+                new SerializeUtil.PreallocatedArraySize(16);
+<span class="fc" id="L289">        final SerializeObject readSerializeObject =</span>
+<span class="fc" id="L290">                SerializeUtil.deserializeFromFile(SerializeObject.class, fileName, preallocatedArraySize);</span>
+<span class="fc" id="L291">        assertEquals(serializeObject, readSerializeObject);</span>
+<span class="fc" id="L292">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
