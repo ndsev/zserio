@@ -190,6 +190,8 @@ client implementation to communicate with the appropriate server.
 A few community projects built around Zserio:
 
 * [VS Code language support](https://github.com/4og/zserio-language-support) - highlighting, syntax checking, and symbol navigation
+* [Sublime Text syntax highlighting](https://github.com/ndsev/zserio-sublime) - Zserio syntax highlighting for Sublime Text
+* [Vim syntax highlighting](https://github.com/ndsev/zserio-vim) - Zserio syntax highlighting for Vim
 * [go-zserio](https://github.com/woven-by-toyota/go-zserio) - Go support
 * [zserio-cmake-helper](https://github.com/Klebert-Engineering/zserio-cmake-helper) - CMake helper
 * [zswag](https://github.com/ndsev/zswag) - REST/OpenAPI access for Zserio services
