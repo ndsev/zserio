@@ -152,6 +152,8 @@ jobs:
         scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
 
     - name: Run Zserio integration tests for repeated generation
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
@@ -282,3 +284,11 @@ jobs:
             scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
             ;;
         esac
+
+    # the shortest variant takes over clang-tidy of the cpp job's repeated generation step, which builds and runs
+    - name: Run clang-tidy over Zserio integration tests for repeated generation
+      if: ${{ matrix.arguments == 'extra' }}
+      env:
+        CLANG_TIDY_BIN: "clang-tidy-14"
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}
