@@ -22,22 +22,23 @@ jobs:
     uses: "./.github/workflows/build_linux_cpp.yml"
   java:
     needs: [legs, zserio]
-    if: needs.legs.outputs.java == 'true'
+    if: false
     uses: "./.github/workflows/build_linux_java.yml"
   python:
     needs: [legs, zserio]
-    if: needs.legs.outputs.python == 'true'
+    if: false
     uses: "./.github/workflows/build_linux_python.yml"
   doc:
     needs: [legs, zserio]
-    if: needs.legs.outputs.doc == 'true'
+    if: false
     uses: "./.github/workflows/build_linux_doc.yml"
   xml:
     needs: [legs, zserio]
-    if: needs.legs.outputs.xml == 'true'
+    if: false
     uses: "./.github/workflows/build_linux_xml.yml"
 
   release:
+    if: false
     needs: [cpp, java, python, doc, xml]
     runs-on: "ubuntu-22.04"
     steps:

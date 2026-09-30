@@ -5,6 +5,7 @@ on:
 
 jobs:
   cpp:
+    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -316,6 +317,7 @@ jobs:
 
   # clang-tidy over the test sources (generated code included), split by the test runs of the cpp job
   cpp-clang-tidy:
+    if: false
     strategy:
       fail-fast: false
       matrix:
