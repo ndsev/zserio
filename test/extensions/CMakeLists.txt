@@ -142,7 +142,7 @@ foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
     endforeach ()
 endforeach ()
 
-# clang-tidy target which runs clang-tidy over sources of all tests without building or running them
+# clang-tidy target which runs clang-tidy over sources of all tests, it builds only the generated code libraries
 if (TEST_CLANG_TIDY_TARGETS_LIST)
     add_custom_target(clang-tidy)
     add_dependencies(clang-tidy ${TEST_CLANG_TIDY_TARGETS_LIST})

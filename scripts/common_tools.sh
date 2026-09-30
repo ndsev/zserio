@@ -474,7 +474,8 @@ Uses the following environment variables for building:
                            called. Default is empty string.
     CLANG_TIDY_BIN         Name of clang-tidy binary. If not set, clang-tidy tool is not called.
     CLANG_TIDY_ONLY        Set to 1 to only run clang-tidy over the sources of C++ tests
-                           instead of building and running them. Requires CLANG_TIDY_BIN.
+                           instead of building and running the tests. The generated code
+                           libraries are still built. Requires CLANG_TIDY_BIN.
                            Default is 0.
     CLANG_FORMAT_BIN       Name of clang-format binary. If not set, clang-format tool is not called.
     GCOVR_BIN              Gcovr binary to use for coverage report generation (gcc).
