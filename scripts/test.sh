@@ -294,6 +294,8 @@ test_cpp()
     local CTEST_ARGS=()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         local CPP_TARGET="clean"
+    elif [[ ${CLANG_TIDY_ONLY} == 1 ]] ; then
+        local CPP_TARGET="clang-tidy"
     else
         local CPP_TARGET="all"
     fi
@@ -304,7 +306,7 @@ test_cpp()
         return 1
     fi
 
-    if [[ ${SWITCH_CLEAN} != 1 ]] ; then
+    if [[ ${CPP_TARGET} == "all" ]] ; then
         for TARGET in "${CPP_TARGETS[@]}"; do
             local BUILD_TYPE="release"
             if [[ "${CMAKE_EXTRA_ARGS}" == *-DCMAKE_BUILD_TYPE=?ebug* ]] ; then

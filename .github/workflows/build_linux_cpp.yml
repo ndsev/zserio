@@ -134,11 +134,16 @@ jobs:
       run: |
         scripts/release.sh -p runtime_libs
 
+    # clang-tidy over the test sources runs in the cpp-clang-tidy job
     - name: Run Zserio tests
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         scripts/test.sh cpp-${PACKAGE}
 
     - name: Run Zserio tests with extra arguments
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
         scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
@@ -147,6 +152,8 @@ jobs:
         scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
 
     - name: Run Zserio integration tests for repeated generation
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
@@ -191,3 +198,97 @@ jobs:
               || format('clang{0}', matrix.clang-version) }}-\
           cxx${{matrix.cxx-standard}}-${{matrix.build-type}}"
         path: build/runtime_libs/cpp/**/runtime/*.a
+
+  # clang-tidy over the test sources (generated code included), split by the test runs of the cpp job
+  cpp-clang-tidy:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["64", "32"]
+        cxx-standard: ["11", "17"]
+        arguments: ["default", "extra", "extra-validation"]
+
+    runs-on: "ubuntu-22.04"
+    name: "\
+      ubuntu-22.04-${{matrix.platform}}-clang14-c++${{matrix.cxx-standard}}-Debug-\
+      clang-tidy-${{matrix.arguments}}"
+
+    env:
+      CLANG_VERSION_SUFFIX: "-14"
+      PACKAGE: "linux${{matrix.platform}}-clang"
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "CMAKE_BUILD_OPTIONS=-j$(nproc)" >> ${GITHUB_ENV}
+        CMAKE_EXTRA_ARGS=("-DZSERIO_ENABLE_WERROR=1"
+                          "-DCMAKE_BUILD_TYPE=Debug"
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
+        echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: |
+        echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
+        sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz g++-multilib
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install clang 14 compiler
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 14
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: zserio-bin-java8
+
+    # clang-tidy over the runtime sources runs in the cpp job
+    - name: Build Zserio C++ runtime
+      run: |
+        scripts/build.sh cpp_rt-${PACKAGE}
+
+    - name: Pack Zserio C++ runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run clang-tidy over Zserio tests
+      env:
+        CLANG_TIDY_BIN: "clang-tidy-14"
+        CLANG_TIDY_ONLY: 1
+      run: |
+        EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
+        case "${{matrix.arguments}}" in
+          default)
+            scripts/test.sh cpp-${PACKAGE}
+            ;;
+          extra)
+            export ZSERIO_EXTRA_ARGS="${EXTRA_ARGS}"
+            scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
+            ;;
+          extra-validation)
+            export ZSERIO_EXTRA_ARGS="${EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+            scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
+            ;;
+        esac
+
+    # the shortest variant takes over clang-tidy of the cpp job's repeated generation step, which builds and runs
+    - name: Run clang-tidy over Zserio integration tests for repeated generation
+      if: ${{ matrix.arguments == 'extra' }}
+      env:
+        CLANG_TIDY_BIN: "clang-tidy-14"
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}

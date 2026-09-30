@@ -134,6 +134,13 @@ set_global_cpp_variables()
         return 1
     fi
 
+    # whether C++ tests only run clang-tidy over their sources instead of being built and run, by default 0
+    CLANG_TIDY_ONLY="${CLANG_TIDY_ONLY:-0}"
+    if [[ ${CLANG_TIDY_ONLY} == 1 && -z "${CLANG_TIDY_BIN}" ]] ; then
+        stderr_echo "CLANG_TIDY_ONLY=1 requires CLANG_TIDY_BIN to be set!"
+        return 1
+    fi
+
     return 0
 }
 
@@ -466,6 +473,10 @@ Uses the following environment variables for building:
                            (e.g. /usr/share/spotbugs). If set, spotbugs will be
                            called. Default is empty string.
     CLANG_TIDY_BIN         Name of clang-tidy binary. If not set, clang-tidy tool is not called.
+    CLANG_TIDY_ONLY        Set to 1 to only run clang-tidy over the sources of C++ tests
+                           instead of building and running the tests. The generated code
+                           libraries are still built. Requires CLANG_TIDY_BIN.
+                           Default is 0.
     CLANG_FORMAT_BIN       Name of clang-format binary. If not set, clang-format tool is not called.
     GCOVR_BIN              Gcovr binary to use for coverage report generation (gcc).
                            Default is empty string.
@@ -906,10 +917,10 @@ compile_cpp_for_target()
         return 1
     fi
 
-    # only run "make test" if we can actually run it on current host
+    # only run "make test" if the tests have been built and if we can actually run it on current host
     can_run_tests "${TARGET}"
     local CAN_RUN_TESTS_RESULT=$?
-    if [[ ${MAKE_TARGET} != "clean" && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
+    if [[ (${MAKE_TARGET} == "all" || ${MAKE_TARGET} == "install") && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
         CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" ${CTEST_ARGS[@]}
         local CTEST_RESULT=$?
         if [ ${CTEST_RESULT} -ne 0 ] ; then
