@@ -107,6 +107,8 @@ jobs:
       run: |
         scripts/test.sh python
 
+    # stays on all legs: the options generate code the default run does not run, and each Python version
+    # is an environment it has to work in
     - name: Run Zserio tests with extra arguments
       shell: bash
       run: |

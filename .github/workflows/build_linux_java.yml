@@ -68,6 +68,8 @@ jobs:
         scripts/test.sh java
 
     # DynamicBitFieldLengthBoundsTest fails with range checking - see https://github.com/ndsev/zserio/issues/79
+    # stays on all legs: the options generate code the default run does not compile, and each Java version
+    # is an environment it has to work in
     - name: Run Zserio tests with extra arguments
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
