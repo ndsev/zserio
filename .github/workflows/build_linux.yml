@@ -8,23 +8,33 @@ on:
   workflow_dispatch:
 
 jobs:
+  legs:
+    uses: "./.github/workflows/select_legs.yml"
+
   zserio:
+    needs: [legs]
+    if: needs.legs.outputs.zserio == 'true'
     uses: "./.github/workflows/build_linux_zserio.yml"
 
   cpp:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.cpp == 'true'
     uses: "./.github/workflows/build_linux_cpp.yml"
   java:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.java == 'true'
     uses: "./.github/workflows/build_linux_java.yml"
   python:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.python == 'true'
     uses: "./.github/workflows/build_linux_python.yml"
   doc:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.doc == 'true'
     uses: "./.github/workflows/build_linux_doc.yml"
   xml:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.xml == 'true'
     uses: "./.github/workflows/build_linux_xml.yml"
 
   release:

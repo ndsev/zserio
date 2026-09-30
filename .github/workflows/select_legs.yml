@@ -1,0 +1,70 @@
+name: Select Legs
+
+on:
+  workflow_call:
+    outputs:
+      zserio:
+        value: ${{jobs.select.outputs.zserio}}
+      cpp:
+        value: ${{jobs.select.outputs.cpp}}
+      java:
+        value: ${{jobs.select.outputs.java}}
+      python:
+        value: ${{jobs.select.outputs.python}}
+      doc:
+        value: ${{jobs.select.outputs.doc}}
+      xml:
+        value: ${{jobs.select.outputs.xml}}
+
+# Pull requests and pushes to '*-ci' branches run only the legs their changed paths can affect,
+# all other events (pushes to master and release/**, manual runs) run all legs.
+jobs:
+  select:
+    runs-on: "ubuntu-22.04"
+    outputs:
+      zserio: ${{steps.select.outputs.zserio}}
+      cpp: ${{steps.select.outputs.cpp}}
+      java: ${{steps.select.outputs.java}}
+      python: ${{steps.select.outputs.python}}
+      doc: ${{steps.select.outputs.doc}}
+      xml: ${{steps.select.outputs.xml}}
+
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: "Test leg selection"
+      run: |
+        .github/scripts/test_select_legs.sh
+
+    - name: "Select legs"
+      id: select
+      env:
+        EVENT_NAME: ${{github.event_name}}
+        REF_NAME: ${{github.ref_name}}
+        PULL_REQUEST_BASE_SHA: ${{github.event.pull_request.base.sha}}
+        PUSH_BEFORE_SHA: ${{github.event.before}}
+      run: |
+        BASE_SHA=""
+        if [[ "${EVENT_NAME}" == "pull_request" ]] ; then
+            BASE_SHA="${PULL_REQUEST_BASE_SHA}"
+        elif [[ "${EVENT_NAME}" == "push" && "${REF_NAME}" == *-ci ]] ; then
+            BASE_SHA="${PUSH_BEFORE_SHA}"
+        fi
+
+        # a new branch has an all zero 'before' and a force push can make it unreachable: run all legs
+        if [[ -n "${BASE_SHA}" && ! "${BASE_SHA}" =~ ^0+$ ]] &&
+                CHANGED_PATHS="$(git diff --name-only "${BASE_SHA}" "${GITHUB_SHA}")" ; then
+            echo "Changed paths since ${BASE_SHA}:"
+            echo "${CHANGED_PATHS}"
+            SELECTION="$(echo "${CHANGED_PATHS}" | .github/scripts/select_legs.sh)"
+        else
+            echo "Running all legs for ${EVENT_NAME} on ${REF_NAME}."
+            SELECTION="$(printf "%s=true\n" zserio cpp java python doc xml)"
+        fi
+
+        echo "Selected legs:"
+        echo "${SELECTION}"
+        echo "${SELECTION}" >> "${GITHUB_OUTPUT}"
