@@ -36,6 +36,11 @@ The following summarizes the process for contributing changes to the Zserio proj
 
 * Ensure that all GitHub [workflows](https://github.com/ndsev/zserio/actions) are passing.
 
+    > Pull requests run only the build legs their changed paths can affect, e.g. a change only in
+      `compiler/extensions/python` runs only the Python legs and a documentation only change runs
+      none. The mapping lives in `.github/scripts/select_legs.sh`. Pushes to `master` and
+      `release/**` always run all legs.
+
 * Wait for the review by [@Mi-La](https://www.github.com/Mi-La) or [@mikir](https://www.github.com/mikir).
 
 > Please try to address only a single problem in you pull request.
