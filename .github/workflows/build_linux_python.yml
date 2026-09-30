@@ -73,6 +73,8 @@ jobs:
       run: |
         scripts/test.sh python
 
+    # stays on all legs: the options generate code the default run does not run, and each Python version
+    # is an environment it has to work in
     - name: Run Zserio tests with extra arguments
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
@@ -85,7 +87,9 @@ jobs:
       run: |
         scripts/test_gen.sh python
 
+    # the API of the generated code does not depend on the Python version, one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ matrix.python-version == '3.9' }}
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         MYPY_ENABLED: 0
@@ -100,7 +104,9 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this measures nothing, it only checks that the benchmarks run, one leg is enough
     - name: Run Zserio benchmarks
+      if: ${{ matrix.python-version == '3.9' }}
       run: |
         scripts/benchmark.sh python python-cpp --num-iterations 1
 

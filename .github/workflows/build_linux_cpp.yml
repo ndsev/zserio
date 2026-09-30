@@ -141,6 +141,8 @@ jobs:
       run: |
         scripts/test.sh cpp-${PACKAGE}
 
+    # stays on all legs: the options generate code the default run does not compile, and whether it compiles
+    # depends on the compiler and the build type, see the MSVC Debug exclusion in build_windows_cpp.yml
     - name: Run Zserio tests with extra arguments
       env:
         CLANG_TIDY_BIN: ""
@@ -157,7 +159,10 @@ jobs:
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
+    # the old version's tests check the API of the generated code, which does not depend on the compiler,
+    # so one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ matrix.platform == '64' && matrix.gcc-version == '11' && matrix.build-type == 'Release' }}
       env:
         CLANG_FORMAT_BIN: ""
         CLANG_TIDY_BIN: ""
@@ -176,7 +181,10 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this only builds the benchmarks, one gcc and one clang leg are enough for that
     - name: Run Zserio benchmarks
+      if: ${{ matrix.platform == '64' && matrix.build-type == 'Release' && matrix.cxx-standard == '11' &&
+              (matrix.gcc-version == '11' || matrix.clang-version == '21') }}
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
 
