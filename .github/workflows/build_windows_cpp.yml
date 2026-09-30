@@ -172,7 +172,10 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this only builds the benchmarks, one MSVC and one MinGW leg are enough for that
     - name: Run Zserio benchmarks
+      if: ${{ matrix.build-type == 'Release' && matrix.cxx-standard == '11' &&
+              (matrix.msvc-toolset == 'v142' || matrix.mingw-version == '9.4.0') }}
       shell: bash
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1

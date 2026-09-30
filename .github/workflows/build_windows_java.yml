@@ -113,7 +113,9 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this measures nothing, it only checks that the benchmarks run, one leg is enough
     - name: Run Zserio benchmarks
+      if: ${{ matrix.java-version == '8' }}
       shell: bash
       run: |
         scripts/benchmark.sh java --num-iterations 1
