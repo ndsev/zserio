@@ -818,6 +818,8 @@ Package can be a combination of:
     cpp-linux64-gcc       Zserio C++ tests for linux64 target (gcc).
     cpp-linux32-clang     Zserio C++ tests for linux32 target (Clang).
     cpp-linux64-clang     Zserio C++ tests for linux64 target (Clang).
+    cpp-linuxarm64-gcc    Zserio C++ tests for linuxarm64 target (gcc).
+    cpp-linuxarm64-clang  Zserio C++ tests for linuxarm64 target (Clang).
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
@@ -829,6 +831,8 @@ Package can be a combination of:
     all-linux64-gcc       Zserio all tests with C++ for linux64 target (gcc).
     all-linux32-clang     Zserio all tests with C++ for linux32 target (Clang).
     all-linux64-clang     Zserio all tests with C++ for linux64 target (Clang).
+    all-linuxarm64-gcc    Zserio all tests with C++ for linuxarm64 target (gcc).
+    all-linuxarm64-clang  Zserio all tests with C++ for linuxarm64 target (Clang).
     all-windows64-mingw   Zserio all tests with C++ for windows64 target (MinGW64).
     all-windows64-msvc    Zserio all tests with C++ for windows64 target (MSVC).
 
@@ -954,7 +958,7 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
+            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-linuxarm64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 NUM_TEST_TARGETS=$((NUM_TEST_TARGETS + 1))
@@ -982,7 +986,7 @@ parse_arguments()
                 eval ${PARAM_CORE_OUT}=1
                 ;;
 
-            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-linuxarm64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1

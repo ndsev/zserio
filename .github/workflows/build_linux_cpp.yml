@@ -208,6 +208,115 @@ jobs:
           cxx${{matrix.cxx-standard}}-${{matrix.build-type}}"
         path: build/runtime_libs/cpp/**/runtime/*.a
 
+  # native linux arm64, the compiler versions are those of the cpp job since compiler_utils.cmake pins its
+  # warnings as errors exceptions to them
+  cpp-arm64:
+    # only the full runs of master, release/** and manual runs, pull requests and '*-ci' pushes skip it
+    if: ${{ github.event_name == 'workflow_dispatch' ||
+            (github.event_name == 'push' && (github.ref_name == 'master' || startsWith(github.ref_name, 'release/'))) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { gcc-version: "11", cxx-standard: "11", build-type: "Release" }
+        - { clang-version: "21", cxx-standard: "11", build-type: "Debug" }
+
+    runs-on: "ubuntu-24.04-arm"
+    name: "\
+      ubuntu-24.04-arm-\
+      ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+          || format('clang{0}', matrix.clang-version) }}-\
+      c++${{matrix.cxx-standard}}-${{matrix.build-type}}"
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "CMAKE_BUILD_OPTIONS=-j$(nproc)" >> ${GITHUB_ENV}
+        if [[ "${{matrix.gcc-version}}" != "" ]] ; then
+          echo "GCC_VERSION_SUFFIX=-${{matrix.gcc-version}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=linuxarm64-gcc" >> ${GITHUB_ENV}
+        elif [[ "${{matrix.clang-version}}" != "" ]] ; then
+          echo "CLANG_VERSION_SUFFIX=-${{matrix.clang-version}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=linuxarm64-clang" >> ${GITHUB_ENV}
+        fi
+
+        if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
+          echo "SANITIZERS_ENABLED=1" >> ${GITHUB_ENV}
+        fi
+
+        CMAKE_EXTRA_ARGS=("-DZSERIO_ENABLE_WERROR=1"
+                          "-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
+        echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
+
+    - name: Apt update
+      run: |
+        sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install gcc ${{matrix.gcc-version}} compiler
+      if: ${{ matrix.gcc-version != '' }}
+      run: |
+        sudo apt-get install gcc-${{matrix.gcc-version}} g++-${{matrix.gcc-version}}
+
+    - name: Install clang ${{matrix.clang-version}} compiler
+      if: ${{ matrix.clang-version != '' }}
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${{matrix.clang-version}}
+        # install asan library
+        sudo apt install -y libclang-rt-${{matrix.clang-version}}-dev
+
+    # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
+    - name: Reduce ASLR entropy as a temporary workaround
+      if: ${{ env.SANITIZERS_ENABLED == 1 }}
+      run: |
+        sudo sysctl -w vm.mmap_rnd_bits=28
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: zserio-bin-java8
+
+    - name: Build Zserio C++ runtime
+      run: |
+        scripts/build.sh cpp_rt-${PACKAGE}
+
+    - name: Pack Zserio C++ runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      run: |
+        scripts/test.sh cpp-${PACKAGE}
+
+    # stays on all legs, see the cpp job
+    - name: Run Zserio tests with extra arguments
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
+        scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
+
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}
+
   # clang-tidy over the test sources (generated code included), split by the test runs of the cpp job
   cpp-clang-tidy:
     strategy:
