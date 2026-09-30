@@ -2,9 +2,9 @@ name: SonarCloud Trigger
 
 on:
   push:
-    branches: [ master, '*-ci' ]
+    branches: [ master, 'release/**', '*-ci' ]
   pull_request:
-    branches: [ master, '*-ci' ]
+    branches: [ master, 'release/**', '*-ci' ]
   workflow_dispatch:
 
 jobs:
