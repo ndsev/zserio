@@ -153,9 +153,11 @@ jobs:
         scripts/test_gen.sh cpp-${PACKAGE}
 
     - name: Run Zserio API compatibility checks
+      # the old version's tests check the API of the generated code, which does not depend on the compiler,
+      # so one leg is enough
       # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
       # MinGW Debug/Release build fails because of long paths
-      if: ${{ matrix.mingw-version == '' && (matrix.msvc-toolset == '' || matrix.build-type == 'Release') }}
+      if: ${{ matrix.msvc-toolset == 'v142' && matrix.cxx-standard == '11' && matrix.build-type == 'Release' }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

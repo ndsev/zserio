@@ -121,7 +121,9 @@ jobs:
       run: |
         scripts/test_gen.sh python
 
+    # the API of the generated code does not depend on the Python version, one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ matrix.python-version == '3.9' }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

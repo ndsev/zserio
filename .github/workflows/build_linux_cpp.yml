@@ -157,7 +157,10 @@ jobs:
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
+    # the old version's tests check the API of the generated code, which does not depend on the compiler,
+    # so one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ matrix.platform == '64' && matrix.gcc-version == '11' && matrix.build-type == 'Release' }}
       env:
         CLANG_FORMAT_BIN: ""
         CLANG_TIDY_BIN: ""
