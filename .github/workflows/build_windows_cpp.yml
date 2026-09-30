@@ -164,7 +164,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
-        scripts/test_compat_api.sh cpp-${PACKAGE}
+        # warnings of newer compilers in the old version's sources are not what this check is about
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DZSERIO_ENABLE_WERROR=OFF" scripts/test_compat_api.sh cpp-${PACKAGE}
 
     - name: Run Zserio performance tests
       shell: bash
