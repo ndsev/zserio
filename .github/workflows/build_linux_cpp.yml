@@ -211,6 +211,9 @@ jobs:
   # native linux arm64, the compiler versions are those of the cpp job since compiler_utils.cmake pins its
   # warnings as errors exceptions to them
   cpp-arm64:
+    # only the full runs of master, release/** and manual runs, pull requests and '*-ci' pushes skip it
+    if: ${{ github.event_name == 'workflow_dispatch' ||
+            (github.event_name == 'push' && (github.ref_name == 'master' || startsWith(github.ref_name, 'release/'))) }}
     strategy:
       fail-fast: false
       matrix:
