@@ -254,6 +254,8 @@ Package can be the combination of:
     cpp_rt-linux64-gcc       Zserio C++ extension runtime library for native linux64 (gcc).
     cpp_rt-linux32-clang     Zserio ASIL C++ extension runtime library for native linux32 (Clang).
     cpp_rt-linux64-clang     Zserio ASIL C++ extension runtime library for native linux64 (Clang).
+    cpp_rt-linuxarm64-gcc    Zserio C++ extension runtime library for native linuxarm64 (gcc).
+    cpp_rt-linuxarm64-clang  Zserio C++ extension runtime library for native linuxarm64 (Clang).
     cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
     cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
     java                     Zserio Java extension.
@@ -267,6 +269,8 @@ Package can be the combination of:
     all-linux64-gcc          All available packages for linux64 (gcc).
     all-linux32-clang        All available packages for linux32 (Clang).
     all-linux64-clang        All available packages for linux64 (Clang).
+    all-linuxarm64-gcc       All available packages for linuxarm64 (gcc).
+    all-linuxarm64-clang     All available packages for linuxarm64 (Clang).
     all-windows64-mingw      All available packages for windows64 target (MinGW64).
     all-windows64-msvc       All available packages for windows64 target (MSVC).
 
@@ -381,7 +385,7 @@ parse_arguments()
                 eval ${PARAM_CPP_OUT}=1
                 ;;
 
-            "cpp_rt-linux32-"* | "cpp_rt-linux64-"* | "cpp_rt-windows64-"*)
+            "cpp_rt-linux32-"* | "cpp_rt-linux64-"* | "cpp_rt-linuxarm64-"* | "cpp_rt-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp_rt-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -414,7 +418,7 @@ parse_arguments()
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
 
-            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-linuxarm64-"* | "all-windows64-"*)
                 eval ${PARAM_ANT_TASK_OUT}=1
                 eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_CPP_OUT}=1

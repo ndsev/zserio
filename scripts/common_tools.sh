@@ -1056,6 +1056,9 @@ can_run_tests()
     ubuntu64)
         [[ "${TARGET_PLATFORM}" == "linux32-"* || "${TARGET_PLATFORM}" = "linux64-"* ]]
         ;;
+    ubuntuarm64)
+        [[ "${TARGET_PLATFORM}" == "linuxarm64-"* ]]
+        ;;
     windows64)
         [[ "${TARGET_PLATFORM}" == "windows64-"* ]]
         ;;
@@ -1068,7 +1071,7 @@ can_run_tests()
 # Determines the current host platform.
 #
 # Returns one of the following platforms:
-# ubuntu32, ubuntu64, windows32, windows64
+# ubuntu32, ubuntu64, ubuntuarm64, windows32, windows64
 get_host_platform()
 {
     exit_if_argc_ne $# 1
@@ -1117,6 +1120,9 @@ get_host_platform()
             ;;
         i686)
             NATIVE_TARGET="${HOST}32"
+            ;;
+        aarch64)
+            NATIVE_TARGET="${HOST}arm64"
             ;;
         *)
             stderr_echo "unname returned unsupported architecture!"

@@ -445,6 +445,8 @@ Generator can be:
     cpp-linux64-gcc       Generate C++ sources and compile them for for linux64 target (gcc).
     cpp-linux32-clang     Generate C++ sources and compile them for linux32 target (Clang).
     cpp-linux64-clang     Generate C++ sources and compile them for for linux64 target (Clang).
+    cpp-linuxarm64-gcc    Generate C++ sources and compile them for for linuxarm64 target (gcc).
+    cpp-linuxarm64-clang  Generate C++ sources and compile them for for linuxarm64 target (Clang).
     cpp-windows64-mingw   Generate C++ sources and compile them for for windows64 target (MinGW64).
     cpp-windows64-msvc    Generate C++ sources and compile them for for windows64 target (MSVC).
     java                  Generate Java sources and compile them.
@@ -455,6 +457,8 @@ Generator can be:
     all-linux64-gcc       Test all generators and compile all possible linux64 sources (gcc).
     all-linux32-clang     Test all generators and compile all possible linux32 sources (Clang).
     all-linux64-clang     Test all generators and compile all possible linux64 sources (Clang).
+    all-linuxarm64-gcc    Test all generators and compile all possible linuxarm64 sources (gcc).
+    all-linuxarm64-clang  Test all generators and compile all possible linuxarm64 sources (Clang).
     all-windows64-mingw   Test all generators and compile all possible windows64 sources (MinGW64).
     all-windows64-msvc    Test all generators and compile all possible windows64 sources (MSVC).
 
@@ -580,7 +584,7 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
+            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-linuxarm64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -601,7 +605,7 @@ parse_arguments()
                 eval ${PARAM_DOC_OUT}=1
                 ;;
 
-            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-linuxarm64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
