@@ -253,6 +253,17 @@ check_generated_version()
     return 0
 }
 
+# Print the exact command which pushes the current branch of the given repository to origin.
+print_push_command()
+{
+    exit_if_argc_ne $# 1
+    local REPO_DIR="$1"; shift
+
+    local REPO_TOPLEVEL=`"${GIT}" -C "${REPO_DIR}" rev-parse --show-toplevel`
+    local REPO_BRANCH=`"${GIT}" -C "${REPO_DIR}" rev-parse --abbrev-ref HEAD`
+    printf "    %q -C %q push origin %q\n" "${GIT}" "${REPO_TOPLEVEL}" "${REPO_BRANCH}"
+}
+
 # Upload Zserio jar together with runtime jars to Maven central repository.
 upload_maven()
 {
@@ -470,7 +481,8 @@ EOF
 
         echo $'\e[1;33m'"Don't forget to check the Zserio Conan Center Index repository!"$'\e[0m'
         echo $'\e[1;33m'"Run: 'conan create recipes/zserio/all/conanfile.py --version ${ZSERIO_VERSION}'"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push changes to origin and make a pull request to upstream!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin and make a pull request to upstream:"$'\e[0m'
+        print_push_command "${CONAN_DIR}"
         read -n 1 -s -r -p "Press any key to continue..."
         echo
     else
@@ -516,7 +528,8 @@ update_extension_sample()
             return 1
         fi
         echo $'\e[1;33m'"Don't forget to check the Zserio Extension Sample repository!"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin:"$'\e[0m'
+        print_push_command "${EXTENSION_SAMPLE_DIR}"
         read -n 1 -s -r -p "Press any key to continue..."
         echo
     fi
@@ -579,7 +592,8 @@ update_tutorial_cpp()
             return 1
         fi
         echo $'\e[1;33m'"Don't forget to check the Zserio Tutorial Cpp repository!"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin:"$'\e[0m'
+        print_push_command "${TUTORIAL_CPP_DIR}"
         read -n 1 -s -r -p "Press any key to continue..."
         echo
     fi
@@ -633,7 +647,8 @@ update_tutorial_java()
             return 1
         fi
         echo $'\e[1;33m'"Don't forget to check the Zserio Tutorial Java repository!"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin:"$'\e[0m'
+        print_push_command "${TUTORIAL_JAVA_DIR}"
         read -n 1 -s -r -p "Press any key to continue..."
         echo
     fi
@@ -705,7 +720,8 @@ update_tutorial_python()
             return 1
         fi
         echo $'\e[1;33m'"Don't forget to check the Zserio Tutorial Python repository!"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin:"$'\e[0m'
+        print_push_command "${TUTORIAL_PYTHON_DIR}"
         read -n 1 -s -r -p "Press any key to continue..."
         echo
     fi
