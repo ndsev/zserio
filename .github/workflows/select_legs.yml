@@ -2,6 +2,11 @@ name: Select Legs
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs with all checks regardless of the event."
+        type: boolean
+        default: false
     outputs:
       zserio:
         value: ${{jobs.select.outputs.zserio}}
@@ -24,6 +29,7 @@ on:
 # 'full' is true for pushes to master and release/** and for manual runs, which run every leg of each language.
 # Otherwise it is false and the language workflows run a smoke run: one Linux leg per language, without
 # Windows and without the extra and slow checks, a miss shows up on the next push to release/**.
+# The 'full' input selects all legs with 'full' true for any event, the release workflow uses it.
 jobs:
   select:
     runs-on: "ubuntu-22.04"
@@ -51,6 +57,7 @@ jobs:
       env:
         EVENT_NAME: ${{github.event_name}}
         REF_NAME: ${{github.ref_name}}
+        FULL_INPUT: ${{inputs.full}}
         PULL_REQUEST_BASE_SHA: ${{github.event.pull_request.base.sha}}
         PUSH_BEFORE_SHA: ${{github.event.before}}
       run: |
@@ -62,7 +69,7 @@ jobs:
         fi
 
         # a new branch has an all zero 'before' and a force push can make it unreachable: run all legs
-        if [[ -n "${BASE_SHA}" && ! "${BASE_SHA}" =~ ^0+$ ]] &&
+        if [[ "${FULL_INPUT}" != "true" && -n "${BASE_SHA}" && ! "${BASE_SHA}" =~ ^0+$ ]] &&
                 CHANGED_PATHS="$(git diff --name-only "${BASE_SHA}" "${GITHUB_SHA}")" ; then
             echo "Changed paths since ${BASE_SHA}:"
             echo "${CHANGED_PATHS}"
@@ -73,7 +80,7 @@ jobs:
         fi
 
         FULL=false
-        if [[ "${EVENT_NAME}" == "workflow_dispatch" ||
+        if [[ "${FULL_INPUT}" == "true" || "${EVENT_NAME}" == "workflow_dispatch" ||
               ( "${EVENT_NAME}" == "push" && ( "${REF_NAME}" == "master" || "${REF_NAME}" == release/* ) ) ]] ; then
             FULL=true
         fi
