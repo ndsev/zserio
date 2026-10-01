@@ -661,13 +661,26 @@ update_tutorial_python()
         stderr_echo "Python failed with return code ${PYTHON_RESULT}!"
         return 1
     fi
-    if [ -f "${TUTORIAL_PYTHON_BUILD_DIR}/bin/activate" ] ; then
-        . "${TUTORIAL_PYTHON_BUILD_DIR}/bin/activate"
-    else
-        . "${TUTORIAL_PYTHON_BUILD_DIR}/Scripts/activate"
+    local VENV_BIN_DIR="${TUTORIAL_PYTHON_BUILD_DIR}/bin"
+    if [ ! -f "${VENV_BIN_DIR}/activate" ] ; then
+        VENV_BIN_DIR="${TUTORIAL_PYTHON_BUILD_DIR}/Scripts"
     fi
-    pip install zserio=="${ZSERIO_VERSION}"
-    zserio -src "${TUTORIAL_PYTHON_DIR}" tutorial.zs -python "${TUTORIAL_PYTHON_DIR}/src"
+    . "${VENV_BIN_DIR}/activate"
+
+    # call pip and zserio from the virtualenv explicitly, a zserio installed elsewhere must not be used
+    "${VENV_BIN_DIR}/python" -m pip install zserio=="${ZSERIO_VERSION}"
+    local PIP_RESULT=$?
+    if [ ${PIP_RESULT} -ne 0 ] ; then
+        stderr_echo "Pip install of zserio ${ZSERIO_VERSION} failed with return code ${PIP_RESULT}!"
+        return 1
+    fi
+    local VENV_ZSERIO_VERSION
+    VENV_ZSERIO_VERSION=`"${VENV_BIN_DIR}/zserio" --version | "${SED}" -n 's/^Core version //p'`
+    if [[ "${VENV_ZSERIO_VERSION}" != "${ZSERIO_VERSION}" ]] ; then
+        stderr_echo "Zserio in the virtualenv has version '${VENV_ZSERIO_VERSION}' instead of ${ZSERIO_VERSION}!"
+        return 1
+    fi
+    "${VENV_BIN_DIR}/zserio" -src "${TUTORIAL_PYTHON_DIR}" tutorial.zs -python "${TUTORIAL_PYTHON_DIR}/src"
     local ZSERIO_RESULT=$?
     if [ ${ZSERIO_RESULT} -ne 0 ] ; then
         stderr_echo "Zserio failed with return code ${ZSERIO_RESULT}!"
