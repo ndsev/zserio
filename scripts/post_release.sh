@@ -59,6 +59,21 @@ set_post_release_global_variables()
         return 1
     fi
 
+    # SED and TAIL to use, default to "sed" and "tail" if not set; GNU versions are required
+    # (BSD sed and tail silently do something else with the options used here)
+    SED="${SED:-sed}"
+    if ! "${SED}" --version 2>/dev/null | grep -q "GNU" ; then
+        stderr_echo "GNU sed is required, '${SED}' is not GNU sed! Set SED environment variable" \
+                "(e.g. SED=gsed on macOS)."
+        return 1
+    fi
+    TAIL="${TAIL:-tail}"
+    if ! "${TAIL}" --version 2>/dev/null | grep -q "GNU" ; then
+        stderr_echo "GNU tail is required, '${TAIL}' is not GNU tail! Set TAIL environment variable" \
+                "(e.g. TAIL=gtail on macOS)."
+        return 1
+    fi
+
     # UNZIP to use, defaults to "unzip" if not set
     UNZIP="${UNZIP:-unzip}"
     if [ ! -f "`which "${UNZIP}"`" ] ; then
@@ -177,6 +192,8 @@ Uses the following environment variables for update after release:
     MVN      Mvn executable to use. Default is "mvn".
     JAVA_BIN Java executable to use. Default is "java".
     GIT      Git executable to use. Default is "git".
+    SED      GNU sed executable to use. Default is "sed" (on macOS e.g. "gsed").
+    TAIL     GNU tail executable to use. Default is "tail" (on macOS e.g. "gtail").
     UNZIP    Unzip executable to use. Default is "unzip".
     GPG      Gpg executable to use. Default is "gpg".
     SHASUM   Shasum exetuable to use. Default is "shasum".
@@ -344,7 +361,7 @@ update_conan()
         fi
 
         local CONFIG_YML=${ZSERIO_CONAN_DIR}/recipes/zserio/config.yml
-        local OLD_VERSIONS=$(tail "${CONFIG_YML}" -n +2)
+        local OLD_VERSIONS=$("${TAIL}" -n +2 "${CONFIG_YML}")
         cat > ${CONFIG_YML} << EOF
 versions:
   "${ZSERIO_VERSION}":
@@ -353,7 +370,7 @@ ${OLD_VERSIONS}
 EOF
 
         local CONANDATA_YML=${ZSERIO_CONAN_DIR}/recipes/zserio/all/conandata.yml
-        local OLD_SOURCES=$(tail "${CONANDATA_YML}" -n +2)
+        local OLD_SOURCES=$("${TAIL}" -n +2 "${CONANDATA_YML}")
         local ZSERIO_RUNTIME_LIBS_URL
         get_zserio_runtime_libs_url "${ZSERIO_VERSION}" ZSERIO_RUNTIME_LIBS_URL
         local ZSERIO_BIN_URL
@@ -405,7 +422,7 @@ update_extension_sample()
 
     local EXTENSION_FILE="${EXTENSION_SAMPLE_DIR}/src/zserio/extension/sample/SampleExtension.java"
     echo -ne "Updating version to ${ZSERIO_VERSION} in Zserio Extension Sample..."
-    sed -i -e 's/[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"${ZSERIO_VERSION}"'/' "${EXTENSION_FILE}"
+    "${SED}" -i -e 's/[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"${ZSERIO_VERSION}"'/' "${EXTENSION_FILE}"
     local SED_RESULT=$?
     if [ ${SED_RESULT} -ne 0 ] ; then
         stderr_echo "Sed failed with return code ${SED_RESULT}!"
@@ -606,7 +623,7 @@ update_streamlit()
 
     local REQUIREMENTS_FILE="${STREAMLIT_DIR}/requirements.txt"
     echo -ne "Updating version to ${ZSERIO_VERSION} in Zserio Streamlit..."
-    sed -i -e 's/zserio==[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"zserio==${ZSERIO_VERSION}"'/' \
+    "${SED}" -i -e 's/zserio==[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"zserio==${ZSERIO_VERSION}"'/' \
             "${REQUIREMENTS_FILE}"
     local SED_RESULT=$?
     if [ ${SED_RESULT} -ne 0 ] ; then
@@ -796,7 +813,7 @@ patch_old_runtime_doc()
 
     local HTML_FILES=($(grep "${PATTERN}" "${ZSERIO_DOC_DIR}" -R -l))
     for HTML_FILE  in "${HTML_FILES[@]}" ; do
-        sed -i '/'"${PATTERN}"'/a <option value="'"${ZSERIO_VERSION}"'">'"${ZSERIO_VERSION}"'</option>' ${HTML_FILE}
+        "${SED}" -i '/'"${PATTERN}"'/a <option value="'"${ZSERIO_VERSION}"'">'"${ZSERIO_VERSION}"'</option>' ${HTML_FILE}
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to append the new version <option>!"
             return 1
@@ -830,7 +847,7 @@ patch_new_runtime_doc()
     local GREP_INCLUDE=(--include "index.html" --include "zserio.html" --include "overview-summary.html")
     local HTML_FILES=($(grep "Built for Zserio" "${ZSERIO_NEW_DOC_DIR}" -R -l ${GREP_INCLUDE[@]}))
     for HTML_FILE  in "${HTML_FILES[@]}" ; do
-        sed -i 's/\(Built for Zserio\)\s*[a-zA-Z0-9.-]*/\1'"${ZSERIO_VERSION_SELECT}"'/' "${HTML_FILE}"
+        "${SED}" -i 's/\(Built for Zserio\)\s*[a-zA-Z0-9.-]*/\1'"${ZSERIO_VERSION_SELECT}"'/' "${HTML_FILE}"
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to apply zserio-version-select!"
             return 1
