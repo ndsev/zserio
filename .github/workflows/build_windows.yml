@@ -1,10 +1,10 @@
 name: Windows
 
+# only the full runs of master, release/** and manual runs, pull requests and '*-ci' pushes run only the Linux
+# smoke run, see select_legs.yml
 on:
   push:
-    branches: [ master, 'release/**', '*-ci' ]
-  pull_request:
-    branches: [ master, 'release/**', '*-ci' ]
+    branches: [ master, 'release/**' ]
   workflow_dispatch:
 
 jobs:
