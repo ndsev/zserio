@@ -15,30 +15,44 @@ jobs:
     needs: [legs]
     if: needs.legs.outputs.zserio == 'true'
     uses: "./.github/workflows/build_linux_zserio.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
 
   cpp:
     needs: [legs, zserio]
     if: needs.legs.outputs.cpp == 'true'
     uses: "./.github/workflows/build_linux_cpp.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   java:
     needs: [legs, zserio]
     if: needs.legs.outputs.java == 'true'
     uses: "./.github/workflows/build_linux_java.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   python:
     needs: [legs, zserio]
     if: needs.legs.outputs.python == 'true'
     uses: "./.github/workflows/build_linux_python.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   doc:
     needs: [legs, zserio]
     if: needs.legs.outputs.doc == 'true'
     uses: "./.github/workflows/build_linux_doc.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   xml:
     needs: [legs, zserio]
     if: needs.legs.outputs.xml == 'true'
     uses: "./.github/workflows/build_linux_xml.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
 
+  # only in a full run: the smoke run lacks the clang 14 Debug leg that uploads the C++ runtime artifact
   release:
-    needs: [cpp, java, python, doc, xml]
+    needs: [legs, cpp, java, python, doc, xml]
+    if: needs.legs.outputs.full == 'true'
     runs-on: "ubuntu-22.04"
     steps:
     - name: "Download Zserio compiler artifacts"

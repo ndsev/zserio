@@ -2,18 +2,28 @@ name: Linux Python
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs and checks, otherwise only the smoke run, see select_legs.yml"
+        type: boolean
+        required: true
 
 jobs:
   python:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - { os: "ubuntu-22.04", python-version: "3.9" }
-        - { os: "ubuntu-22.04", python-version: "3.10" }
-        - { os: "ubuntu-22.04", python-version: "3.11" }
-        - { os: "ubuntu-22.04", python-version: "3.12" }
-        - { os: "ubuntu-22.04", python-version: "3.13" }
+        # the smoke run tests only with Python 3.9: the oldest supported version, so the generated code and
+        # the runtime cannot use anything newer
+        include: ${{ fromJSON(inputs.full && '[
+            {"os":"ubuntu-22.04","python-version":"3.9"},
+            {"os":"ubuntu-22.04","python-version":"3.10"},
+            {"os":"ubuntu-22.04","python-version":"3.11"},
+            {"os":"ubuntu-22.04","python-version":"3.12"},
+            {"os":"ubuntu-22.04","python-version":"3.13"}
+          ]' || '[
+            {"os":"ubuntu-22.04","python-version":"3.9"}
+          ]') }}
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-python${{matrix.python-version}}
@@ -23,6 +33,8 @@ jobs:
       run: |
         echo "PYLINT_ENABLED=1" >> ${GITHUB_ENV}
         echo "MYPY_ENABLED=1" >> ${GITHUB_ENV}
+        # the smoke run tests without the C++ optimized runtime (zserio_cpp)
+        echo "PYTHON_CPP_ENABLED=${{ inputs.full && '1' || '0' }}" >> ${GITHUB_ENV}
 
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
@@ -58,6 +70,7 @@ jobs:
         name: zserio-bin-java8
 
     - name: Build zserio C++ runtime (needed for python_cpp)
+      if: ${{ env.PYTHON_CPP_ENABLED == 1 }}
       run: |
         scripts/build.sh cpp_rt-linux64-gcc
 
@@ -73,9 +86,10 @@ jobs:
       run: |
         scripts/test.sh python
 
-    # stays on all legs: the options generate code the default run does not run, and each Python version
-    # is an environment it has to work in
+    # on all legs of a full run: the options generate code the default run does not run, and each Python
+    # version is an environment it has to work in
     - name: Run Zserio tests with extra arguments
+      if: ${{ inputs.full }}
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
         scripts/test.sh -p -i arguments/without_writer_code python
@@ -89,7 +103,7 @@ jobs:
 
     # the API of the generated code does not depend on the Python version, one leg is enough
     - name: Run Zserio API compatibility checks
-      if: ${{ matrix.python-version == '3.9' }}
+      if: ${{ inputs.full && matrix.python-version == '3.9' }}
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         MYPY_ENABLED: 0
@@ -99,14 +113,18 @@ jobs:
 
     - name: Run Zserio performance tests
       run: |
-        scripts/test_perf.sh python python-cpp \
+        PYTHON_TARGETS=("python")
+        if [[ "${PYTHON_CPP_ENABLED}" == 1 ]] ; then
+            PYTHON_TARGETS+=("python-cpp")
+        fi
+        scripts/test_perf.sh "${PYTHON_TARGETS[@]}" \
             --source-dir test/data/others/gif/zs --source gif.zs \
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
     # with one iteration this measures nothing, it only checks that the benchmarks run, one leg is enough
     - name: Run Zserio benchmarks
-      if: ${{ matrix.python-version == '3.9' }}
+      if: ${{ inputs.full && matrix.python-version == '3.9' }}
       run: |
         scripts/benchmark.sh python python-cpp --num-iterations 1
 
