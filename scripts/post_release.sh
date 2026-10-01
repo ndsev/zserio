@@ -599,7 +599,7 @@ update_tutorial_java()
     echo
     local TUTORIAL_JAVA_BUILD_DIR="${TUTORIAL_JAVA_DIR}/build"
     ${MVN} dependency:copy -Dmaven.repo.local="${TUTORIAL_JAVA_BUILD_DIR}/download" \
-            -Dartifact=io.github.ndsev:zserio:LATEST \
+            -Dartifact=io.github.ndsev:zserio:${ZSERIO_VERSION} \
             -DoutputDirectory="${TUTORIAL_JAVA_BUILD_DIR}" \
             -Dmdep.stripVersion=true
     local MVN_RESULT=$?
