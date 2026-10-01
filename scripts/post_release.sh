@@ -199,7 +199,7 @@ Uses the following environment variables for update after release:
     SHASUM   Shasum exetuable to use. Default is "shasum".
     PYTHON   Python executable to use. Default is "python3".
 
-    GITHUB_TOKEN                GitHub token authentication to use during looking for the latest release on GitHub.
+    GITHUB_TOKEN                GitHub token authentication to use during downloading release assets from GitHub.
                                 Default is without authentication.
 
     ZSERIO_PYPI_DIR             Zserio PyPi project directory. Default is "../../zserio-pypi".
@@ -917,13 +917,15 @@ Description:
     Update all Zserio dependent repositories after Zserio release.
 
 Usage:
-    $0 [-h] [-e] [-o <dir>] [repository]
+    $0 [-h] [-e] [-o <dir>] -v <version> [repository]
 
 Arguments:
     -h, --help       Show this help.
     -e, --help-env   Show help for enviroment variables.
     -o <dir>, --output-directory <dir>
                      Output directory where build and distr are located.
+    -v <version>, --version <version>
+                     Zserio release version to update the repositories to (e.g. 2.20.0). Required.
 
 Repository can be empty for all repositories or arbitrary combination of
     maven            Upload Zserio jar together with runtime jars to Maven central repository
@@ -937,7 +939,8 @@ Repository can be empty for all repositories or arbitrary combination of
     web_pages        Update Zserio Web Pages branch after new Zserio release
 
 Examples:
-    $0
+    $0 -v 2.20.0
+    $0 -v 2.20.0 conan extension_sample
 
 EOF
 }
@@ -952,9 +955,10 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=10
+    local NUM_OF_ARGS=11
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
+    local PARAM_VERSION_OUT="$1"; shift
     local PARAM_MAVEN_OUT="$1"; shift
     local PARAM_PYPI_OUT="$1"; shift
     local PARAM_CONAN_OUT="$1"; shift
@@ -994,6 +998,21 @@ parse_arguments()
                     return 1
                 fi
                 eval ${PARAM_OUT_DIR_OUT}="$2"
+                shift 2
+                ;;
+
+            "-v" | "--version")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing version!"
+                    echo
+                    return 1
+                fi
+                if [[ ! "$2" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9]+)?$ ]] ; then
+                    stderr_echo "Invalid version '$2'!"
+                    echo
+                    return 1
+                fi
+                eval ${PARAM_VERSION_OUT}="$2"
                 shift 2
                 ;;
 
@@ -1066,6 +1085,12 @@ parse_arguments()
         ARG="$1"
     done
 
+    if [[ -z "${!PARAM_VERSION_OUT}" ]] ; then
+        stderr_echo "Missing release version, use -v <version>!"
+        echo
+        return 1
+    fi
+
     if [[ ${NUM_PARAMS} == 0 ]] ; then
         eval ${PARAM_MAVEN_OUT}=1
         eval ${PARAM_PYPI_OUT}=1
@@ -1089,6 +1114,7 @@ main()
 
     # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
+    local ZSERIO_VERSION=""
     local PARAM_MAVEN
     local PARAM_PYPI
     local PARAM_CONAN
@@ -1098,8 +1124,8 @@ main()
     local PARAM_TUTORIAL_PYTHON
     local PARAM_STREAMLIT
     local PARAM_WEB_PAGES
-    parse_arguments PARAM_OUT_DIR PARAM_MAVEN PARAM_PYPI PARAM_CONAN PARAM_EXTENSION_SAMPLE PARAM_TUTORIAL_CPP \
-            PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES "$@"
+    parse_arguments PARAM_OUT_DIR ZSERIO_VERSION PARAM_MAVEN PARAM_PYPI PARAM_CONAN PARAM_EXTENSION_SAMPLE \
+            PARAM_TUTORIAL_CPP PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -1118,13 +1144,6 @@ main()
     set_post_release_global_variables ${PARAM_MAVEN} ${PARAM_PYPI} ${PARAM_CONAN} ${PARAM_EXTENSION_SAMPLE} \
             ${PARAM_TUTORIAL_CPP} ${PARAM_TUTORIAL_JAVA} ${PARAM_TUTORIAL_PYTHON} ${PARAM_STREAMLIT} \
             ${PARAM_WEB_PAGES}
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-
-    # get latest zserio version
-    local ZSERIO_VERSION
-    get_latest_zserio_version ZSERIO_VERSION
     if [ $? -ne 0 ] ; then
         return 1
     fi
