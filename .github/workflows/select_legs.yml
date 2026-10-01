@@ -15,9 +15,15 @@ on:
         value: ${{jobs.select.outputs.doc}}
       xml:
         value: ${{jobs.select.outputs.xml}}
+      full:
+        value: ${{jobs.select.outputs.full}}
 
 # Pull requests and pushes to '*-ci' branches run only the legs their changed paths can affect,
 # all other events (pushes to master and release/**, manual runs) run all legs.
+#
+# 'full' is true for pushes to master and release/** and for manual runs, which run every leg of each language.
+# Otherwise it is false and the language workflows run a smoke run: one Linux leg per language, without
+# Windows and without the extra and slow checks, a miss shows up on the next push to release/**.
 jobs:
   select:
     runs-on: "ubuntu-22.04"
@@ -28,6 +34,7 @@ jobs:
       python: ${{steps.select.outputs.python}}
       doc: ${{steps.select.outputs.doc}}
       xml: ${{steps.select.outputs.xml}}
+      full: ${{steps.select.outputs.full}}
 
     steps:
     - name: "Checkout"
@@ -64,6 +71,13 @@ jobs:
             echo "Running all legs for ${EVENT_NAME} on ${REF_NAME}."
             SELECTION="$(printf "%s=true\n" zserio cpp java python doc xml)"
         fi
+
+        FULL=false
+        if [[ "${EVENT_NAME}" == "workflow_dispatch" ||
+              ( "${EVENT_NAME}" == "push" && ( "${REF_NAME}" == "master" || "${REF_NAME}" == release/* ) ) ]] ; then
+            FULL=true
+        fi
+        SELECTION="${SELECTION}"$'\n'"full=${FULL}"
 
         echo "Selected legs:"
         echo "${SELECTION}"

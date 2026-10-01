@@ -31,33 +31,44 @@ test_python_runtime()
     fi
     echo
 
-    echo "Running python runtime unit tests with C++ optimizations."
-    echo
+    # without the C++ optimizations, their code paths stay uncovered and the coverage cannot reach 100%
+    local COVERAGE_DATA_FILES=("coverage_python.data")
+    local COVERAGE_FAIL_UNDER=()
+    if [[ ${PYTHON_CPP_ENABLED} == 1 ]] ; then
+        echo "Running python runtime unit tests with C++ optimizations."
+        echo
 
-    local ZSERIO_CPP_DIR
-    ZSERIO_CPP_DIR=$(ls -d1 "${BUILD_DIR}/zserio_cpp/lib"*)
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Failed to locate C++ runtime binding to Python!"
-        popd > /dev/null
-        return 1
-    fi
+        local ZSERIO_CPP_DIR
+        ZSERIO_CPP_DIR=$(ls -d1 "${BUILD_DIR}/zserio_cpp/lib"*)
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to locate C++ runtime binding to Python!"
+            popd > /dev/null
+            return 1
+        fi
 
-    ZSERIO_PYTHON_IMPLEMENTATION="cpp" \
-    PYTHONPATH="${SOURCES_DIR}:${ZSERIO_CPP_DIR}" python \
-            -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" --data-file=coverage_cpp.data \
-            -m unittest discover -s "${TESTS_DIR}" -v
-    local PYTHON_RESULT=$?
-    if [ ${PYTHON_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python unit tests with C++ optimizations failed with return code ${PYTHON_RESULT}!"
-        popd > /dev/null
-        return 1
+        ZSERIO_PYTHON_IMPLEMENTATION="cpp" \
+        PYTHONPATH="${SOURCES_DIR}:${ZSERIO_CPP_DIR}" python \
+                -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" --data-file=coverage_cpp.data \
+                -m unittest discover -s "${TESTS_DIR}" -v
+        local PYTHON_RESULT=$?
+        if [ ${PYTHON_RESULT} -ne 0 ] ; then
+            stderr_echo "Running python unit tests with C++ optimizations failed with return code ${PYTHON_RESULT}!"
+            popd > /dev/null
+            return 1
+        fi
+        echo
+
+        COVERAGE_DATA_FILES+=("coverage_cpp.data")
+        COVERAGE_FAIL_UNDER=("--fail-under=100")
+    else
+        echo "Skipping python runtime unit tests with C++ optimizations (PYTHON_CPP_ENABLED=${PYTHON_CPP_ENABLED})."
+        echo
     fi
-    echo
 
     echo "Running python coverage report."
     echo
 
-    python -m coverage combine --keep coverage_cpp.data coverage_python.data
+    python -m coverage combine --keep "${COVERAGE_DATA_FILES[@]}"
     python -m coverage xml -o "coverage/coverage_report.xml" --omit="*test_object*"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
@@ -65,7 +76,7 @@ test_python_runtime()
         popd > /dev/null
         return 1
     fi
-    python -m coverage html --directory="coverage" --fail-under=100 \
+    python -m coverage html --directory="coverage" "${COVERAGE_FAIL_UNDER[@]}" \
             --omit="*test_object*" --title="Zserio Python Runtime Library"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
@@ -694,10 +705,12 @@ main()
             local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
 
             # compile C++ runtime binding to Python
-            build_cpp_binding_to_python "${PYTHON_RUNTIME_ROOT}/src" "${CPP_RUNTIME_DIR}" \
-                    "${PYTHON_RUNTIME_BUILD_DIR}"
-            if [ $? -ne 0 ] ; then
-                return 1
+            if [[ ${PYTHON_CPP_ENABLED} == 1 ]] ; then
+                build_cpp_binding_to_python "${PYTHON_RUNTIME_ROOT}/src" "${CPP_RUNTIME_DIR}" \
+                        "${PYTHON_RUNTIME_BUILD_DIR}"
+                if [ $? -ne 0 ] ; then
+                    return 1
+                fi
             fi
 
             test_python_runtime "${PYTHON_RUNTIME_ROOT}" "${PYTHON_RUNTIME_BUILD_DIR}"

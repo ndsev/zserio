@@ -2,17 +2,27 @@ name: Linux Zserio
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs and checks, otherwise only the smoke run, see select_legs.yml"
+        type: boolean
+        required: true
 
 jobs:
   zserio:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - { os: "ubuntu-22.04", java-version: "8" }
-        - { os: "ubuntu-22.04", java-version: "11" }
-        - { os: "ubuntu-22.04", java-version: "17" }
-        - { os: "ubuntu-24.04", java-version: "21" }
+        # the smoke run builds only with Java 8: the oldest supported version, and every other leg uses the
+        # compiler artifact of this leg (zserio-bin-java8)
+        include: ${{ fromJSON(inputs.full && '[
+            {"os":"ubuntu-22.04","java-version":"8"},
+            {"os":"ubuntu-22.04","java-version":"11"},
+            {"os":"ubuntu-22.04","java-version":"17"},
+            {"os":"ubuntu-24.04","java-version":"21"}
+          ]' || '[
+            {"os":"ubuntu-22.04","java-version":"8"}
+          ]') }}
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-java${{matrix.java-version}}

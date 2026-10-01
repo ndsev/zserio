@@ -2,37 +2,44 @@ name: Linux C++
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs and checks, otherwise only the smoke run, see select_legs.yml"
+        type: boolean
+        required: true
 
 jobs:
   cpp:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "17", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "11", build-type: "Debug" }
+        # the smoke run tests only the 64-bit gcc 11 C++11 Debug leg: gcc 11 is the default compiler of
+        # ubuntu-22.04, Debug runs the sanitizers and the runtime's line coverage check, and Debug builds
+        # the test corpus faster than Release
+        include: ${{ fromJSON(inputs.full && '[
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"7","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"7","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"7","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"7","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"11","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"11","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"11","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"11","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"17","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"17","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"17","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"17","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"21","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"21","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"21","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"21","cxx-standard":"11","build-type":"Debug"}
+          ]' || '[
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"11","cxx-standard":"11","build-type":"Debug"}
+          ]') }}
 
     runs-on: ${{matrix.os}}
     name: "\
@@ -141,9 +148,10 @@ jobs:
       run: |
         scripts/test.sh cpp-${PACKAGE}
 
-    # stays on all legs: the options generate code the default run does not compile, and whether it compiles
-    # depends on the compiler and the build type, see the MSVC Debug exclusion in build_windows_cpp.yml
+    # on all legs of a full run: the options generate code the default run does not compile, and whether it
+    # compiles depends on the compiler and the build type, see the MSVC Debug exclusion in build_windows_cpp.yml
     - name: Run Zserio tests with extra arguments
+      if: ${{ inputs.full }}
       env:
         CLANG_TIDY_BIN: ""
       run: |
@@ -162,7 +170,8 @@ jobs:
     # the old version's tests check the API of the generated code, which does not depend on the compiler,
     # so one leg is enough
     - name: Run Zserio API compatibility checks
-      if: ${{ matrix.platform == '64' && matrix.gcc-version == '11' && matrix.build-type == 'Release' }}
+      if: ${{ inputs.full && matrix.platform == '64' && matrix.gcc-version == '11' &&
+              matrix.build-type == 'Release' }}
       env:
         CLANG_FORMAT_BIN: ""
         CLANG_TIDY_BIN: ""
@@ -184,8 +193,8 @@ jobs:
 
     # with one iteration this only builds the benchmarks, one gcc and one clang leg are enough for that
     - name: Run Zserio benchmarks
-      if: ${{ matrix.platform == '64' && matrix.build-type == 'Release' && matrix.cxx-standard == '11' &&
-              (matrix.gcc-version == '11' || matrix.clang-version == '21') }}
+      if: ${{ inputs.full && matrix.platform == '64' && matrix.build-type == 'Release' &&
+              matrix.cxx-standard == '11' && (matrix.gcc-version == '11' || matrix.clang-version == '21') }}
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
 
@@ -211,9 +220,8 @@ jobs:
   # native linux arm64, the compiler versions are those of the cpp job since compiler_utils.cmake pins its
   # warnings as errors exceptions to them
   cpp-arm64:
-    # only the full runs of master, release/** and manual runs, pull requests and '*-ci' pushes skip it
-    if: ${{ github.event_name == 'workflow_dispatch' ||
-            (github.event_name == 'push' && (github.ref_name == 'master' || startsWith(github.ref_name, 'release/'))) }}
+    # only in a full run, the smoke run skips it
+    if: ${{ inputs.full }}
     strategy:
       fail-fast: false
       matrix:
@@ -317,8 +325,10 @@ jobs:
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
-  # clang-tidy over the test sources (generated code included), split by the test runs of the cpp job
+  # clang-tidy over the test sources (generated code included), split by the test runs of the cpp job,
+  # only in a full run, the smoke run skips it
   cpp-clang-tidy:
+    if: ${{ inputs.full }}
     strategy:
       fail-fast: false
       matrix:
