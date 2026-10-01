@@ -6,9 +6,8 @@ source "${SCRIPT_DIR}/common_tools.sh"
 # Set and check global variables.
 set_post_release_global_variables()
 {
-    exit_if_argc_ne $# 9
+    exit_if_argc_ne $# 8
     local PARAM_MAVEN="$1"; shift
-    local PARAM_PYPI="$1"; shift
     local PARAM_CONAN="$1"; shift
     local PARAM_EXTENSION_SAMPLE="$1"; shift
     local PARAM_TUTORIAL_CPP="$1"; shift
@@ -99,20 +98,11 @@ set_post_release_global_variables()
         fi
     fi
 
-    if [[ ${PARAM_PYPI} == 1 || ${PARAM_TUTORIAL_PYTHON} == 1 ]] ; then
+    if [[ ${PARAM_TUTORIAL_PYTHON} == 1 ]] ; then
         # python to use, defaults to "python3" if not set
         PYTHON="${PYTHON:-python3}"
         if [ ! -f "`which "${PYTHON}"`" ] ; then
             stderr_echo "Cannot find Python! Set PYTHON environment variable."
-            return 1
-        fi
-    fi
-
-    if [[ ${PARAM_PYPI} == 1 ]] ; then
-        # Zserio PyPi directory to use, defaults to "${SCRIPT_DIR}/../../zserio-pypi" if not set
-        ZSERIO_PYPI_DIR="${ZSERIO_PYPI_DIR:-${SCRIPT_DIR}/../../zserio-pypi}"
-        if [ ! -d "${ZSERIO_PYPI_DIR}" ] ; then
-            stderr_echo "Cannot find Zserio PyPi directory! Set ZSERIO_PYPI_DIR environment variable."
             return 1
         fi
     fi
@@ -122,7 +112,7 @@ set_post_release_global_variables()
         # defaults to "${SCRIPT_DIR}/../../zserio-conan-center-index" if not set
         ZSERIO_CONAN_DIR="${ZSERIO_CONAN_DIR:-${SCRIPT_DIR}/../../zserio-conan-center-index}"
         if [ ! -d "${ZSERIO_CONAN_DIR}" ] ; then
-            stderr_echo "Cannot find Zserio Conan Center Index directory! Set ZSERIO_PYPI_DIR environment variable."
+            stderr_echo "Cannot find Zserio Conan Center Index directory! Set ZSERIO_CONAN_DIR environment variable."
             return 1
         fi
     fi
@@ -202,7 +192,6 @@ Uses the following environment variables for update after release:
     GITHUB_TOKEN                GitHub token authentication to use during downloading release assets from GitHub.
                                 Default is without authentication.
 
-    ZSERIO_PYPI_DIR             Zserio PyPi project directory. Default is "../../zserio-pypi".
     ZSERIO_CONAN_DIR            Zserio Conan Center Index dirctory. Default is "../../zserio-conan-center-index".
     ZSERIO_EXTENSION_SAMPLE_DIR Zserio Extension Sample project directory. Default is "../../zserio-extension-sample".
     ZSERIO_TUTORIAL_CPP_DIR     Zserio C++ Tutorial project directory. Default is "../../zserio-tutorial-cpp".
@@ -298,41 +287,6 @@ upload_maven()
         echo
     else
         echo $'\e[1;33m'"Zserio ${ZSERIO_VERSION} has been already deployed in Maven repository."$'\e[0m'
-        echo
-    fi
-
-    return 0
-}
-
-# Upload Zserio PyPi repository after new Zserio release.
-upload_pypi()
-{
-    exit_if_argc_ne $# 2
-    local PYPI_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
-
-    local GREP_RESULT=`"${PYTHON}" -m pip install zserio== 2>&1 >/dev/null | grep ${ZSERIO_VERSION}`
-    if [ $? -ne 0 -o -z "${GREP_RESULT}" ] ; then
-        "${PYPI_DIR}/scripts/build.sh" -p
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failure to build Zserio PyPi!"
-            return 1
-        fi
-
-        "${PYPI_DIR}/scripts/test.sh"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failure to test Zserio PyPi!"
-            return 1
-        fi
-
-        "${PYPI_DIR}/scripts/upload.sh"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failure to upload Zserio PyPi!"
-            return 1
-        fi
-        echo
-    else
-        echo $'\e[1;33m'"Zserio ${ZSERIO_VERSION} has been already deployed in PyPi repository."$'\e[0m'
         echo
     fi
 
@@ -1045,7 +999,6 @@ Arguments:
 
 Repository can be empty for all repositories or arbitrary combination of
     maven            Upload Zserio jar together with runtime jars to Maven central repository
-    pypi             Upload Zserio PyPi repository after new Zserio release
     conan            Update Zserio fork of conan-center-index after new Zserio release
     extension_sample Update Zserio Extension Sample repository after new Zserio release
     tutorial_cpp     Update Zserio Tutorial Cpp repository after new Zserio release
@@ -1071,12 +1024,11 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=11
+    local NUM_OF_ARGS=10
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
     local PARAM_VERSION_OUT="$1"; shift
     local PARAM_MAVEN_OUT="$1"; shift
-    local PARAM_PYPI_OUT="$1"; shift
     local PARAM_CONAN_OUT="$1"; shift
     local PARAM_EXTENSION_SAMPLE_OUT="$1"; shift
     local PARAM_TUTORIAL_CPP_OUT="$1"; shift
@@ -1086,7 +1038,6 @@ parse_arguments()
     local PARAM_WEB_PAGES_OUT="$1"; shift
 
     eval ${PARAM_MAVEN_OUT}=0
-    eval ${PARAM_PYPI_OUT}=0
     eval ${PARAM_CONAN_OUT}=0
     eval ${PARAM_EXTENSION_SAMPLE_OUT}=0
     eval ${PARAM_TUTORIAL_CPP_OUT}=0
@@ -1140,12 +1091,6 @@ parse_arguments()
 
             "maven")
                 eval ${PARAM_MAVEN_OUT}=1
-                NUM_PARAMS=$((NUM_PARAMS + 1))
-                shift 1
-                ;;
-
-            "pypi")
-                eval ${PARAM_PYPI_OUT}=1
                 NUM_PARAMS=$((NUM_PARAMS + 1))
                 shift 1
                 ;;
@@ -1209,7 +1154,6 @@ parse_arguments()
 
     if [[ ${NUM_PARAMS} == 0 ]] ; then
         eval ${PARAM_MAVEN_OUT}=1
-        eval ${PARAM_PYPI_OUT}=1
         eval ${PARAM_CONAN_OUT}=1
         eval ${PARAM_EXTENSION_SAMPLE_OUT}=1
         eval ${PARAM_TUTORIAL_CPP_OUT}=1
@@ -1232,7 +1176,6 @@ main()
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local ZSERIO_VERSION=""
     local PARAM_MAVEN
-    local PARAM_PYPI
     local PARAM_CONAN
     local PARAM_EXTENSION_SAMPLE
     local PARAM_TUTORIAL_CPP
@@ -1240,7 +1183,7 @@ main()
     local PARAM_TUTORIAL_PYTHON
     local PARAM_STREAMLIT
     local PARAM_WEB_PAGES
-    parse_arguments PARAM_OUT_DIR ZSERIO_VERSION PARAM_MAVEN PARAM_PYPI PARAM_CONAN PARAM_EXTENSION_SAMPLE \
+    parse_arguments PARAM_OUT_DIR ZSERIO_VERSION PARAM_MAVEN PARAM_CONAN PARAM_EXTENSION_SAMPLE \
             PARAM_TUTORIAL_CPP PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
@@ -1257,7 +1200,7 @@ main()
     convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
 
     # set global variables
-    set_post_release_global_variables ${PARAM_MAVEN} ${PARAM_PYPI} ${PARAM_CONAN} ${PARAM_EXTENSION_SAMPLE} \
+    set_post_release_global_variables ${PARAM_MAVEN} ${PARAM_CONAN} ${PARAM_EXTENSION_SAMPLE} \
             ${PARAM_TUTORIAL_CPP} ${PARAM_TUTORIAL_JAVA} ${PARAM_TUTORIAL_PYTHON} ${PARAM_STREAMLIT} \
             ${PARAM_WEB_PAGES}
     if [ $? -ne 0 ] ; then
@@ -1270,13 +1213,6 @@ main()
 
     if [[ ${PARAM_MAVEN} == 1 ]] ; then
         upload_maven "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    fi
-
-    if [[ ${PARAM_PYPI} == 1 ]] ; then
-        upload_pypi "${ZSERIO_PYPI_DIR}" "${ZSERIO_VERSION}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
