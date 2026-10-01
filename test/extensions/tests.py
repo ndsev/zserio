@@ -36,7 +36,8 @@ def main():
     # path to zserio runtime release
     runtimePath = os.path.join(TestConfig["release_dir"], "runtime_libs", "python")
     sys.path.append(runtimePath)
-    sys.path.append(args.zserio_cpp_dir)
+    if args.zserio_cpp_dir:
+        sys.path.append(args.zserio_cpp_dir)
 
     # detect test directories
     testPattern = "*Test.py"
@@ -64,10 +65,13 @@ def main():
         return 1
 
     # run tests with python runtime and optimized zserio_cpp
-    print("\nRunning python language tests with C++ optimized runtime.")
-    os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "cpp"
-    if not _runTests(args, testDirs, testPattern):
-        return 1
+    if args.zserio_cpp_dir:
+        print("\nRunning python language tests with C++ optimized runtime.")
+        os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "cpp"
+        if not _runTests(args, testDirs, testPattern):
+            return 1
+    else:
+        print("\nSkipping python language tests with C++ optimized runtime, no --zserio_cpp_dir given.")
 
     # run black
     blackResult = _runBlackOnAllSources(testDirs)

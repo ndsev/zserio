@@ -420,16 +420,21 @@ test_python()
             return 1
         fi
 
-        build_cpp_binding_to_python "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python" \
-                "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp" "${TEST_PYTHON_OUT_DIR}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        local ZSERIO_CPP_DIR
-        ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to locate C++ runtime binding to Python!"
-            return 1
+        # without --zserio_cpp_dir, the tests run only with the pure python runtime
+        local ZSERIO_CPP_ARGS=()
+        if [[ ${PYTHON_CPP_ENABLED} == 1 ]] ; then
+            build_cpp_binding_to_python "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python" \
+                    "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp" "${TEST_PYTHON_OUT_DIR}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+            local ZSERIO_CPP_DIR
+            ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to locate C++ runtime binding to Python!"
+                return 1
+            fi
+            ZSERIO_CPP_ARGS=("--zserio_cpp_dir=${ZSERIO_CPP_DIR}")
         fi
 
         local TEST_FILTER=""
@@ -455,7 +460,7 @@ test_python()
 
         python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
                 --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}" \
-                --zserio_cpp_dir="${ZSERIO_CPP_DIR}"
+                "${ZSERIO_CPP_ARGS[@]}"
         local PYTHON_RESULT=$?
         if [ ${PYTHON_RESULT} -ne 0 ] ; then
             stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"

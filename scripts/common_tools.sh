@@ -188,6 +188,9 @@ set_global_python_variables()
     # Mypy extra arguments are empty by default
     MYPY_EXTRA_ARGS="${MYPY_EXTRA_ARGS:-""}"
 
+    # C++ optimized Python runtime (zserio_cpp) - enabled by default
+    PYTHON_CPP_ENABLED="${PYTHON_CPP_ENABLED:-1}"
+
     # documentation variables for sphinx
     set_global_doc_variables
 }
@@ -485,6 +488,8 @@ Uses the following environment variables for building:
     LLVM_COV_BIN           llvm-cov  binary to use for coverage report generation (clang).
                            Default is empty string.
     SANITIZERS_ENABLED     Defines whether to use sanitizers. Default is 0 (disabled).
+    PYTHON_CPP_ENABLED     Defines whether to build and test the C++ optimized Python
+                           runtime (zserio_cpp). Default is 1 (enabled).
 
     Either set these directly, or create 'scripts/build-env.sh' that sets
     these. It's sourced automatically if it exists.
