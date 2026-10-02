@@ -6,10 +6,19 @@ on:
   pull_request:
     branches: [ master, 'release/**', '*-ci' ]
   workflow_dispatch:
+  # the release workflow builds the release artifacts by this workflow
+  workflow_call:
+    inputs:
+      full:
+        description: "Run all legs with all checks regardless of the event."
+        type: boolean
+        default: false
 
 jobs:
   legs:
     uses: "./.github/workflows/select_legs.yml"
+    with:
+      full: ${{ inputs.full == true }}
 
   zserio:
     needs: [legs]
