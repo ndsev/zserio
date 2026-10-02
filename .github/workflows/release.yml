@@ -6,13 +6,12 @@ name: Release
 #
 # Any other run is a dry run which publishes nothing:
 # - the GitHub release is created as a draft and deleted again,
-# - the wheel is built from the already published release 'wheel_tag' and uploaded to TestPyPI,
-#   PyPI rejects a version which is already on TestPyPI, so choose a tag whose version is not there yet,
+# - the wheel is built and tested from the already published release 'wheel_tag',
 # - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project.
 # A manual run takes 'wheel_tag' as input, a push to the branch 'release-dry-run/<wheel_tag>' takes it from
 # the branch name, it runs the dry run before this workflow is on the default branch.
 #
-# PyPI and TestPyPI trust this workflow file in the GitHub environments 'pypi' and 'testpypi'.
+# PyPI trusts this workflow file in the GitHub environment 'pypi'.
 on:
   push:
     tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
@@ -20,7 +19,7 @@ on:
   workflow_dispatch:
     inputs:
       wheel_tag:
-        description: "Published zserio release tag to build the TestPyPI wheel from, e.g. v2.19.0"
+        description: "Published zserio release tag to build the dry run wheel from, e.g. v2.19.0"
         required: true
         type: string
       zserio_pypi_ref:
@@ -179,27 +178,6 @@ jobs:
 
     - name: "Publish to PyPI"
       uses: pypa/gh-action-pypi-publish@release/v1
-
-  testpypi:
-    if: github.ref_type != 'tag'
-    needs: [wheel]
-    runs-on: "ubuntu-22.04"
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/project/zserio/
-    permissions:
-      id-token: write
-    steps:
-    - name: "Download the zserio wheel"
-      uses: actions/download-artifact@v4
-      with:
-        name: zserio-pypi-dist
-        path: dist
-
-    - name: "Publish to TestPyPI"
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
 
   # the token is never used, it expires on its own
   pypi_token_exchange:
