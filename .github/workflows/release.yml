@@ -12,6 +12,10 @@ name: Release
 # the branch name, it runs the dry run before this workflow is on the default branch.
 #
 # PyPI trusts this workflow file in the GitHub environment 'pypi'.
+
+# the run title and the job names tell a dry run from a release in the 'pypi' environment approval
+run-name: "${{github.ref_type == 'tag' && format('Release {0} - publishes to PyPI', github.ref_name) ||
+    format('Release dry run from {0} - no upload', github.ref_name)}}"
 on:
   push:
     tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
@@ -161,6 +165,7 @@ jobs:
         path: distr/*
 
   pypi:
+    name: "Release: upload to PyPI"
     if: github.ref_type == 'tag'
     needs: [wheel]
     runs-on: "ubuntu-22.04"
@@ -181,6 +186,7 @@ jobs:
 
   # the token is never used, it expires on its own
   pypi_token_exchange:
+    name: "Dry run: PyPI token check, no upload"
     if: github.ref_type != 'tag'
     needs: [wheel]
     runs-on: "ubuntu-22.04"
