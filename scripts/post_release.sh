@@ -6,8 +6,7 @@ source "${SCRIPT_DIR}/common_tools.sh"
 # Set and check global variables.
 set_post_release_global_variables()
 {
-    exit_if_argc_ne $# 8
-    local PARAM_MAVEN="$1"; shift
+    exit_if_argc_ne $# 7
     local PARAM_CONAN="$1"; shift
     local PARAM_EXTENSION_SAMPLE="$1"; shift
     local PARAM_TUTORIAL_CPP="$1"; shift
@@ -25,14 +24,7 @@ set_post_release_global_variables()
         fi
     fi
 
-    if [[ ${PARAM_MAVEN} == 1 || ${PARAM_TUTORIAL_JAVA} == 1 ]] ; then
-        # ANT to use, defaults to "ant" if not set
-        ANT="${ANT:-ant}"
-        if [ ! -f "`which "${ANT}"`" ] ; then
-            stderr_echo "Cannot find ant! Set ANT environment variable."
-            return 1
-        fi
-
+    if [[ ${PARAM_TUTORIAL_JAVA} == 1 ]] ; then
         # MVN to use, defaults to "mvn" if not set
         MVN="${MVN:-mvn}"
         if [ ! -f "`which "${MVN}"`" ] ; then
@@ -78,15 +70,6 @@ set_post_release_global_variables()
     if [ ! -f "`which "${UNZIP}"`" ] ; then
         stderr_echo "Cannot find unzip! Set UNZIP environment variable."
         return 1
-    fi
-
-    if [[ ${PARAM_MAVEN} == 1 ]] ; then
-        # GPG to use, defaults to "gpg" if not set
-        GPG="${GPG:-gpg}"
-        if [ ! -f "`which "${GPG}"`" ] ; then
-            stderr_echo "Cannot find gpg! Set GPG environment variable."
-            return 1
-        fi
     fi
 
     if [[ ${PARAM_CONAN} == 1 ]] ; then
@@ -178,14 +161,12 @@ print_release_help_env()
     cat << EOF
 Uses the following environment variables for update after release:
     CMAKE    CMake executable to use. Default is "cmake".
-    ANT      Ant executable to use. Default is "ant".
     MVN      Mvn executable to use. Default is "mvn".
     JAVA_BIN Java executable to use. Default is "java".
     GIT      Git executable to use. Default is "git".
     SED      GNU sed executable to use. Default is "sed" (on macOS e.g. "gsed").
     TAIL     GNU tail executable to use. Default is "tail" (on macOS e.g. "gtail").
     UNZIP    Unzip executable to use. Default is "unzip".
-    GPG      Gpg executable to use. Default is "gpg".
     SHASUM   Shasum exetuable to use. Default is "shasum".
     PYTHON   Python executable to use. Default is "python3".
 
@@ -251,46 +232,6 @@ print_push_command()
     local REPO_TOPLEVEL=`"${GIT}" -C "${REPO_DIR}" rev-parse --show-toplevel`
     local REPO_BRANCH=`"${GIT}" -C "${REPO_DIR}" rev-parse --abbrev-ref HEAD`
     printf "    %q -C %q push origin %q\n" "${GIT}" "${REPO_TOPLEVEL}" "${REPO_BRANCH}"
-}
-
-# Upload Zserio jar together with runtime jars to Maven central repository.
-upload_maven()
-{
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-    local ZSERIO_BUILD_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
-
-    local ZSERIO_DEPLOY_CHECK_DIR="${ZSERIO_BUILD_DIR}/deploy/check"
-    "${MVN}" dependency:copy \
-            -Dmaven.repo.local="${ZSERIO_DEPLOY_CHECK_DIR}" \
-            -Dartifact=io.github.ndsev:zserio:${ZSERIO_VERSION} \
-            -DoutputDirectory="${ZSERIO_DEPLOY_CHECK_DIR}" 2>&1 >/dev/null
-    if [ $? -ne 0 ] ; then
-        echo "Uploading the latest Zserio release from GitHub to Maven central repository"
-        "${ANT}" -f "${ZSERIO_PROJECT_ROOT}/build.xml" \
-                -Dzserio.build_dir="${ZSERIO_BUILD_DIR}" \
-                -Dzserio.deploy.snapshot_flag=no \
-                -Dmaven.executable="${MVN}" \
-                -Dgpg.executable="${GPG}" \
-                deploy
-        local ANT_RESULT=$?
-        if [ ${ANT_RESULT} -ne 0 ] ; then
-            stderr_echo "Ant failed with return code ${ANT_RESULT}!"
-            return 1
-        fi
-        echo $'\e[1;33m'"Don't forget to check the staged repository at" \
-                "https://central.sonatype.com/publishing/deployments!"$'\e[0m'
-        echo $'\e[1;33m'"If it is ok, push Publish button and wait for around 10 minutes" \
-                "to copy artifacts to Maven Central!"$'\e[0m'
-        read -n 1 -s -r -p "Press any key to continue..."
-        echo
-    else
-        echo $'\e[1;33m'"Zserio ${ZSERIO_VERSION} has been already deployed in Maven repository."$'\e[0m'
-        echo
-    fi
-
-    return 0
 }
 
 # Update Zserio fork of conan-center-index after new Zserio release
@@ -998,7 +939,6 @@ Arguments:
                      Zserio release version to update the repositories to (e.g. 2.20.0). Required.
 
 Repository can be empty for all repositories or arbitrary combination of
-    maven            Upload Zserio jar together with runtime jars to Maven central repository
     conan            Update Zserio fork of conan-center-index after new Zserio release
     extension_sample Update Zserio Extension Sample repository after new Zserio release
     tutorial_cpp     Update Zserio Tutorial Cpp repository after new Zserio release
@@ -1024,11 +964,10 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=10
+    local NUM_OF_ARGS=9
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
     local PARAM_VERSION_OUT="$1"; shift
-    local PARAM_MAVEN_OUT="$1"; shift
     local PARAM_CONAN_OUT="$1"; shift
     local PARAM_EXTENSION_SAMPLE_OUT="$1"; shift
     local PARAM_TUTORIAL_CPP_OUT="$1"; shift
@@ -1037,7 +976,6 @@ parse_arguments()
     local PARAM_STREAMLIT_OUT="$1"; shift
     local PARAM_WEB_PAGES_OUT="$1"; shift
 
-    eval ${PARAM_MAVEN_OUT}=0
     eval ${PARAM_CONAN_OUT}=0
     eval ${PARAM_EXTENSION_SAMPLE_OUT}=0
     eval ${PARAM_TUTORIAL_CPP_OUT}=0
@@ -1087,12 +1025,6 @@ parse_arguments()
                 stderr_echo "Invalid switch '${ARG}'!"
                 echo
                 return 1
-                ;;
-
-            "maven")
-                eval ${PARAM_MAVEN_OUT}=1
-                NUM_PARAMS=$((NUM_PARAMS + 1))
-                shift 1
                 ;;
 
             "conan")
@@ -1153,7 +1085,6 @@ parse_arguments()
     fi
 
     if [[ ${NUM_PARAMS} == 0 ]] ; then
-        eval ${PARAM_MAVEN_OUT}=1
         eval ${PARAM_CONAN_OUT}=1
         eval ${PARAM_EXTENSION_SAMPLE_OUT}=1
         eval ${PARAM_TUTORIAL_CPP_OUT}=1
@@ -1175,7 +1106,6 @@ main()
     # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local ZSERIO_VERSION=""
-    local PARAM_MAVEN
     local PARAM_CONAN
     local PARAM_EXTENSION_SAMPLE
     local PARAM_TUTORIAL_CPP
@@ -1183,7 +1113,7 @@ main()
     local PARAM_TUTORIAL_PYTHON
     local PARAM_STREAMLIT
     local PARAM_WEB_PAGES
-    parse_arguments PARAM_OUT_DIR ZSERIO_VERSION PARAM_MAVEN PARAM_CONAN PARAM_EXTENSION_SAMPLE \
+    parse_arguments PARAM_OUT_DIR ZSERIO_VERSION PARAM_CONAN PARAM_EXTENSION_SAMPLE \
             PARAM_TUTORIAL_CPP PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
@@ -1200,7 +1130,7 @@ main()
     convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
 
     # set global variables
-    set_post_release_global_variables ${PARAM_MAVEN} ${PARAM_CONAN} ${PARAM_EXTENSION_SAMPLE} \
+    set_post_release_global_variables ${PARAM_CONAN} ${PARAM_EXTENSION_SAMPLE} \
             ${PARAM_TUTORIAL_CPP} ${PARAM_TUTORIAL_JAVA} ${PARAM_TUTORIAL_PYTHON} ${PARAM_STREAMLIT} \
             ${PARAM_WEB_PAGES}
     if [ $? -ne 0 ] ; then
@@ -1210,13 +1140,6 @@ main()
     echo "Updating dependent repositories after new Zserio release ${ZSERIO_VERSION}."
     echo
     local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
-
-    if [[ ${PARAM_MAVEN} == 1 ]] ; then
-        upload_maven "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    fi
 
     if [[ ${PARAM_CONAN} == 1 ]] ; then
         update_conan "${ZSERIO_CONAN_DIR}" "${ZSERIO_VERSION}"
