@@ -270,6 +270,8 @@ jobs:
         merge-multiple: true
 
     - name: "Upload to the Central Portal"
+      # explicit bash runs with pipefail, the exit status of ant must not be lost in the pipe to tee
+      shell: bash
       env:
         RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
         CENTRAL_TOKEN_USERNAME: ${{secrets.CENTRAL_TOKEN_USERNAME}}
