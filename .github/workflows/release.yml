@@ -3,19 +3,25 @@ name: Release
 # A pushed release tag vX.Y.Z builds the release artifacts by the Linux workflow, creates the GitHub release
 # and publishes the zserio wheel to PyPI by trusted publishing, no PyPI token is stored anywhere.
 # A prepared draft release of that tag is published with its release notes, otherwise a new release is created.
+# The signed zserio and zserio-runtime jars are uploaded to the Central Portal as one deployment, which waits
+# validated for the Publish button at https://central.sonatype.com/publishing/deployments.
 #
 # Any other run is a dry run which publishes nothing, also a manual run started on a tag:
 # - the GitHub release is created as a draft and deleted again,
 # - the wheel is built and tested from the already published release 'wheel_tag',
-# - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project.
+# - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project,
+# - the jars are uploaded to the Central Portal with the version suffix '-dry-run.<run id>', validated and dropped.
 # A manual run takes 'wheel_tag' as input, a push to the branch 'release-dry-run/<wheel_tag>' takes it from
 # the branch name, it runs the dry run before this workflow is on the default branch.
 #
 # PyPI trusts this workflow file in the GitHub environment 'pypi'.
+# The GitHub environment 'maven-central' holds the Central Portal user token in the secrets
+# CENTRAL_TOKEN_USERNAME and CENTRAL_TOKEN_PASSWORD and the armored signing key in MAVEN_GPG_KEY
+# with its passphrase in MAVEN_GPG_PASSPHRASE.
 
 # the run title and the job names tell a dry run from a release in the 'pypi' environment approval
 run-name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
-    format('Release {0} - publishes to PyPI', github.ref_name) ||
+    format('Release {0} - publishes to PyPI and Maven Central', github.ref_name) ||
     format('Release dry run from {0} - no upload', github.ref_name)}}"
 on:
   push:
@@ -237,3 +243,80 @@ jobs:
             sys.exit("The PyPI token is not scoped to exactly one project")
         print("The PyPI token is scoped to the project id", project_ids[0][0])
         EOF
+
+  maven:
+    name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
+        'Release: upload to the Central Portal, publish by hand' ||
+        'Dry run: Central Portal validation, then dropped'}}"
+    needs: [github_release]
+    runs-on: "ubuntu-22.04"
+    environment:
+      name: maven-central
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v4
+
+    - name: "Set up JDK 17"
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: "Download release artifacts"
+      uses: actions/download-artifact@v4
+      with:
+        pattern: linux-release-*
+        path: release
+        merge-multiple: true
+
+    - name: "Upload to the Central Portal"
+      env:
+        RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
+        CENTRAL_TOKEN_USERNAME: ${{secrets.CENTRAL_TOKEN_USERNAME}}
+        CENTRAL_TOKEN_PASSWORD: ${{secrets.CENTRAL_TOKEN_PASSWORD}}
+        MAVEN_GPG_KEY: ${{secrets.MAVEN_GPG_KEY}}
+        MAVEN_GPG_PASSPHRASE: ${{secrets.MAVEN_GPG_PASSPHRASE}}
+      run: |
+        mvn --version
+        shopt -s nullglob
+        BIN_ZIPS=(release/zserio-*-bin.zip)
+        if [[ ${#BIN_ZIPS[@]} -ne 1 ]] ; then
+            echo "::error::Expected one zserio binary zip, found: ${BIN_ZIPS[*]}"
+            exit 1
+        fi
+        ZSERIO_VERSION="${BIN_ZIPS[0]#release/zserio-}"
+        ZSERIO_VERSION="${ZSERIO_VERSION%-bin.zip}"
+
+        if [[ "${RELEASE}" == "true" ]] ; then
+            DEPLOY_VERSION="${ZSERIO_VERSION}"
+        else
+            # a version never published, the deployment is dropped by this job
+            DEPLOY_VERSION="${ZSERIO_VERSION}-dry-run.${GITHUB_RUN_ID}"
+            drop_deployment()
+            {
+                local DEPLOYMENT_ID
+                DEPLOYMENT_ID="$(sed -n 's/.*Uploaded bundle successfully.*deploymentId: \([0-9a-f-]*\)\..*/\1/p' \
+                        deploy.log)"
+                if [[ -z "${DEPLOYMENT_ID}" ]] ; then
+                    echo "No deployment uploaded, nothing to drop"
+                    return 0
+                fi
+                echo "Dropping the deployment ${DEPLOYMENT_ID}"
+                local AUTH
+                AUTH="$(printf "%s:%s" "${CENTRAL_TOKEN_USERNAME}" "${CENTRAL_TOKEN_PASSWORD}" | base64 -w0)"
+                echo "::add-mask::${AUTH}"
+                curl -sSf -X DELETE -H "Authorization: Bearer ${AUTH}" \
+                        "https://central.sonatype.com/api/v1/publisher/deployment/${DEPLOYMENT_ID}"
+                echo "Deployment ${DEPLOYMENT_ID} dropped"
+            }
+            trap drop_deployment EXIT
+        fi
+
+        # waits until the deployment is validated, a failed validation fails the job
+        ant -Dzserio.build_dir="${RUNNER_TEMP}/zserio-deploy" \
+                -Dzserio.deploy.snapshot_flag=no \
+                -Dzserio.deploy.release_dir="${GITHUB_WORKSPACE}/release" \
+                -Dzserio.deploy.release_version="${ZSERIO_VERSION}" \
+                -Dzserio.deploy.version="${DEPLOY_VERSION}" \
+                -Dzserio.deploy.maven_args="-Dgpg.signer=bc" \
+                deploy 2>&1 | tee deploy.log
