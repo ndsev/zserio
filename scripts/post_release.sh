@@ -6,14 +6,13 @@ source "${SCRIPT_DIR}/common_tools.sh"
 # Set and check global variables.
 set_post_release_global_variables()
 {
-    exit_if_argc_ne $# 7
+    exit_if_argc_ne $# 6
     local PARAM_CONAN="$1"; shift
     local PARAM_EXTENSION_SAMPLE="$1"; shift
     local PARAM_TUTORIAL_CPP="$1"; shift
     local PARAM_TUTORIAL_JAVA="$1"; shift
     local PARAM_TUTORIAL_PYTHON="$1"; shift
     local PARAM_STREAMLIT="$1"; shift
-    local PARAM_WEB_PAGES="$1"; shift
 
     if [[ ${PARAM_TUTORIAL_CPP} == 1 ]] ; then
         # CMAKE to use, defaults to "cmake" if not set
@@ -62,13 +61,6 @@ set_post_release_global_variables()
     if ! "${TAIL}" --version 2>/dev/null | grep -q "GNU" ; then
         stderr_echo "GNU tail is required, '${TAIL}' is not GNU tail! Set TAIL environment variable" \
                 "(e.g. TAIL=gtail on macOS)."
-        return 1
-    fi
-
-    # UNZIP to use, defaults to "unzip" if not set
-    UNZIP="${UNZIP:-unzip}"
-    if [ ! -f "`which "${UNZIP}"`" ] ; then
-        stderr_echo "Cannot find unzip! Set UNZIP environment variable."
         return 1
     fi
 
@@ -166,7 +158,6 @@ Uses the following environment variables for update after release:
     GIT      Git executable to use. Default is "git".
     SED      GNU sed executable to use. Default is "sed" (on macOS e.g. "gsed").
     TAIL     GNU tail executable to use. Default is "tail" (on macOS e.g. "gtail").
-    UNZIP    Unzip executable to use. Default is "unzip".
     SHASUM   Shasum exetuable to use. Default is "shasum".
     PYTHON   Python executable to use. Default is "python3".
 
@@ -666,260 +657,6 @@ update_streamlit()
     return 0
 }
 
-# Update Zserio Web Pages branch after new Zserio release.
-update_web_pages()
-{
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-    local ZSERIO_BUILD_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
-
-    local GIT_MESSAGE="Add generated v${ZSERIO_VERSION} runtime documentation"
-    local GREP_RESULT=`"${GIT}" log web-pages | grep "${GIT_MESSAGE}"`
-    if [ $? -ne 0 -o -z "${GREP_RESULT}" ] ; then
-        echo "Rebasing Zserio Web Pages branch onto the v${ZSERIO_VERSION} tag."
-
-        "${GIT}" checkout web-pages
-        if [ $? -ne 0 ] ; then
-            "${GIT}" checkout -b web-pages
-            local GIT_RESULT=$?
-            stderr_echo "Git failed with return code ${GIT_RESULT}!"
-            return 1
-        fi
-        "${GIT}" fetch --tags
-        local GIT_RESULT=$?
-        if [ ${GIT_RESULT} -ne 0 ] ; then
-            stderr_echo "Git failed with return code ${GIT_RESULT}!"
-            return 1
-        fi
-        "${GIT}" rebase v${ZSERIO_VERSION}
-        local GIT_RESULT=$?
-        if [ ${GIT_RESULT} -ne 0 ] ; then
-            stderr_echo "Git failed with return code ${GIT_RESULT}!"
-            return 1
-        fi
-        echo
-
-        echo "Updating sources in Zserio Web Pages branch."
-        echo
-        local WEB_PAGES_BUILD_DIR="${ZSERIO_BUILD_DIR}/web_pages"
-        rm -rf "${WEB_PAGES_BUILD_DIR}"
-        mkdir -p "${WEB_PAGES_BUILD_DIR}"
-
-        echo -ne "Removing Zserio runtime libraries latest version..."
-        local DEST_LATEST_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/latest"
-        rm -rf "${DEST_LATEST_DIR}"
-        echo "Done"
-
-        echo -ne "Adding cross references between runtime libraries versions to old documentations..."
-        patch_old_runtime_doc "${ZSERIO_PROJECT_ROOT}/doc/runtime" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        echo "Done"
-
-        echo -ne "Downloading Zserio runtime libraries from GitHub..."
-        get_zserio_runtime_libs ${ZSERIO_VERSION} "${WEB_PAGES_BUILD_DIR}" "runtime-libs.zip"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        echo "Done"
-
-        echo -ne "Unzipping Zserio runtime libraries..."
-        "${UNZIP}" -q "${WEB_PAGES_BUILD_DIR}"/runtime-libs.zip -d "${WEB_PAGES_BUILD_DIR}"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Cannot unzip zserio runtime libraries to ${WEB_PAGES_BUILD_DIR}!"
-            return 1
-        fi
-        mkdir -p "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc
-        "${UNZIP}" -q "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_runtime_javadocs.jar \
-                -d "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc -x META-INF/*
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Cannot unzip zserio runtime javadocs jar!"
-            return 1
-        fi
-        echo "Done"
-
-        echo -ne "Adding cross references between runtime libraries versions to new documentations..."
-        patch_new_runtime_doc "${ZSERIO_PROJECT_ROOT}/doc/runtime" "${WEB_PAGES_BUILD_DIR}/runtime_libs" \
-                "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        echo "Done"
-
-        echo -ne "Copying Zserio runtime libraries version ${ZSERIO_VERSION}..."
-        local DEST_RUNTIME_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/${ZSERIO_VERSION}"
-        mkdir -p "${DEST_RUNTIME_DIR}"/cpp
-        cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/cpp/zserio_doc/* "${DEST_RUNTIME_DIR}"/cpp
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        mkdir -p "${DEST_RUNTIME_DIR}"/java
-        cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc/* "${DEST_RUNTIME_DIR}"/java
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        mkdir -p "${DEST_RUNTIME_DIR}"/python
-        cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/python/zserio_doc/* "${DEST_RUNTIME_DIR}"/python
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        echo "Done"
-
-        echo -ne "Creating Zserio runtime library GitHub badges..."
-        create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
-        echo "Done"
-
-        echo -ne "Copying Zserio runtime libraries latest version..."
-        mkdir -p "${DEST_LATEST_DIR}"
-        cp -r "${DEST_RUNTIME_DIR}"/* "${DEST_LATEST_DIR}"
-        echo "Done"
-
-        echo
-        echo "Committing changes to Zserio Web Pages branch."
-        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" add -A
-        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" commit -a -m "${GIT_MESSAGE}"
-        local GIT_RESULT=$?
-        if [ ${GIT_RESULT} -ne 0 ] ; then
-            stderr_echo "Git failed with return code ${GIT_RESULT}!"
-            return 1
-        fi
-
-        echo $'\e[1;33m'"Don't forget to check the 'web-pages' branch!"$'\e[0m'
-        read -n 1 -s -r -p "Press any key to PUSH the 'web-pages' branch..."
-        echo
-
-        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --force --set-upstream origin web-pages
-        local GIT_RESULT=$?
-        if [ ${GIT_RESULT} -ne 0 ] ; then
-            stderr_echo "Git failed with return code ${GIT_RESULT}!"
-            return 1
-        fi
-
-        "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" checkout master
-        local GIT_RESULT=$?
-        if [ ${GIT_RESULT} -ne 0 ] ; then
-            stderr_echo "Git failed with return code ${GIT_RESULT}!"
-            return 1
-        fi
-        echo
-    else
-        echo $'\e[1;33m'"Zserio Web Pages already up to date."$'\e[0m'
-        echo
-    fi
-
-    return 0
-}
-
-
-# Patch old runtime documentations - add the new release option
-patch_old_runtime_doc()
-{
-    exit_if_argc_ne $# 2
-    local ZSERIO_DOC_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
-
-    local PATTERN="<select id=\"zserio-version-select\""
-
-    local HTML_FILES=($(grep "${PATTERN}" "${ZSERIO_DOC_DIR}" -R -l))
-    for HTML_FILE  in "${HTML_FILES[@]}" ; do
-        "${SED}" -i '/'"${PATTERN}"'/a <option value="'"${ZSERIO_VERSION}"'">'"${ZSERIO_VERSION}"'</option>' ${HTML_FILE}
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to append the new version <option>!"
-            return 1
-        fi
-    done
-
-    return 0
-}
-
-# Patch new runtime documentations - add cross references between runtime versions
-patch_new_runtime_doc()
-{
-    exit_if_argc_ne $# 3
-    local ZSERIO_OLD_DOC_DIR="$1"; shift
-    local ZSERIO_NEW_DOC_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
-
-    local ZSERIO_VERSION_SELECT="\n\
-<select id=\"zserio-version-select\" style=\"font-size: 100%; margin-bottom: 1px; padding: 2px;\"\
- onChange=\"(function(value){ var url = top.document.URL.split('\/'); url[url.length-3] = \`\${value}\`;\
- top.location.href=url.join('\/'); \
-})(value)\">\n\
-<option value=\"${ZSERIO_VERSION}\" selected>${ZSERIO_VERSION}<\/option>\n\
-"
-    local OLD_VERSIONS=($(ls -1 "${ZSERIO_OLD_DOC_DIR}" | sort -rV))
-    for OLD_VERSION in ${OLD_VERSIONS[@]}; do
-        ZSERIO_VERSION_SELECT+="<option value=\"${OLD_VERSION}\">${OLD_VERSION}<\/option>\n"
-    done
-    ZSERIO_VERSION_SELECT+="<\/select>\n"
-
-    local GREP_INCLUDE=(--include "index.html" --include "zserio.html" --include "overview-summary.html")
-    local HTML_FILES=($(grep "Built for Zserio" "${ZSERIO_NEW_DOC_DIR}" -R -l ${GREP_INCLUDE[@]}))
-    for HTML_FILE  in "${HTML_FILES[@]}" ; do
-        "${SED}" -i 's/\(Built for Zserio\)\s*[a-zA-Z0-9.-]*/\1'"${ZSERIO_VERSION_SELECT}"'/' "${HTML_FILE}"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to apply zserio-version-select!"
-            return 1
-        fi
-    done
-
-    return 0
-}
-
-# Create JSON configuration files for all GitHub badges
-create_github_badge_jsons()
-{
-    exit_if_argc_ne $# 2
-    local ZSERIO_RUNTIME_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
-
-    local CLANG_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/cpp/coverage/clang
-    local CLANG_LINES_COVERAGE=`cat "${CLANG_COVERAGE_DIR}"/coverage_report.txt | grep TOTAL | \
-            tr -s ' ' | cut -d' ' -f 10`
-    create_github_badge_json "${CLANG_COVERAGE_DIR}"/coverage_github_badge.json \
-            "C++ clang runtime ${ZSERIO_VERSION} coverage" "${CLANG_LINES_COVERAGE}"
-
-    local JAVA_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/java/coverage
-    local JAVA_COVERAGE_REPORT=`cat "${JAVA_COVERAGE_DIR}"/jacoco_report.xml`
-    local JAVA_LINES_MISSED=`echo ${JAVA_COVERAGE_REPORT##*INSTRUCTION} | cut -d'"' -f3`
-    local JAVA_LINES_COVERED=`echo ${JAVA_COVERAGE_REPORT##*INSTRUCTION} | cut -d'"' -f5`
-    local JAVA_LINES_VALID=$((${JAVA_LINES_COVERED} - ${JAVA_LINES_MISSED}))
-    local JAVA_LINES_COVERAGE=$((10000 * ${JAVA_LINES_VALID} / ${JAVA_LINES_COVERED}))
-    create_github_badge_json "${JAVA_COVERAGE_DIR}"/coverage_github_badge.json \
-            "Java runtime ${ZSERIO_VERSION} coverage" \
-            "${JAVA_LINES_COVERAGE:0:-2}.${JAVA_LINES_COVERAGE: -2}%"
-
-    local PYTHON_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/python/coverage
-    local PYTHON_LINES_VALID=`cat "${PYTHON_COVERAGE_DIR}"/coverage_report.xml | grep lines-covered | \
-            cut -d' ' -f 4 | cut -d= -f2 | tr -d \"`
-    local PYTHON_LINES_COVERED=`cat "${PYTHON_COVERAGE_DIR}"/coverage_report.xml | grep lines-covered | \
-            cut -d' ' -f 5 | cut -d= -f2 | tr -d \"`
-    local PYTHON_LINES_COVERAGE=$((10000 * ${PYTHON_LINES_VALID} / ${PYTHON_LINES_COVERED}))
-    create_github_badge_json "${PYTHON_COVERAGE_DIR}"/coverage_github_badge.json \
-            "Python runtime ${ZSERIO_VERSION} coverage" \
-            "${PYTHON_LINES_COVERAGE:0:-2}.${PYTHON_LINES_COVERAGE: -2}%"
-}
-
-# Create JSON configuration file for GitHub badge
-create_github_badge_json()
-{
-    exit_if_argc_ne $# 3
-    local BADGE_JSON_FILE="$1"; shift
-    local BADGE_LABEL="$1"; shift
-    local BADGE_MESSAGE="$1"; shift
-
-    cat > "${BADGE_JSON_FILE}" << EOF
-{
-    "schemaVersion": 1,
-    "label": "${BADGE_LABEL}",
-    "message": "${BADGE_MESSAGE}",
-    "color": "green"
-}
-EOF
-}
-
 # Print help message.
 print_help()
 {
@@ -945,7 +682,6 @@ Repository can be empty for all repositories or arbitrary combination of
     tutorial_java    Update Zserio Tutorial Java repository after new Zserio release
     tutorial_python  Update Zserio Tutorial Python repository after new Zserio release
     streamlit        Update Zserio Streamlit repository after new Zserio release
-    web_pages        Update Zserio Web Pages branch after new Zserio release
 
 Examples:
     $0 -v 2.20.0
@@ -964,7 +700,7 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=9
+    local NUM_OF_ARGS=8
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
     local PARAM_VERSION_OUT="$1"; shift
@@ -974,7 +710,6 @@ parse_arguments()
     local PARAM_TUTORIAL_JAVA_OUT="$1"; shift
     local PARAM_TUTORIAL_PYTHON_OUT="$1"; shift
     local PARAM_STREAMLIT_OUT="$1"; shift
-    local PARAM_WEB_PAGES_OUT="$1"; shift
 
     eval ${PARAM_CONAN_OUT}=0
     eval ${PARAM_EXTENSION_SAMPLE_OUT}=0
@@ -982,7 +717,6 @@ parse_arguments()
     eval ${PARAM_TUTORIAL_JAVA_OUT}=0
     eval ${PARAM_TUTORIAL_PYTHON_OUT}=0
     eval ${PARAM_STREAMLIT_OUT}=0
-    eval ${PARAM_WEB_PAGES_OUT}=0
 
     local NUM_PARAMS=0
     local ARG="$1"
@@ -1063,12 +797,6 @@ parse_arguments()
                 shift 1
                 ;;
 
-            "web_pages")
-                eval ${PARAM_WEB_PAGES_OUT}=1
-                NUM_PARAMS=$((NUM_PARAMS + 1))
-                shift 1
-                ;;
-
             *)
                 stderr_echo "Invalid parameter '${ARG}'!"
                 echo
@@ -1091,7 +819,6 @@ parse_arguments()
         eval ${PARAM_TUTORIAL_JAVA_OUT}=1
         eval ${PARAM_TUTORIAL_PYTHON_OUT}=1
         eval ${PARAM_STREAMLIT_OUT}=1
-        eval ${PARAM_WEB_PAGES_OUT}=1
     fi
 
     return 0
@@ -1112,9 +839,8 @@ main()
     local PARAM_TUTORIAL_JAVA
     local PARAM_TUTORIAL_PYTHON
     local PARAM_STREAMLIT
-    local PARAM_WEB_PAGES
     parse_arguments PARAM_OUT_DIR ZSERIO_VERSION PARAM_CONAN PARAM_EXTENSION_SAMPLE \
-            PARAM_TUTORIAL_CPP PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT PARAM_WEB_PAGES "$@"
+            PARAM_TUTORIAL_CPP PARAM_TUTORIAL_JAVA PARAM_TUTORIAL_PYTHON PARAM_STREAMLIT "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -1131,15 +857,13 @@ main()
 
     # set global variables
     set_post_release_global_variables ${PARAM_CONAN} ${PARAM_EXTENSION_SAMPLE} \
-            ${PARAM_TUTORIAL_CPP} ${PARAM_TUTORIAL_JAVA} ${PARAM_TUTORIAL_PYTHON} ${PARAM_STREAMLIT} \
-            ${PARAM_WEB_PAGES}
+            ${PARAM_TUTORIAL_CPP} ${PARAM_TUTORIAL_JAVA} ${PARAM_TUTORIAL_PYTHON} ${PARAM_STREAMLIT}
     if [ $? -ne 0 ] ; then
         return 1
     fi
 
     echo "Updating dependent repositories after new Zserio release ${ZSERIO_VERSION}."
     echo
-    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
 
     if [[ ${PARAM_CONAN} == 1 ]] ; then
         update_conan "${ZSERIO_CONAN_DIR}" "${ZSERIO_VERSION}"
@@ -1178,13 +902,6 @@ main()
 
     if [[ ${PARAM_STREAMLIT} == 1 ]] ; then
         update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    fi
-
-    if [[ ${PARAM_WEB_PAGES} == 1 ]] ; then
-        update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
