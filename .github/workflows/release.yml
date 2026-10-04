@@ -5,12 +5,14 @@ name: Release
 # A prepared draft release of that tag is published with its release notes, otherwise a new release is created.
 # The signed zserio and zserio-runtime jars are uploaded to the Central Portal as one deployment, which waits
 # validated for the Publish button at https://central.sonatype.com/publishing/deployments.
+# The site zserio.org with the runtime docs of the release is deployed to GitHub Pages by the Pages workflow.
 #
 # Any other run is a dry run which publishes nothing, also a manual run started on a tag:
 # - the GitHub release is created as a draft and deleted again,
 # - the wheel is built and tested from the already published release 'wheel_tag',
 # - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project,
-# - the jars are uploaded to the Central Portal with the version suffix '-dry-run.<run id>', validated and dropped.
+# - the jars are uploaded to the Central Portal with the version suffix '-dry-run.<run id>', validated and dropped,
+# - the site is built and uploaded as the Pages artifact, it is not deployed.
 # A manual run takes 'wheel_tag' as input, a push to the branch 'release-dry-run/<wheel_tag>' takes it from
 # the branch name, it runs the dry run before this workflow is on the default branch.
 #
@@ -103,6 +105,20 @@ jobs:
             trap 'gh release delete "${DRAFT_TAG}" --yes' EXIT
             gh release view "${DRAFT_TAG}" --json name,isDraft,assets --jq '{name, isDraft, assets: [.assets[].name]}'
         fi
+
+  pages:
+    name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
+        'Release: deploy zserio.org' || 'Dry run: build zserio.org, no deployment'}}"
+    needs: [github_release]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: "./.github/workflows/pages.yml"
+    with:
+      source_ref: ${{github.sha}}
+      release_artifacts: true
+      deploy: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
 
   wheel:
     needs: [github_release]
