@@ -4,7 +4,7 @@ name: Release
 # and publishes the zserio wheel to PyPI by trusted publishing, no PyPI token is stored anywhere.
 # A prepared draft release of that tag is published with its release notes, otherwise a new release is created.
 #
-# Any other run is a dry run which publishes nothing:
+# Any other run is a dry run which publishes nothing, also a manual run started on a tag:
 # - the GitHub release is created as a draft and deleted again,
 # - the wheel is built and tested from the already published release 'wheel_tag',
 # - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project.
@@ -14,7 +14,8 @@ name: Release
 # PyPI trusts this workflow file in the GitHub environment 'pypi'.
 
 # the run title and the job names tell a dry run from a release in the 'pypi' environment approval
-run-name: "${{github.ref_type == 'tag' && format('Release {0} - publishes to PyPI', github.ref_name) ||
+run-name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
+    format('Release {0} - publishes to PyPI', github.ref_name) ||
     format('Release dry run from {0} - no upload', github.ref_name)}}"
 on:
   push:
@@ -58,7 +59,7 @@ jobs:
       env:
         GH_TOKEN: ${{github.token}}
         GH_REPO: ${{github.repository}}
-        REF_TYPE: ${{github.ref_type}}
+        RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
         REF_NAME: ${{github.ref_name}}
       run: |
         shopt -s nullglob
@@ -72,7 +73,7 @@ jobs:
         ASSETS=("release/zserio-${ZSERIO_VERSION}-bin.zip" "release/zserio-${ZSERIO_VERSION}-runtime-libs.zip")
         ls -l "${ASSETS[@]}"
 
-        if [[ "${REF_TYPE}" == "tag" ]] ; then
+        if [[ "${RELEASE}" == "true" ]] ; then
             if [[ "${REF_NAME}" != "v${ZSERIO_VERSION}" ]] ; then
                 echo "::error::Tag ${REF_NAME} does not match the built zserio version ${ZSERIO_VERSION}"
                 exit 1
@@ -103,11 +104,11 @@ jobs:
     steps:
     - name: "Select the release to build the wheel from"
       env:
-        REF_TYPE: ${{github.ref_type}}
+        RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
         REF_NAME: ${{github.ref_name}}
         INPUT_WHEEL_TAG: ${{inputs.wheel_tag}}
       run: |
-        if [[ "${REF_TYPE}" == "tag" ]] ; then
+        if [[ "${RELEASE}" == "true" ]] ; then
             WHEEL_TAG="${REF_NAME}"
         elif [[ -n "${INPUT_WHEEL_TAG}" ]] ; then
             WHEEL_TAG="${INPUT_WHEEL_TAG}"
@@ -125,7 +126,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ndsev/zserio-pypi
-        ref: ${{github.ref_type == 'tag' && 'master' || inputs.zserio_pypi_ref || 'master'}}
+        ref: ${{github.event_name == 'push' && github.ref_type == 'tag' && 'master' || inputs.zserio_pypi_ref || 'master'}}
 
     - name: "Set up JDK 1.8"
       uses: actions/setup-java@v4
@@ -166,7 +167,7 @@ jobs:
 
   pypi:
     name: "Release: upload to PyPI"
-    if: github.ref_type == 'tag'
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     needs: [wheel]
     runs-on: "ubuntu-22.04"
     environment:
@@ -187,7 +188,7 @@ jobs:
   # the token is never used, it expires on its own
   pypi_token_exchange:
     name: "Dry run: PyPI token check, no upload"
-    if: github.ref_type != 'tag'
+    if: ${{!(github.event_name == 'push' && github.ref_type == 'tag')}}
     needs: [wheel]
     runs-on: "ubuntu-22.04"
     environment:
