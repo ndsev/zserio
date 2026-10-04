@@ -102,6 +102,7 @@ jobs:
       env:
         GH_TOKEN: ${{github.token}}
         GH_REPO: ${{github.repository}}
+        DEPLOY: ${{inputs.deploy}}
       run: |
         shopt -s nullglob
         mkdir -p runtime_libs
@@ -134,7 +135,23 @@ jobs:
             fi
         done
         if [[ -n "${BUILT_VERSION}" ]] ; then
-            cp "${BUILT_ZIPS[0]}" runtime_libs
+            # on a release the built version is already published by the release workflow
+            NEWEST_VERSION="${ARCHIVED_VERSION}"
+            for VERSION in "${PUBLISHED_VERSIONS[@]}" ; do
+                if [[ "${VERSION}" != "${BUILT_VERSION}" ]] && is_newer "${VERSION}" "${NEWEST_VERSION}" ; then
+                    NEWEST_VERSION="${VERSION}"
+                fi
+            done
+            if [[ "${BUILT_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && is_newer "${BUILT_VERSION}" "${NEWEST_VERSION}" ; then
+                cp "${BUILT_ZIPS[0]}" runtime_libs
+            elif [[ "${DEPLOY}" == "true" ]] ; then
+                echo "::error::Built version ${BUILT_VERSION} is not a release newer than ${NEWEST_VERSION}"
+                exit 1
+            else
+                # e.g. a dry run before the version bump or of a pre-release version
+                echo "::notice::Built version ${BUILT_VERSION} is not a release newer than ${NEWEST_VERSION}," \
+                        "the dry run builds the site without it"
+            fi
         fi
 
         ZIPS=(runtime_libs/*.zip)
