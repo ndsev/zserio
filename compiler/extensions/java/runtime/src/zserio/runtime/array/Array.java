@@ -16,8 +16,10 @@ import zserio.runtime.io.BitStreamWriter;
  * - array type (normal, auto, implicit)
  * - offset initializer to set offsets for indexed offsets arrays
  * - offset checker to check offsets for indexed offsets arrays
+ *
+ * Arrays are ordered lexicographically by their elements, the array type and packing are not compared.
  */
-public final class Array
+public final class Array implements Comparable<Array>
 {
     /**
      * Constructor.
@@ -68,6 +70,12 @@ public final class Array
     public boolean equals(java.lang.Object obj)
     {
         return (obj instanceof Array) ? rawArray.equals(((Array)obj).rawArray) : false;
+    }
+
+    @Override
+    public int compareTo(Array other)
+    {
+        return rawArray.compareTo(other.rawArray);
     }
 
     @Override

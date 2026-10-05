@@ -10,7 +10,7 @@ import zserio.runtime.HashCodeUtil;
  * Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all bits
  * of the last byte are used. In this case, only most significant bits of the corresponded size are used.
  */
-public final class BitBuffer
+public final class BitBuffer implements Comparable<BitBuffer>
 {
     /**
      * Constructor from byte buffer.
@@ -90,6 +90,47 @@ public final class BitBuffer
         }
 
         return result;
+    }
+
+    /**
+     * Compares this bit buffer with the other bit buffer.
+     *
+     * Compares byte by byte using lexicographical compare of unsigned bytes, the last byte is masked to use
+     * only the proper number of bits. Bit buffers with equal contents are ordered by their bit size.
+     *
+     * @param other The other bit buffer to compare with.
+     *
+     * @return Negative integer, zero, or a positive integer as this bit buffer is less than, equal to,
+     *         or greater than the other bit buffer.
+     */
+    @Override
+    public int compareTo(BitBuffer other)
+    {
+        final int byteSize1 = getByteSize();
+        final int byteSize2 = other.getByteSize();
+        if (byteSize1 == 0 || byteSize2 == 0)
+            return Integer.compare(byteSize1, byteSize2);
+
+        final int lastIndex1 = byteSize1 - 1;
+        final int lastIndex2 = byteSize2 - 1;
+        int index = 0;
+        for (; index != lastIndex1 && index != lastIndex2; ++index)
+        {
+            final int result = Integer.compare(buffer[index] & 0xFF, other.buffer[index] & 0xFF);
+            if (result != 0)
+                return result;
+        }
+
+        final int lastValue1 = (index != lastIndex1 ? buffer[index] : getMaskedLastByte()) & 0xFF;
+        final int lastValue2 = (index != lastIndex2 ? other.buffer[index] : other.getMaskedLastByte()) & 0xFF;
+        final int result = Integer.compare(lastValue1, lastValue2);
+        if (result != 0)
+            return result;
+
+        if (index == lastIndex1 && index == lastIndex2)
+            return Long.compare(bitSize, other.bitSize);
+
+        return (index == lastIndex1) ? -1 : 1;
     }
 
     /**
