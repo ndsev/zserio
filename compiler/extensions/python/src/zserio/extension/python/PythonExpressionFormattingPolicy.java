@@ -14,6 +14,7 @@ import zserio.ast.Parameter;
 import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
 import zserio.extension.common.ExpressionFormattingPolicy;
+import zserio.extension.common.StringEscapeConverter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
@@ -99,7 +100,8 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     public String getStringLiteral(Expression expr)
     {
         // string literals supports both unicode ('\u0000') and hexadecimal ('\x42') escapes
-        return expr.getText();
+        // but octal escapes in Python have at most three digits without '0' prefix
+        return StringEscapeConverter.convertOctalEscapes(expr.getText());
     }
 
     @Override

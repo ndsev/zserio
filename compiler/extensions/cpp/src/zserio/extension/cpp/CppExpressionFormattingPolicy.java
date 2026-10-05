@@ -135,8 +135,9 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         includeCollector.addCppIncludesForType(nativeStringViewType);
 
         // string literals in C++ does not support unicode escapes from interval <'\u0000', '\u0031'>
-        final String escapedStringLiteral =
-                StringEscapeConverter.convertUnicodeToHexEscapes(expr.getStringValue());
+        // and octal escapes in C++ have at most three digits without '0' prefix
+        final String escapedStringLiteral = StringEscapeConverter.convertOctalEscapes(
+                StringEscapeConverter.convertUnicodeToHexEscapes(expr.getStringValue()));
         return nativeStringViewType.formatLiteral(escapedStringLiteral);
     }
 
