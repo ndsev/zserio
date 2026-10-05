@@ -106,6 +106,40 @@ class CreatorNested:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, CreatorNested):
+            return NotImplemented
+
+        result = zserio.compare.compare(self._param_, other._param_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._value_, other._value_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._text_, other._text_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._extern_data_, other._extern_data_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._bytes_data_, other._bytes_data_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._creator_enum_, other._creator_enum_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._creator_bitmask_, other._creator_bitmask_)
+        if result != 0:
+            return result < 0
+
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_int32(result, self._param_)

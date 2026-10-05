@@ -44,6 +44,16 @@ class WalkerNested:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, WalkerNested):
+            return NotImplemented
+
+        result = zserio.compare.compare(self._text_, other._text_)
+        if result != 0:
+            return result < 0
+
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_string(result, self._text_)

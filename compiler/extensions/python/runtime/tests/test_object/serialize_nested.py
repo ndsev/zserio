@@ -71,6 +71,27 @@ class SerializeNested:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, SerializeNested):
+            return NotImplemented
+
+        result = zserio.compare.compare(self._param_, other._param_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._offset_, other._offset_)
+        if result != 0:
+            return result < 0
+
+        if self.is_optional_value_used() and other.is_optional_value_used():
+            result = zserio.compare.compare(self._optional_value_, other._optional_value_)
+            if result != 0:
+                return result < 0
+        elif self.is_optional_value_used() != other.is_optional_value_used():
+            return not self.is_optional_value_used()
+
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_int32(result, self._param_)

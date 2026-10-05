@@ -72,6 +72,24 @@ class ArrayHolder:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, ArrayHolder):
+            return NotImplemented
+
+        result = zserio.compare.compare(self._enum_array_, other._enum_array_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._bitmask_array_, other._bitmask_array_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._packed_array_, other._packed_array_)
+        if result != 0:
+            return result < 0
+
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_object(result, self._enum_array_)

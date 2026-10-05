@@ -94,6 +94,38 @@ class WalkerObject:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, WalkerObject):
+            return NotImplemented
+
+        result = zserio.compare.compare(self._identifier_, other._identifier_)
+        if result != 0:
+            return result < 0
+
+        if self.is_nested_used() and other.is_nested_used():
+            result = zserio.compare.compare(self._nested_, other._nested_)
+            if result != 0:
+                return result < 0
+        elif self.is_nested_used() != other.is_nested_used():
+            return not self.is_nested_used()
+
+        result = zserio.compare.compare(self._text_, other._text_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._union_array_, other._union_array_)
+        if result != 0:
+            return result < 0
+
+        if self.is_optional_union_array_used() and other.is_optional_union_array_used():
+            result = zserio.compare.compare(self._optional_union_array_, other._optional_union_array_)
+            if result != 0:
+                return result < 0
+        elif self.is_optional_union_array_used() != other.is_optional_union_array_used():
+            return not self.is_optional_union_array_used()
+
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_int32(result, self._identifier_)
