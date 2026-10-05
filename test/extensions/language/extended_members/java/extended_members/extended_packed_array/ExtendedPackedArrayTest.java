@@ -12,6 +12,7 @@ import zserio.runtime.BitPositionUtil;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
 
+import test_utils.ComparisonUtil;
 import test_utils.CompoundUtil;
 
 public class ExtendedPackedArrayTest
@@ -92,8 +93,10 @@ public class ExtendedPackedArrayTest
     {
         Extended2 data = createExtended2();
         Extended2 equalData = createExtended2();
+        Extended2 lessThanData = createExtended2();
+        lessThanData.getPackedArray()[PACKED_ARRAY_SIZE - 1].setValue(12);
 
-        CompoundUtil.comparisonOperatorsTest(data, equalData);
+        ComparisonUtil.comparisonTest(data, equalData, lessThanData);
     }
 
     @Test

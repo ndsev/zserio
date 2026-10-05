@@ -49,6 +49,27 @@ public class ExtendedEmptyStructureTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Extended extended1 = new Extended();
+        final Extended extended2 = new Extended();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended2.setExtendedValue(UINT32_MAX);
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setExtendedValue(UINT32_MAX);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended2.setExtendedValue(UINT32_MAX - 1);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertTrue(extended2.compareTo(extended1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Extended extended1 = new Extended();

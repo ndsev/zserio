@@ -102,6 +102,33 @@ public class BoolParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        BoolParamChoice boolParamChoice1 = new BoolParamChoice(true);
+        BoolParamChoice boolParamChoice2 = new BoolParamChoice(false);
+        assertFalse(boolParamChoice1.compareTo(boolParamChoice2) < 0);
+        assertTrue(boolParamChoice2.compareTo(boolParamChoice1) < 0);
+
+        boolParamChoice2 = new BoolParamChoice(true);
+        assertFalse(boolParamChoice1.compareTo(boolParamChoice2) < 0);
+        assertFalse(boolParamChoice2.compareTo(boolParamChoice1) < 0);
+
+        final byte value = 99;
+        boolParamChoice1.setBlack(value);
+        assertFalse(boolParamChoice1.compareTo(boolParamChoice2) < 0);
+        assertTrue(boolParamChoice2.compareTo(boolParamChoice1) < 0);
+
+        boolParamChoice2.setBlack(value);
+        assertFalse(boolParamChoice1.compareTo(boolParamChoice2) < 0);
+        assertFalse(boolParamChoice2.compareTo(boolParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        boolParamChoice2.setBlack(diffValue);
+        assertTrue(boolParamChoice1.compareTo(boolParamChoice2) < 0);
+        assertFalse(boolParamChoice2.compareTo(boolParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         BoolParamChoice boolParamChoice1 = new BoolParamChoice(true);

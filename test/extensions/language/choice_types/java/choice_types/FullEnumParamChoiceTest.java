@@ -118,6 +118,29 @@ public class FullEnumParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        FullEnumParamChoice fullEnumParamChoice1 = new FullEnumParamChoice(Selector.BLACK);
+        FullEnumParamChoice fullEnumParamChoice2 = new FullEnumParamChoice(Selector.BLACK);
+        assertFalse(fullEnumParamChoice1.compareTo(fullEnumParamChoice2) < 0);
+        assertFalse(fullEnumParamChoice2.compareTo(fullEnumParamChoice1) < 0);
+
+        final byte value = 99;
+        fullEnumParamChoice1.setBlack(value);
+        assertFalse(fullEnumParamChoice1.compareTo(fullEnumParamChoice2) < 0);
+        assertTrue(fullEnumParamChoice2.compareTo(fullEnumParamChoice1) < 0);
+
+        fullEnumParamChoice2.setBlack(value);
+        assertFalse(fullEnumParamChoice1.compareTo(fullEnumParamChoice2) < 0);
+        assertFalse(fullEnumParamChoice2.compareTo(fullEnumParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        fullEnumParamChoice2.setBlack(diffValue);
+        assertTrue(fullEnumParamChoice1.compareTo(fullEnumParamChoice2) < 0);
+        assertFalse(fullEnumParamChoice2.compareTo(fullEnumParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         FullEnumParamChoice fullEnumParamChoice1 = new FullEnumParamChoice(Selector.BLACK);

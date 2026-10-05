@@ -67,6 +67,19 @@ public class EmptyUnionWithParameterTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final EmptyUnionWithParameter emptyUnionWithParameter1 = new EmptyUnionWithParameter((short)1);
+        EmptyUnionWithParameter emptyUnionWithParameter2 = new EmptyUnionWithParameter((short)1);
+        assertFalse(emptyUnionWithParameter1.compareTo(emptyUnionWithParameter2) < 0);
+        assertFalse(emptyUnionWithParameter2.compareTo(emptyUnionWithParameter1) < 0);
+
+        emptyUnionWithParameter2 = new EmptyUnionWithParameter((short)2);
+        assertTrue(emptyUnionWithParameter1.compareTo(emptyUnionWithParameter2) < 0);
+        assertFalse(emptyUnionWithParameter2.compareTo(emptyUnionWithParameter1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final EmptyUnionWithParameter emptyUnionWithParameter1 = new EmptyUnionWithParameter((short)1);

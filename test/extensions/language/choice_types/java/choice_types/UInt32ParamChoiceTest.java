@@ -129,6 +129,33 @@ public class UInt32ParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        UInt32ParamChoice uint32ParamChoice1 = new UInt32ParamChoice(VARIANT_A_SELECTOR);
+        UInt32ParamChoice uint32ParamChoice2 = new UInt32ParamChoice(VARIANT_C_SELECTOR);
+        assertTrue(uint32ParamChoice1.compareTo(uint32ParamChoice2) < 0);
+        assertFalse(uint32ParamChoice2.compareTo(uint32ParamChoice1) < 0);
+
+        uint32ParamChoice2 = new UInt32ParamChoice(VARIANT_A_SELECTOR);
+        assertFalse(uint32ParamChoice1.compareTo(uint32ParamChoice2) < 0);
+        assertFalse(uint32ParamChoice2.compareTo(uint32ParamChoice1) < 0);
+
+        final byte value = 99;
+        uint32ParamChoice1.setValueA(value);
+        assertFalse(uint32ParamChoice1.compareTo(uint32ParamChoice2) < 0);
+        assertTrue(uint32ParamChoice2.compareTo(uint32ParamChoice1) < 0);
+
+        uint32ParamChoice2.setValueA(value);
+        assertFalse(uint32ParamChoice1.compareTo(uint32ParamChoice2) < 0);
+        assertFalse(uint32ParamChoice2.compareTo(uint32ParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        uint32ParamChoice2.setValueA(diffValue);
+        assertTrue(uint32ParamChoice1.compareTo(uint32ParamChoice2) < 0);
+        assertFalse(uint32ParamChoice2.compareTo(uint32ParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final UInt32ParamChoice uint32ParamChoice1 = new UInt32ParamChoice(VARIANT_A_SELECTOR);

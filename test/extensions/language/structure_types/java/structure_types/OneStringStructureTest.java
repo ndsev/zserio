@@ -70,6 +70,26 @@ public class OneStringStructureTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final OneStringStructure oneStringStructure1 = new OneStringStructure();
+        final OneStringStructure oneStringStructure2 = new OneStringStructure();
+        assertFalse(oneStringStructure1.compareTo(oneStringStructure2) < 0);
+
+        oneStringStructure1.setOneString(ONE_STRING);
+        assertFalse(oneStringStructure1.compareTo(oneStringStructure2) < 0);
+        assertTrue(oneStringStructure2.compareTo(oneStringStructure1) < 0);
+
+        oneStringStructure2.setOneString(ONE_STRING);
+        assertFalse(oneStringStructure1.compareTo(oneStringStructure2) < 0);
+        assertFalse(oneStringStructure2.compareTo(oneStringStructure1) < 0);
+
+        oneStringStructure1.setOneString("A string");
+        assertTrue(oneStringStructure1.compareTo(oneStringStructure2) < 0);
+        assertFalse(oneStringStructure2.compareTo(oneStringStructure1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final OneStringStructure oneStringStructure1 = new OneStringStructure();
