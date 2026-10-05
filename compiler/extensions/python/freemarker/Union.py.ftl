@@ -192,6 +192,16 @@ class ${name}:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, ${name}):
+            return NotImplemented
+
+        <@compound_less_than_parameters compoundParametersData/>
+        if self._choice_tag != other._choice_tag:
+            return self._choice_tag < other._choice_tag  # UNDEFINED_CHOICE is the lowest
+
+        return zserio.compare.compare(self._choice, other._choice) < 0
+
 <#macro union_hashcode_field field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}result = zserio.hashcode.calc_hashcode_${field.typeInfo.hashCodeFunc.suffix}(result, self._choice)

@@ -200,6 +200,26 @@ ${I}<#rt>
         return isinstance(other, ${name})
 </#if>
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, ${name}):
+            return NotImplemented
+
+<#if compoundParametersData.list?has_content || fieldList?has_content>
+        <@compound_less_than_parameters compoundParametersData/>
+    <#list fieldList as field>
+        <#if field.isExtended>
+        if self.${field.isPresentIndicatorName}() and other.${field.isPresentIndicatorName}():
+            <@compound_less_than_field field, 3/>
+        elif self.${field.isPresentIndicatorName}() != other.${field.isPresentIndicatorName}():
+            return not self.${field.isPresentIndicatorName}()
+        <#else>
+        <@compound_less_than_field field, 2/>
+        </#if>
+
+    </#list>
+</#if>
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>

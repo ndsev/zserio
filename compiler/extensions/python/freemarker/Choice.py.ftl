@@ -212,6 +212,14 @@ class ${name}:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, ${name}):
+            return NotImplemented
+
+        <@compound_less_than_parameters compoundParametersData/>
+        # only the selected field is compared, no matching case compares the stored objects like __eq__
+        return zserio.compare.compare(self._choice, other._choice) < 0
+
 <#macro choice_hashcode_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
