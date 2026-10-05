@@ -39,6 +39,30 @@ class ExtendedOptionalParameterizedFieldTest(ExtendedMembers.TestCase):
         extended1.extended_value = extendedValue
         self.assertEqual(extended1, extended2)
 
+    def testLt(self):
+        extended1 = self.api.Extended()
+        extended2 = self.api.Extended()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.value = len(ARRAY)
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.value = len(ARRAY)
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extendedValue = self.api.Parameterized(len(ARRAY))
+        extendedValue.array = ARRAY
+        extended2.extended_value = extendedValue
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value = extendedValue
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHash(self):
         extended1 = self.api.Extended()
         extended2 = self.api.Extended()

@@ -22,6 +22,16 @@ class EmptyChoiceWithCaseTest(ChoiceTypes.TestCase):
         self.assertTrue(emptyChoiceWithCase1 == emptyChoiceWithCase2)
         self.assertFalse(emptyChoiceWithCase1 == emptyChoiceWithCase3)
 
+    def testLt(self):
+        emptyChoiceWithCase1 = self.api.EmptyChoiceWithCase(1)
+        emptyChoiceWithCase2 = self.api.EmptyChoiceWithCase(1)
+        self.assertFalse(emptyChoiceWithCase1 < emptyChoiceWithCase2)
+        self.assertFalse(emptyChoiceWithCase2 < emptyChoiceWithCase1)
+
+        emptyChoiceWithCase3 = self.api.EmptyChoiceWithCase(0)
+        self.assertFalse(emptyChoiceWithCase1 < emptyChoiceWithCase3)
+        self.assertTrue(emptyChoiceWithCase3 < emptyChoiceWithCase1)
+
     def testHash(self):
         emptyChoiceWithCase1 = self.api.EmptyChoiceWithCase(1)
         emptyChoiceWithCase2 = self.api.EmptyChoiceWithCase(1)

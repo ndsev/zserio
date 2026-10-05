@@ -1,5 +1,5 @@
 import ChoiceTypes
-from compoundutils import writeReadTest, readTest, hashTest
+from compoundutils import comparisonOperatorsTest, writeReadTest, readTest, hashTest
 from zserio.bitbuffer import BitBuffer
 from zserio.bitwriter import BitStreamWriter
 
@@ -17,6 +17,15 @@ class BoolChoiceWithDefaultTest(ChoiceTypes.TestCase):
 
         data1.field = 99
         self.assertFalse(data1 == data2)
+
+    def testComparisonOperators(self):
+        data = self.api.BoolChoiceWithDefault(True)
+        data.field = 234
+        equalData = self.api.BoolChoiceWithDefault(True)
+        equalData.field = 234
+        lessThanData = self.api.BoolChoiceWithDefault(True)
+        lessThanData.field = 233
+        comparisonOperatorsTest(data, equalData, lessThanData)
 
     def testBitSizeOf(self):
         data = self.api.BoolChoiceWithDefault(True)

@@ -42,6 +42,24 @@ class OptionalArrayRecursionTest(OptionalMembers.TestCase):
         teamLead2 = self._createTeamLead()
         self.assertTrue(teamLead1 == teamLead2)
 
+    def testLt(self):
+        employee = self._createEmployee("", 0, self.api.Title.DEVELOPER)
+        teamLead1 = self._createTeamLead()
+        self.assertTrue(employee < teamLead1)
+        self.assertFalse(teamLead1 < employee)
+
+        teamLead2 = self._createTeamLead()
+        self.assertFalse(teamLead1 < teamLead2)
+        self.assertFalse(teamLead2 < teamLead1)
+
+        teamLead1.title = self.api.Title.DEVELOPER  # set but not used
+        self.assertTrue(teamLead1 < teamLead2)
+        self.assertFalse(teamLead2 < teamLead1)
+
+        teamLead2.title = self.api.Title.DEVELOPER  # set but not used
+        self.assertFalse(teamLead1 < teamLead2)
+        self.assertFalse(teamLead2 < teamLead1)
+
     def testHash(self):
         emptyEmployee1 = self.api.Employee()
         emptyEmployee2 = self.api.Employee()

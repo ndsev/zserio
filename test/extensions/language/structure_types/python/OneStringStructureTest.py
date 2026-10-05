@@ -34,6 +34,23 @@ class OneStringStructureTest(StructureTypes.TestCase):
         oneStringStructure2.one_string = self.ONE_STRING
         self.assertTrue(oneStringStructure1 == oneStringStructure2)
 
+    def testLt(self):
+        oneStringStructure1 = self.api.OneStringStructure()
+        oneStringStructure2 = self.api.OneStringStructure()
+        self.assertFalse(oneStringStructure1 < oneStringStructure2)
+
+        oneStringStructure1.one_string = self.ONE_STRING
+        self.assertFalse(oneStringStructure1 < oneStringStructure2)
+        self.assertTrue(oneStringStructure2 < oneStringStructure1)
+
+        oneStringStructure2.one_string = self.ONE_STRING
+        self.assertFalse(oneStringStructure1 < oneStringStructure2)
+        self.assertFalse(oneStringStructure2 < oneStringStructure1)
+
+        oneStringStructure1.one_string = "A string"
+        self.assertTrue(oneStringStructure1 < oneStringStructure2)
+        self.assertFalse(oneStringStructure2 < oneStringStructure1)
+
     def testHash(self):
         oneStringStructure1 = self.api.OneStringStructure()
         oneStringStructure2 = self.api.OneStringStructure()

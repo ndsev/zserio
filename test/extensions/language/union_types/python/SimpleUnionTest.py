@@ -75,6 +75,32 @@ class SimpleUnionTest(UnionTypes.TestCase):
         simpleUnion4.case4_field = self.CASE1_FIELD  # same value as simpleUnion11, but different choice
         self.assertFalse(simpleUnion11 == simpleUnion4)
 
+    def testLt(self):
+        simpleUnion1 = self.api.SimpleUnion()
+        simpleUnion2 = self.api.SimpleUnion()
+        self.assertFalse(simpleUnion1 < simpleUnion2)
+        self.assertFalse(simpleUnion2 < simpleUnion1)
+
+        simpleUnion1.case1_field = self.CASE1_FIELD
+        self.assertFalse(simpleUnion1 < simpleUnion2)
+        self.assertTrue(simpleUnion2 < simpleUnion1)
+
+        simpleUnion2.case1_field = self.CASE1_FIELD
+        self.assertFalse(simpleUnion1 < simpleUnion2)
+        self.assertFalse(simpleUnion2 < simpleUnion1)
+
+        simpleUnion2.case1_field = self.CASE1_FIELD + 1
+        self.assertTrue(simpleUnion1 < simpleUnion2)
+        self.assertFalse(simpleUnion2 < simpleUnion1)
+
+        simpleUnion2.case2_field = self.CASE2_FIELD
+        self.assertTrue(simpleUnion1 < simpleUnion2)
+        self.assertFalse(simpleUnion2 < simpleUnion1)
+
+        simpleUnion2.case4_field = self.CASE1_FIELD  # same value as simpleUnion1, but different choice
+        self.assertTrue(simpleUnion1 < simpleUnion2)
+        self.assertFalse(simpleUnion2 < simpleUnion1)
+
     def testHash(self):
         simpleUnion1 = self.api.SimpleUnion()
         simpleUnion2 = self.api.SimpleUnion()
