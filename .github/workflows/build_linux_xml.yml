@@ -2,6 +2,11 @@ name: Linux Xml
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs and checks, otherwise only the smoke run, see select_legs.yml"
+        type: boolean
+        required: true
 
 jobs:
   xml:
@@ -45,7 +50,9 @@ jobs:
       run: |
         scripts/test.sh xml
 
+    # only in a full run, the smoke run skips it
     - name: Run Zserio tests with extra arguments
+      if: ${{ inputs.full }}
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
         scripts/test.sh -p -i arguments/without_writer_code xml

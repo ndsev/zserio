@@ -134,6 +134,13 @@ set_global_cpp_variables()
         return 1
     fi
 
+    # whether C++ tests only run clang-tidy over their sources instead of being built and run, by default 0
+    CLANG_TIDY_ONLY="${CLANG_TIDY_ONLY:-0}"
+    if [[ ${CLANG_TIDY_ONLY} == 1 && -z "${CLANG_TIDY_BIN}" ]] ; then
+        stderr_echo "CLANG_TIDY_ONLY=1 requires CLANG_TIDY_BIN to be set!"
+        return 1
+    fi
+
     return 0
 }
 
@@ -180,6 +187,9 @@ set_global_python_variables()
 
     # Mypy extra arguments are empty by default
     MYPY_EXTRA_ARGS="${MYPY_EXTRA_ARGS:-""}"
+
+    # C++ optimized Python runtime (zserio_cpp) - enabled by default
+    PYTHON_CPP_ENABLED="${PYTHON_CPP_ENABLED:-1}"
 
     # documentation variables for sphinx
     set_global_doc_variables
@@ -466,6 +476,10 @@ Uses the following environment variables for building:
                            (e.g. /usr/share/spotbugs). If set, spotbugs will be
                            called. Default is empty string.
     CLANG_TIDY_BIN         Name of clang-tidy binary. If not set, clang-tidy tool is not called.
+    CLANG_TIDY_ONLY        Set to 1 to only run clang-tidy over the sources of C++ tests
+                           instead of building and running the tests. The generated code
+                           libraries are still built. Requires CLANG_TIDY_BIN.
+                           Default is 0.
     CLANG_FORMAT_BIN       Name of clang-format binary. If not set, clang-format tool is not called.
     GCOVR_BIN              Gcovr binary to use for coverage report generation (gcc).
                            Default is empty string.
@@ -474,6 +488,8 @@ Uses the following environment variables for building:
     LLVM_COV_BIN           llvm-cov  binary to use for coverage report generation (clang).
                            Default is empty string.
     SANITIZERS_ENABLED     Defines whether to use sanitizers. Default is 0 (disabled).
+    PYTHON_CPP_ENABLED     Defines whether to build and test the C++ optimized Python
+                           runtime (zserio_cpp). Default is 1 (enabled).
 
     Either set these directly, or create 'scripts/build-env.sh' that sets
     these. It's sourced automatically if it exists.
@@ -906,10 +922,10 @@ compile_cpp_for_target()
         return 1
     fi
 
-    # only run "make test" if we can actually run it on current host
+    # only run "make test" if the tests have been built and if we can actually run it on current host
     can_run_tests "${TARGET}"
     local CAN_RUN_TESTS_RESULT=$?
-    if [[ ${MAKE_TARGET} != "clean" && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
+    if [[ (${MAKE_TARGET} == "all" || ${MAKE_TARGET} == "install") && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
         CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" ${CTEST_ARGS[@]}
         local CTEST_RESULT=$?
         if [ ${CTEST_RESULT} -ne 0 ] ; then
@@ -1045,6 +1061,9 @@ can_run_tests()
     ubuntu64)
         [[ "${TARGET_PLATFORM}" == "linux32-"* || "${TARGET_PLATFORM}" = "linux64-"* ]]
         ;;
+    ubuntuarm64)
+        [[ "${TARGET_PLATFORM}" == "linuxarm64-"* ]]
+        ;;
     windows64)
         [[ "${TARGET_PLATFORM}" == "windows64-"* ]]
         ;;
@@ -1057,7 +1076,7 @@ can_run_tests()
 # Determines the current host platform.
 #
 # Returns one of the following platforms:
-# ubuntu32, ubuntu64, windows32, windows64
+# ubuntu32, ubuntu64, ubuntuarm64, windows32, windows64
 get_host_platform()
 {
     exit_if_argc_ne $# 1
@@ -1106,6 +1125,9 @@ get_host_platform()
             ;;
         i686)
             NATIVE_TARGET="${HOST}32"
+            ;;
+        aarch64)
+            NATIVE_TARGET="${HOST}arm64"
             ;;
         *)
             stderr_echo "unname returned unsupported architecture!"

@@ -2,37 +2,44 @@ name: Linux C++
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs and checks, otherwise only the smoke run, see select_legs.yml"
+        type: boolean
+        required: true
 
 jobs:
   cpp:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "7", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "11", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", gcc-version: "11", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "11", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "17", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "14", cxx-standard: "17", build-type: "Debug" }
-
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "64", clang-version: "21", cxx-standard: "11", build-type: "Debug" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "11", build-type: "Release" }
-        - { os: "ubuntu-22.04", platform: "32", clang-version: "21", cxx-standard: "11", build-type: "Debug" }
+        # the smoke run tests only the 64-bit gcc 11 C++11 Debug leg: gcc 11 is the default compiler of
+        # ubuntu-22.04, Debug runs the sanitizers and the runtime's line coverage check, and Debug builds
+        # the test corpus faster than Release
+        include: ${{ fromJSON(inputs.full && '[
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"7","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"7","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"7","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"7","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"11","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"11","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"11","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","gcc-version":"11","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"17","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"14","cxx-standard":"17","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"17","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"14","cxx-standard":"17","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"21","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"64","clang-version":"21","cxx-standard":"11","build-type":"Debug"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"21","cxx-standard":"11","build-type":"Release"},
+            {"os":"ubuntu-22.04","platform":"32","clang-version":"21","cxx-standard":"11","build-type":"Debug"}
+          ]' || '[
+            {"os":"ubuntu-22.04","platform":"64","gcc-version":"11","cxx-standard":"11","build-type":"Debug"}
+          ]') }}
 
     runs-on: ${{matrix.os}}
     name: "\
@@ -81,6 +88,17 @@ jobs:
                           "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
         echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
+        # the smoke run compiles through ccache, CMake takes the launchers from the environment
+        if [[ "${{inputs.full}}" != "true" ]] ; then
+          {
+            echo "CCACHE_DIR=${RUNNER_TEMP}/ccache"
+            echo "CCACHE_BASEDIR=${GITHUB_WORKSPACE}"
+            echo "CCACHE_MAXSIZE=2G"
+            echo "CMAKE_C_COMPILER_LAUNCHER=ccache"
+            echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache"
+          } >> "${GITHUB_ENV}"
+        fi
+
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
       run: |
         echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
@@ -88,6 +106,10 @@ jobs:
 
     - name: Install dependencies
       run: sudo apt-get install cmake doxygen graphviz g++-multilib gcovr
+
+    - name: Install ccache
+      if: ${{ !inputs.full }}
+      run: sudo apt-get install ccache
 
     - name: Set up Java 8
       uses: actions/setup-java@v4
@@ -126,6 +148,29 @@ jobs:
       with:
         name: zserio-bin-java8
 
+    # each run saves a new entry and restores the latest one of its leg
+    - name: Restore ccache
+      id: ccache-restore
+      if: ${{ !inputs.full }}
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{runner.temp}}/ccache
+        key: "\
+          ccache-${{matrix.os}}-${{matrix.platform}}-\
+          ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+              || format('clang{0}', matrix.clang-version) }}-\
+          cxx${{matrix.cxx-standard}}-${{matrix.build-type}}-${{github.sha}}"
+        restore-keys: "\
+          ccache-${{matrix.os}}-${{matrix.platform}}-\
+          ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+              || format('clang{0}', matrix.clang-version) }}-\
+          cxx${{matrix.cxx-standard}}-${{matrix.build-type}}-"
+
+    - name: Reset ccache statistics
+      if: ${{ !inputs.full }}
+      run: |
+        ccache --zero-stats
+
     - name: Build Zserio C++ runtime
       run: |
         scripts/build.sh cpp_rt-${PACKAGE}
@@ -134,11 +179,19 @@ jobs:
       run: |
         scripts/release.sh -p runtime_libs
 
+    # clang-tidy over the test sources runs in the cpp-clang-tidy job
     - name: Run Zserio tests
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         scripts/test.sh cpp-${PACKAGE}
 
+    # on all legs of a full run: the options generate code the default run does not compile, and whether it
+    # compiles depends on the compiler and the build type, see the MSVC Debug exclusion in build_windows_cpp.yml
     - name: Run Zserio tests with extra arguments
+      if: ${{ inputs.full }}
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
         scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
@@ -147,10 +200,16 @@ jobs:
         scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
 
     - name: Run Zserio integration tests for repeated generation
+      env:
+        CLANG_TIDY_BIN: ""
       run: |
         scripts/test_gen.sh cpp-${PACKAGE}
 
+    # the old version's tests check the API of the generated code, which does not depend on the compiler,
+    # so one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ inputs.full && matrix.platform == '64' && matrix.gcc-version == '11' &&
+              matrix.build-type == 'Release' }}
       env:
         CLANG_FORMAT_BIN: ""
         CLANG_TIDY_BIN: ""
@@ -160,7 +219,8 @@ jobs:
         SANITIZERS_ENABLED: 0
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
-        scripts/test_compat_api.sh cpp-${PACKAGE}
+        # warnings of newer compilers in the old version's sources are not what this check is about
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DZSERIO_ENABLE_WERROR=OFF" scripts/test_compat_api.sh cpp-${PACKAGE}
 
     - name: Run Zserio performance tests
       run: |
@@ -169,9 +229,41 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this only builds the benchmarks, one gcc and one clang leg are enough for that
     - name: Run Zserio benchmarks
+      if: ${{ inputs.full && matrix.platform == '64' && matrix.build-type == 'Release' &&
+              matrix.cxx-standard == '11' && (matrix.gcc-version == '11' || matrix.clang-version == '21') }}
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
+
+    - name: Report ccache statistics
+      if: ${{ always() && !inputs.full }}
+      run: |
+        STATS="$(ccache --print-stats)"
+        stat() { echo "${STATS}" | awk -v NAME="$1" '$1 == NAME { print $2 }' ; }
+        HITS=$(( $(stat direct_cache_hit) + $(stat preprocessed_cache_hit) ))
+        CALLS=$(( HITS + $(stat cache_miss) ))
+        RATE="n/a"
+        if [[ ${CALLS} -gt 0 ]] ; then
+          RATE="$(( HITS * 100 / CALLS )) %"
+        fi
+        {
+          echo "### ccache"
+          echo
+          echo "Hit rate: ${RATE} (${HITS} hits of ${CALLS} cacheable compilations)," \
+              "restored from \`${{steps.ccache-restore.outputs.cache-matched-key || 'nothing'}}\`"
+          echo
+          echo '```'
+          ccache --show-stats
+          echo '```'
+        } | tee -a "${GITHUB_STEP_SUMMARY}"
+
+    - name: Save ccache
+      if: ${{ always() && !inputs.full && steps.ccache-restore.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: ${{runner.temp}}/ccache
+        key: ${{steps.ccache-restore.outputs.cache-primary-key}}
 
     - name: Upload Zserio C++ runtime artifacts
       uses: actions/upload-artifact@v4
@@ -191,3 +283,207 @@ jobs:
               || format('clang{0}', matrix.clang-version) }}-\
           cxx${{matrix.cxx-standard}}-${{matrix.build-type}}"
         path: build/runtime_libs/cpp/**/runtime/*.a
+
+  # native linux arm64, the compiler versions are those of the cpp job since compiler_utils.cmake pins its
+  # warnings as errors exceptions to them
+  cpp-arm64:
+    # only in a full run, the smoke run skips it
+    if: ${{ inputs.full }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { gcc-version: "11", cxx-standard: "11", build-type: "Release" }
+        - { clang-version: "21", cxx-standard: "11", build-type: "Debug" }
+
+    runs-on: "ubuntu-24.04-arm"
+    name: "\
+      ubuntu-24.04-arm-\
+      ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+          || format('clang{0}', matrix.clang-version) }}-\
+      c++${{matrix.cxx-standard}}-${{matrix.build-type}}"
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "CMAKE_BUILD_OPTIONS=-j$(nproc)" >> ${GITHUB_ENV}
+        if [[ "${{matrix.gcc-version}}" != "" ]] ; then
+          echo "GCC_VERSION_SUFFIX=-${{matrix.gcc-version}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=linuxarm64-gcc" >> ${GITHUB_ENV}
+        elif [[ "${{matrix.clang-version}}" != "" ]] ; then
+          echo "CLANG_VERSION_SUFFIX=-${{matrix.clang-version}}" >> ${GITHUB_ENV}
+          echo "PACKAGE=linuxarm64-clang" >> ${GITHUB_ENV}
+        fi
+
+        if [[ "${{matrix.build-type}}" == "Debug" ]] ; then
+          echo "SANITIZERS_ENABLED=1" >> ${GITHUB_ENV}
+        fi
+
+        CMAKE_EXTRA_ARGS=("-DZSERIO_ENABLE_WERROR=1"
+                          "-DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
+        echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
+
+    - name: Apt update
+      run: |
+        sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install gcc ${{matrix.gcc-version}} compiler
+      if: ${{ matrix.gcc-version != '' }}
+      run: |
+        sudo apt-get install gcc-${{matrix.gcc-version}} g++-${{matrix.gcc-version}}
+
+    - name: Install clang ${{matrix.clang-version}} compiler
+      if: ${{ matrix.clang-version != '' }}
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${{matrix.clang-version}}
+        # install asan library
+        sudo apt install -y libclang-rt-${{matrix.clang-version}}-dev
+
+    # https://github.com/actions/runner-images/issues/9491 (remove once fixed)
+    - name: Reduce ASLR entropy as a temporary workaround
+      if: ${{ env.SANITIZERS_ENABLED == 1 }}
+      run: |
+        sudo sysctl -w vm.mmap_rnd_bits=28
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: zserio-bin-java8
+
+    - name: Build Zserio C++ runtime
+      run: |
+        scripts/build.sh cpp_rt-${PACKAGE}
+
+    - name: Pack Zserio C++ runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run Zserio tests
+      run: |
+        scripts/test.sh cpp-${PACKAGE}
+
+    # stays on all legs, see the cpp job
+    - name: Run Zserio tests with extra arguments
+      run: |
+        export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
+        scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
+
+        export ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+        scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
+
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}
+
+  # clang-tidy over the test sources (generated code included), split by the test runs of the cpp job,
+  # only in a full run, the smoke run skips it
+  cpp-clang-tidy:
+    if: ${{ inputs.full }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["64", "32"]
+        cxx-standard: ["11", "17"]
+        arguments: ["default", "extra", "extra-validation"]
+
+    runs-on: "ubuntu-22.04"
+    name: "\
+      ubuntu-22.04-${{matrix.platform}}-clang14-c++${{matrix.cxx-standard}}-Debug-\
+      clang-tidy-${{matrix.arguments}}"
+
+    env:
+      CLANG_VERSION_SUFFIX: "-14"
+      PACKAGE: "linux${{matrix.platform}}-clang"
+
+    steps:
+    - name: "Set up environment"
+      run: |
+        echo "CMAKE_BUILD_OPTIONS=-j$(nproc)" >> ${GITHUB_ENV}
+        CMAKE_EXTRA_ARGS=("-DZSERIO_ENABLE_WERROR=1"
+                          "-DCMAKE_BUILD_TYPE=Debug"
+                          "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
+        echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
+
+    - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      run: |
+        echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
+        sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz g++-multilib
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "8"
+
+    - name: Install clang 14 compiler
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 14
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Download Zserio release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: zserio-bin-java8
+
+    # clang-tidy over the runtime sources runs in the cpp job
+    - name: Build Zserio C++ runtime
+      run: |
+        scripts/build.sh cpp_rt-${PACKAGE}
+
+    - name: Pack Zserio C++ runtime release
+      run: |
+        scripts/release.sh -p runtime_libs
+
+    - name: Run clang-tidy over Zserio tests
+      env:
+        CLANG_TIDY_BIN: "clang-tidy-14"
+        CLANG_TIDY_ONLY: 1
+      run: |
+        EXTRA_ARGS="-withTypeInfoCode -withReflectionCode -withCodeComments -setCppAllocator polymorphic -withParsingInfoCode"
+        case "${{matrix.arguments}}" in
+          default)
+            scripts/test.sh cpp-${PACKAGE}
+            ;;
+          extra)
+            export ZSERIO_EXTRA_ARGS="${EXTRA_ARGS}"
+            scripts/test.sh -p -i arguments/without_writer_code -i arguments/with_setters_code cpp-${PACKAGE}
+            ;;
+          extra-validation)
+            export ZSERIO_EXTRA_ARGS="${EXTRA_ARGS} -withValidationCode -withRangeCheckCode"
+            scripts/test.sh -p -x arguments/without_writer_code -x arguments/with_setters_code cpp-${PACKAGE}
+            ;;
+        esac
+
+    # the shortest variant takes over clang-tidy of the cpp job's repeated generation step, which builds and runs
+    - name: Run clang-tidy over Zserio integration tests for repeated generation
+      if: ${{ matrix.arguments == 'extra' }}
+      env:
+        CLANG_TIDY_BIN: "clang-tidy-14"
+      run: |
+        scripts/test_gen.sh cpp-${PACKAGE}

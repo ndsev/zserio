@@ -133,6 +133,8 @@ jobs:
       run: |
         scripts/test.sh cpp-${PACKAGE}
 
+    # stays on all legs: the options generate code the default run does not compile, and whether it compiles
+    # depends on the compiler and the build type, see the MSVC Debug exclusion below
     - name: Run Zserio tests with extra arguments
       shell: bash
       run: |
@@ -153,14 +155,17 @@ jobs:
         scripts/test_gen.sh cpp-${PACKAGE}
 
     - name: Run Zserio API compatibility checks
+      # the old version's tests check the API of the generated code, which does not depend on the compiler,
+      # so one leg is enough
       # MSVC Debug build fails, https://github.com/ndsev/zserio/issues/589
       # MinGW Debug/Release build fails because of long paths
-      if: ${{ matrix.mingw-version == '' && (matrix.msvc-toolset == '' || matrix.build-type == 'Release') }}
+      if: ${{ matrix.msvc-toolset == 'v142' && matrix.cxx-standard == '11' && matrix.build-type == 'Release' }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
-        scripts/test_compat_api.sh cpp-${PACKAGE}
+        # warnings of newer compilers in the old version's sources are not what this check is about
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DZSERIO_ENABLE_WERROR=OFF" scripts/test_compat_api.sh cpp-${PACKAGE}
 
     - name: Run Zserio performance tests
       shell: bash
@@ -170,7 +175,10 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this only builds the benchmarks, one MSVC and one MinGW leg are enough for that
     - name: Run Zserio benchmarks
+      if: ${{ matrix.build-type == 'Release' && matrix.cxx-standard == '11' &&
+              (matrix.msvc-toolset == 'v142' || matrix.mingw-version == '9.4.0') }}
       shell: bash
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1

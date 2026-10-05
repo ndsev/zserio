@@ -2,17 +2,27 @@ name: Linux Java
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: "Run all legs and checks, otherwise only the smoke run, see select_legs.yml"
+        type: boolean
+        required: true
 
 jobs:
   java:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - { os: "ubuntu-22.04", java-version: "8" }
-        - { os: "ubuntu-22.04", java-version: "11" }
-        - { os: "ubuntu-22.04", java-version: "17" }
-        - { os: "ubuntu-24.04", java-version: "21" }
+        # the smoke run tests only with Java 8: the oldest supported version, so the generated code and the
+        # runtime cannot use anything newer, and the compiler artifact is built with it too
+        include: ${{ fromJSON(inputs.full && '[
+            {"os":"ubuntu-22.04","java-version":"8"},
+            {"os":"ubuntu-22.04","java-version":"11"},
+            {"os":"ubuntu-22.04","java-version":"17"},
+            {"os":"ubuntu-24.04","java-version":"21"}
+          ]' || '[
+            {"os":"ubuntu-22.04","java-version":"8"}
+          ]') }}
 
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}}-java${{matrix.java-version}}
@@ -68,7 +78,10 @@ jobs:
         scripts/test.sh java
 
     # DynamicBitFieldLengthBoundsTest fails with range checking - see https://github.com/ndsev/zserio/issues/79
+    # on all legs of a full run: the options generate code the default run does not compile, and each Java
+    # version is an environment it has to work in
     - name: Run Zserio tests with extra arguments
+      if: ${{ inputs.full }}
       run: |
         export ZSERIO_EXTRA_ARGS="-withTypeInfoCode -withCodeComments"
         scripts/test.sh -p -i arguments/without_writer_code -i language/builtin_types java
@@ -80,7 +93,9 @@ jobs:
       run: |
         scripts/test_gen.sh java
 
+    # the API of the generated code does not depend on the Java version, one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ inputs.full && matrix.java-version == '8' }}
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         SPOTBUGS_HOME: ""
@@ -94,7 +109,9 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this measures nothing, it only checks that the benchmarks run, one leg is enough
     - name: Run Zserio benchmarks
+      if: ${{ inputs.full && matrix.java-version == '8' }}
       run: |
         scripts/benchmark.sh java --num-iterations 1
 

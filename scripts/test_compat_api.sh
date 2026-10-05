@@ -13,19 +13,12 @@ get_old_version_branch()
     if [[ "${PARAM_OLD_VERSION_BRANCH}" != "" ]] ; then
         local BRANCH_NAME="${PARAM_OLD_VERSION_BRANCH}"
     else
-        local DEFAULT_OLD_VERSION_BRANCH="compat-api"
-        git ls-remote https://github.com/ndsev/zserio.git | \
-                grep "refs/heads/${DEFAULT_OLD_VERSION_BRANCH}" > /dev/null
-        if [ $? -eq 0 ] ; then
-           local BRANCH_NAME="${DEFAULT_OLD_VERSION_BRANCH}"
-        else
-           local LATEST_VERSION
-            get_latest_zserio_version LATEST_VERSION
-            if [ $? -ne 0 ] ; then
-                return 1
-            fi
-            local BRANCH_NAME="v${LATEST_VERSION}"
+        local LATEST_VERSION
+        get_latest_zserio_version LATEST_VERSION
+        if [ $? -ne 0 ] ; then
+            return 1
         fi
+        local BRANCH_NAME="v${LATEST_VERSION}"
     fi
 
     eval ${OLD_VERSION_BRANCH_OUT}="'${BRANCH_NAME}'"
@@ -132,9 +125,8 @@ Arguments:
     -o <dir>, --output-directory <dir>
                           Output directory where tests will be run.
     -b <branch>, --old-version-branch <branch>
-                          Specify git branch with the old version to test. If not specified, branch 'compat-api'
-                          is used. If not specified and branch 'compat-api' does not exist,
-                          the latest release from GitHub is used.
+                          Specify git branch or tag with the old version to test. If not specified,
+                          the tag of the latest release from GitHub is used.
 
 Packages:
     All packages available in zserio tests.

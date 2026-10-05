@@ -1,0 +1,203 @@
+name: Pages
+
+# Builds zserio.org by Jekyll and deploys it by actions/deploy-pages, the repository Pages source is GitHub Actions.
+# The site consists of the zserio sources of 'source_ref' with submodules, the Jekyll configuration
+# .github/pages/_config.yml, the archived runtime docs of all versions up to 2.19.0 and the runtime docs of all
+# published releases newer than the archive, see scripts/build_web_pages.sh.
+#
+# The release workflow calls it with the runtime libs of the release just built and deploys on a pushed tag.
+# A manual run deploys only if 'deploy' is checked, e.g. the site of the latest release from its tag.
+# A push to the branch 'pages-dry-run/<source_ref>' builds the site of that ref and uploads the Pages artifact,
+# it deploys nothing.
+
+run-name: "${{github.event_name == 'push' && format('Pages dry run of {0} - no deployment', github.ref_name) ||
+    format('Pages from {0}', inputs.source_ref)}}"
+on:
+  workflow_call:
+    inputs:
+      source_ref:
+        description: "Branch, tag or commit of the zserio sources to publish"
+        required: true
+        type: string
+      release_artifacts:
+        description: "Add the runtime libs of the release artifacts 'linux-release-*' of this run"
+        required: false
+        default: false
+        type: boolean
+      deploy:
+        description: "Deploy the site to zserio.org"
+        required: false
+        default: false
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Branch, tag or commit of the zserio sources to publish, e.g. the latest release tag v2.19.0"
+        required: true
+        type: string
+      deploy:
+        description: "Deploy the site to zserio.org"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [ 'pages-dry-run/**' ]
+
+permissions:
+  contents: read
+
+env:
+  # doc/runtime of this commit holds the runtime docs of all versions up to 2.19.0 as published from the former
+  # 'web-pages' branch, the tag 'web-pages-archive' keeps it reachable
+  WEB_PAGES_ARCHIVE_SHA: be6d904d1b02b3c7e9e4712f95aa6be210c87a2f
+
+jobs:
+  build:
+    runs-on: "ubuntu-22.04"
+    steps:
+    - name: "Select the sources to publish"
+      env:
+        INPUT_SOURCE_REF: ${{inputs.source_ref}}
+        REF_NAME: ${{github.ref_name}}
+      run: |
+        SOURCE_REF="${INPUT_SOURCE_REF:-${REF_NAME#pages-dry-run/}}"
+        if [[ -z "${SOURCE_REF}" ]] ; then
+            echo "::error::No sources to publish"
+            exit 1
+        fi
+        echo "Publishing the zserio sources of ${SOURCE_REF}"
+        echo "SOURCE_REF=${SOURCE_REF}" >> "${GITHUB_ENV}"
+
+    - name: "Checkout the site scripts"
+      uses: actions/checkout@v4
+      with:
+        path: tools
+        sparse-checkout: |
+          scripts
+          .github/pages
+
+    - name: "Checkout the sources to publish"
+      uses: actions/checkout@v4
+      with:
+        ref: ${{env.SOURCE_REF}}
+        path: source
+        submodules: recursive
+
+    - name: "Checkout the runtime docs archive"
+      uses: actions/checkout@v4
+      with:
+        ref: ${{env.WEB_PAGES_ARCHIVE_SHA}}
+        path: archive
+        sparse-checkout: doc/runtime
+
+    - name: "Download release artifacts"
+      if: inputs.release_artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: linux-release-*
+        path: release
+        merge-multiple: true
+
+    - name: "Collect the runtime libs newer than the archive"
+      env:
+        GH_TOKEN: ${{github.token}}
+        GH_REPO: ${{github.repository}}
+        DEPLOY: ${{inputs.deploy}}
+      run: |
+        shopt -s nullglob
+        mkdir -p runtime_libs
+        ARCHIVED_DIRS=(archive/doc/runtime/[0-9]*)
+        ARCHIVED_VERSION="$(printf "%s\n" "${ARCHIVED_DIRS[@]##*/}" | sort -V | tail -n 1)"
+        echo "Newest archived version: ${ARCHIVED_VERSION}"
+
+        BUILT_ZIPS=(release/zserio-*-runtime-libs.zip)
+        BUILT_VERSION=""
+        if [[ ${#BUILT_ZIPS[@]} -gt 1 ]] ; then
+            echo "::error::Expected at most one zserio runtime libs zip, found: ${BUILT_ZIPS[*]}"
+            exit 1
+        elif [[ ${#BUILT_ZIPS[@]} -eq 1 ]] ; then
+            BUILT_VERSION="${BUILT_ZIPS[0]#release/zserio-}"
+            BUILT_VERSION="${BUILT_VERSION%-runtime-libs.zip}"
+            echo "Built version: ${BUILT_VERSION}"
+        fi
+
+        is_newer()
+        {
+            [[ "$1" != "$2" && "$(printf "%s\n%s\n" "$1" "$2" | sort -V | tail -n 1)" == "$1" ]]
+        }
+
+        # a failed gh in a process substitution would go unnoticed, -e fails the step on this assignment
+        RELEASE_TAGS="$(gh release list --exclude-drafts --exclude-pre-releases --limit 200 \
+                --json tagName --jq '.[].tagName')"
+        mapfile -t PUBLISHED_VERSIONS < <(grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' <<< "${RELEASE_TAGS}" | sed 's/^v//' | \
+                sort -V)
+        for VERSION in "${PUBLISHED_VERSIONS[@]}" ; do
+            if is_newer "${VERSION}" "${ARCHIVED_VERSION}" && [[ "${VERSION}" != "${BUILT_VERSION}" ]] ; then
+                echo "Downloading the runtime libs of the published release v${VERSION}"
+                gh release download "v${VERSION}" --pattern "zserio-${VERSION}-runtime-libs.zip" --dir runtime_libs
+            fi
+        done
+        if [[ -n "${BUILT_VERSION}" ]] ; then
+            # on a release the built version is already published by the release workflow
+            NEWEST_VERSION="${ARCHIVED_VERSION}"
+            for VERSION in "${PUBLISHED_VERSIONS[@]}" ; do
+                if [[ "${VERSION}" != "${BUILT_VERSION}" ]] && is_newer "${VERSION}" "${NEWEST_VERSION}" ; then
+                    NEWEST_VERSION="${VERSION}"
+                fi
+            done
+            if [[ "${BUILT_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && is_newer "${BUILT_VERSION}" "${NEWEST_VERSION}" ; then
+                cp "${BUILT_ZIPS[0]}" runtime_libs
+            elif [[ "${DEPLOY}" == "true" ]] ; then
+                echo "::error::Built version ${BUILT_VERSION} is not a release newer than ${NEWEST_VERSION}"
+                exit 1
+            else
+                # e.g. a dry run before the version bump or of a pre-release version
+                echo "::notice::Built version ${BUILT_VERSION} is not a release newer than ${NEWEST_VERSION}," \
+                        "the dry run builds the site without it"
+            fi
+        fi
+
+        ZIPS=(runtime_libs/*.zip)
+        if [[ ${#ZIPS[@]} -gt 0 ]] ; then
+            mapfile -t ZIPS < <(printf "%s\n" "${ZIPS[@]}" | sort -V)
+        fi
+        echo "Runtime libs to add: ${ZIPS[*]:-none}"
+        echo "RUNTIME_LIBS_ZIPS=${ZIPS[*]}" >> "${GITHUB_ENV}"
+
+    - name: "Assemble the site"
+      run: |
+        read -r -a ZIPS <<< "${RUNTIME_LIBS_ZIPS}"
+        tools/scripts/build_web_pages.sh -s source -a archive/doc/runtime -o site "${ZIPS[@]}"
+        du -sh site
+        find site -type f | wc -l
+
+    - name: "Build the site by Jekyll"
+      uses: actions/jekyll-build-pages@v1
+      with:
+        source: ./site
+        destination: ./_site
+        verbose: false
+
+    - name: "Upload the Pages artifact"
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./_site
+
+  deploy:
+    name: "Deploy to zserio.org"
+    if: inputs.deploy
+    needs: [build]
+    runs-on: "ubuntu-22.04"
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+    - name: "Deploy to GitHub Pages"
+      id: deployment
+      uses: actions/deploy-pages@v4
