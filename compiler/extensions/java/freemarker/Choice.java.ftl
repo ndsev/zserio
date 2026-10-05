@@ -97,7 +97,8 @@ ${I}}
 </#if>
 public class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
-        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
+        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf, <#rt>
+        <#lt>java.lang.Comparable<${name}>
 {
 <#if isPackable && usedInPackedArray>
     <@compound_declare_packing_context fieldList/>
@@ -378,6 +379,44 @@ ${I}break;
         return false;
 <#else>
         return obj instanceof ${name};
+</#if>
+    }
+
+<#macro choice_compare_to_member member indent packed>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return zserio.runtime.CompareUtil.compare(<#rt>
+        <#if member.compoundField.array??>
+        <#lt>(${member.compoundField.array.wrapperJavaTypeName})objectChoice,
+${I}        (${member.compoundField.array.wrapperJavaTypeName})other.objectChoice);
+        <#else>
+        <#lt>(${member.compoundField.nullableTypeInfo.typeFullName})objectChoice,
+${I}        (${member.compoundField.nullableTypeInfo.typeFullName})other.objectChoice);
+        </#if>
+    <#else>
+${I}return 0;
+    </#if>
+</#macro>
+<#macro choice_compare_to_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}return zserio.runtime.CompareUtil.compareObjects(objectChoice, other.objectChoice);
+</#macro>
+    @Override
+    public int compareTo(${name} other)
+    {
+<#if compoundParametersData.list?has_content>
+        int result;
+
+        <@compound_parameter_compare_to compoundParametersData/>
+</#if>
+<#if fieldList?has_content>
+        <@choice_switch "choice_compare_to_member", "choice_compare_to_no_match", 2/>
+    <#if isSwitchAllowed && isDefaultUnreachable>
+
+        return zserio.runtime.CompareUtil.compareObjects(objectChoice, other.objectChoice);
+    </#if>
+<#else>
+        return 0;
 </#if>
     }
 

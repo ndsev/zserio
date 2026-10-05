@@ -23,7 +23,8 @@
 </#function>
 public class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
-        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
+        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf, <#rt>
+        <#lt>java.lang.Comparable<${name}>
 {
 <#if isPackable && usedInPackedArray>
     <@compound_declare_packing_context fieldList/>
@@ -395,6 +396,32 @@ public class ${name} implements <#rt>
     </#if>
 </#list>
         return result;
+    }
+
+    @Override
+    public int compareTo(${name} other)
+    {
+<#if compoundParametersData.list?has_content || fieldList?has_content>
+        int result;
+
+        <@compound_parameter_compare_to compoundParametersData/>
+    <#list fieldList as field>
+        <#if field.isExtended>
+        if (${field.isPresentIndicatorName}() && other.${field.isPresentIndicatorName}())
+        {
+            <@compound_compare_to_field field, 3/>
+        }
+        else if (${field.isPresentIndicatorName}() != other.${field.isPresentIndicatorName}())
+        {
+            return ${field.isPresentIndicatorName}() ? 1 : -1;
+        }
+        <#else>
+        <@compound_compare_to_field field, 2/>
+        </#if>
+
+    </#list>
+</#if>
+        return 0;
     }
 
 <#if withCodeComments>
