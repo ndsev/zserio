@@ -28,7 +28,46 @@ jobs:
     name: ${{matrix.os}}-java${{matrix.java-version}}
 
     steps:
+    - name: "Checkout"
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    # the smoke run restores the compiler build of an earlier smoke run whose sources were the same, the key
+    # hashes the git trees of everything the build and the core tests read, the full run always builds
+    - name: "Compute compiler cache key"
+      id: compiler-key
+      if: ${{ !inputs.full }}
+      run: |
+        SOURCES=(compiler ant_task build.xml 3rdparty/java cmake/zserio_compiler.cmake test/core test/data
+                 scripts/build.sh scripts/release.sh scripts/common_tools.sh scripts/test.sh
+                 .github/workflows/build_linux_zserio.yml)
+        TREES="$(git rev-parse "${SOURCES[@]/#/HEAD:}")"
+        echo "key=zserio-bin-${{matrix.os}}-java${{matrix.java-version}}-$(echo "${TREES}" | sha256sum | cut -c1-40)" \
+            >> "${GITHUB_OUTPUT}"
+
+    # saved only when the job succeeds, so a restored build has passed the core tests
+    - name: "Restore compiler build from cache"
+      id: compiler-cache
+      if: ${{ !inputs.full }}
+      uses: actions/cache@v4
+      with:
+        path: release-*
+        key: ${{steps.compiler-key.outputs.key}}
+
+    - name: "Report compiler cache"
+      if: ${{ !inputs.full }}
+      run: |
+        if [[ "${{steps.compiler-cache.outputs.cache-hit}}" == "true" ]] ; then
+            echo "Compiler build restored from cache \`${{steps.compiler-key.outputs.key}}\`, build and core tests skipped." \
+                >> "${GITHUB_STEP_SUMMARY}"
+        else
+            echo "Compiler cache \`${{steps.compiler-key.outputs.key}}\` missed, compiler built and tested." \
+                >> "${GITHUB_STEP_SUMMARY}"
+        fi
+
     - name: "Set up environment"
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         if [[ "${{matrix.os}}" == "ubuntu-22.04" ]] ; then
             echo "CLANG_FORMAT_BIN=clang-format-14" >> ${GITHUB_ENV}
@@ -36,67 +75,75 @@ jobs:
         echo "SPOTBUGS_HOME=${RUNNER_WORKSPACE}/spotbugs-4.8.2" >> ${GITHUB_ENV}
 
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
 
     - name: Set up Java ${{matrix.java-version}}
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: ${{matrix.java-version}}
 
     - name: Install clang-format-14 tool
-      if: ${{ env.CLANG_FORMAT_BIN != '' }}
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' && env.CLANG_FORMAT_BIN != '' }}
       run: |
         sudo apt-get install clang-format-14
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip \
             -P "${RUNNER_WORKSPACE}"
         unzip "${RUNNER_WORKSPACE}"/spotbugs-4.8.2.zip -d "${RUNNER_WORKSPACE}"
 
-    - name: "Checkout"
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-
     - name: Build ant task
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh ant_task
 
     - name: Build Zserio core
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh core
 
     - name: Build Zserio C++ extension
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh cpp
 
     - name: Build Zserio Java extension
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh java
 
     - name: Build Zserio python extension
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh python
 
     - name: Build Zserio Doc extension
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh doc
 
     - name: Build Zserio Xml extension
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh xml
 
     - name: Build Zserio bundle
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/build.sh zserio
 
     - name: Pack Zserio release
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/release.sh -p zserio
 
     - name: Run Zserio core tests
+      if: ${{ steps.compiler-cache.outputs.cache-hit != 'true' }}
       run: |
         scripts/test.sh core
 
