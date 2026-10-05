@@ -88,6 +88,17 @@ jobs:
                           "-DCMAKE_CXX_STANDARD=${{matrix.cxx-standard}}")
         echo "CMAKE_EXTRA_ARGS=${CMAKE_EXTRA_ARGS[@]}" >> ${GITHUB_ENV}
 
+        # the smoke run compiles through ccache, CMake takes the launchers from the environment
+        if [[ "${{inputs.full}}" != "true" ]] ; then
+          {
+            echo "CCACHE_DIR=${RUNNER_TEMP}/ccache"
+            echo "CCACHE_BASEDIR=${GITHUB_WORKSPACE}"
+            echo "CCACHE_MAXSIZE=2G"
+            echo "CMAKE_C_COMPILER_LAUNCHER=ccache"
+            echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache"
+          } >> "${GITHUB_ENV}"
+        fi
+
     - name: Apt update # with workaround for 'Unable to connect to ppa.launchpad.net' failure
       run: |
         echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
@@ -95,6 +106,10 @@ jobs:
 
     - name: Install dependencies
       run: sudo apt-get install cmake doxygen graphviz g++-multilib gcovr
+
+    - name: Install ccache
+      if: ${{ !inputs.full }}
+      run: sudo apt-get install ccache
 
     - name: Set up Java 8
       uses: actions/setup-java@v4
@@ -132,6 +147,29 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: zserio-bin-java8
+
+    # each run saves a new entry and restores the latest one of its leg
+    - name: Restore ccache
+      id: ccache-restore
+      if: ${{ !inputs.full }}
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{runner.temp}}/ccache
+        key: "\
+          ccache-${{matrix.os}}-${{matrix.platform}}-\
+          ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+              || format('clang{0}', matrix.clang-version) }}-\
+          cxx${{matrix.cxx-standard}}-${{matrix.build-type}}-${{github.sha}}"
+        restore-keys: "\
+          ccache-${{matrix.os}}-${{matrix.platform}}-\
+          ${{ matrix.gcc-version && format('gcc{0}', matrix.gcc-version)
+              || format('clang{0}', matrix.clang-version) }}-\
+          cxx${{matrix.cxx-standard}}-${{matrix.build-type}}-"
+
+    - name: Reset ccache statistics
+      if: ${{ !inputs.full }}
+      run: |
+        ccache --zero-stats
 
     - name: Build Zserio C++ runtime
       run: |
@@ -197,6 +235,35 @@ jobs:
               matrix.cxx-standard == '11' && (matrix.gcc-version == '11' || matrix.clang-version == '21') }}
       run: |
         scripts/benchmark.sh cpp-${PACKAGE} --num-iterations 1
+
+    - name: Report ccache statistics
+      if: ${{ always() && !inputs.full }}
+      run: |
+        STATS="$(ccache --print-stats)"
+        stat() { echo "${STATS}" | awk -v NAME="$1" '$1 == NAME { print $2 }' ; }
+        HITS=$(( $(stat direct_cache_hit) + $(stat preprocessed_cache_hit) ))
+        CALLS=$(( HITS + $(stat cache_miss) ))
+        RATE="n/a"
+        if [[ ${CALLS} -gt 0 ]] ; then
+          RATE="$(( HITS * 100 / CALLS )) %"
+        fi
+        {
+          echo "### ccache"
+          echo
+          echo "Hit rate: ${RATE} (${HITS} hits of ${CALLS} cacheable compilations)," \
+              "restored from \`${{steps.ccache-restore.outputs.cache-matched-key || 'nothing'}}\`"
+          echo
+          echo '```'
+          ccache --show-stats
+          echo '```'
+        } | tee -a "${GITHUB_STEP_SUMMARY}"
+
+    - name: Save ccache
+      if: ${{ always() && !inputs.full && steps.ccache-restore.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: ${{runner.temp}}/ccache
+        key: ${{steps.ccache-restore.outputs.cache-primary-key}}
 
     - name: Upload Zserio C++ runtime artifacts
       uses: actions/upload-artifact@v4
