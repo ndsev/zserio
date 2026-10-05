@@ -63,6 +63,7 @@ from zserio import bitreader
 from zserio import bitsizeof
 from zserio import bitwriter
 from zserio import builtin
+from zserio import compare
 from zserio import creator
 from zserio import debugstring
 from zserio import enum

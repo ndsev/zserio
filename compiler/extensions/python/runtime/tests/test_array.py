@@ -396,6 +396,19 @@ class ArrayTest(unittest.TestCase):
             array2_values,
         )
 
+    def test_lt(self):
+        array_traits = BitFieldArrayTraits(5)
+        array1 = Array(array_traits, [1, 2])
+        self.assertFalse(array1 < Array(array_traits, [1, 2]))
+        self.assertTrue(array1 < Array(array_traits, [1, 3]))
+        self.assertFalse(Array(array_traits, [1, 3]) < array1)
+        self.assertTrue(array1 < Array(array_traits, [1, 2, 0]))
+        self.assertTrue(Array(array_traits, []) < array1)
+        self.assertFalse(array1 < Array(array_traits, [1, 2], is_auto=True))  # packing and size are ignored
+
+        with self.assertRaises(TypeError):
+            _ = array1 < [1, 3]
+
     def test_bitfield_packed_array(self):
         array_traits64 = BitFieldArrayTraits(64)
 

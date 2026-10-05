@@ -148,6 +148,13 @@ class Array:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        # compares only raw_array lexicographically, the same as __eq__ does
+        if isinstance(other, Array):
+            return self._raw_array < other._raw_array
+
+        return NotImplemented
+
     def __hash__(self) -> int:
         return self._array_traits.CALC_HASHCODE_FUNC(HASH_SEED, self._raw_array)
 
