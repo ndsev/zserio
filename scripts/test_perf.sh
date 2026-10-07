@@ -78,13 +78,12 @@ generate_java_blob_test()
         // prepare byte array
         byte[] blobBuffer = readBlobBuffer${BLOB_TEST_INDEX}(inputIsJson, inputPath);
 
-        // calculate blob memory size
+        // calculate blob memory size, collecting before both readings leaves only the memory the blob occupies
         final ByteArrayBitStreamReader blobReader = new ByteArrayBitStreamReader(blobBuffer);
-        System.gc();
-        Thread.sleep(1000);
-        final long startHeapSize = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        final ${BLOB_FULL_NAME} memoryBlob = new ${BLOB_FULL_NAME}(blobReader);
-        final long endHeapSize = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        final long startHeapSize = getUsedHeapSizeAfterGc();
+        memoryBlob = new ${BLOB_FULL_NAME}(blobReader);
+        final long endHeapSize = getUsedHeapSizeAfterGc();
+        memoryBlob = null;
         final long blobMemorySize = endHeapSize - startHeapSize;
         final long blobSize = blobReader.getBitPosition();
 
@@ -355,6 +354,31 @@ EOF
             System.exit(1);
         }
     }
+
+    // Collects garbage until the used heap stops shrinking and returns the used heap size.
+    private static long getUsedHeapSizeAfterGc() throws InterruptedException
+    {
+        final Runtime runtime = Runtime.getRuntime();
+        long usedHeapSize = runtime.totalMemory() - runtime.freeMemory();
+        for (int i = 0; i < MAX_GC_ROUNDS; ++i)
+        {
+            System.gc();
+            Thread.sleep(GC_WAIT_MS);
+            final long newUsedHeapSize = runtime.totalMemory() - runtime.freeMemory();
+            final boolean stoppedShrinking = (i > 0 && newUsedHeapSize >= usedHeapSize);
+            usedHeapSize = newUsedHeapSize;
+            if (stoppedShrinking)
+                break;
+        }
+
+        return usedHeapSize;
+    }
+
+    private static final int MAX_GC_ROUNDS = 10;
+    private static final long GC_WAIT_MS = 100;
+
+    // keeps the measured blob reachable until the heap is read after its construction
+    private static Object memoryBlob;
 EOF
 
     for (( BLOB_TEST_INDEX=0; BLOB_TEST_INDEX < ${#DISTINCT_BLOB_NAMES[@]}; BLOB_TEST_INDEX++ )) ; do
