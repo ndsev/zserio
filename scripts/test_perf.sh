@@ -1268,7 +1268,7 @@ Description:
 
 Usage:
     $0 [-h] [-e] [-p] [-r] [-l] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
-        target... -s <source> -b <blobname> [-f <blobfile> | -j <jsonfile>]
+        target... -s <source> (-b <blobname> (-f <blobfile> | -j <jsonfile>))...
 
 Arguments:
     -h, --help              Show this help.
@@ -1294,6 +1294,10 @@ Arguments:
                             Path to the blobfile.
     -j <jsonfile>, --json-file <jsonfile>
                             Path to the JSON file.
+                            Blob name and blob or JSON file can be repeated, the n-th blob name pairs
+                            with the n-th blob or JSON file. The sources are generated and compiled once,
+                            the test runs once per pair and writes PerformanceTest_<n>.log, a single pair
+                            writes PerformanceTest.log.
     generator               Specify the generator to test.
 
 Generator can be:
@@ -1320,6 +1324,7 @@ Generator can be:
 Examples:
     $0 cpp-linux64-gcc java python -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
     $0 all-linux64-gcc -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
+    $0 cpp-linux64-gcc -d /tmp/zs -s test.zs -b test.Blob -f blob1.bin -b test.Blob -f blob2.bin
 
 EOF
 }
@@ -1358,9 +1363,9 @@ parse_arguments()
     eval ${SWITCH_DIRECTORY_OUT}="."
     eval ${SWITCH_SOURCE_OUT}=""
     eval ${SWITCH_TEST_NAME_OUT}=""
-    eval ${SWITCH_BLOB_NAME_OUT}=""
-    eval ${SWITCH_JSON_FILE_OUT}=""
-    eval ${SWITCH_BLOB_FILE_OUT}=""
+    eval ${SWITCH_BLOB_NAME_OUT}="()"
+    eval ${SWITCH_JSON_FILE_OUT}="()"
+    eval ${SWITCH_BLOB_FILE_OUT}="()"
     eval ${SWITCH_NUM_ITERATIONS_OUT}=100 # default
     eval ${SWITCH_TEST_CONFIG_OUT}="READ"
     eval ${SWITCH_PURGE_OUT}=0
@@ -1369,6 +1374,8 @@ parse_arguments()
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=()
+    local NUM_BLOB_NAMES=0
+    local NUM_INPUT_FILES=0
     local ARG="$1"
     while [ $# -ne 0 ] ; do
         case "${ARG}" in
@@ -1431,7 +1438,8 @@ parse_arguments()
                     echo
                     return 1
                 fi
-                eval ${SWITCH_BLOB_NAME_OUT}="$2"
+                eval ${SWITCH_BLOB_NAME_OUT}[${NUM_BLOB_NAMES}]='"$2"'
+                NUM_BLOB_NAMES=$((NUM_BLOB_NAMES + 1))
                 shift 2
                 ;;
 
@@ -1441,7 +1449,9 @@ parse_arguments()
                     echo
                     return 1
                 fi
-                eval ${SWITCH_JSON_FILE_OUT}="$2"
+                eval ${SWITCH_JSON_FILE_OUT}[${NUM_INPUT_FILES}]='"$2"'
+                eval ${SWITCH_BLOB_FILE_OUT}[${NUM_INPUT_FILES}]=""
+                NUM_INPUT_FILES=$((NUM_INPUT_FILES + 1))
                 shift 2
                 ;;
 
@@ -1451,7 +1461,9 @@ parse_arguments()
                     echo
                     return 1
                 fi
-                eval ${SWITCH_BLOB_FILE_OUT}="$2"
+                eval ${SWITCH_BLOB_FILE_OUT}[${NUM_INPUT_FILES}]='"$2"'
+                eval ${SWITCH_JSON_FILE_OUT}[${NUM_INPUT_FILES}]=""
+                NUM_INPUT_FILES=$((NUM_INPUT_FILES + 1))
                 shift 2
                 ;;
 
@@ -1562,20 +1574,21 @@ parse_arguments()
             return 1
         fi
 
-        if [[ "${!SWITCH_BLOB_NAME_OUT}" == "" ]] ; then
+        if [[ ${NUM_BLOB_NAMES} -eq 0 ]] ; then
             stderr_echo "Blob name is not set!"
             echo
             return 1
         fi
 
-        if [[ "${!SWITCH_BLOB_FILE_OUT}" == "" && "${!SWITCH_JSON_FILE_OUT}" == "" ]] ; then
+        if [[ ${NUM_INPUT_FILES} -eq 0 ]] ; then
             stderr_echo "Neither blob nor JSON filename is set!"
             echo
             return 1
         fi
 
-        if [[ "${!SWITCH_BLOB_FILE_OUT}" != "" && "${!SWITCH_JSON_FILE_OUT}" != "" ]] ; then
-            stderr_echo "Set either blob or JSON filename, not both!"
+        if [[ ${NUM_BLOB_NAMES} -ne ${NUM_INPUT_FILES} ]] ; then
+            stderr_echo "Each blob name needs exactly one blob or JSON filename!" \
+                    "(${NUM_BLOB_NAMES} blob names, ${NUM_INPUT_FILES} filenames)"
             echo
             return 1
         fi
@@ -1612,16 +1625,16 @@ main()
     local SWITCH_DIRECTORY
     local SWITCH_SOURCE
     local SWITCH_TEST_NAME
-    local SWITCH_BLOB_NAME
-    local SWITCH_JSON_FILE
-    local SWITCH_BLOB_FILE
+    local SWITCH_BLOB_NAMES=()
+    local SWITCH_JSON_FILES=()
+    local SWITCH_BLOB_FILES=()
     local SWITCH_NUM_ITERATIONS
     local SWITCH_TEST_CONFIG
     local SWITCH_PURGE
     local SWITCH_RUN_ONLY
     local SWITCH_PROFILE
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_PYTHON_CPP SWITCH_OUT_DIR \
-            SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_JSON_FILE SWITCH_BLOB_FILE \
+            SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAMES SWITCH_JSON_FILES SWITCH_BLOB_FILES \
             SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE SWITCH_RUN_ONLY SWITCH_PROFILE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
@@ -1712,13 +1725,10 @@ main()
     fi
 
     # run test
-    local BLOB_NAMES=("${SWITCH_BLOB_NAME}")
-    local JSON_PATHS=("${SWITCH_JSON_FILE}")
-    local BLOB_PATHS=("${SWITCH_BLOB_FILE}")
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
-              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" BLOB_NAMES[@] JSON_PATHS[@] BLOB_PATHS[@] \
-              ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_RUN_ONLY} ${SWITCH_PROFILE}
+              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" SWITCH_BLOB_NAMES[@] SWITCH_JSON_FILES[@] \
+              SWITCH_BLOB_FILES[@] ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_RUN_ONLY} ${SWITCH_PROFILE}
     if [ $? -ne 0 ] ; then
         return 1
     fi
