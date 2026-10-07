@@ -328,6 +328,12 @@ TEST(BitBufferTest, operatorLessThan)
     const BitBuffer bitBuffer5(std::vector<uint8_t>({0xAB, 0xE0, 0x00}), 20);
     ASSERT_TRUE(bitBuffer1 < bitBuffer5);
     ASSERT_FALSE(bitBuffer5 < bitBuffer1);
+
+    const BitBuffer bitBuffer6(std::vector<uint8_t>({0xA0}), 3);
+    const BitBuffer bitBuffer7(std::vector<uint8_t>({0xA0}), 4);
+    ASSERT_FALSE(bitBuffer6 == bitBuffer7);
+    ASSERT_TRUE(bitBuffer6 < bitBuffer7);
+    ASSERT_FALSE(bitBuffer7 < bitBuffer6);
 }
 
 TEST(BitBufferTest, hashCode)

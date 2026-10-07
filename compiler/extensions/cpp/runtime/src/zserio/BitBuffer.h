@@ -144,7 +144,8 @@ public:
      *
      * \param other The another instance of bit buffer to which compare this bit buffer.
      *
-     * \return True when this bit buffer is less than the other (using lexicographical compare).
+     * \return True when this bit buffer is less than the other (using lexicographical compare),
+     *         bit buffers with equal contents are ordered by their bit size.
      */
     bool operator<(const BasicBitBuffer<ALLOC>& other) const;
 
@@ -362,7 +363,12 @@ bool BasicBitBuffer<ALLOC>::operator<(const BasicBitBuffer<ALLOC>& other) const
         return false;
     }
 
-    return (first1 == last1) && (first2 != last2);
+    if ((first1 == last1) && (first2 == last2))
+    {
+        return m_bitSize < other.m_bitSize;
+    }
+
+    return first1 == last1;
 }
 
 template <typename ALLOC>
