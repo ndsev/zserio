@@ -1345,6 +1345,13 @@ Generator can be:
     all-windows64-mingw     Test all generators and compile all possible windows64 sources (MinGW64).
     all-windows64-msvc      Test all generators and compile all possible windows64 sources (MSVC).
 
+Blob in Memory:
+    C++                     Exact number of bytes allocated while the blob is parsed.
+    Java                    Approximation: growth of the used heap over the blob construction, read
+                            after collecting garbage until the used heap stops shrinking. It includes
+                            JVM object headers and padding and can vary slightly between runs.
+    Python                  Peak of the memory traced by tracemalloc while the blob is parsed.
+
 Examples:
     $0 cpp-linux64-gcc java python -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
     $0 all-linux64-gcc -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
