@@ -56,6 +56,13 @@ class BitBuffer:
 
         return True
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, BitBuffer):
+            return NotImplemented
+
+        # bytes are compared lexicographically, bit buffers with equal bytes are ordered by bit size
+        return (self._masked_bytes(), self._bitsize) < (other._masked_bytes(), other._bitsize)
+
     def __hash__(self) -> int:
         result = HASH_SEED
         bytesize = bitsize_to_bytesize(self._bitsize)
@@ -87,6 +94,13 @@ class BitBuffer:
         :returns: Size of the bit buffer in bits.
         """
         return self._bitsize
+
+    def _masked_bytes(self) -> bytes:
+        bytesize = bitsize_to_bytesize(self._bitsize)
+        if bytesize == 0:
+            return bytes()
+
+        return bytes(self._buffer[0 : bytesize - 1]) + bytes([self._masked_last_byte()])
 
     def _masked_last_byte(self) -> int:
         rounded_bytesize = self._bitsize // 8

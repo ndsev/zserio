@@ -40,6 +40,30 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
         uint32ParamChoice2.value_a = diffValue
         self.assertFalse(uint32ParamChoice1 == uint32ParamChoice2)
 
+    def testLt(self):
+        uint32ParamChoice1 = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
+        uint32ParamChoice2 = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
+        self.assertTrue(uint32ParamChoice1 < uint32ParamChoice2)
+        self.assertFalse(uint32ParamChoice2 < uint32ParamChoice1)
+
+        uint32ParamChoice2 = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
+        self.assertFalse(uint32ParamChoice1 < uint32ParamChoice2)
+        self.assertFalse(uint32ParamChoice2 < uint32ParamChoice1)
+
+        value = 99
+        uint32ParamChoice1.value_a = value
+        self.assertFalse(uint32ParamChoice1 < uint32ParamChoice2)
+        self.assertTrue(uint32ParamChoice2 < uint32ParamChoice1)
+
+        uint32ParamChoice2.value_a = value
+        self.assertFalse(uint32ParamChoice1 < uint32ParamChoice2)
+        self.assertFalse(uint32ParamChoice2 < uint32ParamChoice1)
+
+        diffValue = value + 1
+        uint32ParamChoice2.value_a = diffValue
+        self.assertTrue(uint32ParamChoice1 < uint32ParamChoice2)
+        self.assertFalse(uint32ParamChoice2 < uint32ParamChoice1)
+
     def testHash(self):
         uint32ParamChoice1 = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
         uint32ParamChoice2 = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)

@@ -14,6 +14,12 @@ class EmptyStructureTest(StructureTypes.TestCase):
         emptyStructure2 = self.api.EmptyStructure()
         self.assertTrue(emptyStructure1 == emptyStructure2)
 
+    def testLt(self):
+        emptyStructure1 = self.api.EmptyStructure()
+        emptyStructure2 = self.api.EmptyStructure()
+        self.assertFalse(emptyStructure1 < emptyStructure2)
+        self.assertFalse(emptyStructure2 < emptyStructure1)
+
     def testHash(self):
         emptyStructure1 = self.api.EmptyStructure()
         emptyStructure2 = self.api.EmptyStructure()

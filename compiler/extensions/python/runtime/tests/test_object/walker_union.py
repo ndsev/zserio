@@ -78,6 +78,15 @@ class WalkerUnion:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, WalkerUnion):
+            return NotImplemented
+
+        if self._choice_tag != other._choice_tag:
+            return self._choice_tag < other._choice_tag  # UNDEFINED_CHOICE is the lowest
+
+        return zserio.compare.compare(self._choice, other._choice) < 0
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_int32(result, self._choice_tag)

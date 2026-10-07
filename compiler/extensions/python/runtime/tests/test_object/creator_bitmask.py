@@ -43,6 +43,12 @@ class CreatorBitmask:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, CreatorBitmask):
+            return self._value < other._value
+
+        return NotImplemented
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_int32(result, self._value)

@@ -34,6 +34,28 @@ class ExtendedSimpleFieldTest(ExtendedMembers.TestCase):
         extended1.extended_value = zserio.limits.UINT64_MAX
         self.assertEqual(extended1, extended2)
 
+    def testLt(self):
+        extended1 = self.api.Extended()
+        extended2 = self.api.Extended()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.extended_value = zserio.limits.UINT64_MAX
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value = zserio.limits.UINT64_MAX
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHash(self):
         extended1 = self.api.Extended()
         extended2 = self.api.Extended()

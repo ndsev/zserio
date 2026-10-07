@@ -35,6 +35,28 @@ class ExtendedCompoundFieldTest(ExtendedMembers.TestCase):
         extended1.extended_value = self.api.Compound(COMPOUND_ARRAY)
         self.assertEqual(extended1, extended2)
 
+    def testLt(self):
+        extended1 = self.api.Extended()
+        extended2 = self.api.Extended()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.extended_value = self.api.Compound(COMPOUND_ARRAY)
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value = self.api.Compound(COMPOUND_ARRAY)
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHash(self):
         extended1 = self.api.Extended()
         extended2 = self.api.Extended()

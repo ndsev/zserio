@@ -37,6 +37,28 @@ class OptionalRecursionTest(OptionalMembers.TestCase):
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         self.assertFalse(block12 == block1)
 
+    def testLt(self):
+        block1 = self._createBlock(self.BLOCK1_DATA)
+        block2 = self._createBlock(self.BLOCK1_DATA)
+        self.assertFalse(block1 < block2)
+        self.assertFalse(block2 < block1)
+
+        block12_1 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertTrue(block1 < block12_1)
+        self.assertFalse(block12_1 < block1)
+
+        block12_2 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertFalse(block12_1 < block12_2)
+        self.assertFalse(block12_2 < block12_1)
+
+        block12_1.block_terminator = 0  # set but not used
+        self.assertTrue(block12_1 < block12_2)
+        self.assertFalse(block12_2 < block12_1)
+
+        block12_2.block_terminator = 0  # set but not used
+        self.assertFalse(block12_1 < block12_2)
+        self.assertFalse(block12_2 < block12_1)
+
     def testHash(self):
         emptyBlock1 = self._createEmptyBlock()
         emptyBlock2 = self._createEmptyBlock()

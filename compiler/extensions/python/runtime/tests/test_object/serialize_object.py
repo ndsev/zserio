@@ -56,6 +56,20 @@ class SerializeObject:
 
         return False
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, SerializeObject):
+            return NotImplemented
+
+        result = zserio.compare.compare(self._param_, other._param_)
+        if result != 0:
+            return result < 0
+
+        result = zserio.compare.compare(self._nested_, other._nested_)
+        if result != 0:
+            return result < 0
+
+        return False
+
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_int32(result, self._param_)

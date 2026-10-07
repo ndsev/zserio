@@ -66,6 +66,24 @@ class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
         extended3.extended_value9 = 0
         self.assertNotEqual(extended3, extended4)
 
+    def testLt(self):
+        extended1 = self.api.Extended2()
+        extended2 = self.api.Extended2()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended3 = self._createExtended2()
+        self.assertFalse(extended1 < extended3)
+        self.assertTrue(extended3 < extended1)  # first field is VALUE (-13)
+
+        extended4 = self._createExtended2()
+        self.assertFalse(extended3 < extended4)
+        self.assertFalse(extended4 < extended3)
+
+        extended3.extended_value9 = 0
+        self.assertTrue(extended3 < extended4)
+        self.assertFalse(extended4 < extended3)
+
     def testHash(self):
         extended1 = self.api.Extended2()
         extended2 = self.api.Extended2()

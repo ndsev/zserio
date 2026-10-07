@@ -39,6 +39,31 @@ class ExtendedChoiceFieldTest(ExtendedMembers.TestCase):
         extended1.extended_value = extendedValue
         self.assertEqual(extended1, extended2)
 
+    def testLt(self):
+        extended1 = self.api.Extended()
+        extended2 = self.api.Extended()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.num_elements = 1
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.num_elements = 1
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.extended_value = self.api.Choice(1, value_=42)
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+        extended1.extended_value = self.api.Choice(1, value_=42)
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value.value = 41
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHash(self):
         extended1 = self.api.Extended()
         extended2 = self.api.Extended()

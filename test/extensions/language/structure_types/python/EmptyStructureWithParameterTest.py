@@ -22,6 +22,16 @@ class EmptyStructureWithParameterTest(StructureTypes.TestCase):
         self.assertTrue(emptyStructureWithParameter1 == emptyStructureWithParameter2)
         self.assertFalse(emptyStructureWithParameter1 == emptyStructureWithParameter3)
 
+    def testLt(self):
+        emptyStructureWithParameter1 = self.api.EmptyStructureWithParameter(1)
+        emptyStructureWithParameter2 = self.api.EmptyStructureWithParameter(1)
+        self.assertFalse(emptyStructureWithParameter1 < emptyStructureWithParameter2)
+        self.assertFalse(emptyStructureWithParameter2 < emptyStructureWithParameter1)
+
+        emptyStructureWithParameter2 = self.api.EmptyStructureWithParameter(2)
+        self.assertTrue(emptyStructureWithParameter1 < emptyStructureWithParameter2)
+        self.assertFalse(emptyStructureWithParameter2 < emptyStructureWithParameter1)
+
     def testHash(self):
         emptyStructureWithParameter1 = self.api.EmptyStructureWithParameter(1)
         emptyStructureWithParameter2 = self.api.EmptyStructureWithParameter(1)

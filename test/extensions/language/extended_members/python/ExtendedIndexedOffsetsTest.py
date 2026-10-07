@@ -35,6 +35,28 @@ class ExtendedIndexedOffsetsTest(ExtendedMembers.TestCase):
         extended1.array = ARRAY
         self.assertEqual(extended1, extended2)
 
+    def testLt(self):
+        extended1 = self.api.Extended()
+        extended2 = self.api.Extended()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.offsets = OFFSETS
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.offsets = OFFSETS
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.array = ARRAY
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.array = ARRAY
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHash(self):
         extended1 = self.api.Extended()
         extended2 = self.api.Extended()

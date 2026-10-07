@@ -56,6 +56,44 @@ class UInt64BitmaskTest(BitmaskTypes.TestCase):
 
         self.assertFalse(read == write)
 
+    def testLt(self):
+        # pylint: disable=comparison-with-itself
+        self.assertTrue(self.api.Permission.Values.NONE_PERMISSION < self.api.Permission.Values.READ_PERMISSION)
+        self.assertFalse(
+            self.api.Permission.Values.READ_PERMISSION < self.api.Permission.Values.NONE_PERMISSION
+        )
+
+        self.assertTrue(
+            self.api.Permission.Values.READ_PERMISSION < self.api.Permission.Values.WRITE_PERMISSION
+        )
+        self.assertFalse(
+            self.api.Permission.Values.WRITE_PERMISSION < self.api.Permission.Values.READ_PERMISSION
+        )
+
+        self.assertFalse(
+            self.api.Permission.Values.NONE_PERMISSION < self.api.Permission.Values.NONE_PERMISSION
+        )
+        self.assertFalse(
+            self.api.Permission.Values.READ_PERMISSION < self.api.Permission.Values.READ_PERMISSION
+        )
+        self.assertFalse(
+            self.api.Permission.Values.WRITE_PERMISSION < self.api.Permission.Values.WRITE_PERMISSION
+        )
+
+        self.assertTrue(
+            self.api.Permission.Values.READ_PERMISSION
+            < (self.api.Permission.Values.READ_PERMISSION | self.api.Permission.Values.WRITE_PERMISSION)
+        )
+        self.assertFalse(
+            (self.api.Permission.Values.READ_PERMISSION | self.api.Permission.Values.WRITE_PERMISSION)
+            < self.api.Permission.Values.READ_PERMISSION
+        )
+
+        read = self.api.Permission.from_value(self.api.Permission.Values.READ_PERMISSION.value)
+        write = self.api.Permission.from_value(self.api.Permission.Values.WRITE_PERMISSION.value)
+        self.assertTrue(read < write)
+        self.assertFalse(write < read)
+
     def testHash(self):
         read = self.api.Permission.Values.READ_PERMISSION
         write = self.api.Permission.Values.WRITE_PERMISSION

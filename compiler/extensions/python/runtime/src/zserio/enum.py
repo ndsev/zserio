@@ -57,6 +57,8 @@ class DeprecatedItem:
 class Enum(enum.Enum, metaclass=_EnumType):
     """
     Custom zserio enum base class which allows to mark items deprecated.
+
+    Items of the same enum are ordered by their values.
     """
 
     def __new__(cls, value: typing.Any, deprecated: typing.Optional[DeprecatedItem] = None):
@@ -77,3 +79,9 @@ class Enum(enum.Enum, metaclass=_EnumType):
             )
         member._is_deprecated = deprecated is not None  # type: ignore[attr-defined]
         return member
+
+    def __lt__(self, other: object) -> bool:
+        if self.__class__ is other.__class__:
+            return self.value < other.value  # type: ignore[attr-defined]
+
+        return NotImplemented

@@ -18,6 +18,12 @@ class EmptyUnionTest(UnionTypes.TestCase):
         emptyUnion2 = self.api.EmptyUnion()
         self.assertTrue(emptyUnion1 == emptyUnion2)
 
+    def testLt(self):
+        emptyUnion1 = self.api.EmptyUnion()
+        emptyUnion2 = self.api.EmptyUnion()
+        self.assertFalse(emptyUnion1 < emptyUnion2)
+        self.assertFalse(emptyUnion2 < emptyUnion1)
+
     def testHash(self):
         emptyUnion1 = self.api.EmptyUnion()
         emptyUnion2 = self.api.EmptyUnion()

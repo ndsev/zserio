@@ -5,6 +5,25 @@
 (self.<@field_member_name field/> == other.<@field_member_name field/>)<#if field.optional??>)</#if><#rt>
 </#macro>
 
+<#macro compound_less_than_field field indent=2>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+${I}if self.${field.optional.isUsedIndicatorName}() and other.${field.optional.isUsedIndicatorName}():
+    <@compound_less_than_field_inner field, indent+1/>
+${I}elif self.${field.optional.isUsedIndicatorName}() != other.${field.optional.isUsedIndicatorName}():
+${I}    return not self.${field.optional.isUsedIndicatorName}()
+    <#else>
+    <@compound_less_than_field_inner field, indent/>
+    </#if>
+</#macro>
+
+<#macro compound_less_than_field_inner field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}result = zserio.compare.compare(self.<@field_member_name field/>, other.<@field_member_name field/>)
+${I}if result != 0:
+${I}    return result < 0
+</#macro>
+
 <#macro compound_hashcode_field field indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>

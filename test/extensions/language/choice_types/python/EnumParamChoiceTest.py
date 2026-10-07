@@ -40,6 +40,26 @@ class EnumParamChoiceTest(ChoiceTypes.TestCase):
         enumParamChoice2.black = diffValue
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
+    def testLt(self):
+        enumParamChoice1 = self.api.EnumParamChoice(self.api.Selector.BLACK)
+        enumParamChoice2 = self.api.EnumParamChoice(self.api.Selector.BLACK)
+        self.assertFalse(enumParamChoice1 < enumParamChoice2)
+        self.assertFalse(enumParamChoice2 < enumParamChoice1)
+
+        value = 99
+        enumParamChoice1.black = value
+        self.assertFalse(enumParamChoice1 < enumParamChoice2)
+        self.assertTrue(enumParamChoice2 < enumParamChoice1)
+
+        enumParamChoice2.black = value
+        self.assertFalse(enumParamChoice1 < enumParamChoice2)
+        self.assertFalse(enumParamChoice2 < enumParamChoice1)
+
+        diffValue = value + 1
+        enumParamChoice2.black = diffValue
+        self.assertTrue(enumParamChoice1 < enumParamChoice2)
+        self.assertFalse(enumParamChoice2 < enumParamChoice1)
+
     def testHash(self):
         enumParamChoice1 = self.api.EnumParamChoice(self.api.Selector.BLACK)
         enumParamChoice2 = self.api.EnumParamChoice(self.api.Selector.BLACK)

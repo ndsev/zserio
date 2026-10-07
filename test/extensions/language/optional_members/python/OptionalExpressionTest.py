@@ -36,6 +36,23 @@ class OptionalExpressionTest(OptionalMembers.TestCase):
         container2.basic_color = self.api.BasicColor.WHITE  # set but not used
         self.assertTrue(container1 == container2)
 
+    def testLt(self):
+        container1 = self.api.Container()
+        container2 = self.api.Container()
+        self.assertFalse(container1 < container2)
+        self.assertFalse(container2 < container1)
+
+        container1.basic_color = self.api.BasicColor.WHITE
+        container2.basic_color = self.api.BasicColor.BLACK
+        container2.num_black_tones = self.NUM_BLACK_TONES
+        container2.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
+        self.assertFalse(container1 < container2)
+        self.assertTrue(container2 < container1)
+
+        container2.basic_color = self.api.BasicColor.WHITE  # set but not used
+        self.assertFalse(container1 < container2)
+        self.assertFalse(container2 < container1)
+
     def testHash(self):
         container1 = self.api.Container()
         container2 = self.api.Container()

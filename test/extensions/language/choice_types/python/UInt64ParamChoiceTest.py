@@ -41,6 +41,30 @@ class UInt64ParamChoiceTest(ChoiceTypes.TestCase):
         uint64ParamChoice2.value_a = diffValue
         self.assertFalse(uint64ParamChoice1 == uint64ParamChoice2)
 
+    def testLt(self):
+        uint64ParamChoice1 = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
+        uint64ParamChoice2 = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
+        self.assertTrue(uint64ParamChoice1 < uint64ParamChoice2)
+        self.assertFalse(uint64ParamChoice2 < uint64ParamChoice1)
+
+        uint64ParamChoice2 = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
+        self.assertFalse(uint64ParamChoice1 < uint64ParamChoice2)
+        self.assertFalse(uint64ParamChoice2 < uint64ParamChoice1)
+
+        value = 99
+        uint64ParamChoice1.value_a = value
+        self.assertFalse(uint64ParamChoice1 < uint64ParamChoice2)
+        self.assertTrue(uint64ParamChoice2 < uint64ParamChoice1)
+
+        uint64ParamChoice2.value_a = value
+        self.assertFalse(uint64ParamChoice1 < uint64ParamChoice2)
+        self.assertFalse(uint64ParamChoice2 < uint64ParamChoice1)
+
+        diffValue = value + 1
+        uint64ParamChoice2.value_a = diffValue
+        self.assertTrue(uint64ParamChoice1 < uint64ParamChoice2)
+        self.assertFalse(uint64ParamChoice2 < uint64ParamChoice1)
+
     def testHash(self):
         uint64ParamChoice1 = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         uint64ParamChoice2 = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
