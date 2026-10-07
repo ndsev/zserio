@@ -64,6 +64,19 @@ public class SimpleParamTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Item item1 = new Item(LOWER_VERSION, ITEM_PARAM, (long)ITEM_EXTRA_PARAM);
+        final Item item2 = new Item(LOWER_VERSION, ITEM_PARAM, (long)ITEM_EXTRA_PARAM);
+        assertFalse(item1.compareTo(item2) < 0);
+        assertFalse(item2.compareTo(item1) < 0);
+
+        final Item item3 = new Item(HIGHER_VERSION, ITEM_PARAM, (long)ITEM_EXTRA_PARAM);
+        assertTrue(item2.compareTo(item3) < 0);
+        assertFalse(item3.compareTo(item2) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Item item1 = new Item(LOWER_VERSION);

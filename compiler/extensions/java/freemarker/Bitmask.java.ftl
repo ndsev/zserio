@@ -16,7 +16,7 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 </#if>
 public final class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedInPackedArray>Packable</#if>Writer, </#if><#rt>
         <#lt>zserio.runtime.<#if usedInPackedArray>Packable</#if>SizeOf,
-        zserio.runtime.ZserioBitmask
+        zserio.runtime.ZserioBitmask, java.lang.Comparable<${name}>
 {
 <#if withCodeComments>
     /** Default constructor. */
@@ -189,6 +189,12 @@ public final class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if
         int result = zserio.runtime.HashCodeUtil.HASH_SEED;
         result = zserio.runtime.HashCodeUtil.calcHashCode(result, value);
         return result;
+    }
+
+    @Override
+    public int compareTo(${name} other)
+    {
+        return zserio.runtime.CompareUtil.compare(value, other.value);
     }
 
     @Override

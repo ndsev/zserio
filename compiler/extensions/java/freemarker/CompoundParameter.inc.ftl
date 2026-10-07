@@ -75,6 +75,15 @@ this.<@parameter_member_name parameter/> == that.<@parameter_member_name paramet
     </#if>
 </#macro>
 
+<#macro compound_parameter_compare_to compoundParametersData>
+    <#list compoundParametersData.list as parameter>
+        result = zserio.runtime.CompareUtil.compare(<@parameter_member_name parameter/>, other.<@parameter_member_name parameter/>);
+        if (result != 0)
+            return result;
+
+    </#list>
+</#macro>
+
 <#macro compound_parameter_hash_code compoundParameterList>
     <#list compoundParametersData.list as parameter>
         result = zserio.runtime.HashCodeUtil.calcHashCode(result, ${parameter.getterName}());

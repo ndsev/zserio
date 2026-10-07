@@ -14,6 +14,8 @@ For a **quick start** see the [Java Tutorial](https://github.com/ndsev/zserio-tu
 
 [Serialization API](#serialization-api)
 
+&nbsp; &nbsp; &nbsp; &nbsp; [Ordering Rules](#ordering-rules)
+
 &nbsp; &nbsp; &nbsp; &nbsp; [Subtypes](#subtypes)
 
 [Additional API](#additional-api)
@@ -51,7 +53,55 @@ The serialization API provides the following features for all Zserio structures,
 - Getters and setters for all fields
 - Method `bitSizeOf()` which calculates a number of bits needed for serialization of the Zserio object.
 - Method `equals()` which compares two Zserio objects field by field.
+- Method `compareTo()` which compares two Zserio objects field by field using the
+  [Ordering Rules](#ordering-rules).
 - Method `hashCode()` which calculates a hash code of the Zserio object.
+
+### Ordering Rules
+
+Generated structures, choices, unions and bitmasks implement `java.lang.Comparable` and provide
+`compareTo()` (in addition to `equals()`). Thus it's possible to easily use generated objects in
+`java.util.TreeSet` or `java.util.TreeMap`. The order is the same as the order given by `operator<` in the
+[C++ generator](../cpp/README.md#ordering-rules).
+
+In general, all compound objects are compared lexicographically:
+
+* Parameters are compared first in order of definition.
+* Fields are compared:
+   * In case of [structures](../../../doc/ZserioLanguageOverview.md#structure-types),
+     all fields are compared in order of definition.
+   * In case of [unions](../../../doc/ZserioLanguageOverview.md#union-types),
+     the choice tag is compared first (an unset union is the lowest) and then the selected field is compared.
+   * In case of [choices](../../../doc/ZserioLanguageOverview.md#choice-types),
+     only the selected field is compared (if any). If no case matches the selector, the stored objects
+     are compared the same way as `equals()` does, no exception is thrown.
+
+Comparison of [optional fields](../../../doc/ZserioLanguageOverview.md#optional-members)
+and [extended fields](../../../doc/ZserioLanguageOverview.md#extended-members):
+
+* When both fields are present, they are compared.
+* Otherwise the missing field is less than the other field if and only if the other field is present.
+* If both fields are missing, they are equal.
+
+> Note that a compound field which is not set (`null`) is less than a compound field which is set.
+
+Comparison of fields of other types:
+
+* Integer fields are compared by their values, `float` fields using `Float.compare()` and `double` fields
+  using `Double.compare()`, which is consistent with `equals()`.
+* [Enumeration](../../../doc/ZserioLanguageOverview.md#enumeration-types) fields are compared by their values.
+  Note that Java enums compared directly by `Enum.compareTo()` (e.g. when sorting enumeration items) use
+  the declaration order.
+* [Bitmask](../../../doc/ZserioLanguageOverview.md#bitmask-types) objects are compared by their values.
+* [String](../../../doc/ZserioLanguageOverview.md#string-type) fields are compared by Unicode code points,
+  which gives the same order as the comparison of UTF-8 encoded strings in C++.
+* [Arrays](../../../doc/ZserioLanguageOverview.md#array-types) are compared lexicographically element by
+  element, packing is ignored.
+* [`bytes` fields](../../../doc/ZserioLanguageOverview.md#bytes-type) are compared lexicographically as
+  unsigned bytes.
+* [`extern` fields](../../../doc/ZserioLanguageOverview.md#extern-type) (kept in `BitBuffer`) are compared
+  byte by byte as unsigned bytes, the last byte is masked to use only the proper number of bits.
+  Bit buffers with equal contents are ordered by their bit size.
 
 ### Subtypes
 

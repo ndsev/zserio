@@ -95,6 +95,28 @@ public class VarUIntBitmaskTest
     }
 
     @Test
+    public void compareTo()
+    {
+        assertTrue(Permission.Values.NONE.compareTo(Permission.Values.READ) < 0);
+        assertFalse(Permission.Values.READ.compareTo(Permission.Values.NONE) < 0);
+
+        assertTrue(Permission.Values.READ.compareTo(Permission.Values.WRITE) < 0);
+        assertFalse(Permission.Values.WRITE.compareTo(Permission.Values.READ) < 0);
+
+        assertFalse(Permission.Values.NONE.compareTo(Permission.Values.NONE) < 0);
+        assertFalse(Permission.Values.READ.compareTo(Permission.Values.READ) < 0);
+        assertFalse(Permission.Values.WRITE.compareTo(Permission.Values.WRITE) < 0);
+
+        assertTrue(Permission.Values.READ.compareTo(Permission.Values.READ.or(Permission.Values.WRITE)) < 0);
+        assertFalse(Permission.Values.READ.or(Permission.Values.WRITE).compareTo(Permission.Values.READ) < 0);
+
+        final Permission read = new Permission(Permission.Values.READ.getValue());
+        final Permission write = new Permission(Permission.Values.WRITE.getValue());
+        assertTrue(read.compareTo(write) < 0);
+        assertFalse(write.compareTo(read) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Permission read = Permission.Values.READ;

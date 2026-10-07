@@ -112,6 +112,28 @@ public class SimpleStructureTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final SimpleStructure simpleStructure1 = new SimpleStructure();
+        final SimpleStructure simpleStructure2 = new SimpleStructure();
+        assertEquals(0, simpleStructure1.compareTo(simpleStructure2));
+        assertEquals(0, simpleStructure2.compareTo(simpleStructure1));
+
+        simpleStructure1.setNumberA((byte)1);
+        simpleStructure2.setNumberA((byte)1);
+        simpleStructure1.setNumberB((short)1);
+        simpleStructure2.setNumberB((short)1);
+        simpleStructure1.setNumberC((byte)1);
+        simpleStructure2.setNumberC((byte)2);
+        assertTrue(simpleStructure1.compareTo(simpleStructure2) < 0);
+        assertTrue(simpleStructure2.compareTo(simpleStructure1) > 0);
+
+        simpleStructure1.setNumberB((short)2);
+        assertTrue(simpleStructure1.compareTo(simpleStructure2) > 0);
+        assertTrue(simpleStructure2.compareTo(simpleStructure1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final SimpleStructure simpleStructure1 = new SimpleStructure();

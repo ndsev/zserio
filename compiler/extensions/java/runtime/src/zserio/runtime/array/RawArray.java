@@ -3,6 +3,7 @@ package zserio.runtime.array;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import zserio.runtime.CompareUtil;
 import zserio.runtime.HashCodeUtil;
 import zserio.runtime.SizeOf;
 import zserio.runtime.ZserioEnum;
@@ -14,8 +15,10 @@ import zserio.runtime.io.BitBuffer;
  * This interface gives the same abstraction for Java native arrays of primitive types like int[] and for
  * Java native arrays of objects. Using the Java native arrays for primitive types is preferred because
  * ArrayList of primitive types wrapper like Integer brings performance penalty during boxing/unboxing.
+ *
+ * Raw arrays of the same class are ordered lexicographically by their elements.
  */
-public interface RawArray
+public interface RawArray extends Comparable<RawArray>
 {
     /**
      * Gets the raw array size.
@@ -96,6 +99,24 @@ public interface RawArray
         }
 
         @Override
+        public int compareTo(RawArray other)
+        {
+            final byte[] otherRawArray = ((ByteRawArray)other).rawArray;
+            if (rawArray == null || otherRawArray == null)
+                return Boolean.compare(rawArray != null, otherRawArray != null);
+
+            final int minLength = Math.min(rawArray.length, otherRawArray.length);
+            for (int i = 0; i < minLength; ++i)
+            {
+                final int result = CompareUtil.compare(rawArray[i], otherRawArray[i]);
+                if (result != 0)
+                    return result;
+            }
+
+            return Integer.compare(rawArray.length, otherRawArray.length);
+        }
+
+        @Override
         public int hashCode()
         {
             return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
@@ -171,6 +192,12 @@ public interface RawArray
         }
 
         @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((ShortRawArray)other).rawArray);
+        }
+
+        @Override
         public int hashCode()
         {
             return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
@@ -241,6 +268,12 @@ public interface RawArray
         public boolean equals(java.lang.Object obj)
         {
             return (obj instanceof IntRawArray) ? Arrays.equals(rawArray, ((IntRawArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((IntRawArray)other).rawArray);
         }
 
         @Override
@@ -319,6 +352,12 @@ public interface RawArray
         }
 
         @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((LongRawArray)other).rawArray);
+        }
+
+        @Override
         public int hashCode()
         {
             return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
@@ -391,6 +430,12 @@ public interface RawArray
             return (obj instanceof BigIntegerRawArray)
                     ? Arrays.equals(rawArray, ((BigIntegerRawArray)obj).rawArray)
                     : false;
+        }
+
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((BigIntegerRawArray)other).rawArray);
         }
 
         @Override
@@ -469,6 +514,12 @@ public interface RawArray
         }
 
         @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((FloatRawArray)other).rawArray);
+        }
+
+        @Override
         public int hashCode()
         {
             return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
@@ -541,6 +592,12 @@ public interface RawArray
             return (obj instanceof DoubleRawArray)
                     ? Arrays.equals(rawArray, ((DoubleRawArray)obj).rawArray)
                     : false;
+        }
+
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((DoubleRawArray)other).rawArray);
         }
 
         @Override
@@ -619,6 +676,12 @@ public interface RawArray
         }
 
         @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((BooleanRawArray)other).rawArray);
+        }
+
+        @Override
         public int hashCode()
         {
             return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
@@ -691,6 +754,12 @@ public interface RawArray
             return (obj instanceof BytesRawArray)
                     ? Arrays.deepEquals(rawArray, ((BytesRawArray)obj).rawArray)
                     : false;
+        }
+
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((BytesRawArray)other).rawArray);
         }
 
         @Override
@@ -770,6 +839,12 @@ public interface RawArray
         }
 
         @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((StringRawArray)other).rawArray);
+        }
+
+        @Override
         public int hashCode()
         {
             return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
@@ -843,6 +918,12 @@ public interface RawArray
             return (obj instanceof BitBufferRawArray)
                     ? Arrays.equals(rawArray, ((BitBufferRawArray)obj).rawArray)
                     : false;
+        }
+
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((BitBufferRawArray)other).rawArray);
         }
 
         @Override
@@ -928,6 +1009,13 @@ public interface RawArray
                     : false;
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((EnumRawArray<E>)other).rawArray);
+        }
+
         @Override
         public int hashCode()
         {
@@ -1011,6 +1099,13 @@ public interface RawArray
             return (obj instanceof ObjectRawArray)
                     ? Arrays.equals(rawArray, ((ObjectRawArray<E>)obj).rawArray)
                     : false;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public int compareTo(RawArray other)
+        {
+            return CompareUtil.compare(rawArray, ((ObjectRawArray<E>)other).rawArray);
         }
 
         @Override

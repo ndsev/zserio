@@ -55,6 +55,15 @@ public class EmptyUnionTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final EmptyUnion emptyUnion1 = new EmptyUnion();
+        final EmptyUnion emptyUnion2 = new EmptyUnion();
+        assertFalse(emptyUnion1.compareTo(emptyUnion2) < 0);
+        assertFalse(emptyUnion2.compareTo(emptyUnion1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final EmptyUnion emptyUnion1 = new EmptyUnion();
