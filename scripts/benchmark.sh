@@ -48,7 +48,6 @@ run_benchmark()
     local SWITCH_RUN_ONLY="$1"; shift
     local LOG_FILE="$1"; shift
 
-    local BLOB_FILE=""
     local PROFILE=0
 
     local BENCHMARK_DIR="${BENCHMARK%/*}"
@@ -66,11 +65,13 @@ run_benchmark()
 
     local TEST_OUT_DIR="${BENCHMARKS_OUT_DIR}/${ZSERIO_PACKAGE_NAME}_${DATASET_NAME}"
 
+    local BLOB_NAMES=("${ZSERIO_PACKAGE_NAME}.${FIRST_STRUCT}")
+    local JSON_PATHS=("${DATASET}")
+    local BLOB_PATHS=("")
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" CPP_TARGETS[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
               "${BENCHMARKS_SRC_DIR}/${BENCHMARK_DIR}" "${BENCHMARK_ZS}" \
-              "${ZSERIO_PACKAGE_NAME}.${FIRST_STRUCT}" \
-              "${DATASET}" "${BLOB_FILE}" ${NUM_ITERATIONS} ${TEST_CONFIG} ${SWITCH_RUN_ONLY} ${PROFILE}
+              BLOB_NAMES[@] JSON_PATHS[@] BLOB_PATHS[@] ${NUM_ITERATIONS} ${TEST_CONFIG} ${SWITCH_RUN_ONLY} ${PROFILE}
     if [ $? -ne 0 ] ; then
         return 1
     fi
