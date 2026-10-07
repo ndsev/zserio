@@ -83,6 +83,11 @@ The following summarizes the process for contributing changes to the Zserio proj
   [Zserio Extension Sample](https://github.com/ndsev/zserio-extension-sample)
   and keep it as an external extension. We will be happy to add a link to your extension in our [README.md](README.md)!
 
+## Do you release Zserio?
+
+* [RELEASING.md](RELEASING.md) walks a release from the branch `release/X.Y` to the published artifacts and the
+  matching release of the [C++17 extension](https://github.com/ndsev/zserio-cpp17).
+
 ## License
 
 We do not require any formal copyright assignment or contributor license agreement (CLA).
