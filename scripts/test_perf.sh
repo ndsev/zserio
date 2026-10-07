@@ -3,133 +3,80 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_test_tools.sh"
 
-# Generate Ant build.xml file and src/PerformanceTest.java
-generate_java_files()
+# Get the name of the log file which the performance test of the blob with the given index writes.
+get_perf_log_name()
 {
-    exit_if_argc_ne $# 7
-    local ZSERIO_RELEASE="$1"; shift
+    exit_if_argc_ne $# 3
+    local BLOB_INDEX="$1"; shift
+    local NUM_BLOBS="$1"; shift
+    local LOG_NAME_OUT="$1"; shift
+
+    if [[ ${NUM_BLOBS} -eq 1 ]] ; then
+        eval ${LOG_NAME_OUT}="PerformanceTest.log"
+    else
+        eval ${LOG_NAME_OUT}="PerformanceTest_$((BLOB_INDEX + 1)).log"
+    fi
+}
+
+# Get the input switch (-j or -b) and the input path of the blob with the given index.
+get_perf_input()
+{
+    exit_if_argc_ne $# 5
+    local BLOB_INDEX="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local INPUT_JSON_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local INPUT_BLOB_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local INPUT_SWITCH_OUT="$1"; shift
+    local INPUT_PATH_OUT="$1"; shift
+
+    if [[ "${INPUT_BLOB_PATHS[${BLOB_INDEX}]}" != "" ]] ; then
+        eval ${INPUT_SWITCH_OUT}="-b"
+        eval ${INPUT_PATH_OUT}='"${INPUT_BLOB_PATHS[${BLOB_INDEX}]}"'
+    else
+        eval ${INPUT_SWITCH_OUT}="-j"
+        eval ${INPUT_PATH_OUT}='"${INPUT_JSON_PATHS[${BLOB_INDEX}]}"'
+    fi
+}
+
+# Get the blob names without duplicates, in the order of their first occurrence.
+get_distinct_blob_names()
+{
+    exit_if_argc_ne $# 2
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_NAMES=("${MSYS_WORKAROUND_TEMP[@]}")
+    local DISTINCT_BLOB_NAMES_OUT="$1"; shift
+
+    local DISTINCT_BLOB_NAMES_LOC=()
+    local BLOB_NAME
+    for BLOB_NAME in "${BLOB_NAMES[@]}" ; do
+        if [[ " ${DISTINCT_BLOB_NAMES_LOC[*]} " != *" ${BLOB_NAME} "* ]] ; then
+            DISTINCT_BLOB_NAMES_LOC+=("${BLOB_NAME}")
+        fi
+    done
+
+    eval ${DISTINCT_BLOB_NAMES_OUT}='("${DISTINCT_BLOB_NAMES_LOC[@]}")'
+}
+
+# Append the performance test method of one blob to src/PerformanceTest.java
+generate_java_blob_test()
+{
+    exit_if_argc_ne $# 5
     local BUILD_DIR="$1"; shift
+    local BLOB_TEST_INDEX="$1"; shift
     local BLOB_FULL_NAME="$1"; shift
-    local JSON_PATH="$1"; shift
-    local BLOB_PATH="$1"; shift
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
 
-    local LOG_PATH="${BUILD_DIR}/PerformanceTest.log"
     local TOP_LEVEL_PACKAGE_NAME=${BLOB_FULL_NAME%%.*}
 
-    local INPUT_SWITCH="-j"
-    local INPUT_PATH="${JSON_PATH}"
-    if [[ "${BLOB_PATH}" != "" ]] ; then
-        INPUT_SWITCH="-b"
-        INPUT_PATH="${BLOB_PATH}"
-    fi
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
 
-    # use host paths in generated files
-    posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE
-    posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR
-    posix_to_host_path "${LOG_PATH}" HOST_LOG_PATH
-    posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH
-
-    cat > "${BUILD_DIR}"/build.xml << EOF
-<project name="performance_test" basedir="." default="run">
-    <property name="zserio.release_dir" location="${HOST_ZSERIO_RELEASE}"/>
-
-    <property name="runtime.jar_dir" location="\${zserio.release_dir}/runtime_libs/java"/>
-    <property name="runtime.jar_file_name" value="zserio_runtime.jar"/>
-    <property name="runtime.jar_file" location="\${runtime.jar_dir}/\${runtime.jar_file_name}"/>
-
-    <property name="test_perf.build_dir" location="${HOST_BUILD_DIR}/\${ant.java.version}"/>
-    <property name="test_perf.classes_dir" location="\${test_perf.build_dir}/classes"/>
-    <property name="test_perf.jar_dir" location="\${test_perf.build_dir}/jar"/>
-    <property name="test_perf.jar_file" location="\${test_perf.jar_dir}/performance_test.jar"/>
-    <property name="test_perf.src_dir" location="${HOST_BUILD_DIR}/src"/>
-    <property name="test_perf.gen_dir" location="${HOST_BUILD_DIR}/gen"/>
-
-    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
-        <javaversion atleast="21"/>
-    </condition>
-
-    <target name="prepare">
-        <mkdir dir="\${test_perf.classes_dir}"/>
-    </target>
-
-    <target name="compile" depends="prepare">
-        <depend srcDir="\${test_perf.src_dir}:\${test_perf.gen_dir}"
-            destDir="\${test_perf.classes_dir}"
-            cache="\${test_perf.build_dir}/depend-cache"/>
-        <javac destdir="\${test_perf.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
-            <compilerarg value="-Xlint:all"/>
-            <compilerarg value="-Xlint:-cast"/>
-            <compilerarg value="\${xlint.ignore_this_escape}"/>
-            <compilerarg value="-Werror"/>
-            <classpath>
-                <pathelement location="\${runtime.jar_file}"/>
-            </classpath>
-            <src path="\${test_perf.src_dir}"/>
-            <src path="\${test_perf.gen_dir}"/>
-        </javac>
-    </target>
-
-    <target name="jar" depends="compile">
-        <copy file="\${runtime.jar_file}" todir="\${test_perf.jar_dir}"/>
-        <jar destfile="\${test_perf.jar_file}" basedir="\${test_perf.classes_dir}">
-            <manifest>
-                <attribute name="Main-Class" value="PerformanceTest"/>
-                <attribute name="Class-Path" value="\${runtime.jar_file_name}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="run" depends="jar">
-        <java jar="\${test_perf.jar_file}" fork="true" failonerror="true">
-            <arg file="${HOST_LOG_PATH}"/>
-            <arg value="${INPUT_SWITCH}"/>
-            <arg file="${HOST_INPUT_PATH}"/>
-            <arg value="${NUM_ITERATIONS}"/>
-        </java>
-    </target>
-
-    <target name="clean">
-        <delete dir="\${test_perf.classes_dir}"/>
-        <delete dir="\${test_perf.jar_dir}"/>
-        <delete dir="\${test_perf.build_dir}/depend-cache"/>
-    </target>
-</project>
-EOF
-
-    mkdir -p "${BUILD_DIR}/src"
-    cat > "${BUILD_DIR}"/src/PerformanceTest.java << EOF
-import java.io.File;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import zserio.runtime.io.SerializeUtil;
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.DebugStringUtil;
-
-public class PerformanceTest
-{
-    public static void main(String[] args) throws Exception
+    private static void runTest${BLOB_TEST_INDEX}(String logPath, boolean inputIsJson, String inputPath,
+            int numIterations) throws Exception
     {
-        System.out.println("Zserio Java Performance Test");
-
-        if (args.length < 3)
-        {
-            System.err.println("No enough arguments!");
-            System.err.println("Usage: PerformanceTest LOG_PATH [-j|-b] INPUT_PATH [NUM_ITERATIONS]");
-            System.exit(1);
-        }
-
-        final String logPath = args[0];
-        final boolean inputIsJson = args[1].equals("-j") ? true : false;
-        final String inputPath = args[2];
-        final int numIterations = args.length > 3 ? Integer.parseInt(args[3]) : ${NUM_ITERATIONS};
-
         // prepare byte array
-        byte[] blobBuffer = readBlobBuffer(inputIsJson, inputPath);
+        byte[] blobBuffer = readBlobBuffer${BLOB_TEST_INDEX}(inputIsJson, inputPath);
 
         // calculate blob memory size
         final ByteArrayBitStreamReader blobReader = new ByteArrayBitStreamReader(blobBuffer);
@@ -206,7 +153,7 @@ EOF
         logFile.close();
     }
 
-    private static byte[] readBlobBuffer(boolean isInputJson, String inputPath) throws Exception
+    private static byte[] readBlobBuffer${BLOB_TEST_INDEX}(boolean isInputJson, String inputPath) throws Exception
     {
         try
         {
@@ -247,6 +194,175 @@ EOF
 
         return null;
     }
+EOF
+}
+
+# Generate Ant build.xml file and src/PerformanceTest.java
+generate_java_files()
+{
+    exit_if_argc_ne $# 7
+    local ZSERIO_RELEASE="$1"; shift
+    local BUILD_DIR="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_NAMES=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local JSON_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local NUM_ITERATIONS="$1"; shift
+    local TEST_CONFIG="$1"; shift
+
+    # use host paths in generated files
+    posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE
+    posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR
+
+    cat > "${BUILD_DIR}"/build.xml << EOF
+<project name="performance_test" basedir="." default="run">
+    <property name="zserio.release_dir" location="${HOST_ZSERIO_RELEASE}"/>
+
+    <property name="runtime.jar_dir" location="\${zserio.release_dir}/runtime_libs/java"/>
+    <property name="runtime.jar_file_name" value="zserio_runtime.jar"/>
+    <property name="runtime.jar_file" location="\${runtime.jar_dir}/\${runtime.jar_file_name}"/>
+
+    <property name="test_perf.build_dir" location="${HOST_BUILD_DIR}/\${ant.java.version}"/>
+    <property name="test_perf.classes_dir" location="\${test_perf.build_dir}/classes"/>
+    <property name="test_perf.jar_dir" location="\${test_perf.build_dir}/jar"/>
+    <property name="test_perf.jar_file" location="\${test_perf.jar_dir}/performance_test.jar"/>
+    <property name="test_perf.src_dir" location="${HOST_BUILD_DIR}/src"/>
+    <property name="test_perf.gen_dir" location="${HOST_BUILD_DIR}/gen"/>
+
+    <condition property="xlint.ignore_this_escape" value="-Xlint:-this-escape" else="-version">
+        <javaversion atleast="21"/>
+    </condition>
+
+    <target name="prepare">
+        <mkdir dir="\${test_perf.classes_dir}"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <depend srcDir="\${test_perf.src_dir}:\${test_perf.gen_dir}"
+            destDir="\${test_perf.classes_dir}"
+            cache="\${test_perf.build_dir}/depend-cache"/>
+        <javac destdir="\${test_perf.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Xlint:-cast"/>
+            <compilerarg value="\${xlint.ignore_this_escape}"/>
+            <compilerarg value="-Werror"/>
+            <classpath>
+                <pathelement location="\${runtime.jar_file}"/>
+            </classpath>
+            <src path="\${test_perf.src_dir}"/>
+            <src path="\${test_perf.gen_dir}"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <copy file="\${runtime.jar_file}" todir="\${test_perf.jar_dir}"/>
+        <jar destfile="\${test_perf.jar_file}" basedir="\${test_perf.classes_dir}">
+            <manifest>
+                <attribute name="Main-Class" value="PerformanceTest"/>
+                <attribute name="Class-Path" value="\${runtime.jar_file_name}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+EOF
+
+    local NUM_BLOBS=${#BLOB_NAMES[@]}
+    local BLOB_INDEX
+    for (( BLOB_INDEX=0; BLOB_INDEX < NUM_BLOBS; BLOB_INDEX++ )) ; do
+        local LOG_NAME
+        get_perf_log_name ${BLOB_INDEX} ${NUM_BLOBS} LOG_NAME
+        local INPUT_SWITCH
+        local INPUT_PATH
+        get_perf_input ${BLOB_INDEX} JSON_PATHS[@] BLOB_PATHS[@] INPUT_SWITCH INPUT_PATH
+        posix_to_host_path "${BUILD_DIR}/${LOG_NAME}" HOST_LOG_PATH
+        posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH
+        cat >> "${BUILD_DIR}"/build.xml << EOF
+        <java jar="\${test_perf.jar_file}" fork="true" failonerror="true">
+            <arg file="${HOST_LOG_PATH}"/>
+            <arg value="${BLOB_NAMES[${BLOB_INDEX}]}"/>
+            <arg value="${INPUT_SWITCH}"/>
+            <arg file="${HOST_INPUT_PATH}"/>
+            <arg value="${NUM_ITERATIONS}"/>
+        </java>
+EOF
+    done
+
+    cat >> "${BUILD_DIR}"/build.xml << EOF
+    </target>
+
+    <target name="clean">
+        <delete dir="\${test_perf.classes_dir}"/>
+        <delete dir="\${test_perf.jar_dir}"/>
+        <delete dir="\${test_perf.build_dir}/depend-cache"/>
+    </target>
+</project>
+EOF
+
+    mkdir -p "${BUILD_DIR}/src"
+    cat > "${BUILD_DIR}"/src/PerformanceTest.java << EOF
+import java.io.File;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.DebugStringUtil;
+
+public class PerformanceTest
+{
+    public static void main(String[] args) throws Exception
+    {
+        System.out.println("Zserio Java Performance Test");
+
+        if (args.length < 4)
+        {
+            System.err.println("No enough arguments!");
+            System.err.println("Usage: PerformanceTest LOG_PATH BLOB_NAME [-j|-b] INPUT_PATH [NUM_ITERATIONS]");
+            System.exit(1);
+        }
+
+        final String logPath = args[0];
+        final String blobName = args[1];
+        final boolean inputIsJson = args[2].equals("-j") ? true : false;
+        final String inputPath = args[3];
+        final int numIterations = args.length > 4 ? Integer.parseInt(args[4]) : ${NUM_ITERATIONS};
+
+EOF
+
+    local DISTINCT_BLOB_NAMES
+    get_distinct_blob_names BLOB_NAMES[@] DISTINCT_BLOB_NAMES
+    local BLOB_TEST_INDEX
+    for (( BLOB_TEST_INDEX=0; BLOB_TEST_INDEX < ${#DISTINCT_BLOB_NAMES[@]}; BLOB_TEST_INDEX++ )) ; do
+        local ELSE=""
+        if [[ ${BLOB_TEST_INDEX} -ne 0 ]] ; then
+            ELSE="else "
+        fi
+        cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
+        ${ELSE}if (blobName.equals("${DISTINCT_BLOB_NAMES[${BLOB_TEST_INDEX}]}"))
+            runTest${BLOB_TEST_INDEX}(logPath, inputIsJson, inputPath, numIterations);
+EOF
+    done
+
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
+        else
+        {
+            System.err.println("Unknown blob name '" + blobName + "'!");
+            System.exit(1);
+        }
+    }
+EOF
+
+    for (( BLOB_TEST_INDEX=0; BLOB_TEST_INDEX < ${#DISTINCT_BLOB_NAMES[@]}; BLOB_TEST_INDEX++ )) ; do
+        generate_java_blob_test "${BUILD_DIR}" ${BLOB_TEST_INDEX} "${DISTINCT_BLOB_NAMES[${BLOB_TEST_INDEX}]}" \
+                                ${NUM_ITERATIONS} ${TEST_CONFIG}
+    done
+
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
 };
 EOF
 }
@@ -258,25 +374,22 @@ generate_cpp_files()
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_RELEASE="$1"; shift
     local BUILD_DIR="$1"; shift
-    local BLOB_FULL_NAME="$1"; shift
-    local JSON_PATH="$1"; shift
-    local BLOB_PATH="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_NAMES=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local JSON_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
     local PROFILE="$1"; shift
 
-    local INPUT_SWITCH="-j"
-    local INPUT_PATH="${JSON_PATH}"
-    if [[ "${BLOB_PATH}" != "" ]] ; then
-        INPUT_SWITCH="-b"
-        INPUT_PATH="${BLOB_PATH}"
-    fi
+    local NUM_BLOBS=${#BLOB_NAMES[@]}
 
     # use host paths in generated files
     local DISABLE_SLASHES_CONVERSION=1
     posix_to_host_path "${ZSERIO_PROJECT_ROOT}" HOST_ZSERIO_ROOT ${DISABLE_SLASHES_CONVERSION}
     posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE ${DISABLE_SLASHES_CONVERSION}
-    posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH ${DISABLE_SLASHES_CONVERSION}
 
     local BUILD_SRC_DIR="${BUILD_DIR}/src"
     mkdir -p "${BUILD_SRC_DIR}"
@@ -288,9 +401,6 @@ enable_testing()
 
 set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
 set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
-set(LOG_PATH "PerformanceTest.log")
-set(INPUT_SWITCH "${INPUT_SWITCH}")
-set(INPUT_PATH "${HOST_INPUT_PATH}")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "The C++ standard to use.")
@@ -300,10 +410,15 @@ set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Whether compiler specific C++ standard 
 EOF
 
 if [[ ${PROFILE} == 1 ]] ; then
+    # several blobs run several tests, each needs its own callgrind output
+    local CALLGRIND_OUT_FILE="callgrind.out"
+    if [[ ${NUM_BLOBS} -gt 1 ]] ; then
+        CALLGRIND_OUT_FILE="callgrind.out.%p"
+    fi
     cat >> "${BUILD_SRC_DIR}"/CMakeLists.txt << EOF
 string(CONCAT MEMORYCHECK_COMMAND_OPTIONS
     "--tool=callgrind -v --instr-atstart=no --collect-atstart=no --collect-jumps=yes --dump-instr=yes "
-    "--callgrind-out-file=callgrind.out"
+    "--callgrind-out-file=${CALLGRIND_OUT_FILE}"
 )
 include(CTest)
 
@@ -335,17 +450,33 @@ target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}
 target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime \${SQLITE_LIBRARY})
 
-add_test(NAME PerformanceTest COMMAND \${PROJECT_NAME} \${LOG_PATH} \${INPUT_SWITCH} \${INPUT_PATH})
 EOF
 
-    local BLOB_INCLUDE_PATH=${BLOB_FULL_NAME//.//}.h
-    local BLOB_CLASS_FULL_NAME=${BLOB_FULL_NAME//./::}
-    local TOP_LEVEL_PACKAGE_NAME=${BLOB_FULL_NAME%%.*}
+    local BLOB_INDEX
+    for (( BLOB_INDEX=0; BLOB_INDEX < NUM_BLOBS; BLOB_INDEX++ )) ; do
+        local LOG_NAME
+        get_perf_log_name ${BLOB_INDEX} ${NUM_BLOBS} LOG_NAME
+        local INPUT_SWITCH
+        local INPUT_PATH
+        get_perf_input ${BLOB_INDEX} JSON_PATHS[@] BLOB_PATHS[@] INPUT_SWITCH INPUT_PATH
+        posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH ${DISABLE_SLASHES_CONVERSION}
+        local TEST_NAME="${LOG_NAME%.log}"
+        cat >> "${BUILD_SRC_DIR}"/CMakeLists.txt << EOF
+add_test(NAME ${TEST_NAME}
+         COMMAND \${PROJECT_NAME} ${LOG_NAME} ${BLOB_NAMES[${BLOB_INDEX}]} ${INPUT_SWITCH} "${HOST_INPUT_PATH}")
+EOF
+    done
+
+    local DISTINCT_BLOB_NAMES
+    get_distinct_blob_names BLOB_NAMES[@] DISTINCT_BLOB_NAMES
+    local FIRST_BLOB_CLASS_FULL_NAME=${DISTINCT_BLOB_NAMES[0]//./::}
 
     cat > "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
@@ -353,7 +484,16 @@ EOF
 #include <zserio/SerializeUtil.h>
 #include <zserio/UniquePtr.h>
 
-#include <${BLOB_INCLUDE_PATH}>
+EOF
+
+    local BLOB_FULL_NAME
+    for BLOB_FULL_NAME in "${DISTINCT_BLOB_NAMES[@]}" ; do
+        cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+#include <${BLOB_FULL_NAME//.//}.h>
+EOF
+    done
+
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 
 EOF
 
@@ -444,20 +584,22 @@ fi
 
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 
-using allocator_type = ${BLOB_CLASS_FULL_NAME}::allocator_type;
+// all blobs are generated with the same allocator
+using allocator_type = ${FIRST_BLOB_CLASS_FULL_NAME}::allocator_type;
 using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
-static BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
+template <typename Blob>
+static BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath, const char* blobFileName)
 {
     if (inputIsJson)
     {
         // read json file
-        auto blob = zserio::fromJsonFile<${BLOB_CLASS_FULL_NAME}>(inputPath);
+        auto blob = zserio::fromJsonFile<Blob>(inputPath);
 
         // serialize to binary file for further analysis
-        zserio::serializeToFile(blob, "${TOP_LEVEL_PACKAGE_NAME}.blob");
+        zserio::serializeToFile(blob, blobFileName);
 
-        return zserio::serialize<${BLOB_CLASS_FULL_NAME}, allocator_type>(blob);
+        return zserio::serialize<Blob, allocator_type>(blob);
     }
     else
     {
@@ -469,8 +611,8 @@ static BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
         const size_t blobByteSize = static_cast<size_t>(is.tellg());
         is.close();
 
-        auto blob = zserio::deserializeFromFile<${BLOB_CLASS_FULL_NAME}>(inputPath);
-        auto bitBuffer = zserio::serialize<${BLOB_CLASS_FULL_NAME}, allocator_type>(blob);
+        auto blob = zserio::deserializeFromFile<Blob>(inputPath);
+        auto bitBuffer = zserio::serialize<Blob, allocator_type>(blob);
         if (bitBuffer.getByteSize() != blobByteSize)
         {
             throw zserio::CppRuntimeException("Read only ") << bitBuffer.getByteSize()
@@ -481,34 +623,14 @@ static BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
     }
 }
 
-int main(int argc, char* argv[])
+template <typename Blob>
+static int runTest(const char* logPath, bool inputIsJson, const char* inputPath, int numIterations,
+        const char* blobFileName)
 {
-    std::cout << "Zserio C++ Performance Test" << std::endl;
-
-    if (argc < 4)
-    {
-        std::cerr << "No enough arguments!" << std::endl;
-        std::cerr << "Usage: PerformanceTest LOG_PATH (-j|-b) INPUT_PATH [NUM_ITERATIONS]" << std::endl;
-        return 1;
-    }
-
-    const char* logPath = argv[1];
-    const bool inputIsJson = strcmp("-j", argv[2]) == 0 ? true : false;
-    const char* inputPath = argv[3];
-    int numIterations = ${NUM_ITERATIONS};
-    if (argc > 4)
-        numIterations = atoi(argv[4]);
-
-    if (numIterations <= 0)
-    {
-        std::cerr << "Num iterations must be a positive integer (" << numIterations << ")!" << std::endl;
-        return 1;
-    }
-
     BitBuffer bitBuffer;
     try
     {
-        bitBuffer = readBlobBuffer(inputIsJson, inputPath);
+        bitBuffer = readBlobBuffer<Blob>(inputIsJson, inputPath, blobFileName);
     }
     catch (const std::exception& e)
     {
@@ -524,7 +646,7 @@ if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
     TrackerMemoryResource memoryResource;
     const allocator_type allocator(&memoryResource);
     zserio::BitStreamReader blobReader(bitBuffer, zserio::ArrayPreallocation(1024*1024*1024));
-    auto memoryBlob = zserio::allocate_unique<${BLOB_CLASS_FULL_NAME}>(allocator, blobReader, allocator);
+    auto memoryBlob = zserio::allocate_unique<Blob>(allocator, blobReader, allocator);
     const size_t blobMemorySize = memoryResource.getAllocatedSize();
     const size_t blobDeallocMemorySize = memoryResource.getDeallocatedSize();
     if (blobDeallocMemorySize != 0)
@@ -540,13 +662,13 @@ fi
 
 if [[ "${TEST_CONFIG}" != "WRITE" ]] ; then
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
-    std::vector<${BLOB_CLASS_FULL_NAME}> readBlobs;
+    std::vector<Blob> readBlobs;
     readBlobs.reserve(static_cast<size_t>(numIterations));
 EOF
 else
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     zserio::BitStreamReader reader(bitBuffer, zserio::ArrayPreallocation(1024*1024*1024));
-    auto readBlob = ${BLOB_CLASS_FULL_NAME}(reader);
+    auto readBlob = Blob(reader);
 EOF
 fi
 
@@ -646,6 +768,49 @@ cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 
     return 0;
 }
+
+int main(int argc, char* argv[])
+{
+    std::cout << "Zserio C++ Performance Test" << std::endl;
+
+    if (argc < 5)
+    {
+        std::cerr << "No enough arguments!" << std::endl;
+        std::cerr << "Usage: PerformanceTest LOG_PATH BLOB_NAME (-j|-b) INPUT_PATH [NUM_ITERATIONS]" << std::endl;
+        return 1;
+    }
+
+    const char* logPath = argv[1];
+    const std::string blobName = argv[2];
+    const bool inputIsJson = strcmp("-j", argv[3]) == 0 ? true : false;
+    const char* inputPath = argv[4];
+    int numIterations = ${NUM_ITERATIONS};
+    if (argc > 5)
+        numIterations = atoi(argv[5]);
+
+    if (numIterations <= 0)
+    {
+        std::cerr << "Num iterations must be a positive integer (" << numIterations << ")!" << std::endl;
+        return 1;
+    }
+
+EOF
+
+    for BLOB_FULL_NAME in "${DISTINCT_BLOB_NAMES[@]}" ; do
+        cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+    if (blobName == "${BLOB_FULL_NAME}")
+    {
+        return runTest<${BLOB_FULL_NAME//./::}>(logPath, inputIsJson, inputPath, numIterations,
+                "${BLOB_FULL_NAME%%.*}.blob");
+    }
+EOF
+    done
+
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+
+    std::cerr << "Unknown blob name '" << blobName << "'!" << std::endl;
+    return 1;
+}
 EOF
 }
 
@@ -654,13 +819,14 @@ generate_python_perftest()
 {
     exit_if_argc_ne $# 5
     local BUILD_DIR="$1"; shift
-    local BLOB_FULL_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_NAMES=("${MSYS_WORKAROUND_TEMP[@]}")
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
     local PROFILE="$1"; shift
 
-    local API_MODULE=${BLOB_FULL_NAME%%.*}
-    local BLOB_API_PATH=${BLOB_FULL_NAME#*.}
+    local DISTINCT_BLOB_NAMES
+    get_distinct_blob_names BLOB_NAMES[@] DISTINCT_BLOB_NAMES
 
     mkdir -p "${BUILD_DIR}/src"
     cat > "${BUILD_DIR}/src/perftest.py" << EOF
@@ -681,36 +847,65 @@ EOF
 
     cat >> "${BUILD_DIR}/src/perftest.py" << EOF
 import zserio
-import ${API_MODULE}.api as api
+EOF
 
-def read_blob_buffer(input_is_json, input_path):
+    local API_MODULES=()
+    local BLOB_FULL_NAME
+    for BLOB_FULL_NAME in "${DISTINCT_BLOB_NAMES[@]}" ; do
+        local API_MODULE=${BLOB_FULL_NAME%%.*}
+        if [[ " ${API_MODULES[*]} " != *" ${API_MODULE} "* ]] ; then
+            API_MODULES+=("${API_MODULE}")
+            cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+import ${API_MODULE}.api
+EOF
+        fi
+    done
+
+    cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+
+BLOB_TYPES = {
+EOF
+
+    for BLOB_FULL_NAME in "${DISTINCT_BLOB_NAMES[@]}" ; do
+        cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+    "${BLOB_FULL_NAME}": ${BLOB_FULL_NAME%%.*}.api.${BLOB_FULL_NAME#*.},
+EOF
+    done
+
+    cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+}
+
+def read_blob_buffer(blob_name, input_is_json, input_path):
+    blob_type = BLOB_TYPES[blob_name]
     if input_is_json:
-        blob = zserio.from_json_file(api.${BLOB_API_PATH}, input_path)
+        blob = zserio.from_json_file(blob_type, input_path)
 
         # serialize to binary file for further analysis
-        zserio.serialize_to_file(blob, "${API_MODULE}.blob");
+        zserio.serialize_to_file(blob, blob_name.split(".")[0] + ".blob");
 
         return zserio.serialize_to_bytes(blob)
     else:
         blob_byte_size = os.path.getsize(input_path)
 
-        blob = zserio.deserialize_from_file(api.${BLOB_API_PATH}, input_path)
+        blob = zserio.deserialize_from_file(blob_type, input_path)
         blob_buffer = zserio.serialize_to_bytes(blob)
 
         assert len(blob_buffer) == blob_byte_size
 
         return blob_buffer
 
-def performance_test(log_path, input_is_json, input_path, num_iterations):
+def performance_test(log_path, blob_name, input_is_json, input_path, num_iterations):
     print("Zserio Python Performance Test")
 
+    blob_type = BLOB_TYPES[blob_name]
+
     # prepare byte array
-    blob_buffer = read_blob_buffer(input_is_json, input_path)
+    blob_buffer = read_blob_buffer(blob_name, input_is_json, input_path)
 
     # calculate blob memory size
     blob_reader = zserio.BitStreamReader(blob_buffer)
     tracemalloc.start()
-    memory_blob = api.${BLOB_API_PATH}.from_reader(blob_reader)
+    memory_blob = blob_type.from_reader(blob_reader)
     blob_memory_size = tracemalloc.get_traced_memory()[1]
     tracemalloc.stop()
     blob_size = blob_reader.bitposition
@@ -721,7 +916,7 @@ EOF
     if [[ "${TEST_CONFIG}" == "WRITE" ]] ; then
         cat >> "${BUILD_DIR}/src/perftest.py" << EOF
     reader_from_file = zserio.BitStreamReader(blob_buffer)
-    blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
+    blob_from_file = blob_type.from_reader(reader_from_file)
 EOF
     fi
 
@@ -746,13 +941,13 @@ EOF
         "READ")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
         reader = zserio.BitStreamReader(blob_buffer)
-        blob = api.${BLOB_API_PATH}.from_reader(reader)
+        blob = blob_type.from_reader(reader)
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
         reader = zserio.BitStreamReader(blob_buffer)
-        blob = api.${BLOB_API_PATH}.from_reader(reader)
+        blob = blob_type.from_reader(reader)
         writer = zserio.BitStreamWriter()
         blob.write(writer)
 EOF
@@ -802,17 +997,23 @@ if __name__ == "__main__":
 
     arg_parser = argparse.ArgumentParser(description="Zserio Python Performance Test")
     arg_parser.add_argument("--log-path", required=True, help="Path to the log file to create")
+    arg_parser.add_argument("--blob-name", required=True, choices=BLOB_TYPES.keys(),
+                            help="Full name of the blob to test")
     arg_parser.add_argument('--is-json', default=False, action="store_true",
                             help="Use when the input is a JSON file")
     arg_parser.add_argument('--input-path', required=True, help="Path to the input file")
     arg_parser.add_argument('--num-iterations', default=${NUM_ITERATIONS}, type=int, help="Number of iterations")
     args = arg_parser.parse_args()
 
-    performance_test(args.log_path, args.is_json, args.input_path, args.num_iterations)
+    performance_test(args.log_path, args.blob_name, args.is_json, args.input_path, args.num_iterations)
 EOF
 }
 
 # Run zserio performance tests.
+#
+# BLOB_NAMES, JSON_PATHS and BLOB_PATHS are parallel arrays, one entry per blob: the full name of the blob
+# and either its JSON path or its blob path, the other one is empty. The sources are generated and compiled
+# once and the performance test runs once per blob.
 test_perf()
 {
     exit_if_argc_ne $# 17
@@ -827,20 +1028,27 @@ test_perf()
     local PARAM_PYTHON_CPP="$1"; shift
     local SWITCH_DIRECTORY="$1"; shift
     local SWITCH_SOURCE="$1"; shift
-    local SWITCH_BLOB_NAME="$1"; shift
-    local SWITCH_JSON_PATH="$1"; shift
-    local SWITCH_BLOB_PATH="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_NAMES=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local JSON_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local BLOB_PATHS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SWITCH_NUM_ITERATIONS="$1"; shift
     local SWITCH_TEST_CONFIG="$1"; shift
     local SWITCH_RUN_ONLY="$1"; shift
     local SWITCH_PROFILE="$1"; shift
 
-    if [[ "${SWITCH_JSON_PATH}" != "" ]] ; then
-        convert_to_absolute_path "${SWITCH_JSON_PATH}" SWITCH_JSON_PATH
-    fi
-    if [[ "${SWITCH_BLOB_PATH}" != "" ]] ; then
-        convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
-    fi
+    local NUM_BLOBS=${#BLOB_NAMES[@]}
+    local BLOB_INDEX
+    for (( BLOB_INDEX=0; BLOB_INDEX < NUM_BLOBS; BLOB_INDEX++ )) ; do
+        if [[ "${JSON_PATHS[${BLOB_INDEX}]}" != "" ]] ; then
+            convert_to_absolute_path "${JSON_PATHS[${BLOB_INDEX}]}" "JSON_PATHS[${BLOB_INDEX}]"
+        fi
+        if [[ "${BLOB_PATHS[${BLOB_INDEX}]}" != "" ]] ; then
+            convert_to_absolute_path "${BLOB_PATHS[${BLOB_INDEX}]}" "BLOB_PATHS[${BLOB_INDEX}]"
+        fi
+    done
 
     if [[ ${SWITCH_PROFILE} == 1 && ( ${PARAM_JAVA} == 1 ) ]] ; then
         stderr_echo "Profiling not available for Java!"
@@ -877,7 +1085,7 @@ test_perf()
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
             generate_java_files "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/java" \
-                                "${SWITCH_BLOB_NAME}" "${SWITCH_JSON_PATH}" "${SWITCH_BLOB_PATH}" \
+                                BLOB_NAMES[@] JSON_PATHS[@] BLOB_PATHS[@] \
                                 ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
         fi
         ANT_ARGS=()
@@ -891,7 +1099,7 @@ test_perf()
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
             generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp" \
-                               "${SWITCH_BLOB_NAME}" "${SWITCH_JSON_PATH}" "${SWITCH_BLOB_PATH}" \
+                               BLOB_NAMES[@] JSON_PATHS[@] BLOB_PATHS[@] \
                                ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
         local CMAKE_ARGS=()
@@ -910,8 +1118,11 @@ test_perf()
             echo ""
             echo "C++ profiling finished, use one of the following commands for analysis:"
             for CPP_TARGET in "${CPP_TARGETS[@]}" ; do
-                local CALLGRIND_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "callgrind.out")
-                echo "    kcachegrind ${CALLGRIND_FILE}"
+                local CALLGRIND_FILES=($(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "callgrind.out*"))
+                local CALLGRIND_FILE
+                for CALLGRIND_FILE in "${CALLGRIND_FILES[@]}" ; do
+                    echo "    kcachegrind ${CALLGRIND_FILE}"
+                done
             done
         fi
     fi
@@ -924,32 +1135,16 @@ test_perf()
         fi
 
         if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-            generate_python_perftest "${TEST_PYTHON_OUT_DIR}" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
+            generate_python_perftest "${TEST_PYTHON_OUT_DIR}" BLOB_NAMES[@] ${SWITCH_NUM_ITERATIONS} \
                                      ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
 
-        local IS_JSON="--is-json"
-        local INPUT_PATH="${SWITCH_JSON_PATH}"
-        if [[ "${SWITCH_BLOB_FILE}" != "" ]] ; then
-            IS_JSON=""
-            INPUT_PATH="${SWITCH_BLOB_PATH}"
-        fi
         local PYTHON_RUNTIME_DIR="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
+        local PYTHON_RUNS=()
         if [[ ${PARAM_PYTHON} == 1 ]] ; then
-            mkdir -p "${TEST_PYTHON_OUT_DIR}/python-pure"
-            pushd "${TEST_PYTHON_OUT_DIR}/python-pure" > /dev/null
-            ZSERIO_PYTHOM_IMPLEMENTATION="python" \
-            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_PYTHON_OUT_DIR}/gen" \
-            python ${TEST_PYTHON_OUT_DIR}/src/perftest.py \
-                   --log-path="PerformanceTest.log" ${IS_JSON} --input-path "${INPUT_PATH}"
-            if [ $? -ne 0 ] ; then
-                popd > /dev/null
-                return 1
-            fi
-            popd > /dev/null
+            PYTHON_RUNS+=("python-pure")
         fi
-
         if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
             if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
                 build_cpp_binding_to_python "${PYTHON_RUNTIME_DIR}" \
@@ -959,75 +1154,107 @@ test_perf()
                     return 1
                 fi
             fi
-
-            local ZSERIO_CPP_DIR
-            ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
-            if [ $? -ne 0 ] ; then
-                stderr_echo "Failed to locate C++ runtime binding to Python!"
-                return 1
-            fi
-
-            mkdir -p "${TEST_PYTHON_OUT_DIR}/python-cpp"
-            pushd "${TEST_PYTHON_OUT_DIR}/python-cpp" > /dev/null
-            ZSERIO_PYTHOM_IMPLEMENTATION="cpp" \
-            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_PYTHON_OUT_DIR}/gen:${ZSERIO_CPP_DIR}" \
-            python ${TEST_PYTHON_OUT_DIR}/src/perftest.py \
-                   --log-path="PerformanceTest.log" ${IS_JSON} --input-path "${INPUT_PATH}"
-            if [ $? -ne 0 ] ; then
-                popd > /dev/null
-                return 1
-            fi
-            popd > /dev/null
+            PYTHON_RUNS+=("python-cpp")
         fi
 
+        local PYTHON_RUN
+        for PYTHON_RUN in "${PYTHON_RUNS[@]}" ; do
+            local PYTHON_IMPLEMENTATION="python"
+            local PYTHON_PATH="${PYTHON_RUNTIME_DIR}:${TEST_PYTHON_OUT_DIR}/gen"
+            if [[ "${PYTHON_RUN}" == "python-cpp" ]] ; then
+                local ZSERIO_CPP_DIR
+                ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
+                if [ $? -ne 0 ] ; then
+                    stderr_echo "Failed to locate C++ runtime binding to Python!"
+                    return 1
+                fi
+                PYTHON_IMPLEMENTATION="cpp"
+                PYTHON_PATH="${PYTHON_PATH}:${ZSERIO_CPP_DIR}"
+            fi
+
+            mkdir -p "${TEST_PYTHON_OUT_DIR}/${PYTHON_RUN}"
+            pushd "${TEST_PYTHON_OUT_DIR}/${PYTHON_RUN}" > /dev/null
+            for (( BLOB_INDEX=0; BLOB_INDEX < NUM_BLOBS; BLOB_INDEX++ )) ; do
+                local LOG_NAME
+                get_perf_log_name ${BLOB_INDEX} ${NUM_BLOBS} LOG_NAME
+                local INPUT_SWITCH
+                local INPUT_PATH
+                get_perf_input ${BLOB_INDEX} JSON_PATHS[@] BLOB_PATHS[@] INPUT_SWITCH INPUT_PATH
+                local IS_JSON=""
+                if [[ "${INPUT_SWITCH}" == "-j" ]] ; then
+                    IS_JSON="--is-json"
+                fi
+
+                ZSERIO_PYTHOM_IMPLEMENTATION="${PYTHON_IMPLEMENTATION}" \
+                PYTHONPATH="${PYTHON_PATH}" \
+                python ${TEST_PYTHON_OUT_DIR}/src/perftest.py \
+                       --log-path="${LOG_NAME}" --blob-name "${BLOB_NAMES[${BLOB_INDEX}]}" ${IS_JSON} \
+                       --input-path "${INPUT_PATH}"
+                if [ $? -ne 0 ] ; then
+                    popd > /dev/null
+                    return 1
+                fi
+            done
+            popd > /dev/null
+        done
+
         if [[ ${SWITCH_PROFILE} == 1 ]] ; then
-            local PROFDATA_FILE="PerformanceTest.prof"
             echo ""
             echo "Python profiling finished, use one of the following commands for analysis:"
-            echo "    python3 -m pstats ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
-            echo "    python3 -m snakeviz ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
-            echo "    python3 -m pyprof2calltree -k -i ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
+            for (( BLOB_INDEX=0; BLOB_INDEX < NUM_BLOBS; BLOB_INDEX++ )) ; do
+                local LOG_NAME
+                get_perf_log_name ${BLOB_INDEX} ${NUM_BLOBS} LOG_NAME
+                local PROFDATA_FILE="${LOG_NAME%.log}.prof"
+                echo "    python3 -m pstats ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
+                echo "    python3 -m snakeviz ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
+                echo "    python3 -m pyprof2calltree -k -i ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
+            done
         fi
     fi
 
     # collect results
-    echo
-    echo "Performance Tests Results - ${SWITCH_TEST_CONFIG}"
-    echo "Blob name: ${SWITCH_BLOB_NAME}"
-    if [[ "${SWITCH_JSON_PATH}" != "" ]] ; then
-        echo "JSON file: ${SWITCH_JSON_PATH##*/}"
-    else
-        echo "Blob file: ${SWITCH_BLOB_PATH##*/}"
-    fi
-    for i in {1..103} ; do echo -n "=" ; done ; echo
-    printf "| %-21s | %14s | %10s | %15s | %10s | %10s |\n" \
-           "Generator" "Total Duration" "Iterations" "Step Duration" "Blob Size" "Blob in Memory"
-    echo -n "|" ; for i in {1..101} ; do echo -n "-" ; done ; echo "|"
-    if [[ ${PARAM_JAVA} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
-               "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
-    fi
-    if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
-        for CPP_TARGET in "${CPP_TARGETS[@]}" ; do
-            local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "PerformanceTest.log")
-            local RESULTS=($(cat ${PERF_TEST_FILE}))
+    for (( BLOB_INDEX=0; BLOB_INDEX < NUM_BLOBS; BLOB_INDEX++ )) ; do
+        local LOG_NAME
+        get_perf_log_name ${BLOB_INDEX} ${NUM_BLOBS} LOG_NAME
+
+        echo
+        echo "Performance Tests Results - ${SWITCH_TEST_CONFIG}"
+        echo "Blob name: ${BLOB_NAMES[${BLOB_INDEX}]}"
+        if [[ "${JSON_PATHS[${BLOB_INDEX}]}" != "" ]] ; then
+            echo "JSON file: ${JSON_PATHS[${BLOB_INDEX}]##*/}"
+        else
+            echo "Blob file: ${BLOB_PATHS[${BLOB_INDEX}]##*/}"
+        fi
+        for i in {1..103} ; do echo -n "=" ; done ; echo
+        printf "| %-21s | %14s | %10s | %15s | %10s | %10s |\n" \
+               "Generator" "Total Duration" "Iterations" "Step Duration" "Blob Size" "Blob in Memory"
+        echo -n "|" ; for i in {1..101} ; do echo -n "-" ; done ; echo "|"
+        if [[ ${PARAM_JAVA} == 1 ]] ; then
+            local RESULTS=($(cat ${TEST_OUT_DIR}/java/${LOG_NAME}))
             printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
-                   "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
-        done
-    fi
-    if [[ ${PARAM_PYTHON} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_PYTHON_OUT_DIR}/python-pure/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
-               "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
-    fi
-    if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_PYTHON_OUT_DIR}/python-cpp/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
-               "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
-    fi
-    for i in {1..103} ; do echo -n "=" ; done ; echo
-    echo
+                   "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
+        fi
+        if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
+            for CPP_TARGET in "${CPP_TARGETS[@]}" ; do
+                local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "${LOG_NAME}")
+                local RESULTS=($(cat ${PERF_TEST_FILE}))
+                printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+                       "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
+            done
+        fi
+        if [[ ${PARAM_PYTHON} == 1 ]] ; then
+            local RESULTS=($(cat ${TEST_PYTHON_OUT_DIR}/python-pure/${LOG_NAME}))
+            printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+                   "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
+        fi
+        if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
+            local RESULTS=($(cat ${TEST_PYTHON_OUT_DIR}/python-cpp/${LOG_NAME}))
+            printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+                   "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
+        fi
+        for i in {1..103} ; do echo -n "=" ; done ; echo
+        echo
+    done
 
     return 0
 }
@@ -1485,11 +1712,13 @@ main()
     fi
 
     # run test
+    local BLOB_NAMES=("${SWITCH_BLOB_NAME}")
+    local JSON_PATHS=("${SWITCH_JSON_FILE}")
+    local BLOB_PATHS=("${SWITCH_BLOB_FILE}")
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
-              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_BLOB_NAME}" \
-              "${SWITCH_JSON_FILE}" "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} \
-              ${SWITCH_RUN_ONLY} ${SWITCH_PROFILE}
+              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" BLOB_NAMES[@] JSON_PATHS[@] BLOB_PATHS[@] \
+              ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_RUN_ONLY} ${SWITCH_PROFILE}
     if [ $? -ne 0 ] ; then
         return 1
     fi
