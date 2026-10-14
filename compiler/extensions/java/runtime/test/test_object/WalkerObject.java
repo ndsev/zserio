@@ -315,15 +315,17 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         if (result != 0)
             return result;
 
-        if (isNestedUsed() && other.isNestedUsed())
+        final boolean isNestedUsed = isNestedUsed();
+        final boolean otherIsNestedUsed = other.isNestedUsed();
+        if (isNestedUsed && otherIsNestedUsed)
         {
             result = zserio.runtime.CompareUtil.compare(nested_, other.nested_);
             if (result != 0)
                 return result;
         }
-        else if (isNestedUsed() != other.isNestedUsed())
+        else if (isNestedUsed != otherIsNestedUsed)
         {
-            return isNestedUsed() ? 1 : -1;
+            return isNestedUsed ? 1 : -1;
         }
 
         result = zserio.runtime.CompareUtil.compare(text_, other.text_);
@@ -334,15 +336,17 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         if (result != 0)
             return result;
 
-        if (isOptionalUnionArrayUsed() && other.isOptionalUnionArrayUsed())
+        final boolean isOptionalUnionArrayUsed = isOptionalUnionArrayUsed();
+        final boolean otherIsOptionalUnionArrayUsed = other.isOptionalUnionArrayUsed();
+        if (isOptionalUnionArrayUsed && otherIsOptionalUnionArrayUsed)
         {
             result = zserio.runtime.CompareUtil.compare(optionalUnionArray_, other.optionalUnionArray_);
             if (result != 0)
                 return result;
         }
-        else if (isOptionalUnionArrayUsed() != other.isOptionalUnionArrayUsed())
+        else if (isOptionalUnionArrayUsed != otherIsOptionalUnionArrayUsed)
         {
-            return isOptionalUnionArrayUsed() ? 1 : -1;
+            return isOptionalUnionArrayUsed ? 1 : -1;
         }
 
         return 0;

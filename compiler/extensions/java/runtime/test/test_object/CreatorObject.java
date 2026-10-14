@@ -527,48 +527,56 @@ public class CreatorObject implements zserio.runtime.io.Writer, zserio.runtime.S
         if (result != 0)
             return result;
 
-        if (isExternArrayUsed() && other.isExternArrayUsed())
+        final boolean isExternArrayUsed = isExternArrayUsed();
+        final boolean otherIsExternArrayUsed = other.isExternArrayUsed();
+        if (isExternArrayUsed && otherIsExternArrayUsed)
         {
             result = zserio.runtime.CompareUtil.compare(externArray_, other.externArray_);
             if (result != 0)
                 return result;
         }
-        else if (isExternArrayUsed() != other.isExternArrayUsed())
+        else if (isExternArrayUsed != otherIsExternArrayUsed)
         {
-            return isExternArrayUsed() ? 1 : -1;
+            return isExternArrayUsed ? 1 : -1;
         }
 
-        if (isBytesArrayUsed() && other.isBytesArrayUsed())
+        final boolean isBytesArrayUsed = isBytesArrayUsed();
+        final boolean otherIsBytesArrayUsed = other.isBytesArrayUsed();
+        if (isBytesArrayUsed && otherIsBytesArrayUsed)
         {
             result = zserio.runtime.CompareUtil.compare(bytesArray_, other.bytesArray_);
             if (result != 0)
                 return result;
         }
-        else if (isBytesArrayUsed() != other.isBytesArrayUsed())
+        else if (isBytesArrayUsed != otherIsBytesArrayUsed)
         {
-            return isBytesArrayUsed() ? 1 : -1;
+            return isBytesArrayUsed ? 1 : -1;
         }
 
-        if (isOptionalBoolUsed() && other.isOptionalBoolUsed())
+        final boolean isOptionalBoolUsed = isOptionalBoolUsed();
+        final boolean otherIsOptionalBoolUsed = other.isOptionalBoolUsed();
+        if (isOptionalBoolUsed && otherIsOptionalBoolUsed)
         {
             result = zserio.runtime.CompareUtil.compare(optionalBool_, other.optionalBool_);
             if (result != 0)
                 return result;
         }
-        else if (isOptionalBoolUsed() != other.isOptionalBoolUsed())
+        else if (isOptionalBoolUsed != otherIsOptionalBoolUsed)
         {
-            return isOptionalBoolUsed() ? 1 : -1;
+            return isOptionalBoolUsed ? 1 : -1;
         }
 
-        if (isOptionalNestedUsed() && other.isOptionalNestedUsed())
+        final boolean isOptionalNestedUsed = isOptionalNestedUsed();
+        final boolean otherIsOptionalNestedUsed = other.isOptionalNestedUsed();
+        if (isOptionalNestedUsed && otherIsOptionalNestedUsed)
         {
             result = zserio.runtime.CompareUtil.compare(optionalNested_, other.optionalNested_);
             if (result != 0)
                 return result;
         }
-        else if (isOptionalNestedUsed() != other.isOptionalNestedUsed())
+        else if (isOptionalNestedUsed != otherIsOptionalNestedUsed)
         {
-            return isOptionalNestedUsed() ? 1 : -1;
+            return isOptionalNestedUsed ? 1 : -1;
         }
 
         return 0;
