@@ -60,6 +60,32 @@ patch_old_runtime_doc()
     return 0
 }
 
+# Remove the version <option> of the given versions from the version select of all runtime documentations.
+remove_versions_from_select()
+{
+    exit_if_argc_lt $# 2
+    local ZSERIO_DOC_DIR="$1"; shift
+    local ZSERIO_VERSIONS=("$@")
+
+    local SED_ARGS=()
+    local ZSERIO_VERSION
+    for ZSERIO_VERSION in "${ZSERIO_VERSIONS[@]}" ; do
+        local VERSION_PATTERN="${ZSERIO_VERSION//./\\.}"
+        SED_ARGS+=(-e '/^<option value="'"${VERSION_PATTERN}"'">'"${VERSION_PATTERN}"'<\/option>$/d')
+    done
+
+    local HTML_FILES=($(grep "<select id=\"zserio-version-select\"" "${ZSERIO_DOC_DIR}" -R -l))
+    for HTML_FILE in "${HTML_FILES[@]}" ; do
+        "${SED}" -i "${SED_ARGS[@]}" "${HTML_FILE}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to remove the version <option>!"
+            return 1
+        fi
+    done
+
+    return 0
+}
+
 # Replace the version in the new runtime documentation by the select of all published versions.
 patch_new_runtime_doc()
 {
@@ -305,6 +331,7 @@ drop_old_patch_versions()
 
     local VERSIONS=($(ls -1 "${RUNTIME_DOC_DIR}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | sort -rV))
     local KEPT_VERSION=""
+    local DROPPED_VERSIONS=()
     local VERSION
     for VERSION in "${VERSIONS[@]}" ; do
         if [[ -n "${KEPT_VERSION}" && "${VERSION%.*}" == "${KEPT_VERSION%.*}" ]] ; then
@@ -314,10 +341,20 @@ drop_old_patch_versions()
                 return 1
             fi
             echo "Done"
+            DROPPED_VERSIONS+=("${VERSION}")
         else
             KEPT_VERSION="${VERSION}"
         fi
     done
+
+    if [ ${#DROPPED_VERSIONS[@]} -gt 0 ] ; then
+        echo -ne "Removing the redirected versions from the version select..."
+        remove_versions_from_select "${RUNTIME_DOC_DIR}" "${DROPPED_VERSIONS[@]}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+        echo "Done"
+    fi
     echo
 
     return 0
