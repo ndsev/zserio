@@ -3,12 +3,13 @@ name: Pages
 # Builds zserio.org by Jekyll and deploys it by actions/deploy-pages, the repository Pages source is GitHub Actions.
 # The site consists of the zserio sources of 'source_ref' with submodules, the Jekyll configuration
 # .github/pages/_config.yml, the archived runtime docs of all versions up to 2.19.0 and the runtime docs of all
-# published releases newer than the archive, see scripts/build_web_pages.sh.
+# published releases newer than the archive, see scripts/build_web_pages.sh. Of each minor line only the highest
+# patch version is published, the pages of the older patch versions redirect to it.
 #
 # The release workflow calls it with the runtime libs of the release just built and deploys on a pushed tag.
 # A manual run deploys only if 'deploy' is checked, e.g. the site of the latest release from its tag.
 # A push to the branch 'pages-dry-run/<source_ref>' builds the site of that ref and uploads the Pages artifact,
-# it deploys nothing.
+# it deploys nothing. It fails if the site plus one more version would exceed the 1 GB limit of GitHub Pages.
 
 run-name: "${{github.event_name == 'push' && format('Pages dry run of {0} - no deployment', github.ref_name) ||
     format('Pages from {0}', inputs.source_ref)}}"

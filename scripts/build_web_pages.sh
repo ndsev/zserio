@@ -444,6 +444,10 @@ Description:
     the archived runtime libraries documentation of all already published versions and the runtime
     libraries documentation of the given new versions.
 
+    Of each minor line only the highest patch version is published, e.g. 2.18.2 of 2.18.0, 2.18.1 and 2.18.2.
+    Each page of an older patch version is a static redirect page to the same page of the highest patch version,
+    which lists only the published versions in its version select.
+
 Usage:
     $0 [-h] [-e] -s <dir> -a <dir> -o <dir> [runtime_libs_zip...]
 

@@ -147,6 +147,7 @@ Delete the branch `release-dry-run/...` if you pushed one.
 | *PyPI token check*: `PyPI did not return a token` | the trusted publisher on pypi.org does not match repository, workflow or environment, see step 0 |
 | *Central Portal validation* | the log names the failed validation rule (signature, POM, javadoc); a missing or wrong secret in `maven-central` fails before the upload. If the job was cancelled before its cleanup, drop the deployment by hand on [Deployments](https://central.sonatype.com/publishing/deployments) |
 | *build zserio.org* | `scripts/build_web_pages.sh` or Jekyll failed; a version which is not newer than the published ones is only a notice in a dry run |
+| *build zserio.org*: `exceeds the GitHub Pages limit of 1 GB` | the next release would not fit on zserio.org; reduce the published runtime docs before the release |
 
 Run the dry run again after each fix, until it is green on the head commit of `release/X.Y`.
 
