@@ -88,6 +88,9 @@ public class CompareUtilTest
         assertTrue(CompareUtil.compare(new byte[] {1, 2}, new byte[] {2}) < 0);
         // bytes are unsigned
         assertTrue(CompareUtil.compare(new byte[] {(byte)0x01}, new byte[] {(byte)0xFF}) < 0);
+        // int8 arrays are signed
+        assertTrue(new RawArray.ByteRawArray(new byte[] {-1})
+                           .compareTo(new RawArray.ByteRawArray(new byte[] {1})) < 0);
         assertTrue(CompareUtil.compare((byte[])null, new byte[] {}) < 0);
     }
 
