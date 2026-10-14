@@ -37,3 +37,16 @@ class CompareTest(unittest.TestCase):
         self.assertEqual(0, compare(BitBuffer(bytes([0xAB, 0xE0]), 11), BitBuffer(bytes([0xAB, 0xF0]), 11)))
         self.assertTrue(compare(BitBuffer(bytes([0xAB, 0x00]), 11), BitBuffer(bytes([0xAB, 0xE0]), 11)) < 0)
         self.assertTrue(compare(BitBuffer(bytes([0xAB, 0xE0]), 11), BitBuffer(bytes([0xAB, 0x00]), 11)) > 0)
+
+    def test_three_way(self):
+        class Value:  # without __lt__, compare() must use _zserio_cmp
+            def __init__(self, value):
+                self.value = value
+
+            def _zserio_cmp(self, other):
+                return self.value - other.value
+
+        self.assertEqual(0, compare(Value(1), Value(1)))
+        self.assertTrue(compare(Value(1), Value(2)) < 0)
+        self.assertTrue(compare(Value(2), Value(1)) > 0)
+        self.assertTrue(compare(None, Value(1)) < 0)

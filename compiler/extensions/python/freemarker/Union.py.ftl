@@ -196,11 +196,14 @@ class ${name}:
         if not isinstance(other, ${name}):
             return NotImplemented
 
-        <@compound_less_than_parameters compoundParametersData/>
-        if self._choice_tag != other._choice_tag:
-            return self._choice_tag < other._choice_tag  # UNDEFINED_CHOICE is the lowest
+        return self._zserio_cmp(other) < 0
 
-        return zserio.compare.compare(self._choice, other._choice) < 0
+    def _zserio_cmp(self, other: '${name}') -> int:
+        <@compound_compare_to_parameters compoundParametersData/>
+        if self._choice_tag != other._choice_tag:
+            return -1 if self._choice_tag < other._choice_tag else 1  # UNDEFINED_CHOICE is the lowest
+
+        return zserio.compare.compare(self._choice, other._choice)
 
 <#macro union_hashcode_field field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>

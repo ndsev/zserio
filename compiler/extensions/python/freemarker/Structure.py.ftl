@@ -204,21 +204,29 @@ ${I}<#rt>
         if not isinstance(other, ${name}):
             return NotImplemented
 
+        return self._zserio_cmp(other) < 0
+
 <#if compoundParametersData.list?has_content || fieldList?has_content>
-        <@compound_less_than_parameters compoundParametersData/>
+    def _zserio_cmp(self, other: '${name}') -> int:
+        <@compound_compare_to_parameters compoundParametersData/>
     <#list fieldList as field>
         <#if field.isExtended>
-        if self.${field.isPresentIndicatorName}() and other.${field.isPresentIndicatorName}():
-            <@compound_less_than_field field, 3/>
-        elif self.${field.isPresentIndicatorName}() != other.${field.isPresentIndicatorName}():
-            return not self.${field.isPresentIndicatorName}()
+        is_present = self.${field.isPresentIndicatorName}()
+        other_is_present = other.${field.isPresentIndicatorName}()
+        if is_present and other_is_present:
+            <@compound_compare_to_field field, 3/>
+        elif is_present != other_is_present:
+            return 1 if is_present else -1
         <#else>
-        <@compound_less_than_field field, 2/>
+        <@compound_compare_to_field field, 2/>
         </#if>
 
     </#list>
+        return 0
+<#else>
+    def _zserio_cmp(self, _other: '${name}') -> int:
+        return 0
 </#if>
-        return False
 
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
