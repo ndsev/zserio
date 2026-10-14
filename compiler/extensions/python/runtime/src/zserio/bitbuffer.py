@@ -61,7 +61,34 @@ class BitBuffer:
             return NotImplemented
 
         # bytes are compared lexicographically, bit buffers with equal bytes are ordered by bit size
-        return (self._masked_bytes(), self._bitsize) < (other._masked_bytes(), other._bitsize)
+        bytesize = bitsize_to_bytesize(self._bitsize)
+        other_bytesize = bitsize_to_bytesize(other._bitsize)
+        if bytesize == 0 or other_bytesize == 0:
+            return bytesize < other_bytesize
+
+        # number of bytes in front of the last byte of the shorter bit buffer
+        prefix_bytesize = min(bytesize, other_bytesize) - 1
+        if prefix_bytesize > 0:
+            prefix = self._buffer[0:prefix_bytesize]
+            other_prefix = other._buffer[0:prefix_bytesize]
+            if prefix != other_prefix:
+                return prefix < other_prefix
+
+        last_byte = (
+            self._masked_last_byte() if prefix_bytesize == bytesize - 1 else self._buffer[prefix_bytesize]
+        )
+        other_last_byte = (
+            other._masked_last_byte()
+            if prefix_bytesize == other_bytesize - 1
+            else other._buffer[prefix_bytesize]
+        )
+        if last_byte != other_last_byte:
+            return last_byte < other_last_byte
+
+        if bytesize != other_bytesize:
+            return bytesize < other_bytesize
+
+        return self._bitsize < other._bitsize
 
     def __hash__(self) -> int:
         result = HASH_SEED
@@ -94,13 +121,6 @@ class BitBuffer:
         :returns: Size of the bit buffer in bits.
         """
         return self._bitsize
-
-    def _masked_bytes(self) -> bytes:
-        bytesize = bitsize_to_bytesize(self._bitsize)
-        if bytesize == 0:
-            return bytes()
-
-        return bytes(self._buffer[0 : bytesize - 1]) + bytes([self._masked_last_byte()])
 
     def _masked_last_byte(self) -> int:
         rounded_bytesize = self._bitsize // 8
