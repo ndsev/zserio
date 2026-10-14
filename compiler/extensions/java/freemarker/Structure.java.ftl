@@ -407,13 +407,17 @@ public class ${name} implements <#rt>
         <@compound_parameter_compare_to compoundParametersData/>
     <#list fieldList as field>
         <#if field.isExtended>
-        if (${field.isPresentIndicatorName}() && other.${field.isPresentIndicatorName}())
+            <#assign isPresent=field.isPresentIndicatorName>
+            <#assign otherIsPresent="other" + isPresent?cap_first>
+        final boolean ${isPresent} = ${isPresent}();
+        final boolean ${otherIsPresent} = other.${isPresent}();
+        if (${isPresent} && ${otherIsPresent})
         {
             <@compound_compare_to_field field, 3/>
         }
-        else if (${field.isPresentIndicatorName}() != other.${field.isPresentIndicatorName}())
+        else if (${isPresent} != ${otherIsPresent})
         {
-            return ${field.isPresentIndicatorName}() ? 1 : -1;
+            return ${isPresent} ? 1 : -1;
         }
         <#else>
         <@compound_compare_to_field field, 2/>
