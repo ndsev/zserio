@@ -1,7 +1,11 @@
 cert-err58-cpp:gen/constants/DEFAULT_PEN_COLOR_VALUE.h
 cert-err58-cpp:gen/constants/HEX_ESC_STRING_CONSTANT.h
 cert-err58-cpp:gen/constants/JOINED_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/OCTAL_ESC_JOINED_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/OCTAL_ESC_MAX_STRING_CONSTANT.h
 cert-err58-cpp:gen/constants/OCTAL_ESC_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT.h
 cert-err58-cpp:gen/constants/STRING_CONSTANT.h
 cert-err58-cpp:gen/constants/SUBTYPE_STRING_CONSTANT.h
 cert-err58-cpp:gen/constants/StringPascalCaseConstant.h
