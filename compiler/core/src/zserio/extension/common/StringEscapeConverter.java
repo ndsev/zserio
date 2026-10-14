@@ -114,6 +114,27 @@ public final class StringEscapeConverter
      */
     public static String convertOctalEscapes(String stringToConvert)
     {
+        return convertOctalEscapes(stringToConvert, "");
+    }
+
+    /**
+     * Normalizes Zserio octal escape sequences to the full Zserio format '\0ooo' in given string.
+     *
+     * The normalized escape sequences always take exactly three octal digits, thus they cannot merge with
+     * digits which follow them, e.g. when two string literals are concatenated. Zserio '\01' is normalized
+     * to '\0001'.
+     *
+     * @param stringToConvert String for escape sequences conversion.
+     *
+     * @return String with normalized escape sequences.
+     */
+    public static String normalizeOctalEscapes(String stringToConvert)
+    {
+        return convertOctalEscapes(stringToConvert, String.valueOf(ESCAPE_OCTAL_SPECIFIER));
+    }
+
+    private static String convertOctalEscapes(String stringToConvert, String octalEscapePrefix)
+    {
         final StringBuilder buffer = new StringBuilder();
         final int endIndex = stringToConvert.length();
         int index = 0;
@@ -137,6 +158,7 @@ public final class StringEscapeConverter
                     final int numDigits = getNumOctalEscapeDigits(stringToConvert, digitsStartIndex);
                     final String digits =
                             stringToConvert.substring(digitsStartIndex, digitsStartIndex + numDigits);
+                    buffer.append(octalEscapePrefix);
                     for (int i = numDigits; i < ESCAPE_OCTAL_MAX_DIGITS; ++i)
                         buffer.append('0');
                     buffer.append(digits);

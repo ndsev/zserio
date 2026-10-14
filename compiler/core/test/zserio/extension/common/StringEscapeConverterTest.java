@@ -51,4 +51,32 @@ public class StringEscapeConverterTest
         final String expectedConvertedString = "\\\\0156\\\\\\156\\x01";
         assertEquals(expectedConvertedString, convertedString);
     }
+
+    @Test
+    public void normalizeOctalEscapes()
+    {
+        final String stringToConvert = "Test \\0156\\031\\07\\0778\\0377\\\\01\\x01 conversion.";
+        final String convertedString = StringEscapeConverter.normalizeOctalEscapes(stringToConvert);
+        final String expectedConvertedString = "Test \\0156\\0031\\0007\\00778\\0377\\\\01\\x01 conversion.";
+        assertEquals(expectedConvertedString, convertedString);
+    }
+
+    @Test
+    public void normalizeOctalEscapesIsIdempotent()
+    {
+        final String normalizedString = StringEscapeConverter.normalizeOctalEscapes("\\01\\0156\\07");
+        assertEquals(normalizedString, StringEscapeConverter.normalizeOctalEscapes(normalizedString));
+    }
+
+    @Test
+    public void convertJoinedNormalizedOctalEscapes()
+    {
+        // joined string literals "\01" + "56" and "\07" + "7" must not merge into one escape
+        final String joinedString = StringEscapeConverter.normalizeOctalEscapes("\\01") +
+                StringEscapeConverter.normalizeOctalEscapes("56") +
+                StringEscapeConverter.normalizeOctalEscapes("\\07") +
+                StringEscapeConverter.normalizeOctalEscapes("7");
+        final String convertedString = StringEscapeConverter.convertOctalEscapes(joinedString);
+        assertEquals("\\00156\\0077", convertedString);
+    }
 }

@@ -314,6 +314,36 @@ public class ConstantsTest
     }
 
     @Test
+    public void octalEscThreeDigitsStringConstant()
+    {
+        assertEquals("Test string with octal escape n",
+                OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT.OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT);
+    }
+
+    @Test
+    public void octalEscMaxStringConstant()
+    {
+        // Java uses the character U+00FF, C++ keeps the single byte 0xFF
+        assertEquals("\u00ff", OCTAL_ESC_MAX_STRING_CONSTANT.OCTAL_ESC_MAX_STRING_CONSTANT);
+    }
+
+    @Test
+    public void octalEscJoinedStringConstant()
+    {
+        assertEquals("\001"
+                        + "56",
+                OCTAL_ESC_JOINED_STRING_CONSTANT.OCTAL_ESC_JOINED_STRING_CONSTANT);
+    }
+
+    @Test
+    public void octalEscJoinedWithConstantStringConstant()
+    {
+        assertEquals("Test \"Quated\" String\007"
+                        + "7",
+                OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT.OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT);
+    }
+
+    @Test
     public void stringPascalCaseConstant()
     {
         assertEquals("Different naming convention", StringPascalCaseConstant.StringPascalCaseConstant);
