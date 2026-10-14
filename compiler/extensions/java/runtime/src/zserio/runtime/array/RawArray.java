@@ -101,6 +101,7 @@ public interface RawArray extends Comparable<RawArray>
         @Override
         public int compareTo(RawArray other)
         {
+            // int8 elements are compared signed on purpose, unlike CompareUtil.compare(byte[]) for zserio bytes
             final byte[] otherRawArray = ((ByteRawArray)other).rawArray;
             if (rawArray == null || otherRawArray == null)
                 return Boolean.compare(rawArray != null, otherRawArray != null);
