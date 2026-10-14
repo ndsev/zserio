@@ -348,6 +348,13 @@ public class ${name} implements <#rt>
     </#if>
 </#list>
 <@compound_functions compoundFunctionsData/>
+<#macro structure_compare_field field>
+    <#if field.optional??>
+((!${field.optional.isUsedIndicatorName}()) ? !that.${field.optional.isUsedIndicatorName}() : <@compound_compare_field field/>)<#rt>
+    <#else>
+<@compound_compare_field field/><#rt>
+    </#if>
+</#macro>
     @Override
     public boolean equals(java.lang.Object obj)
     {
@@ -361,7 +368,10 @@ public class ${name} implements <#rt>
                     <@compound_compare_parameter parameter/><#if parameter?has_next || fieldList?has_content> &&<#else>;</#if>
     </#list>
     <#list fieldList as field>
-        <#if field.optional??>
+        <#if field.isExtended>
+                    ((!${field.isPresentIndicatorName}()) ? !that.${field.isPresentIndicatorName}() :
+                        (that.${field.isPresentIndicatorName}() && <@structure_compare_field field/>))<#if field?has_next> &&<#else>;</#if>
+        <#elseif field.optional??>
             <#-- if optional is not auto and is used the that should be is used as well because all previous paramaters and fields were the same. -->
                     ((!${field.optional.isUsedIndicatorName}()) ? !that.${field.optional.isUsedIndicatorName}() :
                         <@compound_compare_field field/>)<#if field?has_next> &&<#else>;</#if>
@@ -377,6 +387,15 @@ public class ${name} implements <#rt>
 </#if>
     }
 
+<#macro structure_hash_code_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+${I}if (${field.optional.isUsedIndicatorName}())
+${I}    result = zserio.runtime.HashCodeUtil.calcHashCode(result, <@field_member_name field/>);
+    <#else>
+${I}result = zserio.runtime.HashCodeUtil.calcHashCode(result, <@field_member_name field/>);
+    </#if>
+</#macro>
     @Override
     public int hashCode()
     {
@@ -384,11 +403,13 @@ public class ${name} implements <#rt>
 
         <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
-    <#if field.optional??>
-        if (${field.optional.isUsedIndicatorName}())
-            result = zserio.runtime.HashCodeUtil.calcHashCode(result, <@field_member_name field/>);
+    <#if field.isExtended>
+        if (${field.isPresentIndicatorName}())
+        {
+            <@structure_hash_code_field field, 3/>
+        }
     <#else>
-        result = zserio.runtime.HashCodeUtil.calcHashCode(result, <@field_member_name field/>);
+        <@structure_hash_code_field field, 2/>
     </#if>
     <#if !field?has_next>
 
