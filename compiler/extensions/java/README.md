@@ -103,6 +103,10 @@ Comparison of fields of other types:
   byte by byte as unsigned bytes, the last byte is masked to use only the proper number of bits.
   Bit buffers with equal contents are ordered by their bit size.
 
+> Note that the runtime interface `zserio.runtime.array.RawArray` extends `Comparable<RawArray>`. An implementation
+  of `RawArray` outside the Java runtime has to provide `compareTo()`. All `RawArray` implementations in the runtime
+  are final and generated code implements none.
+
 ### Subtypes
 
 Because Java language does not support aliases for types, Zserio subtypes in Java are resolved during

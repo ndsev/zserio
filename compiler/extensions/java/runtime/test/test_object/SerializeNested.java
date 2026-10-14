@@ -201,15 +201,17 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
         if (result != 0)
             return result;
 
-        if (isOptionalValueUsed() && other.isOptionalValueUsed())
+        final boolean isOptionalValueUsed = isOptionalValueUsed();
+        final boolean otherIsOptionalValueUsed = other.isOptionalValueUsed();
+        if (isOptionalValueUsed && otherIsOptionalValueUsed)
         {
             result = zserio.runtime.CompareUtil.compare(optionalValue_, other.optionalValue_);
             if (result != 0)
                 return result;
         }
-        else if (isOptionalValueUsed() != other.isOptionalValueUsed())
+        else if (isOptionalValueUsed != otherIsOptionalValueUsed)
         {
-            return isOptionalValueUsed() ? 1 : -1;
+            return isOptionalValueUsed ? 1 : -1;
         }
 
         return 0;

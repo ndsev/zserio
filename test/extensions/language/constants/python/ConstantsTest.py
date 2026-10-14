@@ -159,6 +159,21 @@ class ConstantsTest(unittest.TestCase):
     def testOctalEscStringConstant(self):
         self.assertEqual("Test string with octal escape \031", self.api.OCTAL_ESC_STRING_CONSTANT)
 
+    def testOctalEscThreeDigitsStringConstant(self):
+        self.assertEqual("Test string with octal escape n", self.api.OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT)
+
+    def testOctalEscMaxStringConstant(self):
+        # Python uses the character U+00FF, C++ keeps the single byte 0xFF
+        self.assertEqual("\xff", self.api.OCTAL_ESC_MAX_STRING_CONSTANT)
+
+    def testOctalEscJoinedStringConstant(self):
+        self.assertEqual("\001" + "56", self.api.OCTAL_ESC_JOINED_STRING_CONSTANT)
+
+    def testOctalEscJoinedWithConstantStringConstant(self):
+        self.assertEqual(
+            'Test "Quated" String\007' + "7", self.api.OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT
+        )
+
     def testStringPascalCaseConstant(self):
         self.assertEqual("Different naming convention", self.api.STRING_PASCAL_CASE_CONSTANT)
 

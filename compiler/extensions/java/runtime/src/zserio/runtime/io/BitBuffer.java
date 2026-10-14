@@ -127,10 +127,7 @@ public final class BitBuffer implements Comparable<BitBuffer>
         if (result != 0)
             return result;
 
-        if (index == lastIndex1 && index == lastIndex2)
-            return Long.compare(bitSize, other.bitSize);
-
-        return (index == lastIndex1) ? -1 : 1;
+        return Long.compare(bitSize, other.bitSize);
     }
 
     /**
