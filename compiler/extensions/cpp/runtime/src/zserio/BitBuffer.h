@@ -363,12 +363,7 @@ bool BasicBitBuffer<ALLOC>::operator<(const BasicBitBuffer<ALLOC>& other) const
         return false;
     }
 
-    if ((first1 == last1) && (first2 == last2))
-    {
-        return m_bitSize < other.m_bitSize;
-    }
-
-    return first1 == last1;
+    return m_bitSize < other.m_bitSize;
 }
 
 template <typename ALLOC>
