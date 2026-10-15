@@ -67,6 +67,23 @@ public class OptionalEnumerationTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Container container1 = new Container();
+        final Container container2 = new Container();
+        assertFalse(container1.compareTo(container2) < 0);
+        assertFalse(container2.compareTo(container1) < 0);
+
+        container1.setBasicColor(BasicColor.WHITE);
+        assertFalse(container1.compareTo(container2) < 0);
+        assertTrue(container2.compareTo(container1) < 0);
+
+        container2.setBasicColor(BasicColor.BLACK);
+        assertFalse(container1.compareTo(container2) < 0);
+        assertTrue(container2.compareTo(container1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Container container1 = new Container();

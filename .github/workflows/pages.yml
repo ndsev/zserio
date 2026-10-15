@@ -3,12 +3,13 @@ name: Pages
 # Builds zserio.org by Jekyll and deploys it by actions/deploy-pages, the repository Pages source is GitHub Actions.
 # The site consists of the zserio sources of 'source_ref' with submodules, the Jekyll configuration
 # .github/pages/_config.yml, the archived runtime docs of all versions up to 2.19.0 and the runtime docs of all
-# published releases newer than the archive, see scripts/build_web_pages.sh.
+# published releases newer than the archive, see scripts/build_web_pages.sh. Of each minor line only the highest
+# patch version is published, the pages of the older patch versions redirect to it.
 #
 # The release workflow calls it with the runtime libs of the release just built and deploys on a pushed tag.
 # A manual run deploys only if 'deploy' is checked, e.g. the site of the latest release from its tag.
 # A push to the branch 'pages-dry-run/<source_ref>' builds the site of that ref and uploads the Pages artifact,
-# it deploys nothing.
+# it deploys nothing. It fails if the site plus one more version would exceed the 1 GB limit of GitHub Pages.
 
 run-name: "${{github.event_name == 'push' && format('Pages dry run of {0} - no deployment', github.ref_name) ||
     format('Pages from {0}', inputs.source_ref)}}"
@@ -177,6 +178,23 @@ jobs:
         source: ./site
         destination: ./_site
         verbose: false
+
+    - name: "Check the site size against the Pages limit"
+      env:
+        DRY_RUN: ${{github.event_name == 'push' && !inputs.deploy}}
+      run: |
+        # a dry run fails already if the next release would not fit, i.e. the site plus one more version
+        LIMIT=1000000000
+        SITE_SIZE="$(du -sb _site | cut -f1)"
+        VERSION_SIZE="$(du -sb _site/doc/runtime/latest | cut -f1)"
+        echo "Site size: $((SITE_SIZE / 1000000)) MB, size of one version: $((VERSION_SIZE / 1000000)) MB," \
+                "Pages limit: $((LIMIT / 1000000)) MB"
+        if [[ "${DRY_RUN}" == "true" ]] && (( SITE_SIZE + VERSION_SIZE > LIMIT )) ; then
+            echo "::error::The site of $((SITE_SIZE / 1000000)) MB plus one more version of" \
+                    "$((VERSION_SIZE / 1000000)) MB exceeds the GitHub Pages limit of 1 GB ($((LIMIT / 1000000)) MB)," \
+                    "see https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits"
+            exit 1
+        fi
 
     - name: "Upload the Pages artifact"
       uses: actions/upload-pages-artifact@v3

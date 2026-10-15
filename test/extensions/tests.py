@@ -195,7 +195,7 @@ def _runPylintOnAllSources(args, testDirs):
         "too-many-instance-attributes, too-many-arguments, too-many-public-methods, "
         "too-few-public-methods, too-many-locals, too-many-branches, too-many-statements, "
         "unneeded-not, superfluous-parens, import-self, invalid-unary-operand-type, "
-        "invalid-character-sub, c-extension-no-member"
+        "invalid-character-sub, c-extension-no-member, too-many-return-statements"
     )
     genPylintOptions = ["--persistent=n", "--score=n", "--ignore=api.py"]
     if args.pylint_rcfile:

@@ -59,10 +59,10 @@ class ExtendedPackedArrayTest(ExtendedMembers.TestCase):
     def testoperatorEquality(self):
         data = self.createExtended2()
         equalData = self.createExtended2()
-        # lessThanData = self.createExtended2()
-        # lessThanData.packed_array[-1].value = 12
+        lessThanData = self.createExtended2()
+        lessThanData.packed_array[-1].value = 12
 
-        comparisonOperatorsTest(data, equalData)
+        comparisonOperatorsTest(data, equalData, lessThanData)
 
     def testbitSizeOfExtended1(self):
         data = self.createExtended1()

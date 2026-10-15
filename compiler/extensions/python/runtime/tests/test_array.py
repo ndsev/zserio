@@ -396,6 +396,19 @@ class ArrayTest(unittest.TestCase):
             array2_values,
         )
 
+    def test_lt(self):
+        array_traits = BitFieldArrayTraits(5)
+        array1 = Array(array_traits, [1, 2])
+        self.assertFalse(array1 < Array(array_traits, [1, 2]))
+        self.assertTrue(array1 < Array(array_traits, [1, 3]))
+        self.assertFalse(Array(array_traits, [1, 3]) < array1)
+        self.assertTrue(array1 < Array(array_traits, [1, 2, 0]))
+        self.assertTrue(Array(array_traits, []) < array1)
+        self.assertFalse(array1 < Array(array_traits, [1, 2], is_auto=True))  # packing and size are ignored
+
+        with self.assertRaises(TypeError):
+            _ = array1 < [1, 3]
+
     def test_bitfield_packed_array(self):
         array_traits64 = BitFieldArrayTraits(64)
 
@@ -540,6 +553,7 @@ class ArrayTest(unittest.TestCase):
     ):
         self._test_eq(array_traits, array1_values, array2_values)
         self._test_hashcode(array_traits, array1_values, array2_values)
+        self._test_lt(array_traits, array1_values, array2_values)
         self._test_len(array_traits, array1_values)
         self._test_get_item(array_traits, array1_values)
         self._test_set_item(array_traits, array1_values)
@@ -590,6 +604,20 @@ class ArrayTest(unittest.TestCase):
         array3 = Array(array_traits, array1_values)
         self.assertNotEqual(hash(array1), hash(array2))
         self.assertEqual(hash(array1), hash(array3))
+
+    def _test_lt(self, array_traits, array1_values, array2_values):
+        array1 = Array(array_traits, array1_values)
+        array2 = Array(array_traits, array2_values)
+        array3 = Array(array_traits, array1_values)
+        auto_array1 = Array(array_traits, array1_values, is_auto=True)
+        empty_array = Array(array_traits, [])
+        self.assertNotEqual(array1 < array2, array2 < array1)
+        self.assertFalse(array1 < array3)
+        self.assertFalse(array3 < array1)
+        self.assertFalse(array1 < auto_array1)
+        self.assertFalse(auto_array1 < array1)
+        self.assertTrue(empty_array < array1)
+        self.assertFalse(array1 < empty_array)
 
     def _test_len(self, array_traits, array_values):
         array = Array(array_traits, array_values)

@@ -37,6 +37,16 @@ ${I}<#rt>
     </#list>
 </#macro>
 
+<#macro compound_compare_to_parameters compoundParametersData>
+    <#list compoundParametersData.list as parameter>
+        result = zserio.compare.compare(self.<@parameter_member_name parameter/>, <#rt>
+                <#lt>other.<@parameter_member_name parameter/>)
+        if result != 0:
+            return result
+
+    </#list>
+</#macro>
+
 <#macro compound_hashcode_parameters compoundParametersData>
     <#list compoundParametersData.list as parameter>
         result = zserio.hashcode.calc_hashcode_${parameter.typeInfo.hashCodeFunc.suffix}(<#rt>

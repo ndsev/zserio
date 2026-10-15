@@ -79,6 +79,31 @@ public class ExtendedFieldInTemplateTest
     }
 
     @Test
+    public void compareToSimple()
+    {
+        final ExtendedSimple extended1 = new ExtendedSimple();
+        final ExtendedSimple extended2 = new ExtendedSimple();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setValue(13);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertTrue(extended2.compareTo(extended1) < 0);
+
+        extended2.setValue(13);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended2.setExtendedValue(UINT32_MAX);
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setExtendedValue(UINT32_MAX);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+    }
+
+    @Test
     public void equalsCompound()
     {
         final ExtendedCompound extended1 = new ExtendedCompound();
@@ -94,6 +119,31 @@ public class ExtendedFieldInTemplateTest
         assertFalse(extended1 == extended2);
         extended1.setExtendedValue(new Compound(UINT32_MAX));
         assertEquals(extended1, extended2);
+    }
+
+    @Test
+    public void compareToCompound()
+    {
+        final ExtendedCompound extended1 = new ExtendedCompound();
+        final ExtendedCompound extended2 = new ExtendedCompound();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setValue(13);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertTrue(extended2.compareTo(extended1) < 0);
+
+        extended2.setValue(13);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended2.setExtendedValue(new Compound(UINT32_MAX));
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setExtendedValue(new Compound(UINT32_MAX));
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
     }
 
     @Test

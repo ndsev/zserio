@@ -7,6 +7,7 @@
             <Class name="choice_types.multiple_param_choice.TestChoice"/>
         </Or>
         <Or>
+            <Method name="compareTo"/>
             <Method name="hashCode"/>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>

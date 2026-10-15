@@ -62,6 +62,33 @@ public class ExtendedOptionalParameterizedFieldTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Extended extended1 = new Extended();
+        final Extended extended2 = new Extended();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setValue((short)ARRAY.length);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertTrue(extended2.compareTo(extended1) < 0);
+
+        extended2.setValue((short)ARRAY.length);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        final Parameterized extendedValue = new Parameterized((short)ARRAY.length);
+        extendedValue.setArray(ARRAY);
+        extended2.setExtendedValue(extendedValue);
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setExtendedValue(extendedValue);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Extended extended1 = new Extended();

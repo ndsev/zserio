@@ -119,6 +119,29 @@ public class FullBitmaskParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        FullBitmaskParamChoice fullBitmaskParamChoice1 = new FullBitmaskParamChoice(Selector.Values.BLACK);
+        FullBitmaskParamChoice fullBitmaskParamChoice2 = new FullBitmaskParamChoice(Selector.Values.BLACK);
+        assertFalse(fullBitmaskParamChoice1.compareTo(fullBitmaskParamChoice2) < 0);
+        assertFalse(fullBitmaskParamChoice2.compareTo(fullBitmaskParamChoice1) < 0);
+
+        final byte value = 99;
+        fullBitmaskParamChoice1.setBlack(value);
+        assertFalse(fullBitmaskParamChoice1.compareTo(fullBitmaskParamChoice2) < 0);
+        assertTrue(fullBitmaskParamChoice2.compareTo(fullBitmaskParamChoice1) < 0);
+
+        fullBitmaskParamChoice2.setBlack(value);
+        assertFalse(fullBitmaskParamChoice1.compareTo(fullBitmaskParamChoice2) < 0);
+        assertFalse(fullBitmaskParamChoice2.compareTo(fullBitmaskParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        fullBitmaskParamChoice2.setBlack(diffValue);
+        assertTrue(fullBitmaskParamChoice1.compareTo(fullBitmaskParamChoice2) < 0);
+        assertFalse(fullBitmaskParamChoice2.compareTo(fullBitmaskParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         FullBitmaskParamChoice fullBitmaskParamChoice1 = new FullBitmaskParamChoice(Selector.Values.BLACK);

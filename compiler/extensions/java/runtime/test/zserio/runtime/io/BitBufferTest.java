@@ -66,6 +66,50 @@ public class BitBufferTest
     }
 
     @Test
+    public void compareToMethod()
+    {
+        final BitBuffer bitBufferEmpty1 = new BitBuffer(new byte[] {});
+        final BitBuffer bitBufferEmpty2 = new BitBuffer(new byte[] {});
+        assertEquals(0, bitBufferEmpty1.compareTo(bitBufferEmpty2));
+
+        final BitBuffer bitBufferByte1 = new BitBuffer(new byte[] {(byte)0xAB}, 8);
+        final BitBuffer bitBufferByte2 = new BitBuffer(new byte[] {(byte)0xAC}, 8);
+        assertTrue(bitBufferByte1.compareTo(bitBufferByte2) < 0);
+        assertTrue(bitBufferByte2.compareTo(bitBufferByte1) > 0);
+
+        final BitBuffer bitBuffer1 = new BitBuffer(new byte[] {(byte)0xAB, (byte)0xE0}, 11);
+        assertTrue(bitBufferEmpty1.compareTo(bitBuffer1) < 0);
+        assertTrue(bitBufferByte1.compareTo(bitBuffer1) < 0);
+        assertTrue(bitBuffer1.compareTo(bitBufferEmpty1) > 0);
+        assertTrue(bitBuffer1.compareTo(bitBufferByte1) > 0);
+
+        final BitBuffer bitBuffer1Copy = new BitBuffer(new byte[] {(byte)0xAB, (byte)0xE0}, 11);
+        assertEquals(0, bitBuffer1.compareTo(bitBuffer1Copy));
+
+        final BitBuffer bitBuffer2 = new BitBuffer(new byte[] {(byte)0xAB, (byte)0xF0}, 11);
+        assertEquals(0, bitBuffer1.compareTo(bitBuffer2));
+        assertEquals(0, bitBuffer2.compareTo(bitBuffer1));
+
+        final BitBuffer bitBuffer3 = new BitBuffer(new byte[] {(byte)0xAB, (byte)0x00}, 11);
+        assertTrue(bitBuffer3.compareTo(bitBuffer1) < 0);
+        assertTrue(bitBuffer1.compareTo(bitBuffer3) > 0);
+
+        final BitBuffer bitBuffer4 = new BitBuffer(new byte[] {(byte)0x00, (byte)0x00}, 11);
+        assertTrue(bitBuffer4.compareTo(bitBuffer1) < 0);
+        assertTrue(bitBuffer1.compareTo(bitBuffer4) > 0);
+
+        final BitBuffer bitBuffer5 = new BitBuffer(new byte[] {(byte)0xAB, (byte)0xE0, (byte)0x00}, 20);
+        assertTrue(bitBuffer1.compareTo(bitBuffer5) < 0);
+        assertTrue(bitBuffer5.compareTo(bitBuffer1) > 0);
+
+        final BitBuffer bitBuffer6 = new BitBuffer(new byte[] {(byte)0xA0}, 3);
+        final BitBuffer bitBuffer7 = new BitBuffer(new byte[] {(byte)0xA0}, 4);
+        assertFalse(bitBuffer6.equals(bitBuffer7));
+        assertTrue(bitBuffer6.compareTo(bitBuffer7) < 0);
+        assertTrue(bitBuffer7.compareTo(bitBuffer6) > 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final long bitSize = 11;

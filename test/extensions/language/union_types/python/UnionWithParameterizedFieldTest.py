@@ -22,6 +22,32 @@ class UnionWithParameterizedFieldTest(UnionTypes.TestCase):
         readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer)
         self.assertEqual(10, readTestUnion.array_holder.size)
 
+    def testLt(self):
+        testUnion1 = self.api.TestUnion()
+        testUnion2 = self.api.TestUnion()
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion1.field = 33
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertTrue(testUnion2 < testUnion1)
+
+        testUnion2.field = 33
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion2.field = 32
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertTrue(testUnion2 < testUnion1)
+
+        testUnion2.array_holder = self.api.ArrayHolder(10, [0] * 10)
+        self.assertTrue(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion1.array_holder = self.api.ArrayHolder(10, [0] * 10)
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
     def testHash(self):
         testUnion1 = self.api.TestUnion()
         testUnion2 = self.api.TestUnion()

@@ -37,6 +37,7 @@ void pybindBitBuffer(py::module_ module)
             }, py::keep_alive<0, 1>()))
             .def_property_readonly("bitsize", &zserio::BitBuffer::getBitSize)
             .def(py::self == py::self)
+            .def(py::self < py::self)
             .def("__hash__", &zserio::BitBuffer::hashCode)
             ;
 }

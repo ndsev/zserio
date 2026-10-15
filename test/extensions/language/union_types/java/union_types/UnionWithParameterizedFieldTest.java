@@ -40,6 +40,24 @@ public class UnionWithParameterizedFieldTest
     }
 
     @Test
+    public void compareTo()
+    {
+        TestUnion testUnion1 = new TestUnion();
+        TestUnion testUnion2 = new TestUnion();
+        assertEquals(0, testUnion1.compareTo(testUnion2));
+        testUnion1.setField(33);
+        assertNotEquals(0, testUnion1.compareTo(testUnion2));
+        testUnion2.setField(33);
+        assertEquals(0, testUnion1.compareTo(testUnion2));
+        testUnion2.setField(32);
+        assertNotEquals(0, testUnion1.compareTo(testUnion2));
+        testUnion2.setArrayHolder(new ArrayHolder((short)10, new long[10]));
+        assertNotEquals(0, testUnion1.compareTo(testUnion2));
+        testUnion1.setArrayHolder(new ArrayHolder((short)10, new long[10]));
+        assertEquals(0, testUnion1.compareTo(testUnion2));
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         TestUnion testUnion1 = new TestUnion();

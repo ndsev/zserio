@@ -118,6 +118,29 @@ public class BitmaskParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        BitmaskParamChoice bitmaskParamChoice1 = new BitmaskParamChoice(Selector.Values.BLACK);
+        BitmaskParamChoice bitmaskParamChoice2 = new BitmaskParamChoice(Selector.Values.BLACK);
+        assertFalse(bitmaskParamChoice1.compareTo(bitmaskParamChoice2) < 0);
+        assertFalse(bitmaskParamChoice2.compareTo(bitmaskParamChoice1) < 0);
+
+        final byte value = 99;
+        bitmaskParamChoice1.setBlack(value);
+        assertFalse(bitmaskParamChoice1.compareTo(bitmaskParamChoice2) < 0);
+        assertTrue(bitmaskParamChoice2.compareTo(bitmaskParamChoice1) < 0);
+
+        bitmaskParamChoice2.setBlack(value);
+        assertFalse(bitmaskParamChoice1.compareTo(bitmaskParamChoice2) < 0);
+        assertFalse(bitmaskParamChoice2.compareTo(bitmaskParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        bitmaskParamChoice2.setBlack(diffValue);
+        assertTrue(bitmaskParamChoice1.compareTo(bitmaskParamChoice2) < 0);
+        assertFalse(bitmaskParamChoice2.compareTo(bitmaskParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         BitmaskParamChoice bitmaskParamChoice1 = new BitmaskParamChoice(Selector.Values.BLACK);
