@@ -135,7 +135,9 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     public String getStringLiteral(Expression expr)
     {
         // string literals in Java does not support hexadecimal escapes
-        return StringEscapeConverter.convertHexToUnicodeToEscapes(expr.getText());
+        // and octal escapes in Java have at most three digits without '0' prefix
+        return StringEscapeConverter.convertOctalEscapes(
+                StringEscapeConverter.convertHexToUnicodeToEscapes(expr.getText()));
     }
 
     @Override

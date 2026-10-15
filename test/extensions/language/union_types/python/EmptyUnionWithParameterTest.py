@@ -21,6 +21,16 @@ class EmptyUnionWithParameterTest(UnionTypes.TestCase):
         self.assertTrue(emptyUnionWithParameter1 == emptyUnionWithParameter2)
         self.assertFalse(emptyUnionWithParameter1 == emptyUnionWithParameter3)
 
+    def testLt(self):
+        emptyUnionWithParameter1 = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
+        emptyUnionWithParameter2 = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
+        self.assertFalse(emptyUnionWithParameter1 < emptyUnionWithParameter2)
+        self.assertFalse(emptyUnionWithParameter2 < emptyUnionWithParameter1)
+
+        emptyUnionWithParameter3 = self.api.EmptyUnionWithParameter(self.PARAM_VALUE2)
+        self.assertTrue(emptyUnionWithParameter3 < emptyUnionWithParameter1)
+        self.assertFalse(emptyUnionWithParameter1 < emptyUnionWithParameter3)
+
     def testHash(self):
         emptyUnionWithParameter1 = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
         emptyUnionWithParameter2 = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)

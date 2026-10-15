@@ -12,6 +12,7 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import choice_types.bool_choice_with_default.BoolChoiceWithDefault;
+import test_utils.ComparisonUtil;
 import test_utils.CompoundUtil;
 
 public class BoolChoiceWithDefaultTest
@@ -40,6 +41,18 @@ public class BoolChoiceWithDefaultTest
 
         data1.setField((short)99);
         assertFalse(data1.equals(data2));
+    }
+
+    @Test
+    public void compareTo()
+    {
+        BoolChoiceWithDefault data = new BoolChoiceWithDefault(true);
+        data.setField((short)234);
+        BoolChoiceWithDefault equalData = new BoolChoiceWithDefault(true);
+        equalData.setField((short)234);
+        BoolChoiceWithDefault lessThanData = new BoolChoiceWithDefault(true);
+        lessThanData.setField((short)233);
+        ComparisonUtil.comparisonTest(data, equalData, lessThanData);
     }
 
     @Test

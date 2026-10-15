@@ -482,6 +482,7 @@ public class ArrayTest
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
+        assertTrue(normalArray1.compareTo(new Array(rawArray2, arrayTraits, ArrayType.NORMAL)) < 0);
         final ArrayBitmask[] expectedRawArray = rawArray1.getRawArray();
         assertArrayEquals(expectedRawArray, normalArray1.getRawArray());
         assertEquals(expectedRawArray.length, normalArray1.size());
@@ -502,6 +503,7 @@ public class ArrayTest
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
+        assertTrue(normalArray1.compareTo(new Array(rawArray2, arrayTraits, ArrayType.NORMAL)) < 0);
         final ArrayEnum[] expectedRawArray = rawArray1.getRawArray();
         assertArrayEquals(expectedRawArray, normalArray1.getRawArray());
         assertEquals(expectedRawArray.length, normalArray1.size());
@@ -522,6 +524,7 @@ public class ArrayTest
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
+        assertTrue(normalArray1.compareTo(new Array(rawArray2, arrayTraits, ArrayType.NORMAL)) < 0);
         final ArrayObject[] expectedRawArray = rawArray1.getRawArray();
         assertArrayEquals(expectedRawArray, normalArray1.getRawArray());
         assertEquals(expectedRawArray.length, normalArray1.size());
@@ -925,6 +928,7 @@ public class ArrayTest
         testArraySize(rawArray1, rawArray2, emptyRawArray, arrayTraits);
         testArrayEquals(rawArray1, rawArray2, emptyRawArray, arrayTraits);
         testArrayHashCode(rawArray1, rawArray2, emptyRawArray, arrayTraits);
+        testArrayCompareTo(rawArray1, rawArray2, emptyRawArray, arrayTraits);
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, emptyRawArray, arrayTraits);
     }
 
@@ -990,6 +994,28 @@ public class ArrayTest
         assertNotEquals(normalArray1.hashCode(), normalArray2.hashCode());
         assertNotEquals(normalArray1.hashCode(), autoArray2.hashCode());
         assertNotEquals(normalArray1.hashCode(), autoEmptyArray.hashCode());
+    }
+
+    private static void testArrayCompareTo(
+            RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray, ArrayTraits arrayTraits)
+    {
+        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
+        final Array autoArray1 = new Array(rawArray1, arrayTraits, ArrayType.AUTO);
+        final Array implicitArray1 = new Array(rawArray1, arrayTraits, ArrayType.IMPLICIT);
+        final Array alignedNormalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL,
+                new ArrayTestOffsetChecker(), new ArrayTestOffsetInitializer());
+        final Array normalArray2 = new Array(rawArray2, arrayTraits, ArrayType.NORMAL);
+        final Array autoEmptyArray = new Array(emptyRawArray, arrayTraits, ArrayType.AUTO);
+
+        assertEquals(0, normalArray1.compareTo(autoArray1));
+        assertEquals(0, normalArray1.compareTo(implicitArray1));
+        assertEquals(0, normalArray1.compareTo(alignedNormalArray1));
+        assertNotEquals(0, normalArray1.compareTo(normalArray2));
+        assertEquals(Integer.signum(normalArray1.compareTo(normalArray2)),
+                -Integer.signum(normalArray2.compareTo(normalArray1)));
+        assertEquals(normalArray1.equals(autoEmptyArray), normalArray1.compareTo(autoEmptyArray) == 0);
+        assertEquals(Integer.signum(normalArray1.compareTo(autoEmptyArray)),
+                -Integer.signum(autoEmptyArray.compareTo(normalArray1)));
     }
 
     private static void testArray(RawArray rawArray1, int array1BitSizeOf, int array1AlignedBitSizeOf,

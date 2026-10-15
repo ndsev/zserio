@@ -14,7 +14,8 @@
 </#if>
 public class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
-        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
+        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf, <#rt>
+        <#lt>java.lang.Comparable<${name}>
 {
 <#if isPackable && usedInPackedArray>
     <@compound_declare_packing_context fieldList, true/>
@@ -290,6 +291,37 @@ public class ${name} implements <#rt>
         return false;
 <#else>
         return obj instanceof ${name};
+</#if>
+    }
+
+    @Override
+    public int compareTo(${name} other)
+    {
+        int result;
+
+        <@compound_parameter_compare_to compoundParametersData/>
+        result = zserio.runtime.CompareUtil.compare(choiceTag, other.choiceTag);
+        if (result != 0)
+            return result;
+
+<#if fieldList?has_content>
+        switch (choiceTag)
+        {
+    <#list fieldList as field>
+        case <@choice_tag_name field/>:
+        <#if field.array??>
+            return zserio.runtime.CompareUtil.compare((${field.array.wrapperJavaTypeName})objectChoice,
+                    (${field.array.wrapperJavaTypeName})other.objectChoice);
+        <#else>
+            return zserio.runtime.CompareUtil.compare((${field.nullableTypeInfo.typeFullName})objectChoice,
+                    (${field.nullableTypeInfo.typeFullName})other.objectChoice);
+        </#if>
+    </#list>
+        default:
+            return 0; // UNDEFINED_CHOICE
+        }
+<#else>
+        return 0;
 </#if>
     }
 

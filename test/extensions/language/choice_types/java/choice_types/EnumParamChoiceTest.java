@@ -118,6 +118,29 @@ public class EnumParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        EnumParamChoice enumParamChoice1 = new EnumParamChoice(Selector.BLACK);
+        EnumParamChoice enumParamChoice2 = new EnumParamChoice(Selector.BLACK);
+        assertFalse(enumParamChoice1.compareTo(enumParamChoice2) < 0);
+        assertFalse(enumParamChoice2.compareTo(enumParamChoice1) < 0);
+
+        final byte value = 99;
+        enumParamChoice1.setBlack(value);
+        assertFalse(enumParamChoice1.compareTo(enumParamChoice2) < 0);
+        assertTrue(enumParamChoice2.compareTo(enumParamChoice1) < 0);
+
+        enumParamChoice2.setBlack(value);
+        assertFalse(enumParamChoice1.compareTo(enumParamChoice2) < 0);
+        assertFalse(enumParamChoice2.compareTo(enumParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        enumParamChoice2.setBlack(diffValue);
+        assertTrue(enumParamChoice1.compareTo(enumParamChoice2) < 0);
+        assertFalse(enumParamChoice2.compareTo(enumParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         EnumParamChoice enumParamChoice1 = new EnumParamChoice(Selector.BLACK);

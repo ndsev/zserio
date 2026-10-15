@@ -16,6 +16,18 @@ class EnumerationParamTest(ParameterizedTypes.TestCase):
         self.assertFalse(enumerationParam1 == enumerationParam3)
         self.assertFalse(enumerationParam2 == enumerationParam3)
 
+    def testLt(self):
+        enumerationParam1 = self.api.EnumerationParam(self.api.BasicColor.WHITE, 0)
+        enumerationParam2 = self.api.EnumerationParam(self.api.BasicColor.WHITE, 0)
+        self.assertFalse(enumerationParam1 < enumerationParam2)
+        self.assertFalse(enumerationParam2 < enumerationParam1)
+
+        enumerationParam2.field = 1
+        self.assertTrue(enumerationParam1 < enumerationParam2)
+
+        enumerationParam3 = self.api.EnumerationParam(self.api.BasicColor.BLACK)
+        self.assertFalse(enumerationParam1 < enumerationParam3)
+
     def testHash(self):
         enumerationParam1 = self.api.EnumerationParam(self.api.BasicColor.WHITE, 0)
         enumerationParam2 = self.api.EnumerationParam(self.api.BasicColor.WHITE, 0)

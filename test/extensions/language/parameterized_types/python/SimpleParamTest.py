@@ -30,6 +30,16 @@ class SimpleParamTest(ParameterizedTypes.TestCase):
         item3 = self.api.Item(self.HIGHER_VERSION)
         self.assertFalse(item2 == item3)
 
+    def testLt(self):
+        item1 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item2 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        self.assertFalse(item1 < item2)
+        self.assertFalse(item2 < item1)
+
+        item3 = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        self.assertTrue(item2 < item3)
+        self.assertFalse(item3 < item2)
+
     def testHash(self):
         item1 = self.api.Item(self.LOWER_VERSION)
         item2 = self.api.Item(self.LOWER_VERSION)

@@ -91,6 +91,30 @@ public class UInt64BitmaskTest
     }
 
     @Test
+    public void compareTo()
+    {
+        assertTrue(Permission.Values.nonePermission.compareTo(Permission.Values.READ_PERMISSION) < 0);
+        assertFalse(Permission.Values.READ_PERMISSION.compareTo(Permission.Values.nonePermission) < 0);
+
+        assertTrue(Permission.Values.READ_PERMISSION.compareTo(Permission.Values.write_permission) < 0);
+        assertFalse(Permission.Values.write_permission.compareTo(Permission.Values.READ_PERMISSION) < 0);
+
+        assertFalse(Permission.Values.nonePermission.compareTo(Permission.Values.nonePermission) < 0);
+        assertFalse(Permission.Values.READ_PERMISSION.compareTo(Permission.Values.READ_PERMISSION) < 0);
+        assertFalse(Permission.Values.write_permission.compareTo(Permission.Values.write_permission) < 0);
+
+        assertTrue(Permission.Values.READ_PERMISSION.compareTo(
+                           Permission.Values.READ_PERMISSION.or(Permission.Values.write_permission)) < 0);
+        assertFalse(Permission.Values.READ_PERMISSION.or(Permission.Values.write_permission)
+                            .compareTo(Permission.Values.READ_PERMISSION) < 0);
+
+        final Permission read = new Permission(Permission.Values.READ_PERMISSION.getValue());
+        final Permission write = new Permission(Permission.Values.write_permission.getValue());
+        assertTrue(read.compareTo(write) < 0);
+        assertFalse(write.compareTo(read) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Permission read = Permission.Values.READ_PERMISSION;

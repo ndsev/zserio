@@ -64,6 +64,39 @@ public class ExtendedChoiceFieldTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Extended extended1 = new Extended();
+        final Extended extended2 = new Extended();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setNumElements(1);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertTrue(extended2.compareTo(extended1) < 0);
+
+        extended2.setNumElements(1);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        final Choice extendedValue2 = new Choice(1);
+        extendedValue2.setValue(42);
+        extended2.setExtendedValue(extendedValue2);
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+        // use a separate instance, Java setters do not copy the value
+        final Choice extendedValue1 = new Choice(1);
+        extendedValue1.setValue(42);
+        extended1.setExtendedValue(extendedValue1);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.getExtendedValue().setValue(41);
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Extended extended1 = new Extended();

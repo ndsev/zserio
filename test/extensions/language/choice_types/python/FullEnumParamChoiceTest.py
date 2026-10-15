@@ -40,6 +40,26 @@ class FullEnumParamChoiceTest(ChoiceTypes.TestCase):
         fullEnumParamChoice2.black = diffValue
         self.assertFalse(fullEnumParamChoice1 == fullEnumParamChoice2)
 
+    def testLt(self):
+        fullEnumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        fullEnumParamChoice2 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        self.assertFalse(fullEnumParamChoice1 < fullEnumParamChoice2)
+        self.assertFalse(fullEnumParamChoice2 < fullEnumParamChoice1)
+
+        value = 99
+        fullEnumParamChoice1.black = value
+        self.assertFalse(fullEnumParamChoice1 < fullEnumParamChoice2)
+        self.assertTrue(fullEnumParamChoice2 < fullEnumParamChoice1)
+
+        fullEnumParamChoice2.black = value
+        self.assertFalse(fullEnumParamChoice1 < fullEnumParamChoice2)
+        self.assertFalse(fullEnumParamChoice2 < fullEnumParamChoice1)
+
+        diffValue = value + 1
+        fullEnumParamChoice2.black = diffValue
+        self.assertTrue(fullEnumParamChoice1 < fullEnumParamChoice2)
+        self.assertFalse(fullEnumParamChoice2 < fullEnumParamChoice1)
+
     def testHash(self):
         fullEnumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
         fullEnumParamChoice2 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)

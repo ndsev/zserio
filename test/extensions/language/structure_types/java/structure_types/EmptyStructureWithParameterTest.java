@@ -74,6 +74,20 @@ public class EmptyStructureWithParameterTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final EmptyStructureWithParameter emptyStructureWithParameter1 =
+                new EmptyStructureWithParameter((short)1);
+        EmptyStructureWithParameter emptyStructureWithParameter2 = new EmptyStructureWithParameter((short)1);
+        assertFalse(emptyStructureWithParameter1.compareTo(emptyStructureWithParameter2) < 0);
+        assertFalse(emptyStructureWithParameter2.compareTo(emptyStructureWithParameter1) < 0);
+
+        emptyStructureWithParameter2 = new EmptyStructureWithParameter((short)2);
+        assertTrue(emptyStructureWithParameter1.compareTo(emptyStructureWithParameter2) < 0);
+        assertFalse(emptyStructureWithParameter2.compareTo(emptyStructureWithParameter1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final EmptyStructureWithParameter emptyStructureWithParameter1 =
