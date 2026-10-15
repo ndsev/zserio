@@ -351,6 +351,7 @@ public class ${name} implements <#rt>
 <@compound_functions compoundFunctionsData/>
 <#macro structure_compare_field field>
     <#if field.optional??>
+        <#-- if optional is not auto and is used the that should be is used as well because all previous paramaters and fields were the same. -->
 ((!${field.optional.isUsedIndicatorName}()) ? !that.${field.optional.isUsedIndicatorName}() : <@compound_compare_field field/>)<#rt>
     <#else>
 <@compound_compare_field field/><#rt>
@@ -372,12 +373,8 @@ public class ${name} implements <#rt>
         <#if field.isExtended>
                     ((!${field.isPresentIndicatorName}()) ? !that.${field.isPresentIndicatorName}() :
                         (that.${field.isPresentIndicatorName}() && <@structure_compare_field field/>))<#if field?has_next> &&<#else>;</#if>
-        <#elseif field.optional??>
-            <#-- if optional is not auto and is used the that should be is used as well because all previous paramaters and fields were the same. -->
-                    ((!${field.optional.isUsedIndicatorName}()) ? !that.${field.optional.isUsedIndicatorName}() :
-                        <@compound_compare_field field/>)<#if field?has_next> &&<#else>;</#if>
         <#else>
-                    <@compound_compare_field field/><#if field?has_next> &&<#else>;</#if>
+                    <@structure_compare_field field/><#if field?has_next> &&<#else>;</#if>
         </#if>
     </#list>
         }
