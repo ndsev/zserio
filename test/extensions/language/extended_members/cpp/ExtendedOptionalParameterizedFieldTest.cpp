@@ -154,6 +154,45 @@ TEST_F(ExtendedOptionalParameterizedFieldTest, hashCode)
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 }
 
+TEST_F(ExtendedOptionalParameterizedFieldTest, operatorEqualityAndHashCodeReadOriginal)
+{
+    Original original(static_cast<uint16_t>(ARRAY.size()));
+    auto originalBitBuffer = zserio::serialize(original);
+    auto readExtended = zserio::deserialize<Extended>(originalBitBuffer);
+    ASSERT_FALSE(readExtended.isExtendedValuePresent());
+
+    // same value, extended field present but optional unset
+    Extended extendedWithoutOptional(static_cast<uint16_t>(ARRAY.size()), zserio::NullOpt);
+    ASSERT_FALSE(readExtended == extendedWithoutOptional);
+    ASSERT_FALSE(extendedWithoutOptional == readExtended);
+    ASSERT_NE(zserio::serializeToBytes(readExtended), zserio::serializeToBytes(extendedWithoutOptional));
+
+    // same value, extended field present and optional set
+    Extended extendedWithOptional(static_cast<uint16_t>(ARRAY.size()), Parameterized(ARRAY));
+    extendedWithOptional.initializeChildren();
+    ASSERT_FALSE(readExtended == extendedWithOptional);
+    ASSERT_FALSE(extendedWithOptional == readExtended);
+    ASSERT_NE(zserio::serializeToBytes(readExtended), zserio::serializeToBytes(extendedWithOptional));
+
+    // only present extended fields are taken into account
+    ASSERT_EQ(original.hashCode(), readExtended.hashCode());
+    // an unset optional adds nothing to the hash code
+    ASSERT_EQ(readExtended.hashCode(), extendedWithoutOptional.hashCode());
+    ASSERT_NE(readExtended.hashCode(), extendedWithOptional.hashCode());
+
+    // two objects read from the same data are equal
+    auto otherReadExtended = zserio::deserialize<Extended>(originalBitBuffer);
+    ASSERT_EQ(readExtended, otherReadExtended);
+    ASSERT_EQ(readExtended.hashCode(), otherReadExtended.hashCode());
+    ASSERT_EQ(zserio::serializeToBytes(readExtended), zserio::serializeToBytes(otherReadExtended));
+
+    // resetter makes the value present
+    readExtended.resetExtendedValue();
+    ASSERT_EQ(readExtended, extendedWithoutOptional);
+    ASSERT_EQ(readExtended.hashCode(), extendedWithoutOptional.hashCode());
+    ASSERT_EQ(zserio::serializeToBytes(readExtended), zserio::serializeToBytes(extendedWithoutOptional));
+}
+
 TEST_F(ExtendedOptionalParameterizedFieldTest, bitSizeOf)
 {
     Extended extended;

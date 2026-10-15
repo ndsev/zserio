@@ -123,6 +123,62 @@ public class MultipleExtendedFieldsTest
     }
 
     @Test
+    public void equalsAndHashCodeReadOriginal()
+    {
+        final Original original = new Original(42);
+        final BitBuffer originalBitBuffer = SerializeUtil.serialize(original);
+        final Extended2 readExtended2 = SerializeUtil.deserialize(Extended2.class, originalBitBuffer);
+        assertFalse(readExtended2.isExtendedValue1Present());
+        assertFalse(readExtended2.isExtendedValue2Present());
+
+        // same values, but extended fields present
+        final Extended2 extended2 = new Extended2(42, (byte)0, DEFAULT_EXTENDED_VALUE2);
+        assertNotEquals(readExtended2, extended2);
+        assertNotEquals(extended2, readExtended2);
+        assertFalse(Arrays.equals(
+                SerializeUtil.serializeToBytes(readExtended2), SerializeUtil.serializeToBytes(extended2)));
+
+        // only present extended fields are taken into account
+        assertEquals(original.hashCode(), readExtended2.hashCode());
+        assertNotEquals(readExtended2.hashCode(), extended2.hashCode());
+
+        // any setter makes all values present
+        readExtended2.setExtendedValue1((byte)0);
+        assertEquals(readExtended2, extended2);
+        assertEquals(readExtended2.hashCode(), extended2.hashCode());
+        assertArrayEquals(
+                SerializeUtil.serializeToBytes(readExtended2), SerializeUtil.serializeToBytes(extended2));
+    }
+
+    @Test
+    public void equalsAndHashCodeReadExtended1()
+    {
+        final Extended1 extended1 = new Extended1(42, (byte)2);
+        final BitBuffer extended1BitBuffer = SerializeUtil.serialize(extended1);
+        final Extended2 readExtended2 = SerializeUtil.deserialize(Extended2.class, extended1BitBuffer);
+        assertTrue(readExtended2.isExtendedValue1Present());
+        assertFalse(readExtended2.isExtendedValue2Present());
+
+        // same values, but all extended fields present
+        final Extended2 extended2 = new Extended2(42, (byte)2, DEFAULT_EXTENDED_VALUE2);
+        assertNotEquals(readExtended2, extended2);
+        assertNotEquals(extended2, readExtended2);
+        assertFalse(Arrays.equals(
+                SerializeUtil.serializeToBytes(readExtended2), SerializeUtil.serializeToBytes(extended2)));
+
+        // only present extended fields are taken into account
+        assertEquals(extended1.hashCode(), readExtended2.hashCode());
+        assertNotEquals(readExtended2.hashCode(), extended2.hashCode());
+
+        // two objects read from the same data are equal
+        final Extended2 otherReadExtended2 = SerializeUtil.deserialize(Extended2.class, extended1BitBuffer);
+        assertEquals(readExtended2, otherReadExtended2);
+        assertEquals(readExtended2.hashCode(), otherReadExtended2.hashCode());
+        assertArrayEquals(SerializeUtil.serializeToBytes(readExtended2),
+                SerializeUtil.serializeToBytes(otherReadExtended2));
+    }
+
+    @Test
     public void bitSizeOf()
     {
         final Extended2 extended2 = new Extended2();
