@@ -80,6 +80,48 @@ class ExtendedOptionalParameterizedFieldTest(ExtendedMembers.TestCase):
         extended1.extended_value = extendedValue
         self.assertEqual(hash(extended1), hash(extended2))
 
+    def testEqAndHashReadOriginal(self):
+        original = self.api.Original(len(ARRAY))
+        originalBitBuffer = zserio.serialize(original)
+        readExtended = zserio.deserialize(self.api.Extended, originalBitBuffer)
+        self.assertFalse(readExtended.is_extended_value_present())
+
+        # same value, extended field present but optional unset
+        extendedWithoutOptional = self.api.Extended(len(ARRAY), None)
+        self.assertNotEqual(readExtended, extendedWithoutOptional)
+        self.assertNotEqual(extendedWithoutOptional, readExtended)
+        self.assertNotEqual(
+            zserio.serialize_to_bytes(readExtended), zserio.serialize_to_bytes(extendedWithoutOptional)
+        )
+
+        # same value, extended field present and optional set
+        extendedWithOptional = self.api.Extended(len(ARRAY), self.api.Parameterized(len(ARRAY), ARRAY))
+        self.assertNotEqual(readExtended, extendedWithOptional)
+        self.assertNotEqual(extendedWithOptional, readExtended)
+        self.assertNotEqual(
+            zserio.serialize_to_bytes(readExtended), zserio.serialize_to_bytes(extendedWithOptional)
+        )
+
+        # only present extended fields are taken into account
+        self.assertEqual(hash(original), hash(readExtended))
+        # an unset optional adds nothing to the hash code
+        self.assertEqual(hash(readExtended), hash(extendedWithoutOptional))
+        self.assertNotEqual(hash(readExtended), hash(extendedWithOptional))
+
+        # two objects read from the same data are equal
+        otherReadExtended = zserio.deserialize(self.api.Extended, originalBitBuffer)
+        self.assertEqual(readExtended, otherReadExtended)
+        self.assertEqual(hash(readExtended), hash(otherReadExtended))
+        self.assertEqual(zserio.serialize_to_bytes(readExtended), zserio.serialize_to_bytes(otherReadExtended))
+
+        # resetter makes the value present
+        readExtended.reset_extended_value()
+        self.assertEqual(readExtended, extendedWithoutOptional)
+        self.assertEqual(hash(readExtended), hash(extendedWithoutOptional))
+        self.assertEqual(
+            zserio.serialize_to_bytes(readExtended), zserio.serialize_to_bytes(extendedWithoutOptional)
+        )
+
     def testBitSizeOf(self):
         extended = self.api.Extended()
         self.assertEqual(EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL, extended.bitsizeof())

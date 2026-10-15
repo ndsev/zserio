@@ -109,6 +109,50 @@ public class ExtendedOptionalParameterizedFieldTest
     }
 
     @Test
+    public void equalsAndHashCodeReadOriginal()
+    {
+        final Original original = new Original((short)ARRAY.length);
+        final BitBuffer originalBitBuffer = SerializeUtil.serialize(original);
+        final Extended readExtended = SerializeUtil.deserialize(Extended.class, originalBitBuffer);
+        assertFalse(readExtended.isExtendedValuePresent());
+
+        // same value, extended field present but optional unset
+        final Extended extendedWithoutOptional = new Extended((short)ARRAY.length, null);
+        assertNotEquals(readExtended, extendedWithoutOptional);
+        assertNotEquals(extendedWithoutOptional, readExtended);
+        assertFalse(Arrays.equals(SerializeUtil.serializeToBytes(readExtended),
+                SerializeUtil.serializeToBytes(extendedWithoutOptional)));
+
+        // same value, extended field present and optional set
+        final Extended extendedWithOptional =
+                new Extended((short)ARRAY.length, new Parameterized((short)ARRAY.length, ARRAY));
+        assertNotEquals(readExtended, extendedWithOptional);
+        assertNotEquals(extendedWithOptional, readExtended);
+        assertFalse(Arrays.equals(SerializeUtil.serializeToBytes(readExtended),
+                SerializeUtil.serializeToBytes(extendedWithOptional)));
+
+        // only present extended fields are taken into account
+        assertEquals(original.hashCode(), readExtended.hashCode());
+        // an unset optional adds nothing to the hash code
+        assertEquals(readExtended.hashCode(), extendedWithoutOptional.hashCode());
+        assertNotEquals(readExtended.hashCode(), extendedWithOptional.hashCode());
+
+        // two objects read from the same data are equal
+        final Extended otherReadExtended = SerializeUtil.deserialize(Extended.class, originalBitBuffer);
+        assertEquals(readExtended, otherReadExtended);
+        assertEquals(readExtended.hashCode(), otherReadExtended.hashCode());
+        assertArrayEquals(SerializeUtil.serializeToBytes(readExtended),
+                SerializeUtil.serializeToBytes(otherReadExtended));
+
+        // resetter makes the value present
+        readExtended.resetExtendedValue();
+        assertEquals(readExtended, extendedWithoutOptional);
+        assertEquals(readExtended.hashCode(), extendedWithoutOptional.hashCode());
+        assertArrayEquals(SerializeUtil.serializeToBytes(readExtended),
+                SerializeUtil.serializeToBytes(extendedWithoutOptional));
+    }
+
+    @Test
     public void bitSizeOf()
     {
         final Extended extended = new Extended();
