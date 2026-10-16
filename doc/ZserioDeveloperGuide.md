@@ -98,12 +98,13 @@ the bundle, needed by every other leg), `cpp`, `java`, `python`, `doc` and `xml`
 | full run | pushes to `master` and `release/**`, manual runs, the release workflow (Linux only) | all legs on Linux and Windows with all checks, e.g. all compilers, extra arguments, clang-tidy, the API compatibility check |
 
 [`select_legs.yml`](../.github/workflows/select_legs.yml) decides between the two. In a smoke run,
-[`.github/scripts/select_legs.sh`](../.github/scripts/select_legs.sh) maps the changed paths to the legs:
+[`.github/scripts/select_legs.sh`](../.github/scripts/select_legs.sh) maps the changed paths to the legs. The
+script is the authority, the list shows its rules in outline:
 
 * `compiler/core`, `scripts`, `cmake` and `.github` run all legs,
 * `doc/`, `*.md`, `LICENSE` and `CNAME` run no leg,
-* `compiler/extensions/<language>` runs the leg of that language, C++ also the Python leg, which builds the C++
-  runtime for its C++ binding,
+* `compiler/extensions/<language>` runs the leg of that language; `compiler/extensions/cpp` and `3rdparty/cpp`
+  also the Python leg, which builds the C++ runtime for its C++ binding,
 * `test/*/<language>/*` runs the leg of that language, any other test path (e.g. a schema shared by all
   languages) runs all legs,
 * any unknown path runs all legs.
