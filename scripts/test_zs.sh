@@ -142,6 +142,7 @@ EOF
         <!-- Same code in different switch clauses. -->
         <Bug code="DB"/>
         <Or>
+            <Method name="compareTo"/>
             <Method name="hashCode"/>
             <Method name="initializeOffsets"/>
             <Method name="bitSizeOf"/>
