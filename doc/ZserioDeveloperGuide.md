@@ -244,7 +244,8 @@ The release workflow relies on these repository settings, none of them is in the
 | Environment `maven-central` | secrets `CENTRAL_TOKEN_USERNAME`, `CENTRAL_TOKEN_PASSWORD`, `MAVEN_GPG_KEY`, `MAVEN_GPG_PASSPHRASE`; deployment refs: tags `v*` and the branch the dry run runs on | `gh api repos/ndsev/zserio/environments/maven-central/deployment-branch-policies -q '.branch_policies[].name'` |
 | PyPI project `zserio` | trusted publisher: repository `ndsev/zserio`, workflow `release.yml`, environment `pypi` | *Your projects* → `zserio` → *Publishing* on pypi.org |
 | Pages | source *GitHub Actions*, custom domain `zserio.org` | `gh api repos/ndsev/zserio/pages -q '.build_type, .cname'` prints `workflow` and `zserio.org` |
-| Ruleset `master merge commits only` | target branch `master`, pull requests may be merged only by *Create a merge commit* (step 11) | `gh api repos/ndsev/zserio/rulesets` lists it; *Settings* → *Rules* → *Rulesets* |
+| Ruleset `master merge commits only` | target branch `master`: pull requests may be merged only by *Create a merge commit* (step 11), no deletion, no force push | `gh api repos/ndsev/zserio/rules/branches/master -q '[.[].type]'` lists `pull_request`, `deletion` and `non_fast_forward` |
+| Ruleset `release tags immutable` | target tags `refs/tags/v*`: no deletion, no update, no force push | `gh api repos/ndsev/zserio/rulesets -q '.[].name'` lists it |
 
 **Check before step 1:** every row matches. The dry run in step 3 runs both environments from one ref, so that
 ref must be allowed in `pypi` and in `maven-central`.
@@ -386,8 +387,15 @@ prints `false` and both `zserio-X.Y.Z-bin.zip` and `zserio-X.Y.Z-runtime-libs.zi
 
 **If it fails:**
 
-* `build` fails: nothing is published yet. Delete the tag (`git push origin :refs/tags/vX.Y.Z` and
-  `git tag -d vX.Y.Z`), fix `release/X.Y` and start again at step 2.
+* `build` fails: nothing is published yet. Delete the tag, fix `release/X.Y` and start again at step 2. The
+  ruleset `release tags immutable` blocks the deletion, so a repository admin switches it off for that moment:
+
+  ```bash
+  ID=$(gh api repos/ndsev/zserio/rulesets -q '.[] | select(.name == "release tags immutable") | .id')
+  gh api -X PUT repos/ndsev/zserio/rulesets/${ID} -f enforcement=disabled
+  git push origin :refs/tags/vX.Y.Z && git tag -d vX.Y.Z
+  gh api -X PUT repos/ndsev/zserio/rulesets/${ID} -f enforcement=active
+  ```
 * `Tag vX.Y.Z does not match the built zserio version`: the core version on the tagged commit is not `X.Y.Z`.
   Delete the tag as above and fix the version, step 1.
 * The release exists but an asset is missing: upload it by
