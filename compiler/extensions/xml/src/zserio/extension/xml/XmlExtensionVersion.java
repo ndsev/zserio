@@ -10,7 +10,7 @@ package zserio.extension.xml;
 public final class XmlExtensionVersion
 {
     /** XML extension version string. */
-    public static final String XML_EXTENSION_VERSION_STRING = "1.0.10";
+    public static final String XML_EXTENSION_VERSION_STRING = "1.0.11";
 
     /** Expected Zserio core version string. */
     public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.20.0";
