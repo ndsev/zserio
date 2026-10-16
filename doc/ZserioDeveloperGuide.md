@@ -244,7 +244,7 @@ The release workflow relies on these repository settings, none of them is in the
 | Environment `maven-central` | secrets `CENTRAL_TOKEN_USERNAME`, `CENTRAL_TOKEN_PASSWORD`, `MAVEN_GPG_KEY`, `MAVEN_GPG_PASSPHRASE`; deployment refs: tags `v*` and the branch the dry run runs on | `gh api repos/ndsev/zserio/environments/maven-central/deployment-branch-policies -q '.branch_policies[].name'` |
 | PyPI project `zserio` | trusted publisher: repository `ndsev/zserio`, workflow `release.yml`, environment `pypi` | *Your projects* → `zserio` → *Publishing* on pypi.org |
 | Pages | source *GitHub Actions*, custom domain `zserio.org` | `gh api repos/ndsev/zserio/pages -q '.build_type, .cname'` prints `workflow` and `zserio.org` |
-| Ruleset `master merge commits only` | target branch `master`: pull requests may be merged only by *Create a merge commit* (step 11), no deletion, no force push | `gh api repos/ndsev/zserio/rules/branches/master -q '[.[].type]'` lists `pull_request`, `deletion` and `non_fast_forward` |
+| Ruleset `protect default branch` | target branch `master`: pull requests may be merged only by *Create a merge commit* (step 11), no deletion, no force push | `gh api repos/ndsev/zserio/rules/branches/master -q '[.[].type]'` lists `pull_request`, `deletion` and `non_fast_forward` |
 | Ruleset `release tags immutable` | target tags `refs/tags/v*`: no deletion, no update, no force push | `gh api repos/ndsev/zserio/rulesets -q '.[].name'` lists it |
 
 **Check before step 1:** every row matches. The dry run in step 3 runs both environments from one ref, so that
@@ -375,8 +375,9 @@ git tag -a vX.Y.Z origin/release/X.Y -m "Zserio vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-The tag starts *Release vX.Y.Z - publishes to PyPI and Maven Central*. It builds all legs again, then
-`github_release` uploads the two zips to the draft and publishes it.
+The tag starts *Release vX.Y.Z - publishes to PyPI and Maven Central*. It builds all Linux legs again, as the
+published zips come from them, then `github_release` uploads the two zips to the draft and publishes it. Windows
+is not built again: the release relies on the green Windows run of step 2 on the same commit.
 
 **Check before step 6:** `github_release` is green and
 
@@ -585,8 +586,9 @@ gh pr create -R ndsev/zserio --base master --head release/X.Y --title "Release X
 Merge it on GitHub by *Create a merge commit*, or `gh pr merge <number> -R ndsev/zserio --merge`.
 
 **Check:** `git fetch origin && git merge-base --is-ancestor vX.Y.Z origin/master` exits 0, and the issues
-listed in `release-closes.md` are closed. After that, `release/X.Y` is no longer needed for the history of
-`master`; keep it while a patch release `X.Y.Z+1` may still come from it.
+listed in `release-closes.md` are closed. The merge deletes `release/X.Y`, as the repository deletes the head
+branch of a merged pull request. A patch release `X.Y.Z+1` starts a new `release/X.Y` from the tag:
+`git switch -c release/X.Y vX.Y.Z`.
 
 **If it fails:**
 
@@ -604,7 +606,7 @@ listed in `release-closes.md` are closed. After that, `release/X.Y` is no longer
   ```
 
 * The merge button offers *Squash and merge* or *Rebase and merge* as well: the ruleset
-  `master merge commits only` is missing, see step 0. Merge only by *Create a merge commit* and restore the
+  `protect default branch` is missing, see step 0. Merge only by *Create a merge commit* and restore the
   ruleset.
 
 The release of zserio `X.Y.Z` is complete when step 11 is.
