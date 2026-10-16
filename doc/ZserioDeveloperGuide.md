@@ -88,8 +88,8 @@ zserio core with a test in `test/core`.
 
 ## Continuous Integration
 
-The workflows *Linux* ([`build_linux.yml`](../.github/workflows/build_linux.yml)) and *Windows*
-([`build_windows.yml`](../.github/workflows/build_windows.yml)) build and test zserio in legs: `zserio` (core and
+The workflows *Linux* ([`build_linux.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/build_linux.yml)) and *Windows*
+([`build_windows.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/build_windows.yml)) build and test zserio in legs: `zserio` (core and
 the bundle, needed by every other leg), `cpp`, `java`, `python`, `doc` and `xml`. Two kinds of run exist:
 
 | Run | When | What runs |
@@ -97,8 +97,8 @@ the bundle, needed by every other leg), `cpp`, `java`, `python`, `doc` and `xml`
 | smoke run | pull requests into `master`, `release/**` or `*-ci`, and pushes to a branch named `*-ci` | only the Linux legs whose changed paths can affect them, one leg per language, without Windows and without the extra and slow checks |
 | full run | pushes to `master` and `release/**`, manual runs, the release workflow (Linux only) | all legs on Linux and Windows with all checks, e.g. all compilers, extra arguments, clang-tidy, the API compatibility check |
 
-[`select_legs.yml`](../.github/workflows/select_legs.yml) decides between the two. In a smoke run,
-[`.github/scripts/select_legs.sh`](../.github/scripts/select_legs.sh) maps the changed paths to the legs. The
+[`select_legs.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/select_legs.yml) decides between the two. In a smoke run,
+[`.github/scripts/select_legs.sh`](https://github.com/ndsev/zserio/blob/master/.github/scripts/select_legs.sh) maps the changed paths to the legs. The
 script is the authority, the list shows its rules in outline:
 
 * `compiler/core`, `scripts`, `cmake` and `.github` run all legs,
@@ -109,7 +109,7 @@ script is the authority, the list shows its rules in outline:
   languages) runs all legs,
 * any unknown path runs all legs.
 
-A change of the mapping comes with a case in [`.github/scripts/test_select_legs.sh`](../.github/scripts/test_select_legs.sh),
+A change of the mapping comes with a case in [`.github/scripts/test_select_legs.sh`](https://github.com/ndsev/zserio/blob/master/.github/scripts/test_select_legs.sh),
 which every run executes first.
 
 A smoke run misses what only a full run checks: the Windows legs, the other compilers and the clang-tidy run over
@@ -117,13 +117,13 @@ the tests. That shows up on the next push to `release/**`. To get a full run for
 start the workflows by hand: `gh workflow run build_linux.yml -R ndsev/zserio --ref <branch>`, likewise
 `build_windows.yml`.
 
-*SonarCloud* ([`sonar_cloud_trigger.yml`](../.github/workflows/sonar_cloud_trigger.yml)) analyses only pushes to
+*SonarCloud* ([`sonar_cloud_trigger.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/sonar_cloud_trigger.yml)) analyses only pushes to
 `master` and `release/**`.
 
 ## C++ Static Analysis
 
 clang-tidy checks the C++ runtime library and the C++ tests including their generated code, clang-format checks
-the runtime library and the hand written test sources against [`.clang-format`](../.clang-format). Both run when
+the runtime library and the hand written test sources against [`.clang-format`](https://github.com/ndsev/zserio/blob/master/.clang-format). Both run when
 their binary is set: `CLANG_TIDY_BIN=clang-tidy-14` and `CLANG_FORMAT_BIN=clang-format-14` for
 `scripts/build.sh` and `scripts/test.sh`. `CLANG_TIDY_ONLY=1` makes `scripts/test.sh` only run clang-tidy over
 the C++ tests instead of building and running them, which is what the CI job `cpp-clang-tidy` does in a full run.
@@ -208,7 +208,7 @@ A release publishes:
 * the matching release of the [C++17 extension](https://github.com/ndsev/zserio-cpp17).
 
 Everything from the GitHub release to zserio.org is done by the workflow
-[`.github/workflows/release.yml`](../.github/workflows/release.yml) on a pushed tag `vX.Y.Z`. A pushed tag cannot
+[`.github/workflows/release.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/release.yml) on a pushed tag `vX.Y.Z`. A pushed tag cannot
 be taken back once PyPI has the wheel, so everything before the tag is about making that run boring.
 
 Organisations that use zserio may run their own checks against `release/X.Y`; they are outside this guide.
@@ -250,8 +250,9 @@ The release workflow relies on these repository settings, none of them is in the
 **Check before step 1:** every row matches. The dry run in step 3 runs both environments from one ref, so that
 ref must be allowed in `pypi` and in `maven-central`.
 
-**If it fails:** a repository admin fixes the setting under *Settings* → *Environments* or *Settings* →
-*Pages* or *Settings* → *Rules*. Do not start the release with a mismatch: a rejected environment fails the tag run half way.
+**If it fails:** a repository admin fixes the setting under *Settings* → *Environments*, *Settings* → *Pages*
+or *Settings* → *Rules*. Do not start the release with a mismatch: a rejected environment fails the tag run half
+way.
 
 ### 1. Branch `release/X.Y`
 
@@ -456,7 +457,7 @@ prints `200`. `post_release.sh` downloads the jar from Maven Central for the Jav
 ### 8. zserio.org
 
 The jobs *Release: deploy zserio.org / build* and *Release: deploy zserio.org / Deploy to zserio.org* run the
-Pages workflow [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) with the runtime libs of the
+Pages workflow [`.github/workflows/pages.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/pages.yml) with the runtime libs of the
 release and deploy the site. They need nothing from you.
 
 **Check before step 9:** both jobs are green and the runtime docs of the release are online:
@@ -589,19 +590,31 @@ listed in `release-closes.md` are closed. After that, `release/X.Y` is no longer
 
 **If it fails:**
 
-* The pull request has conflicts: `master` got commits which are not on `release/X.Y`. Resolve them in the merge
-  as for any pull request; the tagged commit stays unchanged.
-* The merge button offers only *Squash and merge* or *Rebase and merge*: the ruleset or the repository setting
-  is missing, see step 0. Do not merge with another method.
+* The pull request has conflicts: `master` got commits which are not on `release/X.Y`. Do not resolve them on
+  GitHub, which would commit `master` into `release/X.Y` and bring newer work into a later patch release. Merge
+  on a branch of its own and open the pull request from it instead:
+
+  ```bash
+  git fetch origin
+  git switch -c merge-vX.Y.Z vX.Y.Z
+  git merge origin/master        # resolve the conflicts and commit
+  git push -u origin merge-vX.Y.Z
+  gh pr create -R ndsev/zserio --base master --head merge-vX.Y.Z --title "Release X.Y.Z" \
+          --body-file release-closes.md
+  ```
+
+* The merge button offers *Squash and merge* or *Rebase and merge* as well: the ruleset
+  `master merge commits only` is missing, see step 0. Merge only by *Create a merge commit* and restore the
+  ruleset.
 
 The release of zserio `X.Y.Z` is complete when step 11 is.
 
 ## zserio.org
 
 The site [zserio.org](https://zserio.org) is built by Jekyll from the zserio sources of a release with the
-configuration [`.github/pages/_config.yml`](../.github/pages/_config.yml): the README, the documents in `doc`
+configuration [`.github/pages/_config.yml`](https://github.com/ndsev/zserio/blob/master/.github/pages/_config.yml): the README, the documents in `doc`
 (this guide included) and the runtime library documentation of every published version. It is deployed to GitHub
-Pages by the workflow [`pages.yml`](../.github/workflows/pages.yml); the repository Pages source is *GitHub
+Pages by the workflow [`pages.yml`](https://github.com/ndsev/zserio/blob/master/.github/workflows/pages.yml); the repository Pages source is *GitHub
 Actions* and the custom domain is in [`CNAME`](../CNAME).
 
 * The release workflow deploys the site of each release tag, see [step 8](#8-zserioorg) of Releasing.
