@@ -78,6 +78,27 @@ public class OptionalArrayRecursionTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Employee employee = new Employee("", 0, Title.DEVELOPER, null);
+        final Employee teamLead1 = createTeamLead();
+        assertTrue(employee.compareTo(teamLead1) < 0);
+        assertFalse(teamLead1.compareTo(employee) < 0);
+
+        final Employee teamLead2 = createTeamLead();
+        assertFalse(teamLead1.compareTo(teamLead2) < 0);
+        assertFalse(teamLead2.compareTo(teamLead1) < 0);
+
+        teamLead1.setTitle(Title.DEVELOPER); // set but not used
+        assertTrue(teamLead1.compareTo(teamLead2) < 0);
+        assertFalse(teamLead2.compareTo(teamLead1) < 0);
+
+        teamLead2.setTitle(Title.DEVELOPER); // set but not used
+        assertFalse(teamLead1.compareTo(teamLead2) < 0);
+        assertFalse(teamLead2.compareTo(teamLead1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Employee emptyEmployee1 = new Employee();

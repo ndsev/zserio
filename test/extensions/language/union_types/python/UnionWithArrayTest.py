@@ -31,6 +31,36 @@ class UnionWithArrayTest(UnionTypes.TestCase):
         readTestUnion = zserio.deserialize_from_file(self.api.TestUnion, filename)
         self.assertEqual(testUnion, readTestUnion)
 
+    def testLt(self):
+        testUnion1 = self.api.TestUnion()
+        testUnion2 = self.api.TestUnion()
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion1.array8 = self._createArray8()
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertTrue(testUnion2 < testUnion1)
+
+        testUnion2.array8 = self._createArray8()
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion2.array8[0].data = 0
+        self.assertTrue(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion2.array16 = self._createArray16()
+        self.assertTrue(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion1.array16 = self._createArray16()
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertFalse(testUnion2 < testUnion1)
+
+        testUnion2.array16[-1] -= 1
+        self.assertFalse(testUnion1 < testUnion2)
+        self.assertTrue(testUnion2 < testUnion1)
+
     def testHash(self):
         testUnion1 = self.api.TestUnion()
         testUnion2 = self.api.TestUnion()

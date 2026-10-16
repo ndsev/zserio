@@ -10,7 +10,10 @@ jobs:
   run:
     name: sonar_cloud
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
+    # a manual run of the trigger on another branch does not analyse it either
+    if: ${{ github.event.workflow_run.conclusion == 'success' &&
+            (github.event.workflow_run.head_branch == 'master' ||
+             startsWith(github.event.workflow_run.head_branch, 'release/')) }}
     env:
       BUILD_WRAPPER_OUT_DIR: build_wrapper
 

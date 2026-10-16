@@ -40,6 +40,30 @@ class BoolParamChoiceTest(ChoiceTypes.TestCase):
         boolParamChoice2.black = diffValue
         self.assertFalse(boolParamChoice1 == boolParamChoice2)
 
+    def testLt(self):
+        boolParamChoice1 = self.api.BoolParamChoice(True)
+        boolParamChoice2 = self.api.BoolParamChoice(False)
+        self.assertFalse(boolParamChoice1 < boolParamChoice2)
+        self.assertTrue(boolParamChoice2 < boolParamChoice1)
+
+        boolParamChoice2 = self.api.BoolParamChoice(True)
+        self.assertFalse(boolParamChoice1 < boolParamChoice2)
+        self.assertFalse(boolParamChoice2 < boolParamChoice1)
+
+        value = 99
+        boolParamChoice1.black = value
+        self.assertFalse(boolParamChoice1 < boolParamChoice2)
+        self.assertTrue(boolParamChoice2 < boolParamChoice1)
+
+        boolParamChoice2.black = value
+        self.assertFalse(boolParamChoice1 < boolParamChoice2)
+        self.assertFalse(boolParamChoice2 < boolParamChoice1)
+
+        diffValue = value + 1
+        boolParamChoice2.black = diffValue
+        self.assertTrue(boolParamChoice1 < boolParamChoice2)
+        self.assertFalse(boolParamChoice2 < boolParamChoice1)
+
     def testHash(self):
         boolParamChoice1 = self.api.BoolParamChoice(True)
         boolParamChoice2 = self.api.BoolParamChoice(True)

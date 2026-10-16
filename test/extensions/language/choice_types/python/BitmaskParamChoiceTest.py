@@ -39,6 +39,26 @@ class BitmaskParamChoiceTest(ChoiceTypes.TestCase):
         bitmaskParamChoice2.black = diffValue
         self.assertFalse(bitmaskParamChoice1 == bitmaskParamChoice2)
 
+    def testLt(self):
+        bitmaskParamChoice1 = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
+        bitmaskParamChoice2 = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
+        self.assertFalse(bitmaskParamChoice1 < bitmaskParamChoice2)
+        self.assertFalse(bitmaskParamChoice2 < bitmaskParamChoice1)
+
+        value = 99
+        bitmaskParamChoice1.black = value
+        self.assertFalse(bitmaskParamChoice1 < bitmaskParamChoice2)
+        self.assertTrue(bitmaskParamChoice2 < bitmaskParamChoice1)
+
+        bitmaskParamChoice2.black = value
+        self.assertFalse(bitmaskParamChoice1 < bitmaskParamChoice2)
+        self.assertFalse(bitmaskParamChoice2 < bitmaskParamChoice1)
+
+        diffValue = value + 1
+        bitmaskParamChoice2.black = diffValue
+        self.assertTrue(bitmaskParamChoice1 < bitmaskParamChoice2)
+        self.assertFalse(bitmaskParamChoice2 < bitmaskParamChoice1)
+
     def testHash(self):
         bitmaskParamChoice1 = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
         bitmaskParamChoice2 = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)

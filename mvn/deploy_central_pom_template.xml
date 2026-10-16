@@ -1,0 +1,133 @@
+<!--
+Build project which deploys the prebuilt Zserio jars to Maven Central by central-publishing-maven-plugin.
+
+The modules publish the prebuilt jars of a Zserio release as they are together with the poms generated from
+deploy_pom_template.xml. This build project itself is not published.
+-->
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.ndsev</groupId>
+    <artifactId>zserio-central-deploy</artifactId>
+    <version>${pom.version}</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>zserio</module>
+        <module>zserio-runtime</module>
+    </modules>
+
+    <properties>
+        <maven.install.skip>true</maven.install.skip>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- the prebuilt jar is the artifact, nothing is compiled or packed -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-jar</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Maven does not allow to attach a jar without classifier, thus the artifact file is set
+                     directly, the published pom replaces the pom of this build project -->
+                <plugin>
+                    <groupId>org.codehaus.gmavenplus</groupId>
+                    <artifactId>gmavenplus-plugin</artifactId>
+                    <version>4.3.1</version>
+                    <executions>
+                        <execution>
+                            <id>use-prebuilt-jar</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <configuration>
+                                <scripts>
+                                    <script>
+                                        project.artifact.file = new File(project.basedir, 'artifact.jar')
+                                        project.pomFile = new File(project.basedir, 'pom_published.xml')
+                                    </script>
+                                </scripts>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.groovy</groupId>
+                            <artifactId>groovy</artifactId>
+                            <version>4.0.33</version>
+                            <scope>runtime</scope>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.6.2</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources-and-javadoc</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>attach-artifact</goal>
+                            </goals>
+                            <configuration>
+                                <artifacts>
+                                    <artifact>
+                                        <file>sources.jar</file>
+                                        <type>jar</type>
+                                        <classifier>sources</classifier>
+                                    </artifact>
+                                    <artifact>
+                                        <file>javadoc.jar</file>
+                                        <type>jar</type>
+                                        <classifier>javadoc</classifier>
+                                    </artifact>
+                                </artifacts>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- signs by local gpg, -Dgpg.signer=bc signs by the key in MAVEN_GPG_KEY without gpg -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.8</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- uploads one bundle of all modules and waits until it is validated, publishing stays manual
+                 unless -DautoPublish=true -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.11.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <deploymentName>${central.deployment_name}</deploymentName>
+                    <excludeArtifacts>
+                        <excludeArtifact>zserio-central-deploy</excludeArtifact>
+                    </excludeArtifacts>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

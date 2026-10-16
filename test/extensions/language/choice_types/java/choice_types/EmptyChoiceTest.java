@@ -73,6 +73,19 @@ public class EmptyChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final EmptyChoice emptyChoice1 = new EmptyChoice((short)1);
+        final EmptyChoice emptyChoice2 = new EmptyChoice((short)1);
+        assertFalse(emptyChoice1.compareTo(emptyChoice2) < 0);
+        assertFalse(emptyChoice2.compareTo(emptyChoice1) < 0);
+
+        final EmptyChoice emptyChoice3 = new EmptyChoice((short)0);
+        assertFalse(emptyChoice1.compareTo(emptyChoice3) < 0);
+        assertTrue(emptyChoice3.compareTo(emptyChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final EmptyChoice emptyChoice1 = new EmptyChoice((short)1);

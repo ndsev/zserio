@@ -1,10 +1,9 @@
 name: SonarCloud Trigger
 
+# only master and release/**, pull requests and '*-ci' pushes skip the analysis
 on:
   push:
-    branches: [ master, '*-ci' ]
-  pull_request:
-    branches: [ master, '*-ci' ]
+    branches: [ master, 'release/**' ]
   workflow_dispatch:
 
 jobs:

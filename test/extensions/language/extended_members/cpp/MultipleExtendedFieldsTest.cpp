@@ -162,6 +162,56 @@ TEST_F(MultipleExtendedFieldsTest, hashCode)
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 }
 
+TEST_F(MultipleExtendedFieldsTest, operatorEqualityAndHashCodeReadOriginal)
+{
+    Original original(42);
+    auto originalBitBuffer = zserio::serialize(original);
+    auto readExtended2 = zserio::deserialize<Extended2>(originalBitBuffer);
+    ASSERT_FALSE(readExtended2.isExtendedValue1Present());
+    ASSERT_FALSE(readExtended2.isExtendedValue2Present());
+
+    // same values, but extended fields present
+    Extended2 extended2(42, 0, DEFAULT_EXTENDED_VALUE2);
+    ASSERT_FALSE(readExtended2 == extended2);
+    ASSERT_FALSE(extended2 == readExtended2);
+    ASSERT_NE(zserio::serializeToBytes(readExtended2), zserio::serializeToBytes(extended2));
+
+    // only present extended fields are taken into account
+    ASSERT_EQ(original.hashCode(), readExtended2.hashCode());
+    ASSERT_NE(readExtended2.hashCode(), extended2.hashCode());
+
+    // any setter makes all values present
+    readExtended2.setExtendedValue1(0);
+    ASSERT_EQ(readExtended2, extended2);
+    ASSERT_EQ(readExtended2.hashCode(), extended2.hashCode());
+    ASSERT_EQ(zserio::serializeToBytes(readExtended2), zserio::serializeToBytes(extended2));
+}
+
+TEST_F(MultipleExtendedFieldsTest, operatorEqualityAndHashCodeReadExtended1)
+{
+    Extended1 extended1(42, 2);
+    auto extended1BitBuffer = zserio::serialize(extended1);
+    auto readExtended2 = zserio::deserialize<Extended2>(extended1BitBuffer);
+    ASSERT_TRUE(readExtended2.isExtendedValue1Present());
+    ASSERT_FALSE(readExtended2.isExtendedValue2Present());
+
+    // same values, but all extended fields present
+    Extended2 extended2(42, 2, DEFAULT_EXTENDED_VALUE2);
+    ASSERT_FALSE(readExtended2 == extended2);
+    ASSERT_FALSE(extended2 == readExtended2);
+    ASSERT_NE(zserio::serializeToBytes(readExtended2), zserio::serializeToBytes(extended2));
+
+    // only present extended fields are taken into account
+    ASSERT_EQ(extended1.hashCode(), readExtended2.hashCode());
+    ASSERT_NE(readExtended2.hashCode(), extended2.hashCode());
+
+    // two objects read from the same data are equal
+    auto otherReadExtended2 = zserio::deserialize<Extended2>(extended1BitBuffer);
+    ASSERT_EQ(readExtended2, otherReadExtended2);
+    ASSERT_EQ(readExtended2.hashCode(), otherReadExtended2.hashCode());
+    ASSERT_EQ(zserio::serializeToBytes(readExtended2), zserio::serializeToBytes(otherReadExtended2));
+}
+
 TEST_F(MultipleExtendedFieldsTest, bitSizeOf)
 {
     Extended2 extended2;

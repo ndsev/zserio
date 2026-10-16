@@ -37,6 +37,58 @@ class OptionalRecursionTest(OptionalMembers.TestCase):
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         self.assertFalse(block12 == block1)
 
+    def testLt(self):
+        block1 = self._createBlock(self.BLOCK1_DATA)
+        block2 = self._createBlock(self.BLOCK1_DATA)
+        self.assertFalse(block1 < block2)
+        self.assertFalse(block2 < block1)
+
+        block12_1 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertTrue(block1 < block12_1)
+        self.assertFalse(block12_1 < block1)
+
+        block12_2 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertFalse(block12_1 < block12_2)
+        self.assertFalse(block12_2 < block12_1)
+
+        block12_1.block_terminator = 0  # set but not used
+        self.assertTrue(block12_1 < block12_2)
+        self.assertFalse(block12_2 < block12_1)
+
+        block12_2.block_terminator = 0  # set but not used
+        self.assertFalse(block12_1 < block12_2)
+        self.assertFalse(block12_2 < block12_1)
+
+    def testLtDeepChain(self):
+        # pylint: disable=protected-access
+        # each nested block is compared once, so equal chains of depth n cost n comparisons, not 2^n
+        calls = 0
+        blockCmp = self.api.Block._zserio_cmp
+
+        def countingCmp(block, other):
+            nonlocal calls
+            calls += 1
+            return blockCmp(block, other)
+
+        self.api.Block._zserio_cmp = countingCmp
+        try:
+            depth = 20
+            self.assertFalse(
+                self._createBlockChain(depth, self.BLOCK1_DATA)
+                < self._createBlockChain(depth, self.BLOCK1_DATA)
+            )
+            self.assertEqual(depth, calls)
+        finally:
+            self.api.Block._zserio_cmp = blockCmp
+
+        deepDepth = 300
+        deepChain1 = self._createBlockChain(deepDepth, self.BLOCK1_DATA)
+        self.assertFalse(deepChain1 < self._createBlockChain(deepDepth, self.BLOCK1_DATA))
+        greaterLastBlockData = self.BLOCK1_DATA[:-1] + [self.BLOCK1_DATA[-1] + 1]  # differs only in last byte
+        deepChain2 = self._createBlockChain(deepDepth, greaterLastBlockData)
+        self.assertTrue(deepChain1 < deepChain2)
+        self.assertFalse(deepChain2 < deepChain1)
+
     def testHash(self):
         emptyBlock1 = self._createEmptyBlock()
         emptyBlock2 = self._createEmptyBlock()
@@ -144,6 +196,13 @@ class OptionalRecursionTest(OptionalMembers.TestCase):
         block2 = self._createBlock(block2Data)
 
         return self.api.Block(len(block1Data), block1Data, len(block2Data), block2)
+
+    def _createBlockChain(self, depth, lastBlockData):
+        block = self._createBlock(lastBlockData)
+        for _ in range(depth - 1):
+            block = self.api.Block(len(self.BLOCK1_DATA), self.BLOCK1_DATA, len(block.data_bytes), block)
+
+        return block
 
     @staticmethod
     def _getBlockBitSize(blockData):

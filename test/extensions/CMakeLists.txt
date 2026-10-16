@@ -86,6 +86,7 @@ endfunction()
 # functions to set globals called by included CMake lists
 set(TEST_DEPENDENCIES_LIST "" CACHE INTERNAL "Test objects")
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
+set(TEST_CLANG_TIDY_TARGETS_LIST "" CACHE INTERNAL "Test clang-tidy targets")
 function(add_custom_test TEST_NAME)
     cmake_parse_arguments(TEST_ARG "" "" "DEPENDS;SOURCES;GENERATED_SOURCES" ${ARGN})
 
@@ -105,6 +106,9 @@ function(add_custom_test TEST_NAME)
                                     "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime/ClangTidyConfig.txt"
                                  HEADER_FILTER
                                     "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*")
+    if (CLANG_TIDY_BIN)
+        set(TEST_CLANG_TIDY_TARGETS_LIST "${TEST_CLANG_TIDY_TARGETS_LIST};${TEST_NAME}-clang-tidy" CACHE INTERNAL "")
+    endif ()
 
     if (DEFINED TEST_ARG_SOURCES)
         clang_format_add_custom_target(${TEST_NAME}-clang-format
@@ -137,6 +141,12 @@ foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
         endif ()
     endforeach ()
 endforeach ()
+
+# clang-tidy target which runs clang-tidy over sources of all tests, it builds only the generated code libraries
+if (TEST_CLANG_TIDY_TARGETS_LIST)
+    add_custom_target(clang-tidy)
+    add_dependencies(clang-tidy ${TEST_CLANG_TIDY_TARGETS_LIST})
+endif ()
 
 if (NOT TEST_SOURCES_LIST)
     if (NOT TEST_DEPENDENCIES_LIST)

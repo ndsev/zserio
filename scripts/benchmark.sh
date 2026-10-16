@@ -48,7 +48,6 @@ run_benchmark()
     local SWITCH_RUN_ONLY="$1"; shift
     local LOG_FILE="$1"; shift
 
-    local BLOB_FILE=""
     local PROFILE=0
 
     local BENCHMARK_DIR="${BENCHMARK%/*}"
@@ -66,11 +65,13 @@ run_benchmark()
 
     local TEST_OUT_DIR="${BENCHMARKS_OUT_DIR}/${ZSERIO_PACKAGE_NAME}_${DATASET_NAME}"
 
+    local BLOB_NAMES=("${ZSERIO_PACKAGE_NAME}.${FIRST_STRUCT}")
+    local JSON_PATHS=("${DATASET}")
+    local BLOB_PATHS=("")
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" CPP_TARGETS[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
               "${BENCHMARKS_SRC_DIR}/${BENCHMARK_DIR}" "${BENCHMARK_ZS}" \
-              "${ZSERIO_PACKAGE_NAME}.${FIRST_STRUCT}" \
-              "${DATASET}" "${BLOB_FILE}" ${NUM_ITERATIONS} ${TEST_CONFIG} ${SWITCH_RUN_ONLY} ${PROFILE}
+              BLOB_NAMES[@] JSON_PATHS[@] BLOB_PATHS[@] ${NUM_ITERATIONS} ${TEST_CONFIG} ${SWITCH_RUN_ONLY} ${PROFILE}
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -395,7 +396,7 @@ parse_arguments()
     local NUM_CPP_TARGETS=0
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
+            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-linuxarm64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -412,7 +413,7 @@ parse_arguments()
                 eval ${PARAM_PYTHON_CPP_OUT}=1
                 ;;
 
-            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-linuxarm64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1

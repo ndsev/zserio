@@ -33,6 +33,26 @@ class AutoOptionalTest(OptionalMembers.TestCase):
         container1.reset_auto_optional_int()
         self.assertFalse(container1 == container2)
 
+    def testLt(self):
+        container1 = self.api.Container()
+        container2 = self.api.Container()
+        self.assertFalse(container1 < container2)
+        self.assertFalse(container2 < container1)
+
+        container1.non_optional_int = self.NON_OPTIONAL_INT_VALUE
+        container1.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
+        container2.non_optional_int = self.NON_OPTIONAL_INT_VALUE
+        self.assertFalse(container1 < container2)
+        self.assertTrue(container2 < container1)
+
+        container2.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
+        self.assertFalse(container1 < container2)
+        self.assertFalse(container2 < container1)
+
+        container1.reset_auto_optional_int()
+        self.assertTrue(container1 < container2)
+        self.assertFalse(container2 < container1)
+
     def testHash(self):
         container1 = self.api.Container()
         container2 = self.api.Container()

@@ -15,6 +15,8 @@ For a **quick start** see the [Python Tutorial](https://github.com/ndsev/zserio-
 
 [Serialization API](#serialization-api)
 
+&nbsp; &nbsp; &nbsp; &nbsp; [Ordering Rules](#ordering-rules)
+
 &nbsp; &nbsp; &nbsp; &nbsp; [Auto-generated API helper](#auto-generated-api-helper)
 
 &nbsp; &nbsp; &nbsp; &nbsp; [PEP-8 compliant API](#pep-8-compliant-api)
@@ -52,7 +54,58 @@ The serialization API provides the following features for all Zserio structures,
 - Properties for all fields to get and set values
 - Method `bitsizeof()` which calculates a number of bits needed for serialization of the Zserio object.
 - Method `__eq__()` which compares two Zserio objects field by field.
+- Method `__lt__()` which compares two Zserio objects field by field using the
+  [Ordering Rules](#ordering-rules).
 - Method `__hash__()` which calculates a hash code of the Zserio object.
+
+### Ordering Rules
+
+Generated structures, choices, unions, bitmasks and enumerations provide `__lt__()` (in addition to
+`__eq__()`). Thus it's possible to easily sort generated objects by `sorted()` or to use `min()` and `max()`.
+The order is the same as the order given by `operator<` in the [C++ generator](../cpp/README.md#ordering-rules).
+
+Only `__lt__()` is provided, the same as in C++. Operator `>` works because Python reflects it to `__lt__()`,
+operators `<=` and `>=` are not supported. Comparison with an object of another type returns `NotImplemented`,
+thus Python raises `TypeError`.
+
+In general, all compound objects are compared lexicographically:
+
+* Parameters are compared first in order of definition.
+* Fields are compared:
+   * In case of [structures](../../../doc/ZserioLanguageOverview.md#structure-types),
+     all fields are compared in order of definition.
+   * In case of [unions](../../../doc/ZserioLanguageOverview.md#union-types),
+     the choice tag is compared first (an unset union is the lowest) and then the selected field is compared.
+   * In case of [choices](../../../doc/ZserioLanguageOverview.md#choice-types),
+     only the selected field is compared (if any). If no case matches the selector, the stored objects
+     are compared the same way as `__eq__()` does, no exception is raised.
+
+Comparison of [optional fields](../../../doc/ZserioLanguageOverview.md#optional-members)
+and [extended fields](../../../doc/ZserioLanguageOverview.md#extended-members):
+
+* When both fields are present, they are compared.
+* Otherwise the missing field is less than the other field if and only if the other field is present.
+* If both fields are missing, they are equal.
+
+> Note that a field which is not set (`None`) is less than a field which is set.
+
+Comparison of fields of other types:
+
+* Integer, `bool` and float fields are compared by their values. Note that `NaN` has no defined order,
+  it is neither less nor greater than any other value.
+* [Enumeration](../../../doc/ZserioLanguageOverview.md#enumeration-types) items are compared by their values,
+  only items of the same enumeration can be compared.
+* [Bitmask](../../../doc/ZserioLanguageOverview.md#bitmask-types) objects are compared by their values.
+* [String](../../../doc/ZserioLanguageOverview.md#string-type) fields are compared by Unicode code points,
+  which gives the same order as the comparison of UTF-8 encoded strings in C++.
+* [Arrays](../../../doc/ZserioLanguageOverview.md#array-types) are compared lexicographically element by
+  element, packing is ignored.
+* [`bytes` fields](../../../doc/ZserioLanguageOverview.md#bytes-type) are compared lexicographically as
+  unsigned bytes.
+* [`extern` fields](../../../doc/ZserioLanguageOverview.md#extern-type) (kept in `BitBuffer`) are compared
+  byte by byte as unsigned bytes, the last byte is masked to use only the proper number of bits.
+  Bit buffers with equal contents are ordered by their bit size. This holds for the pure Python `BitBuffer`
+  as well as for the optimized C++ one.
 
 ### Auto-generated API helper
 

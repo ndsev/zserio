@@ -64,6 +64,50 @@ class ExtendedFieldInTemplateTest(ExtendedMembers.TestCase):
         extended1.extended_value = self.api.Compound(zserio.limits.UINT32_MAX)
         self.assertEqual(extended1, extended2)
 
+    def testLtSimple(self):
+        extended1 = self.api.ExtendedSimple()
+        extended2 = self.api.ExtendedSimple()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.extended_value = zserio.limits.UINT32_MAX
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value = zserio.limits.UINT32_MAX
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+    def testLtCompound(self):
+        extended1 = self.api.ExtendedCompound()
+        extended2 = self.api.ExtendedCompound()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.extended_value = self.api.Compound(zserio.limits.UINT32_MAX)
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value = self.api.Compound(zserio.limits.UINT32_MAX)
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHashSimple(self):
         extended1 = self.api.ExtendedSimple()
         extended2 = self.api.ExtendedSimple()

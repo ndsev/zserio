@@ -45,6 +45,36 @@ class MultipleExtendedFieldsTest(ExtendedMembers.TestCase):
         extended2.extended_value2 = "value"
         self.assertEqual(extended1, extended2)
 
+    def testLt(self):
+        extended1 = self.api.Extended2()
+        extended2 = self.api.Extended2()
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.value = 13
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended2.extended_value1 = 2
+        self.assertTrue(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value1 = 2
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
+        extended1.extended_value2 = "value"
+        self.assertFalse(extended1 < extended2)
+        self.assertTrue(extended2 < extended1)
+
+        extended2.extended_value2 = "value"
+        self.assertFalse(extended1 < extended2)
+        self.assertFalse(extended2 < extended1)
+
     def testHashCode(self):
         extended1 = self.api.Extended2()
         extended2 = self.api.Extended2()
@@ -64,6 +94,54 @@ class MultipleExtendedFieldsTest(ExtendedMembers.TestCase):
         self.assertNotEqual(hash(extended1), hash(extended2))
         extended2.extended_value2 = "value"
         self.assertEqual(hash(extended1), hash(extended2))
+
+    def testEqualityAndHashCodeReadOriginal(self):
+        original = self.api.Original(42)
+        originalBitBuffer = zserio.serialize(original)
+        readExtended2 = zserio.deserialize(self.api.Extended2, originalBitBuffer)
+        self.assertFalse(readExtended2.is_extended_value1_present())
+        self.assertFalse(readExtended2.is_extended_value2_present())
+
+        # same values, but extended fields present
+        extended2 = self.api.Extended2(42, 0, DEFAULT_EXTENDED_VALUE2)
+        self.assertNotEqual(readExtended2, extended2)
+        self.assertNotEqual(extended2, readExtended2)
+        self.assertNotEqual(zserio.serialize_to_bytes(readExtended2), zserio.serialize_to_bytes(extended2))
+
+        # only present extended fields are taken into account
+        self.assertEqual(hash(original), hash(readExtended2))
+        self.assertNotEqual(hash(readExtended2), hash(extended2))
+
+        # any setter makes all values present
+        readExtended2.extended_value1 = 0
+        self.assertEqual(readExtended2, extended2)
+        self.assertEqual(hash(readExtended2), hash(extended2))
+        self.assertEqual(zserio.serialize_to_bytes(readExtended2), zserio.serialize_to_bytes(extended2))
+
+    def testEqualityAndHashCodeReadExtended1(self):
+        extended1 = self.api.Extended1(42, 2)
+        extended1BitBuffer = zserio.serialize(extended1)
+        readExtended2 = zserio.deserialize(self.api.Extended2, extended1BitBuffer)
+        self.assertTrue(readExtended2.is_extended_value1_present())
+        self.assertFalse(readExtended2.is_extended_value2_present())
+
+        # same values, but all extended fields present
+        extended2 = self.api.Extended2(42, 2, DEFAULT_EXTENDED_VALUE2)
+        self.assertNotEqual(readExtended2, extended2)
+        self.assertNotEqual(extended2, readExtended2)
+        self.assertNotEqual(zserio.serialize_to_bytes(readExtended2), zserio.serialize_to_bytes(extended2))
+
+        # only present extended fields are taken into account
+        self.assertEqual(hash(extended1), hash(readExtended2))
+        self.assertNotEqual(hash(readExtended2), hash(extended2))
+
+        # two objects read from the same data are equal
+        otherReadExtended2 = zserio.deserialize(self.api.Extended2, extended1BitBuffer)
+        self.assertEqual(readExtended2, otherReadExtended2)
+        self.assertEqual(hash(readExtended2), hash(otherReadExtended2))
+        self.assertEqual(
+            zserio.serialize_to_bytes(readExtended2), zserio.serialize_to_bytes(otherReadExtended2)
+        )
 
     def testBitSizeOf(self):
         extended2 = self.api.Extended2()

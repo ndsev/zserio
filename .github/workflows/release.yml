@@ -1,0 +1,340 @@
+name: Release
+
+# A pushed release tag vX.Y.Z builds the release artifacts by the Linux workflow, creates the GitHub release
+# and publishes the zserio wheel to PyPI by trusted publishing, no PyPI token is stored anywhere.
+# A prepared draft release of that tag is published with its release notes, otherwise a new release is created.
+# The signed zserio and zserio-runtime jars are uploaded to the Central Portal as one deployment, which waits
+# validated for the Publish button at https://central.sonatype.com/publishing/deployments.
+# The site zserio.org with the runtime docs of the release is deployed to GitHub Pages by the Pages workflow.
+#
+# Any other run is a dry run which publishes nothing, also a manual run started on a tag:
+# - the GitHub release is created as a draft and deleted again,
+# - the wheel is built and tested from the already published release 'wheel_tag',
+# - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project,
+# - the jars are uploaded to the Central Portal with the version suffix '-dry-run.<run id>', validated and dropped,
+# - the site is built and uploaded as the Pages artifact, it is not deployed.
+# A manual run takes 'wheel_tag' as input, a push to the branch 'release-dry-run/<wheel_tag>' takes it from
+# the branch name, it runs the dry run before this workflow is on the default branch.
+#
+# PyPI trusts this workflow file in the GitHub environment 'pypi'.
+# The GitHub environment 'maven-central' holds the Central Portal user token in the secrets
+# CENTRAL_TOKEN_USERNAME and CENTRAL_TOKEN_PASSWORD and the armored signing key in MAVEN_GPG_KEY
+# with its passphrase in MAVEN_GPG_PASSPHRASE.
+
+# the run title and the job names tell a dry run from a release in the 'pypi' environment approval
+run-name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
+    format('Release {0} - publishes to PyPI and Maven Central', github.ref_name) ||
+    format('Release dry run from {0} - no upload', github.ref_name)}}"
+on:
+  push:
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
+    branches: [ 'release-dry-run/*' ]
+  workflow_dispatch:
+    inputs:
+      wheel_tag:
+        description: "Published zserio release tag to build the dry run wheel from, e.g. v2.19.0"
+        required: true
+        type: string
+      zserio_pypi_ref:
+        description: "Branch, tag or commit of ndsev/zserio-pypi to build the wheel by"
+        required: false
+        default: "master"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: "./.github/workflows/build_linux.yml"
+    with:
+      full: true
+
+  github_release:
+    needs: [build]
+    runs-on: "ubuntu-22.04"
+    permissions:
+      contents: write
+    steps:
+    - name: "Download release artifacts"
+      uses: actions/download-artifact@v4
+      with:
+        pattern: linux-release-*
+        path: release
+        merge-multiple: true
+
+    - name: "Create GitHub release"
+      env:
+        GH_TOKEN: ${{github.token}}
+        GH_REPO: ${{github.repository}}
+        RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
+        REF_NAME: ${{github.ref_name}}
+      run: |
+        shopt -s nullglob
+        BIN_ZIPS=(release/zserio-*-bin.zip)
+        if [[ ${#BIN_ZIPS[@]} -ne 1 ]] ; then
+            echo "::error::Expected one zserio binary zip, found: ${BIN_ZIPS[*]}"
+            exit 1
+        fi
+        ZSERIO_VERSION="${BIN_ZIPS[0]#release/zserio-}"
+        ZSERIO_VERSION="${ZSERIO_VERSION%-bin.zip}"
+        ASSETS=("release/zserio-${ZSERIO_VERSION}-bin.zip" "release/zserio-${ZSERIO_VERSION}-runtime-libs.zip")
+        ls -l "${ASSETS[@]}"
+
+        if [[ "${RELEASE}" == "true" ]] ; then
+            if [[ "${REF_NAME}" != "v${ZSERIO_VERSION}" ]] ; then
+                echo "::error::Tag ${REF_NAME} does not match the built zserio version ${ZSERIO_VERSION}"
+                exit 1
+            fi
+            if [[ "$(gh release view "${REF_NAME}" --json isDraft --jq .isDraft 2>/dev/null)" == "true" ]] ; then
+                echo "Publishing the prepared draft release ${REF_NAME}"
+                gh release upload "${REF_NAME}" "${ASSETS[@]}"
+                gh release edit "${REF_NAME}" --draft=false
+            else
+                echo "Creating the release ${REF_NAME}"
+                gh release create "${REF_NAME}" "${ASSETS[@]}" --verify-tag --title "Zserio ${REF_NAME}" \
+                        --generate-notes
+            fi
+            gh release view "${REF_NAME}" --json name,isDraft,assets --jq '{name, isDraft, assets: [.assets[].name]}'
+        else
+            DRAFT_TAG="v${ZSERIO_VERSION}-dry-run-${GITHUB_RUN_ID}"
+            echo "Creating and deleting the draft release ${DRAFT_TAG}"
+            gh release create "${DRAFT_TAG}" "${ASSETS[@]}" --draft --target "${GITHUB_SHA}" \
+                    --title "Zserio v${ZSERIO_VERSION} dry run ${GITHUB_RUN_ID}" \
+                    --notes "Dry run of the release workflow, deleted by the same job."
+            trap 'gh release delete "${DRAFT_TAG}" --yes' EXIT
+            gh release view "${DRAFT_TAG}" --json name,isDraft,assets --jq '{name, isDraft, assets: [.assets[].name]}'
+        fi
+
+  pages:
+    name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
+        'Release: deploy zserio.org' || 'Dry run: build zserio.org, no deployment'}}"
+    needs: [github_release]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: "./.github/workflows/pages.yml"
+    with:
+      source_ref: ${{github.sha}}
+      release_artifacts: true
+      deploy: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
+
+  wheel:
+    needs: [github_release]
+    runs-on: "ubuntu-22.04"
+    steps:
+    - name: "Select the release to build the wheel from"
+      env:
+        RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
+        REF_NAME: ${{github.ref_name}}
+        INPUT_WHEEL_TAG: ${{inputs.wheel_tag}}
+      run: |
+        if [[ "${RELEASE}" == "true" ]] ; then
+            WHEEL_TAG="${REF_NAME}"
+        elif [[ -n "${INPUT_WHEEL_TAG}" ]] ; then
+            WHEEL_TAG="${INPUT_WHEEL_TAG}"
+        else
+            WHEEL_TAG="${REF_NAME#release-dry-run/}"
+        fi
+        if [[ ! "${WHEEL_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]] ; then
+            echo "::error::Invalid release tag '${WHEEL_TAG}' to build the wheel from"
+            exit 1
+        fi
+        echo "Building the wheel from the zserio release ${WHEEL_TAG}"
+        echo "ZSERIO_RELEASE_TAG=${WHEEL_TAG}" >> "${GITHUB_ENV}"
+
+    - name: "Checkout zserio-pypi"
+      uses: actions/checkout@v4
+      with:
+        repository: ndsev/zserio-pypi
+        ref: ${{github.event_name == 'push' && github.ref_type == 'tag' && 'master' || inputs.zserio_pypi_ref || 'master'}}
+
+    - name: "Set up JDK 1.8"
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 8
+
+    - name: "Set up Python 3.12"
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: "Install Python dependencies"
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install virtualenv packaging
+
+    - name: "Build the zserio wheel"
+      run: scripts/build.sh
+
+    - name: "Test the zserio wheel"
+      run: scripts/test.sh
+
+    - name: "Check the wheel version"
+      run: |
+        ls -l distr
+        WHEEL_VERSION="${ZSERIO_RELEASE_TAG#v}"
+        if [[ ! -f "distr/zserio-${WHEEL_VERSION}-py3-none-any.whl" || ! -f "distr/zserio-${WHEEL_VERSION}.tar.gz" ]] ; then
+            echo "::error::Expected the wheel and the sdist of zserio ${WHEEL_VERSION} in distr"
+            exit 1
+        fi
+
+    - name: "Archive the zserio wheel"
+      uses: actions/upload-artifact@v4
+      with:
+        name: zserio-pypi-dist
+        path: distr/*
+
+  pypi:
+    name: "Release: upload to PyPI"
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [wheel]
+    runs-on: "ubuntu-22.04"
+    environment:
+      name: pypi
+      url: https://pypi.org/project/zserio/
+    permissions:
+      id-token: write
+    steps:
+    - name: "Download the zserio wheel"
+      uses: actions/download-artifact@v4
+      with:
+        name: zserio-pypi-dist
+        path: dist
+
+    - name: "Publish to PyPI"
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  # the token is never used, it expires on its own
+  pypi_token_exchange:
+    name: "Dry run: PyPI token check, no upload"
+    if: ${{!(github.event_name == 'push' && github.ref_type == 'tag')}}
+    needs: [wheel]
+    runs-on: "ubuntu-22.04"
+    environment:
+      name: pypi
+    permissions:
+      id-token: write
+    steps:
+    - name: "Set up Python 3.12"
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: "Install Python dependencies"
+      run: |
+        python -m pip install pymacaroons
+
+    - name: "Exchange the OIDC token for a PyPI token scoped to one project"
+      run: |
+        AUDIENCE="$(curl -sSf https://pypi.org/_/oidc/audience | jq -er .audience)"
+        OIDC_TOKEN="$(curl -sSf -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+                "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}" | jq -er .value)"
+        echo "::add-mask::${OIDC_TOKEN}"
+        RESPONSE="$(curl -sS -X POST https://pypi.org/_/oidc/mint-token \
+                -H "Content-Type: application/json" -d "{\"token\": \"${OIDC_TOKEN}\"}")"
+        if ! PYPI_TOKEN="$(jq -er .token <<< "${RESPONSE}")" ; then
+            echo "::error::PyPI did not return a token: $(jq -c 'del(.token)' <<< "${RESPONSE}")"
+            exit 1
+        fi
+        echo "::add-mask::${PYPI_TOKEN}"
+        echo "PyPI returned a token, expires at $(jq -r .expires <<< "${RESPONSE}")"
+
+        # PyPI caveats are JSON lists [tag, ...], tag 2 is ProjectID with the list of project ids
+        PYPI_TOKEN="${PYPI_TOKEN}" python - << "EOF"
+        import json
+        import os
+        import sys
+
+        import pymacaroons
+
+        token = os.environ["PYPI_TOKEN"]
+        macaroon = pymacaroons.Macaroon.deserialize(token[len("pypi-"):])
+        caveats = [json.loads(caveat.caveat_id) for caveat in macaroon.first_party_caveats()]
+        print("PyPI token caveats:", json.dumps(caveats))
+        project_ids = [caveat[1] for caveat in caveats if isinstance(caveat, list) and caveat[0] == 2]
+        if len(project_ids) != 1 or len(project_ids[0]) != 1:
+            sys.exit("The PyPI token is not scoped to exactly one project")
+        print("The PyPI token is scoped to the project id", project_ids[0][0])
+        EOF
+
+  maven:
+    name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
+        'Release: upload to the Central Portal, publish by hand' ||
+        'Dry run: Central Portal validation, then dropped'}}"
+    needs: [github_release]
+    runs-on: "ubuntu-22.04"
+    environment:
+      name: maven-central
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v4
+
+    - name: "Set up JDK 17"
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: "Download release artifacts"
+      uses: actions/download-artifact@v4
+      with:
+        pattern: linux-release-*
+        path: release
+        merge-multiple: true
+
+    - name: "Upload to the Central Portal"
+      # explicit bash runs with pipefail, the exit status of ant must not be lost in the pipe to tee
+      shell: bash
+      env:
+        RELEASE: ${{github.event_name == 'push' && github.ref_type == 'tag'}}
+        CENTRAL_TOKEN_USERNAME: ${{secrets.CENTRAL_TOKEN_USERNAME}}
+        CENTRAL_TOKEN_PASSWORD: ${{secrets.CENTRAL_TOKEN_PASSWORD}}
+        MAVEN_GPG_KEY: ${{secrets.MAVEN_GPG_KEY}}
+        MAVEN_GPG_PASSPHRASE: ${{secrets.MAVEN_GPG_PASSPHRASE}}
+      run: |
+        mvn --version
+        shopt -s nullglob
+        BIN_ZIPS=(release/zserio-*-bin.zip)
+        if [[ ${#BIN_ZIPS[@]} -ne 1 ]] ; then
+            echo "::error::Expected one zserio binary zip, found: ${BIN_ZIPS[*]}"
+            exit 1
+        fi
+        ZSERIO_VERSION="${BIN_ZIPS[0]#release/zserio-}"
+        ZSERIO_VERSION="${ZSERIO_VERSION%-bin.zip}"
+
+        if [[ "${RELEASE}" == "true" ]] ; then
+            DEPLOY_VERSION="${ZSERIO_VERSION}"
+        else
+            # a version never published, the deployment is dropped by this job
+            DEPLOY_VERSION="${ZSERIO_VERSION}-dry-run.${GITHUB_RUN_ID}"
+            drop_deployment()
+            {
+                local DEPLOYMENT_ID
+                DEPLOYMENT_ID="$(sed -n 's/.*Uploaded bundle successfully.*deploymentId: \([0-9a-f-]*\)\..*/\1/p' \
+                        deploy.log)"
+                if [[ -z "${DEPLOYMENT_ID}" ]] ; then
+                    echo "No deployment uploaded, nothing to drop"
+                    return 0
+                fi
+                echo "Dropping the deployment ${DEPLOYMENT_ID}"
+                local AUTH
+                AUTH="$(printf "%s:%s" "${CENTRAL_TOKEN_USERNAME}" "${CENTRAL_TOKEN_PASSWORD}" | base64 -w0)"
+                echo "::add-mask::${AUTH}"
+                curl -sSf -X DELETE -H "Authorization: Bearer ${AUTH}" \
+                        "https://central.sonatype.com/api/v1/publisher/deployment/${DEPLOYMENT_ID}"
+                echo "Deployment ${DEPLOYMENT_ID} dropped"
+            }
+            trap drop_deployment EXIT
+        fi
+
+        # waits until the deployment is validated, a failed validation fails the job
+        ant -Dzserio.build_dir="${RUNNER_TEMP}/zserio-deploy" \
+                -Dzserio.deploy.snapshot_flag=no \
+                -Dzserio.deploy.release_dir="${GITHUB_WORKSPACE}/release" \
+                -Dzserio.deploy.release_version="${ZSERIO_VERSION}" \
+                -Dzserio.deploy.version="${DEPLOY_VERSION}" \
+                -Dzserio.deploy.maven_args="-Dgpg.signer=bc" \
+                deploy 2>&1 | tee deploy.log

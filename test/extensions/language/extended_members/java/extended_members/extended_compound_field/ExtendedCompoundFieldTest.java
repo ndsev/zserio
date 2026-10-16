@@ -57,6 +57,31 @@ public class ExtendedCompoundFieldTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Extended extended1 = new Extended();
+        final Extended extended2 = new Extended();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setValue(13);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertTrue(extended2.compareTo(extended1) < 0);
+
+        extended2.setValue(13);
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended2.setExtendedValue(new Compound(COMPOUND_ARRAY));
+        assertTrue(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        extended1.setExtendedValue(new Compound(COMPOUND_ARRAY));
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Extended extended1 = new Extended();

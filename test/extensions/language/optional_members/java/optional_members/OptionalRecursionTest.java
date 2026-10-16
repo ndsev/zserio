@@ -76,6 +76,31 @@ public class OptionalRecursionTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Block block1 = createBlock(BLOCK1_DATA);
+        final Block block2 = createBlock(BLOCK1_DATA);
+        assertFalse(block1.compareTo(block2) < 0);
+        assertFalse(block2.compareTo(block1) < 0);
+
+        final Block block12_1 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertTrue(block1.compareTo(block12_1) < 0);
+        assertFalse(block12_1.compareTo(block1) < 0);
+
+        final Block block12_2 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertFalse(block12_1.compareTo(block12_2) < 0);
+        assertFalse(block12_2.compareTo(block12_1) < 0);
+
+        block12_1.setBlockTerminator((short)0); // set but not used
+        assertTrue(block12_1.compareTo(block12_2) < 0);
+        assertFalse(block12_2.compareTo(block12_1) < 0);
+
+        block12_2.setBlockTerminator((short)0); // set but not used
+        assertFalse(block12_1.compareTo(block12_2) < 0);
+        assertFalse(block12_2.compareTo(block12_1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final Block emptyBlock1 = new Block((short)0);

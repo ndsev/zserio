@@ -328,6 +328,30 @@ java.lang.Double.doubleToLongBits(<@compound_get_field field/>) == java.lang.Dou
     </#if>
 </#macro>
 
+<#macro compound_compare_to_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#local isUsed=field.optional.isUsedIndicatorName>
+        <#local otherIsUsed="other" + isUsed?cap_first>
+${I}final boolean ${isUsed} = ${isUsed}();
+${I}final boolean ${otherIsUsed} = other.${isUsed}();
+${I}if (${isUsed} && ${otherIsUsed})
+${I}{
+${I}    result = zserio.runtime.CompareUtil.compare(<@field_member_name field/>, other.<@field_member_name field/>);
+${I}    if (result != 0)
+${I}        return result;
+${I}}
+${I}else if (${isUsed} != ${otherIsUsed})
+${I}{
+${I}    return ${isUsed} ? 1 : -1;
+${I}}
+    <#else>
+${I}result = zserio.runtime.CompareUtil.compare(<@field_member_name field/>, other.<@field_member_name field/>);
+${I}if (result != 0)
+${I}    return result;
+    </#if>
+</#macro>
+
 <#macro compound_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>

@@ -31,33 +31,44 @@ test_python_runtime()
     fi
     echo
 
-    echo "Running python runtime unit tests with C++ optimizations."
-    echo
+    # without the C++ optimizations, their code paths stay uncovered and the coverage cannot reach 100%
+    local COVERAGE_DATA_FILES=("coverage_python.data")
+    local COVERAGE_FAIL_UNDER=()
+    if [[ ${PYTHON_CPP_ENABLED} == 1 ]] ; then
+        echo "Running python runtime unit tests with C++ optimizations."
+        echo
 
-    local ZSERIO_CPP_DIR
-    ZSERIO_CPP_DIR=$(ls -d1 "${BUILD_DIR}/zserio_cpp/lib"*)
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Failed to locate C++ runtime binding to Python!"
-        popd > /dev/null
-        return 1
-    fi
+        local ZSERIO_CPP_DIR
+        ZSERIO_CPP_DIR=$(ls -d1 "${BUILD_DIR}/zserio_cpp/lib"*)
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to locate C++ runtime binding to Python!"
+            popd > /dev/null
+            return 1
+        fi
 
-    ZSERIO_PYTHON_IMPLEMENTATION="cpp" \
-    PYTHONPATH="${SOURCES_DIR}:${ZSERIO_CPP_DIR}" python \
-            -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" --data-file=coverage_cpp.data \
-            -m unittest discover -s "${TESTS_DIR}" -v
-    local PYTHON_RESULT=$?
-    if [ ${PYTHON_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python unit tests with C++ optimizations failed with return code ${PYTHON_RESULT}!"
-        popd > /dev/null
-        return 1
+        ZSERIO_PYTHON_IMPLEMENTATION="cpp" \
+        PYTHONPATH="${SOURCES_DIR}:${ZSERIO_CPP_DIR}" python \
+                -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" --data-file=coverage_cpp.data \
+                -m unittest discover -s "${TESTS_DIR}" -v
+        local PYTHON_RESULT=$?
+        if [ ${PYTHON_RESULT} -ne 0 ] ; then
+            stderr_echo "Running python unit tests with C++ optimizations failed with return code ${PYTHON_RESULT}!"
+            popd > /dev/null
+            return 1
+        fi
+        echo
+
+        COVERAGE_DATA_FILES+=("coverage_cpp.data")
+        COVERAGE_FAIL_UNDER=("--fail-under=100")
+    else
+        echo "Skipping python runtime unit tests with C++ optimizations (PYTHON_CPP_ENABLED=${PYTHON_CPP_ENABLED})."
+        echo
     fi
-    echo
 
     echo "Running python coverage report."
     echo
 
-    python -m coverage combine --keep coverage_cpp.data coverage_python.data
+    python -m coverage combine --keep "${COVERAGE_DATA_FILES[@]}"
     python -m coverage xml -o "coverage/coverage_report.xml" --omit="*test_object*"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
@@ -65,7 +76,7 @@ test_python_runtime()
         popd > /dev/null
         return 1
     fi
-    python -m coverage html --directory="coverage" --fail-under=100 \
+    python -m coverage html --directory="coverage" "${COVERAGE_FAIL_UNDER[@]}" \
             --omit="*test_object*" --title="Zserio Python Runtime Library"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
@@ -254,6 +265,8 @@ Package can be the combination of:
     cpp_rt-linux64-gcc       Zserio C++ extension runtime library for native linux64 (gcc).
     cpp_rt-linux32-clang     Zserio ASIL C++ extension runtime library for native linux32 (Clang).
     cpp_rt-linux64-clang     Zserio ASIL C++ extension runtime library for native linux64 (Clang).
+    cpp_rt-linuxarm64-gcc    Zserio C++ extension runtime library for native linuxarm64 (gcc).
+    cpp_rt-linuxarm64-clang  Zserio C++ extension runtime library for native linuxarm64 (Clang).
     cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
     cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
     java                     Zserio Java extension.
@@ -267,6 +280,8 @@ Package can be the combination of:
     all-linux64-gcc          All available packages for linux64 (gcc).
     all-linux32-clang        All available packages for linux32 (Clang).
     all-linux64-clang        All available packages for linux64 (Clang).
+    all-linuxarm64-gcc       All available packages for linuxarm64 (gcc).
+    all-linuxarm64-clang     All available packages for linuxarm64 (Clang).
     all-windows64-mingw      All available packages for windows64 target (MinGW64).
     all-windows64-msvc       All available packages for windows64 target (MSVC).
 
@@ -381,7 +396,7 @@ parse_arguments()
                 eval ${PARAM_CPP_OUT}=1
                 ;;
 
-            "cpp_rt-linux32-"* | "cpp_rt-linux64-"* | "cpp_rt-windows64-"*)
+            "cpp_rt-linux32-"* | "cpp_rt-linux64-"* | "cpp_rt-linuxarm64-"* | "cpp_rt-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp_rt-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -414,7 +429,7 @@ parse_arguments()
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
 
-            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-linuxarm64-"* | "all-windows64-"*)
                 eval ${PARAM_ANT_TASK_OUT}=1
                 eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_CPP_OUT}=1
@@ -690,10 +705,12 @@ main()
             local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
 
             # compile C++ runtime binding to Python
-            build_cpp_binding_to_python "${PYTHON_RUNTIME_ROOT}/src" "${CPP_RUNTIME_DIR}" \
-                    "${PYTHON_RUNTIME_BUILD_DIR}"
-            if [ $? -ne 0 ] ; then
-                return 1
+            if [[ ${PYTHON_CPP_ENABLED} == 1 ]] ; then
+                build_cpp_binding_to_python "${PYTHON_RUNTIME_ROOT}/src" "${CPP_RUNTIME_DIR}" \
+                        "${PYTHON_RUNTIME_BUILD_DIR}"
+                if [ $? -ne 0 ] ; then
+                    return 1
+                fi
             fi
 
             test_python_runtime "${PYTHON_RUNTIME_ROOT}" "${PYTHON_RUNTIME_BUILD_DIR}"
