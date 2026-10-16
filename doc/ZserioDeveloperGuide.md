@@ -5,6 +5,154 @@ extensions, the runtime libraries, the tests or the CI of this repository, and t
 not for developers who use zserio in their own projects; they find their documentation in the
 [README](../README.md#documentation).
 
+* [Repository Layout](#repository-layout)
+* [Building](#building)
+* [Testing](#testing)
+* [Continuous Integration](#continuous-integration)
+* [C++ Static Analysis](#c-static-analysis)
+* [Versioning](#versioning)
+* [Releasing](#releasing)
+* [zserio.org](#zserioorg)
+
+How to propose a change, the coding style and the review are described in the
+[Contribution Guide](../CONTRIBUTING.md).
+
+## Repository Layout
+
+| Path | Content |
+|------|---------|
+| `compiler/core` | zserio core: the ANTLR grammar, the parser, the AST, the checks and the extension loading |
+| `compiler/extensions/<language>` | the extensions `cpp`, `java`, `python`, `doc` and `xml`: Java sources, FreeMarker templates and tests of the generator |
+| `compiler/extensions/<language>/runtime` | the runtime libraries of C++, Java and Python with their unit tests and test objects |
+| `test/core` | tests of zserio core: schemas with expected errors and warnings |
+| `test/extensions` | tests of the generated code, one directory per test, each with its schemas and its `cpp`, `java` and `python` tests |
+| `test/data` | submodule [zserio-test-data](https://github.com/ndsev/zserio-test-data) with the schemas and data the tests share |
+| `scripts` | Bash scripts to build, pack, test and release zserio |
+| `cmake` | CMake helpers: toolchains, compiler warnings, clang-tidy, clang-format and coverage |
+| `ant_task`, `build.xml` | the zserio Ant task and the top level Ant build |
+| `benchmarks` | the benchmarks and the submodule [zserio-benchmarks-datasets](https://github.com/ndsev/zserio-benchmarks-datasets) |
+| `3rdparty` | third party sources: Java libraries, googletest (submodule) and SQLite |
+| `doc` | the documentation of zserio, which is also published on [zserio.org](#zserioorg) |
+| `.github/workflows` | the CI, release and Pages workflows |
+
+Clone with the submodules, the tests need `test/data`:
+
+```bash
+git clone --recursive https://github.com/ndsev/zserio.git
+```
+
+## Building
+
+[Zserio Compiler Build Instructions](ZserioBuildInstructions.md) list the prerequisites and the packages of
+`scripts/build.sh`, which builds into the directory `distr`. `scripts/build.sh -h` and `scripts/build.sh -e` show
+the current packages and the environment variables, e.g. `GCC_VERSION_SUFFIX` or `CLANG_TIDY_BIN`.
+
+The tests do not run on `distr` but on a packed release in `release-<version>`, made by `scripts/release.sh`.
+The usual sequence for a linux64 gcc build is:
+
+```bash
+scripts/build.sh all-linux64-gcc
+scripts/release.sh
+scripts/test.sh all-linux64-gcc
+```
+
+Building a runtime library package, e.g. `cpp_rt-linux64-gcc`, also runs the unit tests of that runtime library.
+
+## Testing
+
+[`scripts/test.sh`](../scripts/test.sh) runs the tests of `test/core` and `test/extensions` with the release in
+`release-<version>`. `scripts/test.sh -h` lists the packages, `scripts/test.sh -e` the environment variables.
+
+```bash
+scripts/test.sh core                                        # zserio core tests
+scripts/test.sh java python                                 # all Java and Python tests
+scripts/test.sh cpp-linux64-gcc -i language/choice_types    # one test directory
+scripts/test.sh python -i "language/*" -x "*sql_tables*"    # patterns to include and exclude
+scripts/test.sh -p cpp-linux64-gcc                          # purge the test build directory first
+```
+
+`ZSERIO_EXTRA_ARGS` passes extra zserio arguments to every test, the CI runs the C++ tests also with
+`-withTypeInfoCode -withReflectionCode ...`, see [Continuous Integration](#continuous-integration).
+
+Further test scripts in [`scripts`](../scripts), each with `-h`:
+
+| Script | Tests |
+|--------|-------|
+| `test_zs.sh` | given zserio sources outside of `test` |
+| `test_gen.sh` | that repeated generation of the same schema gives the same sources |
+| `test_compat_api.sh` | the tests of an older zserio version against the generated API of this version |
+| `test_perf.sh`, `benchmark.sh` | the performance on given zserio sources and the [benchmarks](../benchmarks/README.md) |
+
+A new language feature or fix comes with tests in `test/extensions` for each language, a new check or error of
+zserio core with a test in `test/core`.
+
+## Continuous Integration
+
+The workflows *Linux* ([`build_linux.yml`](../.github/workflows/build_linux.yml)) and *Windows*
+([`build_windows.yml`](../.github/workflows/build_windows.yml)) build and test zserio in legs: `zserio` (core and
+the bundle, needed by every other leg), `cpp`, `java`, `python`, `doc` and `xml`. Two kinds of run exist:
+
+| Run | When | What runs |
+|-----|------|-----------|
+| smoke run | pull requests into `master`, `release/**` or `*-ci`, and pushes to a branch named `*-ci` | only the Linux legs whose changed paths can affect them, one leg per language, without Windows and without the extra and slow checks |
+| full run | pushes to `master` and `release/**`, manual runs, the release workflow (Linux only) | all legs on Linux and Windows with all checks, e.g. all compilers, extra arguments, clang-tidy, the API compatibility check |
+
+[`select_legs.yml`](../.github/workflows/select_legs.yml) decides between the two. In a smoke run,
+[`.github/scripts/select_legs.sh`](../.github/scripts/select_legs.sh) maps the changed paths to the legs:
+
+* `compiler/core`, `scripts`, `cmake` and `.github` run all legs,
+* `doc/`, `*.md`, `LICENSE` and `CNAME` run no leg,
+* `compiler/extensions/<language>` runs the leg of that language, C++ also the Python leg, which builds the C++
+  runtime for its C++ binding,
+* `test/*/<language>/*` runs the leg of that language, any other test path (e.g. a schema shared by all
+  languages) runs all legs,
+* any unknown path runs all legs.
+
+A change of the mapping comes with a case in [`.github/scripts/test_select_legs.sh`](../.github/scripts/test_select_legs.sh),
+which every run executes first.
+
+A smoke run misses what only a full run checks: the Windows legs, the other compilers and the clang-tidy run over
+the tests. That shows up on the next push to `release/**`. To get a full run for a branch before it is merged,
+start the workflows by hand: `gh workflow run build_linux.yml -R ndsev/zserio --ref <branch>`, likewise
+`build_windows.yml`.
+
+*SonarCloud* ([`sonar_cloud_trigger.yml`](../.github/workflows/sonar_cloud_trigger.yml)) analyses only pushes to
+`master` and `release/**`.
+
+## C++ Static Analysis
+
+clang-tidy checks the C++ runtime library and the C++ tests including their generated code, clang-format checks
+the runtime library and the hand written test sources against [`.clang-format`](../.clang-format). Both run when
+their binary is set: `CLANG_TIDY_BIN=clang-tidy-14` and `CLANG_FORMAT_BIN=clang-format-14` for
+`scripts/build.sh` and `scripts/test.sh`. `CLANG_TIDY_ONLY=1` makes `scripts/test.sh` only run clang-tidy over
+the C++ tests instead of building and running them, which is what the CI job `cpp-clang-tidy` does in a full run.
+
+The checks are configured per target:
+
+* the runtime library: [`ClangTidyConfig.txt`](../compiler/extensions/cpp/runtime/ClangTidyConfig.txt) and
+  [`ClangTidySuppressions.txt`](../compiler/extensions/cpp/runtime/ClangTidySuppressions.txt) in
+  `compiler/extensions/cpp/runtime`,
+* the tests: a `ClangTidySuppressions.txt` next to the `CMakeLists.txt` of a test directory in `test/extensions`.
+
+A warning which is neither fixed nor suppressed fails the build. The suppressions are matched by
+[`cmake/clang_tidy_check.cmake`](../cmake/clang_tidy_check.cmake) against the clang-tidy log, one per line,
+`#` starts a comment:
+
+```
+rule-definition                    # suppress the rule everywhere
+rule-definition:path-regex         # suppress the rule in matching paths
+rule-definition:path-regex:10      # suppress the rule on line 10 of matching paths
+rule-definition:path-regex:10:1    # suppress the rule at line 10, column 1 of matching paths
+```
+
+For example `bugprone-signed-char-misuse:src/zserio/DeltaContext.h:95`. Each suppression gets a comment above it
+why the warning is accepted.
+
+The runtime library is built with `WERROR_UNUSED_SUPPRESSIONS`: a suppression which no longer matches a warning
+fails the build as well. A line based suppression therefore has to move with its code: a change which shifts
+lines of a suppressed file must shift the line numbers of its suppressions in the same pull request. The build
+prints the unused suppressions and the unsuppressed warnings, which give the new line numbers.
+
 ## Versioning
 
 Zserio has independent versions, each changed by `scripts/update_version.sh <type> <version>` (`-m` commits
@@ -16,14 +164,14 @@ the change, `-h` lists the types):
 | `cpp`, `java`, `python`, `doc`, `xml` | each extension `A.B.C` | its `*ExtensionVersion.java`, for C++ also `CppRuntimeVersion.h` of the C++ runtime |
 | `bin`, `json` | the binary and the JSON encoding | [Zserio Encoding Guide](ZserioEncodingGuide.md), [Zserio JSON Guide](ZserioJsonGuide.md) and the extension version files |
 
-The rules as practised in the releases so far:
+What a major, minor or patch version promises to zserio users is described in the
+[Zserio Compatibility Guide](ZserioCompatibilityGuide.md); choose the size of each bump by it. The rules as
+practised in the releases so far:
 
-* Every release bumps the core version: the patch version for a bugfix release, the minor version for a release
-  with new features.
+* Every release bumps the core version.
 * Every core release bumps **every** extension at least by a patch version, also an extension without changes:
-  the core bump rewrites `EXPECTED_ZSERIO_VERSION_STRING` in every extension, and zserio core loads only an
-  extension which expects the same major.minor version and not a newer patch version. An extension with new
-  features or changed generated API gets a minor bump instead.
+  the core bump rewrites `EXPECTED_ZSERIO_VERSION_STRING` in every extension, which decides whether zserio core
+  loads the extension, see [Extension API Compatibility](ZserioCompatibilityGuide.md#extension-api-compatibility).
 * `bin` and `json` change only when the encoding itself changes, which has not happened so far.
 * After the version bumps, `scripts/update_test_objects.sh -m all` regenerates the test objects of the C++, Java
   and Python runtime libraries (`compiler/extensions/*/runtime/test*/test_object`). The header of each generated
@@ -411,3 +559,26 @@ extension must change. zserio-cpp17 has no release workflow; its release is made
   `gh release upload vA.B.C <zip> --clobber -R ndsev/zserio-cpp17`.
 
 The release of zserio `X.Y.Z` is complete when step 10 is.
+
+## zserio.org
+
+The site [zserio.org](https://zserio.org) is built by Jekyll from the zserio sources of a release with the
+configuration [`.github/pages/_config.yml`](../.github/pages/_config.yml): the README, the documents in `doc`
+(this guide included) and the runtime library documentation of every published version. It is deployed to GitHub
+Pages by the workflow [`pages.yml`](../.github/workflows/pages.yml); the repository Pages source is *GitHub
+Actions* and the custom domain is in [`CNAME`](../CNAME).
+
+* The release workflow deploys the site of each release tag, see [step 8](#8-zserioorg) of Releasing.
+* The runtime docs up to 2.19.0 come from the archive kept by the tag `web-pages-archive`, the newer ones from the
+  `zserio-X.Y.Z-runtime-libs.zip` of each published release. Of each minor line only the highest patch version is
+  published, the older patch versions redirect to it.
+* [`scripts/build_web_pages.sh`](../scripts/build_web_pages.sh) assembles the site sources locally,
+  `scripts/build_web_pages.sh -h` shows how.
+* A push to a branch `pages-dry-run/<ref>` builds the site of `<ref>` without deploying it. A manual run of
+  `pages.yml` with `deploy` checked re-deploys the site, e.g. of the latest release tag:
+
+  ```bash
+  gh workflow run pages.yml -R ndsev/zserio -f source_ref=vX.Y.Z -f deploy=true
+  ```
+
+A change of `doc` reaches zserio.org only with the next deployment, normally the next release.
