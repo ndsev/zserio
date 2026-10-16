@@ -275,7 +275,7 @@ the built `zserio-X.Y.Z-bin.zip` and refuses a tag which does not match it.
 ### 2. Green CI
 
 A push to `release/X.Y` runs the Linux and Windows workflows with all legs (pull requests run only the legs
-their paths affect, see [CONTRIBUTING.md](../CONTRIBUTING.md)).
+their paths affect, see [Continuous Integration](#continuous-integration)).
 
 ```bash
 gh run list -R ndsev/zserio --branch release/X.Y --limit 10
