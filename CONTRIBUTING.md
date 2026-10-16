@@ -4,6 +4,8 @@ The following summarizes the process for contributing changes to the Zserio proj
 
 ## Where to start
 
+* [Zserio Developer Guide](doc/ZserioDeveloperGuide.md): repository layout, building, testing, CI, C++ static
+  analysis, versioning and releasing.
 * [Zserio Build Instructions](doc/ZserioBuildInstructions.md).
 
 ## General rules for any code contribution
@@ -34,12 +36,9 @@ The following summarizes the process for contributing changes to the Zserio proj
     black source.py --line-length 112
     ```
 
-* Ensure that all GitHub [workflows](https://github.com/ndsev/zserio/actions) are passing.
-
-    > Pull requests run only the build legs their changed paths can affect, e.g. a change only in
-      `compiler/extensions/python` runs only the Python legs and a documentation only change runs
-      none. The mapping lives in `.github/scripts/select_legs.sh`. Pushes to `master` and
-      `release/**` always run all legs.
+* Ensure that all GitHub [workflows](https://github.com/ndsev/zserio/actions) are passing. Pull requests run
+  only the build legs their changed paths can affect, see
+  [Continuous Integration](doc/ZserioDeveloperGuide.md#continuous-integration).
 
 * Wait for the review by [@Mi-La](https://www.github.com/Mi-La) or [@mikir](https://www.github.com/mikir).
 
@@ -85,8 +84,9 @@ The following summarizes the process for contributing changes to the Zserio proj
 
 ## Do you release Zserio?
 
-* [RELEASING.md](RELEASING.md) walks a release from the branch `release/X.Y` to the published artifacts and the
-  matching release of the [C++17 extension](https://github.com/ndsev/zserio-cpp17).
+* [Releasing](doc/ZserioDeveloperGuide.md#releasing) in the Zserio Developer Guide walks a release from the
+  branch `release/X.Y` to the published artifacts and the matching release of the
+  [C++17 extension](https://github.com/ndsev/zserio-cpp17).
 
 ## License
 
