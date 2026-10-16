@@ -85,8 +85,8 @@ The following summarizes the process for contributing changes to the Zserio proj
 
 ## Do you release Zserio?
 
-* [RELEASING.md](RELEASING.md) walks a release from the branch `release/X.Y` to the published artifacts and the
-  matching release of the [C++17 extension](https://github.com/ndsev/zserio-cpp17).
+* [Releasing](doc/ZserioDeveloperGuide.md#releasing) in the Zserio Developer Guide walks a release from the
+  branch `release/X.Y` to the published artifacts and the matching release of the [C++17 extension](https://github.com/ndsev/zserio-cpp17).
 
 ## License
 
