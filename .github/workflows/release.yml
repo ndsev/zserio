@@ -13,8 +13,7 @@ name: Release
 # - the OIDC token is exchanged for a PyPI token, which is only checked to be scoped to one project,
 # - the jars are uploaded to the Central Portal with the version suffix '-dry-run.<run id>', validated and dropped,
 # - the site is built and uploaded as the Pages artifact, it is not deployed.
-# A manual run takes 'wheel_tag' as input, a push to the branch 'release-dry-run/<wheel_tag>' takes it from
-# the branch name, it runs the dry run before this workflow is on the default branch.
+# A dry run is a manual run on 'release/X.Y' and takes 'wheel_tag' as input.
 #
 # PyPI trusts this workflow file in the GitHub environment 'pypi'.
 # The GitHub environment 'maven-central' holds the Central Portal user token in the secrets
@@ -28,7 +27,6 @@ run-name: "${{github.event_name == 'push' && github.ref_type == 'tag' &&
 on:
   push:
     tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
-    branches: [ 'release-dry-run/*' ]
   workflow_dispatch:
     inputs:
       wheel_tag:
@@ -132,10 +130,8 @@ jobs:
       run: |
         if [[ "${RELEASE}" == "true" ]] ; then
             WHEEL_TAG="${REF_NAME}"
-        elif [[ -n "${INPUT_WHEEL_TAG}" ]] ; then
-            WHEEL_TAG="${INPUT_WHEEL_TAG}"
         else
-            WHEEL_TAG="${REF_NAME#release-dry-run/}"
+            WHEEL_TAG="${INPUT_WHEEL_TAG}"
         fi
         if [[ ! "${WHEEL_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]] ; then
             echo "::error::Invalid release tag '${WHEEL_TAG}' to build the wheel from"
