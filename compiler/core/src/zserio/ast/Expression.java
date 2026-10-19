@@ -11,6 +11,7 @@ import java.util.Set;
 
 import zserio.antlr.ZserioParser;
 import zserio.ast.Scope.FoundSymbol;
+import zserio.extension.common.StringEscapeConverter;
 
 /**
  * AST node for expressions defined in the language.
@@ -1386,7 +1387,11 @@ public final class Expression extends AstNodeBase
             if (operand1.expressionStringValue == null || operand2.expressionStringValue == null)
                 throw new ParserException(this, "Constant string expressions expected!");
 
-            expressionStringValue = operand1.expressionStringValue + operand2.expressionStringValue;
+            // octal escapes must be normalized to prevent merging of escape ending the first operand with
+            // digits starting the second operand
+            expressionStringValue =
+                    StringEscapeConverter.normalizeOctalEscapes(operand1.expressionStringValue) +
+                    StringEscapeConverter.normalizeOctalEscapes(operand2.expressionStringValue);
         }
         else
         {

@@ -68,7 +68,7 @@ cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1522
 
 # This is necessary for implementation of deprecated constructor which accepts raw pointer. Constructor
 # with raw pointer cannot be removed because of backward compatibility.
-cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:274
+cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:275
 
 # This is false positive, the member is initialized.
 cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:70
@@ -152,8 +152,8 @@ cppcoreguidelines-avoid-c-arrays:test/zserio/SpanTest.cpp:45
 cppcoreguidelines-avoid-c-arrays:test/zserio/StringViewTest.cpp:769
 
 # Intentional tests.
-cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:366
-cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:380
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:377
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:391
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:34
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:38
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:81

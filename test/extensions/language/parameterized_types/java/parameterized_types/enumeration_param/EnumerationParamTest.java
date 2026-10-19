@@ -27,6 +27,21 @@ public class EnumerationParamTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final EnumerationParam enumerationParam1 = new EnumerationParam(BasicColor.WHITE, 0);
+        final EnumerationParam enumerationParam2 = new EnumerationParam(BasicColor.WHITE, 0);
+        assertFalse(enumerationParam1.compareTo(enumerationParam2) < 0);
+        assertFalse(enumerationParam2.compareTo(enumerationParam1) < 0);
+
+        enumerationParam2.setField(1);
+        assertTrue(enumerationParam1.compareTo(enumerationParam2) < 0);
+
+        final EnumerationParam enumerationParam3 = new EnumerationParam(BasicColor.BLACK, null);
+        assertFalse(enumerationParam1.compareTo(enumerationParam3) < 0);
+    }
+
+    @Test
     public void hashCodeMethod() throws IOException
     {
         final EnumerationParam enumerationParam1 = new EnumerationParam(BasicColor.WHITE, 0);

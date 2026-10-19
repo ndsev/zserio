@@ -118,6 +118,33 @@ public class UInt64ParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        UInt64ParamChoice uint64ParamChoice1 = new UInt64ParamChoice(VARIANT_A_SELECTOR);
+        UInt64ParamChoice uint64ParamChoice2 = new UInt64ParamChoice(VARIANT_B_SELECTOR);
+        assertTrue(uint64ParamChoice1.compareTo(uint64ParamChoice2) < 0);
+        assertFalse(uint64ParamChoice2.compareTo(uint64ParamChoice1) < 0);
+
+        uint64ParamChoice2 = new UInt64ParamChoice(VARIANT_A_SELECTOR);
+        assertFalse(uint64ParamChoice1.compareTo(uint64ParamChoice2) < 0);
+        assertFalse(uint64ParamChoice2.compareTo(uint64ParamChoice1) < 0);
+
+        final byte value = 99;
+        uint64ParamChoice1.setValueA(value);
+        assertFalse(uint64ParamChoice1.compareTo(uint64ParamChoice2) < 0);
+        assertTrue(uint64ParamChoice2.compareTo(uint64ParamChoice1) < 0);
+
+        uint64ParamChoice2.setValueA(value);
+        assertFalse(uint64ParamChoice1.compareTo(uint64ParamChoice2) < 0);
+        assertFalse(uint64ParamChoice2.compareTo(uint64ParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        uint64ParamChoice2.setValueA(diffValue);
+        assertTrue(uint64ParamChoice1.compareTo(uint64ParamChoice2) < 0);
+        assertFalse(uint64ParamChoice2.compareTo(uint64ParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         UInt64ParamChoice uint64ParamChoice1 = new UInt64ParamChoice(VARIANT_A_SELECTOR);

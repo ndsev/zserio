@@ -182,6 +182,35 @@ public class SimpleUnionTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final SimpleUnion simpleUnion1 = new SimpleUnion();
+        final SimpleUnion simpleUnion2 = new SimpleUnion();
+        assertFalse(simpleUnion1.compareTo(simpleUnion2) < 0);
+        assertFalse(simpleUnion2.compareTo(simpleUnion1) < 0);
+
+        simpleUnion1.setCase1Field(CASE1_FIELD);
+        assertFalse(simpleUnion1.compareTo(simpleUnion2) < 0);
+        assertTrue(simpleUnion2.compareTo(simpleUnion1) < 0);
+
+        simpleUnion2.setCase1Field(CASE1_FIELD);
+        assertFalse(simpleUnion1.compareTo(simpleUnion2) < 0);
+        assertFalse(simpleUnion2.compareTo(simpleUnion1) < 0);
+
+        simpleUnion2.setCase1Field((byte)(CASE1_FIELD + 1));
+        assertTrue(simpleUnion1.compareTo(simpleUnion2) < 0);
+        assertFalse(simpleUnion2.compareTo(simpleUnion1) < 0);
+
+        simpleUnion2.setCase2Field(CASE2_FIELD);
+        assertTrue(simpleUnion1.compareTo(simpleUnion2) < 0);
+        assertFalse(simpleUnion2.compareTo(simpleUnion1) < 0);
+
+        simpleUnion2.setCase4Field(CASE1_FIELD); // same value as simpleUnion1, but different choice
+        assertTrue(simpleUnion1.compareTo(simpleUnion2) < 0);
+        assertFalse(simpleUnion2.compareTo(simpleUnion1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         SimpleUnion simpleUnion1 = new SimpleUnion();

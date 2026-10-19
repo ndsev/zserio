@@ -70,6 +70,8 @@ Package                  | Description
 `cpp`                    | Zserio C++ extension.
 `cpp_rt-linux32`         | Zserio C++ extension runtime library for native linux32 (gcc).
 `cpp_rt-linux64`         | Zserio C++ extension runtime library for native linux64 (gcc).
+`cpp_rt-linuxarm64-gcc`  | Zserio C++ extension runtime library for native linuxarm64 (gcc).
+`cpp_rt-linuxarm64-clang`| Zserio C++ extension runtime library for native linuxarm64 (Clang).
 `cpp_rt-windows64-mingw` | Zserio C++ extension runtime library for windows64 target (MinGW64).
 `cpp_rt-windows64-msvc`  | Zserio C++ extension runtime library for windows64 target (MSVC).
 `java`                   | Zserio Java extension.
@@ -81,6 +83,8 @@ Package                  | Description
 `zserio`                 | Zserio bundle (Zserio Core packed together with all already built extensions).
 `all-linux32`            | All available packages for linux32.
 `all-linux64`            | All available packages for linux64.
+`all-linuxarm64-gcc`     | All available packages for linuxarm64 (gcc).
+`all-linuxarm64-clang`   | All available packages for linuxarm64 (Clang).
 `all-windows64-mingw`    | All available packages for windows64 (MinGW).
 `all-windows64-msvc`     | All available packages for windows64 (MSVC).
 

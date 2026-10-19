@@ -22,6 +22,7 @@ from zserio.bitsizeof import (
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.bitbuffer import BitBuffer
+from zserio.compare import compare
 from zserio.hashcode import (
     HASH_SEED,
     calc_hashcode_bool_array,
@@ -147,6 +148,21 @@ class Array:
             return self._raw_array == other._raw_array
 
         return False
+
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, Array):
+            return self._zserio_cmp(other) < 0
+
+        return NotImplemented
+
+    def _zserio_cmp(self, other: "Array") -> int:
+        # compares only raw_array lexicographically, the same as __eq__ does
+        for element, other_element in zip(self._raw_array, other._raw_array):
+            result = compare(element, other_element)
+            if result != 0:
+                return result
+
+        return compare(len(self._raw_array), len(other._raw_array))
 
     def __hash__(self) -> int:
         return self._array_traits.CALC_HASHCODE_FUNC(HASH_SEED, self._raw_array)

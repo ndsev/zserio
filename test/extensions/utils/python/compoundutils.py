@@ -96,5 +96,11 @@ def hashTest(value: Any, hashValue: int, equalValue: Any, diffValue: Any = None,
         assert diffHashValue == hash(diffValue)
 
 
-def comparisonOperatorsTest(value: Any, equalValue: Any):
+def comparisonOperatorsTest(value: Any, equalValue: Any, lessThanValue: Any = None):
     assert value == equalValue
+    assert not value < equalValue
+    if lessThanValue is not None:
+        assert value != lessThanValue
+        assert equalValue != lessThanValue
+        assert lessThanValue < value
+        assert not equalValue < lessThanValue

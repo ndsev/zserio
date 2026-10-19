@@ -4,6 +4,8 @@ The following summarizes the process for contributing changes to the Zserio proj
 
 ## Where to start
 
+* [Zserio Developer Guide](doc/ZserioDeveloperGuide.md): repository layout, building, testing, CI, C++ static
+  analysis, versioning and releasing.
 * [Zserio Build Instructions](doc/ZserioBuildInstructions.md).
 
 ## General rules for any code contribution
@@ -34,7 +36,9 @@ The following summarizes the process for contributing changes to the Zserio proj
     black source.py --line-length 112
     ```
 
-* Ensure that all GitHub [workflows](https://github.com/ndsev/zserio/actions) are passing.
+* Ensure that all GitHub [workflows](https://github.com/ndsev/zserio/actions) are passing. Pull requests run
+  only the build legs their changed paths can affect, see
+  [Continuous Integration](doc/ZserioDeveloperGuide.md#continuous-integration).
 
 * Wait for the review by [@Mi-La](https://www.github.com/Mi-La) or [@mikir](https://www.github.com/mikir).
 
@@ -77,6 +81,12 @@ The following summarizes the process for contributing changes to the Zserio proj
 * In case you want to implement a new generator (i.e. zserio extension), you can start with
   [Zserio Extension Sample](https://github.com/ndsev/zserio-extension-sample)
   and keep it as an external extension. We will be happy to add a link to your extension in our [README.md](README.md)!
+
+## Do you release Zserio?
+
+* [Releasing](doc/ZserioDeveloperGuide.md#releasing) in the Zserio Developer Guide walks a release from the
+  branch `release/X.Y` to the published artifacts and the matching release of the
+  [C++17 extension](https://github.com/ndsev/zserio-cpp17).
 
 ## License
 

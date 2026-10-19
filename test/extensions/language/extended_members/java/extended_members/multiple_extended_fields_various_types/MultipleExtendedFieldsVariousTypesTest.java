@@ -81,6 +81,27 @@ public class MultipleExtendedFieldsVariousTypesTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final Extended2 extended1 = new Extended2();
+        final Extended2 extended2 = new Extended2();
+        assertFalse(extended1.compareTo(extended2) < 0);
+        assertFalse(extended2.compareTo(extended1) < 0);
+
+        final Extended2 extended3 = createExtended2();
+        assertFalse(extended1.compareTo(extended3) < 0);
+        assertTrue(extended3.compareTo(extended1) < 0); // first field is VALUE (-13)
+
+        final Extended2 extended4 = createExtended2();
+        assertFalse(extended3.compareTo(extended4) < 0);
+        assertFalse(extended4.compareTo(extended3) < 0);
+
+        extended3.setExtendedValue9(BigInteger.ZERO);
+        assertTrue(extended3.compareTo(extended4) < 0);
+        assertFalse(extended4.compareTo(extended3) < 0);
+    }
+
+    @Test
     public void hashCodeTest()
     {
         final Extended2 extended1 = new Extended2();

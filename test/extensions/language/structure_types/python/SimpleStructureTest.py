@@ -54,6 +54,25 @@ class SimpleStructureTest(StructureTypes.TestCase):
         simpleStructure2.number_b = numberB
         self.assertTrue(simpleStructure1 == simpleStructure2)
 
+    def testLt(self):
+        simpleStructure1 = self.api.SimpleStructure()
+        simpleStructure2 = self.api.SimpleStructure()
+        self.assertFalse(simpleStructure1 < simpleStructure2)
+        self.assertFalse(simpleStructure2 < simpleStructure1)
+
+        simpleStructure1.number_a = 1
+        simpleStructure2.number_a = 1
+        simpleStructure1.number_b = 1
+        simpleStructure2.number_b = 1
+        simpleStructure1.number_c = 1
+        simpleStructure2.number_c = 2
+        self.assertTrue(simpleStructure1 < simpleStructure2)
+        self.assertFalse(simpleStructure2 < simpleStructure1)
+
+        simpleStructure1.number_b = 2
+        self.assertFalse(simpleStructure1 < simpleStructure2)
+        self.assertTrue(simpleStructure2 < simpleStructure1)
+
     def testHash(self):
         simpleStructure1 = self.api.SimpleStructure()
         simpleStructure2 = self.api.SimpleStructure()

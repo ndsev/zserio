@@ -294,6 +294,8 @@ test_cpp()
     local CTEST_ARGS=()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         local CPP_TARGET="clean"
+    elif [[ ${CLANG_TIDY_ONLY} == 1 ]] ; then
+        local CPP_TARGET="clang-tidy"
     else
         local CPP_TARGET="all"
     fi
@@ -304,7 +306,7 @@ test_cpp()
         return 1
     fi
 
-    if [[ ${SWITCH_CLEAN} != 1 ]] ; then
+    if [[ ${CPP_TARGET} == "all" ]] ; then
         for TARGET in "${CPP_TARGETS[@]}"; do
             local BUILD_TYPE="release"
             if [[ "${CMAKE_EXTRA_ARGS}" == *-DCMAKE_BUILD_TYPE=?ebug* ]] ; then
@@ -418,16 +420,21 @@ test_python()
             return 1
         fi
 
-        build_cpp_binding_to_python "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python" \
-                "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp" "${TEST_PYTHON_OUT_DIR}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        local ZSERIO_CPP_DIR
-        ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to locate C++ runtime binding to Python!"
-            return 1
+        # without --zserio_cpp_dir, the tests run only with the pure python runtime
+        local ZSERIO_CPP_ARGS=()
+        if [[ ${PYTHON_CPP_ENABLED} == 1 ]] ; then
+            build_cpp_binding_to_python "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python" \
+                    "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp" "${TEST_PYTHON_OUT_DIR}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+            local ZSERIO_CPP_DIR
+            ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to locate C++ runtime binding to Python!"
+                return 1
+            fi
+            ZSERIO_CPP_ARGS=("--zserio_cpp_dir=${ZSERIO_CPP_DIR}")
         fi
 
         local TEST_FILTER=""
@@ -453,7 +460,7 @@ test_python()
 
         python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
                 --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}" \
-                --zserio_cpp_dir="${ZSERIO_CPP_DIR}"
+                "${ZSERIO_CPP_ARGS[@]}"
         local PYTHON_RESULT=$?
         if [ ${PYTHON_RESULT} -ne 0 ] ; then
             stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"
@@ -816,6 +823,8 @@ Package can be a combination of:
     cpp-linux64-gcc       Zserio C++ tests for linux64 target (gcc).
     cpp-linux32-clang     Zserio C++ tests for linux32 target (Clang).
     cpp-linux64-clang     Zserio C++ tests for linux64 target (Clang).
+    cpp-linuxarm64-gcc    Zserio C++ tests for linuxarm64 target (gcc).
+    cpp-linuxarm64-clang  Zserio C++ tests for linuxarm64 target (Clang).
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
@@ -827,6 +836,8 @@ Package can be a combination of:
     all-linux64-gcc       Zserio all tests with C++ for linux64 target (gcc).
     all-linux32-clang     Zserio all tests with C++ for linux32 target (Clang).
     all-linux64-clang     Zserio all tests with C++ for linux64 target (Clang).
+    all-linuxarm64-gcc    Zserio all tests with C++ for linuxarm64 target (gcc).
+    all-linuxarm64-clang  Zserio all tests with C++ for linuxarm64 target (Clang).
     all-windows64-mingw   Zserio all tests with C++ for windows64 target (MinGW64).
     all-windows64-msvc    Zserio all tests with C++ for windows64 target (MSVC).
 
@@ -952,7 +963,7 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
+            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-linuxarm64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 NUM_TEST_TARGETS=$((NUM_TEST_TARGETS + 1))
@@ -980,7 +991,7 @@ parse_arguments()
                 eval ${PARAM_CORE_OUT}=1
                 ;;
 
-            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-linuxarm64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1

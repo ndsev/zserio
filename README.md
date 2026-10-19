@@ -185,6 +185,10 @@ Note that Zserio doesn't provide any Pub/Sub server. There are various implement
 (e.g. [mosquitto](https://github.com/eclipse/mosquitto)) and it's the responsibility of the user's Pub/Sub
 client implementation to communicate with the appropriate server.
 
+## Working on Zserio
+
+Working on zserio itself? See the [Zserio Developer Guide](doc/ZserioDeveloperGuide.md).
+
 ## Community
 
 A few community projects built around Zserio:

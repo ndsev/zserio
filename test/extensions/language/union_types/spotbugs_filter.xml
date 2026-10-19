@@ -8,6 +8,7 @@
             <Class name="union_types.union_with_multiple_parameters.TestUnion"/>
         </Or>
         <Or>
+            <Method name="compareTo"/>
             <Method name="hashCode"/>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>

@@ -55,6 +55,40 @@ public class UnionWithArrayTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final TestUnion testUnion1 = new TestUnion();
+        final TestUnion testUnion2 = new TestUnion();
+        assertFalse(testUnion1.compareTo(testUnion2) < 0);
+        assertFalse(testUnion2.compareTo(testUnion1) < 0);
+
+        testUnion1.setArray8(createArray8());
+        assertFalse(testUnion1.compareTo(testUnion2) < 0);
+        assertTrue(testUnion2.compareTo(testUnion1) < 0);
+
+        testUnion2.setArray8(createArray8());
+        assertFalse(testUnion1.compareTo(testUnion2) < 0);
+        assertFalse(testUnion2.compareTo(testUnion1) < 0);
+
+        testUnion2.getArray8()[0].setData((byte)0);
+        assertTrue(testUnion1.compareTo(testUnion2) < 0);
+        assertFalse(testUnion2.compareTo(testUnion1) < 0);
+
+        testUnion2.setArray16(createArray16());
+        assertTrue(testUnion1.compareTo(testUnion2) < 0);
+        assertFalse(testUnion2.compareTo(testUnion1) < 0);
+
+        testUnion1.setArray16(createArray16());
+        assertFalse(testUnion1.compareTo(testUnion2) < 0);
+        assertFalse(testUnion2.compareTo(testUnion1) < 0);
+
+        final short[] array16 = testUnion2.getArray16();
+        array16[array16.length - 1] = (short)(array16[array16.length - 1] - 1);
+        assertFalse(testUnion1.compareTo(testUnion2) < 0);
+        assertTrue(testUnion2.compareTo(testUnion1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         TestUnion testUnion1 = new TestUnion();

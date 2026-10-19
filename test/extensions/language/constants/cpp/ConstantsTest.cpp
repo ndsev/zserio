@@ -21,7 +21,11 @@
 #include "constants/INTFIELD8_MAX_CONSTANT.h"
 #include "constants/INTFIELD8_MIN_CONSTANT.h"
 #include "constants/JOINED_STRING_CONSTANT.h"
+#include "constants/OCTAL_ESC_JOINED_STRING_CONSTANT.h"
+#include "constants/OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT.h"
+#include "constants/OCTAL_ESC_MAX_STRING_CONSTANT.h"
 #include "constants/OCTAL_ESC_STRING_CONSTANT.h"
+#include "constants/OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT.h"
 #include "constants/READ_PERMISSION.h"
 #include "constants/READ_PERMISSION_VALUE.h"
 #include "constants/STRING_CONSTANT.h"
@@ -422,6 +426,39 @@ TEST(ConstantsTest, octalEscStringConstant)
     static_assert(OCTAL_ESC_STRING_CONSTANT.size() == 31, "shall be constexpr");
 
     ASSERT_EQ("Test string with octal escape \031"_sv, OCTAL_ESC_STRING_CONSTANT);
+}
+
+TEST(ConstantsTest, octalEscThreeDigitsStringConstant)
+{
+    static_assert(OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT.size() == 31, "shall be constexpr");
+
+    ASSERT_EQ("Test string with octal escape n"_sv, OCTAL_ESC_THREE_DIGITS_STRING_CONSTANT);
+}
+
+TEST(ConstantsTest, octalEscMaxStringConstant)
+{
+    // C++ keeps the single byte 0xFF, Java and Python use the character U+00FF
+    static_assert(OCTAL_ESC_MAX_STRING_CONSTANT.size() == 1, "shall be constexpr");
+
+    ASSERT_EQ("\377"_sv, OCTAL_ESC_MAX_STRING_CONSTANT);
+}
+
+TEST(ConstantsTest, octalEscJoinedStringConstant)
+{
+    static_assert(OCTAL_ESC_JOINED_STRING_CONSTANT.size() == 3, "shall be constexpr");
+
+    ASSERT_EQ("\001"
+              "56"_sv,
+            OCTAL_ESC_JOINED_STRING_CONSTANT);
+}
+
+TEST(ConstantsTest, octalEscJoinedWithConstantStringConstant)
+{
+    static_assert(OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT.size() == 22, "shall be constexpr");
+
+    ASSERT_EQ("Test \"Quated\" String\007"
+              "7"_sv,
+            OCTAL_ESC_JOINED_WITH_CONSTANT_STRING_CONSTANT);
 }
 
 TEST(ConstantsTest, stringPascalCaseConstant)

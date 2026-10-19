@@ -81,6 +81,8 @@ jobs:
         scripts/test.sh java
 
     # DynamicBitFieldLengthBoundsTest fails with range checking - see https://github.com/ndsev/zserio/issues/79
+    # stays on all legs: the options generate code the default run does not compile, and each Java version
+    # is an environment it has to work in
     - name: Run Zserio tests with extra arguments
       shell: bash
       run: |
@@ -95,7 +97,9 @@ jobs:
       run: |
         scripts/test_gen.sh java
 
+    # the API of the generated code does not depend on the Java version, one leg is enough
     - name: Run Zserio API compatibility checks
+      if: ${{ matrix.java-version == '8' }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -111,7 +115,9 @@ jobs:
             --blob-name gif.GifFile --blob-file test/data/others/gif/data/1pix.gif \
             --num-iterations 1000 --test-config READ_WRITE
 
+    # with one iteration this measures nothing, it only checks that the benchmarks run, one leg is enough
     - name: Run Zserio benchmarks
+      if: ${{ matrix.java-version == '8' }}
       shell: bash
       run: |
         scripts/benchmark.sh java --num-iterations 1

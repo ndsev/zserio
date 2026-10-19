@@ -22,6 +22,20 @@ class OptionalEnumerationTest(OptionalMembers.TestCase):
         container2.basic_color = self.api.BasicColor.BLACK
         self.assertFalse(container1 == container2)
 
+    def testLt(self):
+        container1 = self.api.Container()
+        container2 = self.api.Container()
+        self.assertFalse(container1 < container2)
+        self.assertFalse(container2 < container1)
+
+        container1.basic_color = self.api.BasicColor.WHITE
+        self.assertFalse(container1 < container2)
+        self.assertTrue(container2 < container1)
+
+        container2.basic_color = self.api.BasicColor.BLACK
+        self.assertFalse(container1 < container2)
+        self.assertTrue(container2 < container1)
+
     def testHash(self):
         container1 = self.api.Container()
         container2 = self.api.Container()

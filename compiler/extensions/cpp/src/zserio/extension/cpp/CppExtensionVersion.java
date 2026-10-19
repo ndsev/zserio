@@ -10,10 +10,10 @@ package zserio.extension.cpp;
 public final class CppExtensionVersion
 {
     /** C++ extension version string. */
-    public static final String CPP_EXTENSION_VERSION_STRING = "1.4.2";
+    public static final String CPP_EXTENSION_VERSION_STRING = "1.4.3";
 
     /** Expected Zserio core version string. */
-    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.19.0";
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.20.0";
 
     /** Zserio BIN version string. */
     public static final String BIN_VERSION_STRING = "1.0";
@@ -22,5 +22,5 @@ public final class CppExtensionVersion
     public static final String JSON_VERSION_STRING = "1.0";
 
     /** C++ extension version in integer value to allow version checking in generated code. */
-    public static final long CPP_EXTENSION_VERSION_NUMBER = 1004002;
+    public static final long CPP_EXTENSION_VERSION_NUMBER = 1004003;
 }

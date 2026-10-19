@@ -47,6 +47,28 @@ class BitmaskWithoutNoneTest(BitmaskTypes.TestCase):
 
         self.assertFalse(read == write)
 
+    def testLt(self):
+        # pylint: disable=comparison-with-itself
+        self.assertTrue(self.api.Permission.Values.READ < self.api.Permission.Values.WRITE)
+        self.assertFalse(self.api.Permission.Values.WRITE < self.api.Permission.Values.READ)
+
+        self.assertFalse(self.api.Permission.Values.READ < self.api.Permission.Values.READ)
+        self.assertFalse(self.api.Permission.Values.WRITE < self.api.Permission.Values.WRITE)
+
+        self.assertTrue(
+            self.api.Permission.Values.READ
+            < (self.api.Permission.Values.READ | self.api.Permission.Values.WRITE)
+        )
+        self.assertFalse(
+            (self.api.Permission.Values.READ | self.api.Permission.Values.WRITE)
+            < self.api.Permission.Values.READ
+        )
+
+        read = self.api.Permission.from_value(self.api.Permission.Values.READ.value)
+        write = self.api.Permission.from_value(self.api.Permission.Values.WRITE.value)
+        self.assertTrue(read < write)
+        self.assertFalse(write < read)
+
     def testHash(self):
         none = self.api.Permission()
         read = self.api.Permission.Values.READ

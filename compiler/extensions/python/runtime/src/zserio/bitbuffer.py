@@ -56,6 +56,40 @@ class BitBuffer:
 
         return True
 
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, BitBuffer):
+            return NotImplemented
+
+        # bytes are compared lexicographically, bit buffers with equal bytes are ordered by bit size
+        bytesize = bitsize_to_bytesize(self._bitsize)
+        other_bytesize = bitsize_to_bytesize(other._bitsize)
+        if bytesize == 0 or other_bytesize == 0:
+            return bytesize < other_bytesize
+
+        # number of bytes in front of the last byte of the shorter bit buffer
+        prefix_bytesize = min(bytesize, other_bytesize) - 1
+        if prefix_bytesize > 0:
+            prefix = self._buffer[0:prefix_bytesize]
+            other_prefix = other._buffer[0:prefix_bytesize]
+            if prefix != other_prefix:
+                return prefix < other_prefix
+
+        last_byte = (
+            self._masked_last_byte() if prefix_bytesize == bytesize - 1 else self._buffer[prefix_bytesize]
+        )
+        other_last_byte = (
+            other._masked_last_byte()
+            if prefix_bytesize == other_bytesize - 1
+            else other._buffer[prefix_bytesize]
+        )
+        if last_byte != other_last_byte:
+            return last_byte < other_last_byte
+
+        if bytesize != other_bytesize:
+            return bytesize < other_bytesize
+
+        return self._bitsize < other._bitsize
+
     def __hash__(self) -> int:
         result = HASH_SEED
         bytesize = bitsize_to_bytesize(self._bitsize)

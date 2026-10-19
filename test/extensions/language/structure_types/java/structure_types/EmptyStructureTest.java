@@ -55,6 +55,15 @@ public class EmptyStructureTest
     }
 
     @Test
+    public void compareTo()
+    {
+        final EmptyStructure emptyStructure1 = new EmptyStructure();
+        final EmptyStructure emptyStructure2 = new EmptyStructure();
+        assertFalse(emptyStructure1.compareTo(emptyStructure2) < 0);
+        assertFalse(emptyStructure2.compareTo(emptyStructure1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final EmptyStructure emptyStructure1 = new EmptyStructure();

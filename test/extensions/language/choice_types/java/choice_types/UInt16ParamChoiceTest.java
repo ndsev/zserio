@@ -129,6 +129,33 @@ public class UInt16ParamChoiceTest
     }
 
     @Test
+    public void compareTo()
+    {
+        UInt16ParamChoice uint16ParamChoice1 = new UInt16ParamChoice(VARIANT_A_SELECTOR);
+        UInt16ParamChoice uint16ParamChoice2 = new UInt16ParamChoice(VARIANT_B_SELECTOR1);
+        assertTrue(uint16ParamChoice1.compareTo(uint16ParamChoice2) < 0);
+        assertFalse(uint16ParamChoice2.compareTo(uint16ParamChoice1) < 0);
+
+        uint16ParamChoice2 = new UInt16ParamChoice(VARIANT_A_SELECTOR);
+        assertFalse(uint16ParamChoice1.compareTo(uint16ParamChoice2) < 0);
+        assertFalse(uint16ParamChoice2.compareTo(uint16ParamChoice1) < 0);
+
+        final byte value = 99;
+        uint16ParamChoice1.setValueA(value);
+        assertFalse(uint16ParamChoice1.compareTo(uint16ParamChoice2) < 0);
+        assertTrue(uint16ParamChoice2.compareTo(uint16ParamChoice1) < 0);
+
+        uint16ParamChoice2.setValueA(value);
+        assertFalse(uint16ParamChoice1.compareTo(uint16ParamChoice2) < 0);
+        assertFalse(uint16ParamChoice2.compareTo(uint16ParamChoice1) < 0);
+
+        final byte diffValue = value + 1;
+        uint16ParamChoice2.setValueA(diffValue);
+        assertTrue(uint16ParamChoice1.compareTo(uint16ParamChoice2) < 0);
+        assertFalse(uint16ParamChoice2.compareTo(uint16ParamChoice1) < 0);
+    }
+
+    @Test
     public void hashCodeMethod()
     {
         final UInt16ParamChoice uint16ParamChoice1 = new UInt16ParamChoice(VARIANT_A_SELECTOR);

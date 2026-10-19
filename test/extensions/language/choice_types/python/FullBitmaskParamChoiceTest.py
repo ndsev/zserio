@@ -40,6 +40,26 @@ class FullBitmaskParamChoiceTest(ChoiceTypes.TestCase):
         fullBitmaskParamChoice2.black = diffValue
         self.assertFalse(fullBitmaskParamChoice1 == fullBitmaskParamChoice2)
 
+    def testLt(self):
+        fullBitmaskParamChoice1 = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
+        fullBitmaskParamChoice2 = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
+        self.assertFalse(fullBitmaskParamChoice1 < fullBitmaskParamChoice2)
+        self.assertFalse(fullBitmaskParamChoice2 < fullBitmaskParamChoice1)
+
+        value = 99
+        fullBitmaskParamChoice1.black = value
+        self.assertFalse(fullBitmaskParamChoice1 < fullBitmaskParamChoice2)
+        self.assertTrue(fullBitmaskParamChoice2 < fullBitmaskParamChoice1)
+
+        fullBitmaskParamChoice2.black = value
+        self.assertFalse(fullBitmaskParamChoice1 < fullBitmaskParamChoice2)
+        self.assertFalse(fullBitmaskParamChoice2 < fullBitmaskParamChoice1)
+
+        diffValue = value + 1
+        fullBitmaskParamChoice2.black = diffValue
+        self.assertTrue(fullBitmaskParamChoice1 < fullBitmaskParamChoice2)
+        self.assertFalse(fullBitmaskParamChoice2 < fullBitmaskParamChoice1)
+
     def testHash(self):
         fullBitmaskParamChoice1 = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
         fullBitmaskParamChoice2 = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)

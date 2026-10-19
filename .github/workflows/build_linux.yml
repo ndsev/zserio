@@ -2,33 +2,66 @@ name: Linux
 
 on:
   push:
-    branches: [ master, '*-ci' ]
+    branches: [ master, 'release/**', '*-ci' ]
   pull_request:
-    branches: [ master, '*-ci' ]
+    branches: [ master, 'release/**', '*-ci' ]
   workflow_dispatch:
+  # the release workflow builds the release artifacts by this workflow
+  workflow_call:
+    inputs:
+      full:
+        description: "Run all legs with all checks regardless of the event."
+        type: boolean
+        default: false
 
 jobs:
+  legs:
+    uses: "./.github/workflows/select_legs.yml"
+    with:
+      full: ${{ inputs.full == true }}
+
   zserio:
+    needs: [legs]
+    if: needs.legs.outputs.zserio == 'true'
     uses: "./.github/workflows/build_linux_zserio.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
 
   cpp:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.cpp == 'true'
     uses: "./.github/workflows/build_linux_cpp.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   java:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.java == 'true'
     uses: "./.github/workflows/build_linux_java.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   python:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.python == 'true'
     uses: "./.github/workflows/build_linux_python.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   doc:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.doc == 'true'
     uses: "./.github/workflows/build_linux_doc.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
   xml:
-    needs: [zserio]
+    needs: [legs, zserio]
+    if: needs.legs.outputs.xml == 'true'
     uses: "./.github/workflows/build_linux_xml.yml"
+    with:
+      full: ${{ needs.legs.outputs.full == 'true' }}
 
+  # only in a full run: the smoke run lacks the clang 14 Debug leg that uploads the C++ runtime artifact
   release:
-    needs: [cpp, java, python, doc, xml]
+    needs: [legs, cpp, java, python, doc, xml]
+    if: needs.legs.outputs.full == 'true'
     runs-on: "ubuntu-22.04"
     steps:
     - name: "Download Zserio compiler artifacts"
