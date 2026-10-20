@@ -240,15 +240,16 @@ The release workflow relies on these repository settings, none of them is in the
 
 | Setting | Expected | Check |
 |---------|----------|-------|
-| Environment `pypi` | required reviewers; deployment refs: tags `v*` and the branch the dry run runs on | `gh api repos/ndsev/zserio/environments/pypi/deployment-branch-policies -q '.branch_policies[].name'` |
-| Environment `maven-central` | secrets `CENTRAL_TOKEN_USERNAME`, `CENTRAL_TOKEN_PASSWORD`, `MAVEN_GPG_KEY`, `MAVEN_GPG_PASSPHRASE`; deployment refs: tags `v*` and the branch the dry run runs on | `gh api repos/ndsev/zserio/environments/maven-central/deployment-branch-policies -q '.branch_policies[].name'` |
+| Environment `pypi` | required reviewers; deployment refs: tags `v*` and branches `release/*` | `gh api repos/ndsev/zserio/environments/pypi/deployment-branch-policies -q '.branch_policies[].name'` |
+| Environment `maven-central` | secrets `CENTRAL_TOKEN_USERNAME`, `CENTRAL_TOKEN_PASSWORD`, `MAVEN_GPG_KEY`, `MAVEN_GPG_PASSPHRASE`; deployment refs: tags `v*` and branches `release/*` | `gh api repos/ndsev/zserio/environments/maven-central/deployment-branch-policies -q '.branch_policies[].name'` |
 | PyPI project `zserio` | trusted publisher: repository `ndsev/zserio`, workflow `release.yml`, environment `pypi` | *Your projects* → `zserio` → *Publishing* on pypi.org |
+| Environment `github-pages` | deployment refs: branch `master` and tags `v*`, the tag run deploys zserio.org from the tag | `gh api repos/ndsev/zserio/environments/github-pages/deployment-branch-policies -q '.branch_policies[].name'` |
 | Pages | source *GitHub Actions*, custom domain `zserio.org` | `gh api repos/ndsev/zserio/pages -q '.build_type, .cname'` prints `workflow` and `zserio.org` |
 | Ruleset `protect default branch` | target branch `master`: pull requests may be merged only by *Create a merge commit* (step 11), no deletion, no force push | `gh api repos/ndsev/zserio/rules/branches/master -q '[.[].type]'` lists `pull_request`, `deletion` and `non_fast_forward` |
 | Ruleset `release tags immutable` | target tags `refs/tags/v*`: no deletion, no update, no force push | `gh api repos/ndsev/zserio/rulesets -q '.[].name'` lists it |
 
-**Check before step 1:** every row matches. The dry run in step 3 runs both environments from one ref, so that
-ref must be allowed in `pypi` and in `maven-central`.
+**Check before step 1:** every row matches. The dry run in step 3 runs both environments from `release/X.Y`, so
+`release/*` must be allowed in `pypi` and in `maven-central`.
 
 **If it fails:** a repository admin fixes the setting under *Settings* → *Environments*, *Settings* → *Pages*
 or *Settings* → *Rules*. Do not start the release with a mismatch: a rejected environment fails the tag run half
@@ -311,13 +312,6 @@ gh workflow run release.yml -R ndsev/zserio --ref release/X.Y -f wheel_tag=v<lat
 gh run list -R ndsev/zserio --workflow release.yml --limit 1
 ```
 
-A manual run needs `release.yml` on the default branch. Before that, push the branch
-`release-dry-run/<wheel_tag>` instead; the run takes `wheel_tag` from the branch name:
-
-```bash
-git push origin release/X.Y:refs/heads/release-dry-run/v<latest published version>
-```
-
 The run title reads *Release dry run from &lt;ref&gt; - no upload*. The job *Dry run: PyPI token check, no
 upload* waits for the `pypi` environment approval: open the run, *Review deployments*, tick `pypi`,
 *Approve and deploy*.
@@ -326,7 +320,6 @@ upload* waits for the `pypi` environment approval: open the run, *Review deploym
 *Dry run: PyPI token check, no upload*, *Dry run: Central Portal validation, then dropped* and
 *Dry run: build zserio.org, no deployment / build*. *Release: upload to PyPI* and *Deploy to zserio.org* are
 skipped. [Deployments](https://central.sonatype.com/publishing/deployments) shows no deployment left over.
-Delete the branch `release-dry-run/...` if you pushed one.
 
 **If it fails:**
 
@@ -473,7 +466,8 @@ prints `200`, likewise for `java/` and `python/`.
 
 * `Built version X.Y.Z is not a release newer than ...`: a newer release than `X.Y.Z` is already published,
   e.g. for a patch release of an older `X.Y`. The site is not deployed; decide by hand which ref to deploy.
-* The deploy job fails: check that the Pages source is *GitHub Actions*, see step 0.
+* The deploy job fails: check that the Pages source is *GitHub Actions* and that the environment `github-pages`
+  allows the tags `v*`, see step 0.
 * Any other failure: re-deploy from the tag by the Pages workflow, which takes the runtime libs from the
   published release:
 
